@@ -1,0 +1,1 @@
+These are sample blockchain contracts and user interfaces that are intended to be used to explore the IBM Blockchain environment and fabric.

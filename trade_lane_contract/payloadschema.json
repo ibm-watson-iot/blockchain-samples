@@ -1,0 +1,837 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "3.1",
+        "title": "IBM IoT Blockchain Trade Lane Sample Contract API",
+        "description": "Interact with the API and schema for IoT trade lane sample contract. Based on the CRUD contract pattern, which is implemented as a pseudo-RPC payload in the chain code inputs (function string and args string array) of the deploy, invoke and query end points. Similar in concept to a JSON-RPC encoding. Note that the interface shown in this schema defines the chaincode inputs as an array of objects, but those objects are always in fact a single JSON encoded string. The sections before Definitions are redacted versions of the rest_api.json file in the Open Block Chain project. This schema builds on the paths by defining the payloads for the devops resource APIs. This file can be explored in the Swagger GUI, but it throws an error on the choice verb 'oneOf', which is very useful for defining payloads related to one endpoint, such as query. This schema uses references everywhere to avoid data duplication, but the generate command runs a script that can resolve all references and create a schema with all data fully realized."
+    },
+    "host": "127.0.0.1:3000",
+    "schemes": [
+        "http"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/devops/deploy": {
+            "post": {
+                "summary": "Service endpoint for deploying Chaincode",
+                "description": "The /devops/deploy endpoint receives Chaincode deployment requests. The Chaincode and the required entities are first packaged into a container and subsequently deployed to the blockchain. If the Chaincode build and deployment are successful, a confirmation message is returned. Otherwise, an error is displayed alongside with a reason for the failure.",
+                "tags": [
+                    "Devops"
+                ],
+                "operationId": "chaincodeDeploy",
+                "parameters": [
+                    {
+                        "name": "ChaincodeInputDeploy",
+                        "in": "body",
+                        "description": "Chaincode specification message",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ChaincodeInputDeploy"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deployed chainCode",
+                        "schema": {
+                            "$ref": "#/definitions/OK"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/devops/invoke": {
+            "post": {
+                "summary": "Service endpoint for invoking Chaincode functions",
+                "description": "The /devops/invoke endpoint receives requests for invoking functions in deployed Chaincodes. If the Chaincode function is invoked sucessfully, a transaction id is returned. Otherwise, an error is displayed alongside with a reason for the failure.",
+                "tags": [
+                    "Devops"
+                ],
+                "operationId": "chaincodeInvoke",
+                "parameters": [
+                    {
+                        "name": "ChaincodeInputInvoke",
+                        "in": "body",
+                        "description": "Chaincode invocation message",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ChaincodeInputInvoke"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully invoked transaction",
+                        "schema": {
+                            "$ref": "#/definitions/OK"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/devops/query": {
+            "post": {
+                "summary": "Service endpoint for querying Chaincode state",
+                "description": "The /devops/query endpoint receives requests to query Chaincode state. The request triggers a query method on the target Chaincode, both identified in the required payload. If the query method is successful, the response defined within the method is returned. Otherwise, an error is displayed alongside with a reason for the failure.",
+                "tags": [
+                    "Devops"
+                ],
+                "operationId": "chaincodeQuery",
+                "parameters": [
+                    {
+                        "name": "ChaincodeInputQuery",
+                        "in": "body",
+                        "description": "Chaincode invocation message",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ChaincodeInputQuery"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully queried chaincode",
+                        "schema": {
+                            "$ref": "#/definitions/OK"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "ChaincodeInputDeploy": {
+            "type": "object",
+            "description": "the payload for a deploy message",
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/API/init"
+                }
+            ]
+        },
+        "ChaincodeInputInvoke": {
+            "type": "object",
+            "description": "the payload for an invoke message",
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/API/createAsset"
+                },
+                {
+                    "$ref": "#/definitions/API/updateAsset"
+                },
+                {
+                    "$ref": "#/definitions/API/deleteAsset"
+                },
+                {
+                    "$ref": "#/definitions/API/deletePropertiesFromAsset"
+                },
+                {
+                    "$ref": "#/definitions/API/setLoggingLevel"
+                },
+                {
+                    "$ref": "#/definitions/API/setCreateOnUpdate"
+                },
+                {
+                    "$ref": "#/definitions/API/deleteAllAssets"
+                }
+            ]
+        },
+        "ChaincodeInputQuery": {
+            "type": "object",
+            "description": "the payload for a query message",
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/API/readAsset"
+                },
+                {
+                    "$ref": "#/definitions/API/readAllAssets"
+                },
+                {
+                    "$ref": "#/definitions/API/readAssetHistory"
+                },
+                {
+                    "$ref": "#/definitions/API/readAssetSamples"
+                },
+                {
+                    "$ref": "#/definitions/API/readAssetSchemas"
+                },
+                {
+                    "$ref": "#/definitions/API/readRecentStates"
+                },
+                {
+                    "$ref": "#/definitions/API/readContractState"
+                },
+                {
+                    "$ref": "#/definitions/API/readContractObjectModel"
+                }
+            ]
+        },
+        "API": {
+            "type": "object",
+            "description": "The API for the tradelane sample contract consisting of the init function, the crud functions to change state, and a set of query functions for asset state, asset history, recent states, and so on.",
+            "properties": {
+                "init": {
+                    "type": "object",
+                    "description": "Initializes the contract when started, either by deployment or by peer restart.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "init"
+                            ],
+                            "description": "init function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/initEvent"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "createAsset": {
+                    "type": "object",
+                    "description": "Create an asset. One argument, a JSON encoded event. AssetID is required with zero or more writable properties. Establishes an initial asset state.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "createAsset"
+                            ],
+                            "description": "createAsset function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/event"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "updateAsset": {
+                    "type": "object",
+                    "description": "Update the state of an asset. The one argument is a JSON encoded event. AssetID is required along with one or more writable properties. Establishes the next asset state. ",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "updateAsset"
+                            ],
+                            "description": "updateAsset function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/event"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "deleteAsset": {
+                    "type": "object",
+                    "description": "Delete an asset, its history, and any recent state activity. Argument is a JSON encoded string containing only an assetID.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deleteAsset"
+                            ],
+                            "description": "deleteAsset function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetIDKey"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "deletePropertiesFromAsset": {
+                    "type": "object",
+                    "description": "Delete one or more properties from an asset. Argument is a JSON encoded string containing an AssetID and an array of qualified property names. An example would be {'assetID':'A1',['event.common.carrier', 'event.customer.temperature']} and the result of that invoke would be the removal of the carrier field and the temperature field with a recalculation of the alert and compliance status.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deletePropertiesFromAsset"
+                            ],
+                            "description": "deletePropertiesFromAsset function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetIDandPropertyArray"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "deleteAllAssets": {
+                    "type": "object",
+                    "description": "Delete the state of all assets. No arguments are accepted. For each managed asset, the state and history are erased, and the asset is removed if necessary from recent states.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deleteAllAssets"
+                            ],
+                            "description": "deleteAllAssets function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        }
+                    }
+                },
+                "readAsset": {
+                    "type": "object",
+                    "description": "Returns the state an asset. Argument is a JSON encoded string. AssetID is the only accepted property.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAsset"
+                            ],
+                            "description": "readAsset function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetIDKey"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        },
+                        "result": {
+                            "$ref": "#/definitions/state"
+                        }
+                    }
+                },
+                "readAllAssets": {
+                    "type": "object",
+                    "description": "Returns the state of all assets as an array of JSON encoded strings. Accepts no arguments. For each managed asset, the state is read from the ledger and added to the returned array. Array is sorted by assetID.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAllAssets"
+                            ],
+                            "description": "readAllAssets function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        },
+                        "result": {
+                            "$ref": "#/definitions/stateArray"
+                        }
+                    }
+                },
+                "readAssetHistory": {
+                    "type": "object",
+                    "description": "Requests a specified number of history states for an assets. Returns an array of states sorted with the most recent first. AssetID is required and count is optional. A missing count, a count of zero, or too large a count returns all existing history states.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAssetHistory"
+                            ],
+                            "description": "readAssetHistory function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetIDandCount"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        },
+                        "result": {
+                            "$ref": "#/definitions/stateArrayRecentFirst"
+                        }
+                    }
+                },
+                "readAssetSchemas": {
+                    "type": "object",
+                    "description": "Returns a string generated from the schema containing APIs and Objects as specified in generate.json in the scripts folder.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAssetSchemas"
+                            ],
+                            "description": "readAssetSchemas function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        },
+                        "result": {
+                            "type": "string",
+                            "description": "JSON encoded object containing selected schemas"
+                        }
+                    }
+                },
+                "readAssetSamples": {
+                    "type": "object",
+                    "description": "Returns a string generated from the schema containing sample Objects as specified in generate.json in the scripts folder.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAssetSamples"
+                            ],
+                            "description": "readAssetSamples function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        },
+                        "result": {
+                            "type": "string",
+                            "description": "JSON encoded object containing selected sample data"
+                        }
+                    }
+                },
+                "readRecentStates": {
+                    "type": "object",
+                    "description": "Returns the state of recently updated assets as an array of objects sorted with the most recently updated asset first. Each asset appears exactly once up to a maxmum of 20 in this version of the contract.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readRecentStates"
+                            ],
+                            "description": "readRecentStates function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        },
+                        "result": {
+                            "$ref": "#/definitions/stateArrayRecentFirst"
+                        }
+                    }
+                },
+                "readContractState": {
+                    "type": "object",
+                    "description": "Returns the state of the contract, which includes its version, its nickname and a list of assetIDs that are currently managed.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readContractState"
+                            ],
+                            "description": "readContractState function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        },
+                        "result": {
+                            "$ref": "#/definitions/contractState"
+                        }
+                    }
+                },
+                "setLoggingLevel": {
+                    "type": "object",
+                    "description": "Sets the logging level in the contract.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "setLoggingLevel"
+                            ],
+                            "description": "setLoggingLevel function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "logLevel": {
+                                    "type": "string",
+                                    "enum": [
+                                        "CRITICAL",
+                                        "ERROR",
+                                        "WARNING",
+                                        "NOTICE",
+                                        "INFO",
+                                        "DEBUG"                                    
+                                    ]
+                                }
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "logging levels indicate what you see"
+                        }
+                    }
+                },
+                "setCreateOnUpdate": {
+                    "type": "object",
+                    "description": "Allow updateAsset to redirect to createAsset when assetID does not exist.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "setCreateOnUpdate"
+                            ],
+                            "description": "setCreateOnUpdate function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "setCreateOnUpdate": {
+                                    "type": "boolean"
+                                }
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "True for redirect allowed, false for error on asset does not exist."
+                        }
+                    }
+                }
+            }
+        },
+        "Error": {
+            "type": "object",
+            "properties": {
+                "Error": {
+                    "type": "string",
+                    "description": "A descriptive message explaining the cause of error."
+                }
+            }
+        },
+        "OK": {
+            "type": "object",
+            "properties": {
+                "OK": {
+                    "type": "string",
+                    "description": "A descriptive message confirming a successful request."
+                },
+                "message": {
+                    "type": "string",
+                    "description": "An optional parameter containing additional information about the request."
+                }
+            }
+        },
+        "version": {
+            "type": "string",
+            "description": "The version number of the current contract"
+        },
+        "nickname": {
+            "type": "string",
+            "default": "TRADELANE",
+            "description": "The nickname of the current contract"
+        },
+        "assetID": {
+            "type": "string",
+            "description": "The ID of a managed asset. The resource focal point for a smart contract."
+        },
+        "assetIDKey": {
+            "type": "object",
+            "description": "An object containing only an assetID for use as an argument to read or delete.",
+            "properties": {
+                "assetID": {
+                    "$ref": "#/definitions/assetID"
+                }
+            }
+        },
+        "alertName": {
+            "type": "string",
+            "enum": [
+                "OVERTTEMP"
+            ],
+            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance."
+        },
+        "alertStatus": {
+            "type": "object",
+            "description": "Active means that the alert is in force in this state. Raised means that the alert became active as the result of the event that generated this state. Cleared means that the alert became inactive as the result of the event that generated this state.",
+            "properties": {
+                "active": {
+                    "type": "array",
+                    "items": {
+                        "type": "boolean",
+                        "description": "Based on the AlertName enum"
+                    },
+                    "minItems": 1
+                },
+                "raised": {
+                    "type": "array",
+                    "items": {
+                        "type": "boolean",
+                        "description": "Based on the AlertName enum"
+                    },
+                    "minItems": 1
+                },
+                "cleared": {
+                    "type": "array",
+                    "items": {
+                        "type": "boolean",
+                        "description": "Based on the AlertName enum"
+                    },
+                    "minItems": 1
+                }
+            }
+        },
+        "geo": {
+            "description": "A geographical coordinate",
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "latitude",
+                "longitude"
+            ]
+        },
+        "assetIDandCount": {
+            "type": "object",
+            "description": "Requested assetID with item count.",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "assetID": {
+                    "$ref": "#/definitions/assetID"
+                }
+            },
+            "required": [
+                "assetID"
+            ]
+        },
+        "qualPropertyNameArray": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "description": "The qualified name of a property. E.g. 'event.common.carrier', 'event.custom.temperature', etc." 
+            }
+        },
+        "assetIDandPropertyArray": {
+            "type": "object",
+            "description": "Requested assetID with a list or qualified property names.",
+            "properties": {
+                "qualPropsToDelete": {
+                    "$ref": "#/definitions/qualPropertyNameArray"
+                },
+                "assetID": {
+                    "$ref": "#/definitions/assetID"
+                }
+            },
+            "required": [
+                "assetID",
+                "qualPropsToDelete"
+            ]
+        },
+        "eventWithFunction": {
+            "type": "object",
+            "description": "function and string parameter that created this state object",
+            "properties": {
+                "args": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "description": "parameters to the function, usually args[0] is populated with a JSON encoded event object"
+                    }
+                },
+                "function": {
+                    "type": "string",
+                    "description": "function that created this state object"
+                },
+                "redirectedFromFunction": {
+                    "type": "string",
+                    "description": "function that originally received the event"
+                }
+            }
+        },
+        "initEvent": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "$ref": "#/definitions/assetID"
+                },
+                "nickname": {
+                    "$ref": "#/definitions/nickname"
+                }
+            },
+            "required": [
+                "version"
+            ],
+            "description": "event sent to init on deployment"
+        },
+        "event": {
+            "type": "object",
+            "description": "A set of fields that constitute the writable fields in an asset's state. AssetID is mandatory along with at least one writable field. In this contract pattern, a partial state is used as an event.",
+            "properties": {
+                "assetID": {
+                    "$ref": "#/definitions/assetID"
+                },
+                "timestamp": {
+                    "type": "string",
+                    "description": "RFC3339nanos formatted timestamp."
+                },
+                "location": {
+                    "$ref": "#/definitions/geo"
+                },
+                "extension": {
+                    "type": "object",
+                    "description": "Application-managed state. Opaque to contract.",
+                    "properties": {}
+                },
+                "temperature": {
+                    "type": "number",
+                    "description": "Temperature of the asset in CELSIUS."
+                },
+                "carrier": {
+                    "type": "string",
+                    "description": "transport entity currently in possession of asset"
+                }
+            },
+            "required": [
+                "assetID"
+            ]
+        },
+        "state": {
+            "type": "object",
+            "description": "A set of fields that constitute the complete asset state.",
+            "properties": {
+                "assetID": {
+                    "$ref": "#/definitions/assetID"
+                },
+                "timestamp": {
+                    "type": "string",
+                    "description": "RFC3339nanos formatted timestamp."
+                },
+                "location": {
+                    "$ref": "#/definitions/geo"
+                },
+                "extension": {
+                    "type": "object",
+                    "description": "Application-managed state. Opaque to contract.",
+                    "properties": {}
+                },
+                "temperature": {
+                    "type": "number",
+                    "description": "Temperature of the asset in CELSIUS."
+                },
+                "carrier": {
+                    "type": "string",
+                    "description": "transport entity currently in possession of asset"
+                },
+                "inCompliance": {
+                    "type": "boolean",
+                    "description": "A contract-specific indication that this asset is compliant."
+                },
+                "alerts": {
+                    "$ref": "#/definitions/alertStatus"
+                },
+                "lastEvent": {
+                    "$ref": "#/definitions/eventWithFunction"
+                }
+            }
+        },
+        "stateArray": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/state"
+            },
+            "minItems": 0,
+            "description": "an array of states, often for different assets"
+        },
+        "stateArrayRecentFirst": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/state"
+            },
+            "minItems": 0,
+            "description": "an array of states for one asset sorted by timestamp with the most recent entry first"
+        },
+        "stateArrayRecentFirstMap": {
+            "type": "Object",
+            "description": "",
+            "properties": {
+                "assetID": {
+                    "$ref": "#/definitions/assetID"
+                },
+                "statesRecentFirst": {
+                    "$ref": "#/definitions/stateArrayRecentFirst"
+                }                
+            }
+        },
+        "contractState": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "$ref": "#/definitions/version"
+                },
+                "nickname": {
+                    "$ref": "#/definitions/nickname"
+                },
+                "activeAssets": {
+                    "type": "array",
+                    "description": "array containing actively managed asset IDs",
+                    "items": {
+                        "$ref": "#/definitions/assetID"
+                    }
+                }
+            }
+        }
+    }
+}

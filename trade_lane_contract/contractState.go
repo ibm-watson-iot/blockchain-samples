@@ -1,0 +1,176 @@
+/*
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+*/
+
+// v3.0 HM 25 Feb 2016 Moved the asset state history code into a separate package.
+// v3.0.1 HM 03 Mar 2016 Store the state history in descending order.
+// v3.1 KL 07 Mar 2016 Reduce memory garbage in updateStateHistory 
+
+package main
+
+import (
+	"encoding/json"
+    "errors"
+    "fmt"
+    "sort"
+	"github.com/openblockchain/obc-peer/openchain/chaincode/shim"
+)
+
+
+// ******* backported from 4.0
+
+// Update version for every change, use VX.X.X (Major, Minor, Fix). Suggest that we update
+// Major for API break, Minor when adding a feature or behavior, Fix when fixing a bug.
+// If the init comes in with the wrong major version, then  we might consider exiting with
+// an error.
+const MYVERSION string = "3.0.5"
+const DEFAULTNICKNAME string = "TRADELANE" 
+
+const CONTRACTSTATEKEY string = "ContractStateKey"	// store contract state such as asset list
+
+type ContractState struct {
+	Version      string           `json:"version"`
+    Nickname     string           `json:"nickname"`
+	ActiveAssets map[string]bool  `json:"activeAssets"`
+}
+
+func GETContractStateFromLedger(stub *shim.ChaincodeStub) (ContractState, error) {
+    var state ContractState = ContractState{ MYVERSION, DEFAULTNICKNAME, make(map[string]bool) }                   
+    var err error
+	contractStateBytes, err := stub.GetState(CONTRACTSTATEKEY)
+	if err == nil && len(contractStateBytes) > 14 {    // minimum string is {"version":""} and version cannot be empty 
+		// apparently, this blockchain instance is being reloaded, has the version changed?
+		err = json.Unmarshal(contractStateBytes, &state)
+		if err != nil {
+            log.Errorf("Unmarshal failed for contract state: %s", err)
+			return ContractState{}, err
+		}
+        if MYVERSION != state.Version {
+            log.Noticef("Contract version has changed from %s to %s\n", state.Version, MYVERSION)
+            state.Version = MYVERSION
+        }
+	} else {
+        // empty state already initialized 
+		log.Noticef("Initialized newly deployed contract state version %s\n", state.Version)
+	}
+    // this MUST be here
+    if state.ActiveAssets == nil {
+        state.ActiveAssets = make(map[string]bool)
+    }
+    log.Debug("GETContractState successful")
+    return state, nil 
+}
+
+func PUTContractStateToLedger(stub *shim.ChaincodeStub, state ContractState) (error) {
+    var contractStateJSON []byte
+    var err error
+    contractStateJSON, err = json.Marshal(state)
+    if err != nil {
+        log.Criticalf("Failed to marshal contract state: %s", err)
+        return err
+    }
+    err = stub.PutState(CONTRACTSTATEKEY, contractStateJSON)
+    if err != nil {
+        log.Criticalf("Failed to PUTSTATE contract state: %s", err)
+        return err
+    } 
+    log.Debugf("PUTContractState: %#v", state)
+    return nil 
+}
+
+func addAssetToContractState(stub *shim.ChaincodeStub, assetID string) (error) {
+    var state ContractState
+    var err error
+    state, err = GETContractStateFromLedger(stub)  
+    if err != nil {
+        return err
+    }
+    log.Debugf("Adding asset %s to contract", assetID)
+    state.ActiveAssets[assetID] = true
+    return PUTContractStateToLedger(stub, state)
+}
+
+func removeAssetFromContractState(stub *shim.ChaincodeStub, assetID string) (error) {
+    var state ContractState
+    var err error
+    state, err = GETContractStateFromLedger(stub)  
+    if err != nil {
+        return err
+    }
+    log.Debugf("Deleting asset %s from contract", assetID)
+    delete(state.ActiveAssets, assetID)
+    return PUTContractStateToLedger(stub, state)
+}
+
+func getActiveAssets(stub *shim.ChaincodeStub) ([]string, error) {
+    var state ContractState
+    var err error
+    state, err = GETContractStateFromLedger(stub)  
+    if err != nil {
+        return []string{}, err
+    }
+    var a []string = make([]string, len(state.ActiveAssets))
+    i := 0
+    for id, _ := range state.ActiveAssets {
+        a[i] = id
+        i++ 
+    }
+    sort.Strings(a)
+    return a, nil
+}
+
+func initializeContractState(stub *shim.ChaincodeStub, version string, nickname string) (error) {
+    var state ContractState
+    var err error
+    if version != MYVERSION {
+        err = errors.New(fmt.Sprintf("Contract version: %s does not match version argument: %s", MYVERSION, version))
+        log.Critical(err)
+        return err
+    }
+    state, err = GETContractStateFromLedger(stub)
+    if err != nil {
+        return err
+    }  
+    if version != state.Version {
+        log.Noticef("Contract version has changed from %s to %s", version, MYVERSION)
+        // keep going, this is an update of version -- later this will
+        // be handled by pulling state from the superseded contract version
+    }
+    state.Version = MYVERSION
+    state.Nickname = nickname
+    return PUTContractStateToLedger(stub, state)
+}
+
+func getLedgerContractVersion(stub *shim.ChaincodeStub) (string, error) {
+    var state ContractState
+    var err error
+    state, err = GETContractStateFromLedger(stub)  
+    if err != nil {
+        return "", err
+    }
+    return state.Version, nil   
+}
+
+func assetIsActive(stub *shim.ChaincodeStub, assetID string) (bool) {
+    var state ContractState
+    var err error
+    state, err = GETContractStateFromLedger(stub)
+    if err != nil { return false}
+    found, _ := state.ActiveAssets[assetID]
+    return found
+}                      
