@@ -19,7 +19,7 @@ under the License.
 
 // ************************************
 // Alerts package
-// KL 16 Feb 2016 Initial alert package
+// KL 16 Feb 2016 Initial alert package    
 // KL 22 Feb 2016 add AllClear method and associated constant
 // ************************************
 

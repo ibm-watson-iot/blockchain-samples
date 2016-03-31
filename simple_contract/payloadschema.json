@@ -1,0 +1,457 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "3.1",
+        "title": "IBM IoT Blockchain Example Contract 01 API",
+        "description": "Interact with the API and schema for IoT example contract. Based on the CRUD contract pattern, which is implemented as a pseudo-RPC payload in the chain code inputs (function string and args string array) of the deploy, invoke and query end points. Similar in concept to a JSON-RPC encoding. Note that the interface shown in this schema defines the chaincode inputs as an array of objects, but those objects are always in fact a single JSON encoded string. The sections before Definitions are redacted versions of the rest_api.json file in the Open Block Chain project. This schema builds on the paths by defining the payloads for the devops resource APIs. This file can be explored in the Swagger GUI, but it throws an error on the choice verb 'oneOf', which is very useful for defining payloads related to one endpoint, such as query. This schema uses references everywhere to avoid data duplication, but the generate command runs a script that can resolve all references and create a schema with all data fully realized."
+    },
+    "host": "127.0.0.1:3000",
+    "schemes": [
+        "http"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/devops/deploy": {
+            "post": {
+                "summary": "Service endpoint for deploying Chaincode",
+                "description": "The /devops/deploy endpoint receives Chaincode deployment requests. The Chaincode and the required entities are first packaged into a container and subsequently deployed to the blockchain. If the Chaincode build and deployment are successful, a confirmation message is returned. Otherwise, an error is displayed alongside with a reason for the failure.",
+                "tags": [
+                    "Devops"
+                ],
+                "operationId": "chaincodeDeploy",
+                "parameters": [
+                    {
+                        "name": "ChaincodeInputDeploy",
+                        "in": "body",
+                        "description": "Chaincode specification message",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ChaincodeInputDeploy"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deployed chainCode",
+                        "schema": {
+                            "$ref": "#/definitions/OK"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/devops/invoke": {
+            "post": {
+                "summary": "Service endpoint for invoking Chaincode functions",
+                "description": "The /devops/invoke endpoint receives requests for invoking functions in deployed Chaincodes. If the Chaincode function is invoked sucessfully, a transaction id is returned. Otherwise, an error is displayed alongside with a reason for the failure.",
+                "tags": [
+                    "Devops"
+                ],
+                "operationId": "chaincodeInvoke",
+                "parameters": [
+                    {
+                        "name": "ChaincodeInputInvoke",
+                        "in": "body",
+                        "description": "Chaincode invocation message",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ChaincodeInputInvoke"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully invoked transaction",
+                        "schema": {
+                            "$ref": "#/definitions/OK"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/devops/query": {
+            "post": {
+                "summary": "Service endpoint for querying Chaincode state",
+                "description": "The /devops/query endpoint receives requests to query Chaincode state. The request triggers a query method on the target Chaincode, both identified in the required payload. If the query method is successful, the response defined within the method is returned. Otherwise, an error is displayed alongside with a reason for the failure.",
+                "tags": [
+                    "Devops"
+                ],
+                "operationId": "chaincodeQuery",
+                "parameters": [
+                    {
+                        "name": "ChaincodeInputQuery",
+                        "in": "body",
+                        "description": "Chaincode invocation message",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ChaincodeInputQuery"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully queried chaincode",
+                        "schema": {
+                            "$ref": "#/definitions/OK"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "ChaincodeInputDeploy": {
+            "type": "object",
+            "description": "the payload for a deploy message",
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/API/init"
+                }
+            ]
+        },
+        "ChaincodeInputInvoke": {
+            "type": "object",
+            "description": "the payload for an invoke message",
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/API/createAsset"
+                },
+                {
+                    "$ref": "#/definitions/API/updateAsset"
+                },
+                {
+                    "$ref": "#/definitions/API/deleteAsset"
+                }
+            ]
+        },
+        "ChaincodeInputQuery": {
+            "type": "object",
+            "description": "the payload for a query message",
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/API/readAsset"
+                },
+                {
+                    "$ref": "#/definitions/API/readAssetSamples"
+                },
+                {
+                    "$ref": "#/definitions/API/readAssetSchemas"
+                }
+            ]
+        },
+        "API": {
+            "type": "object",
+            "description": "The API for the tradelane sample contract consisting of the init function, the crud functions to change state, and a set of query functions for asset state, asset history, recent states, and so on.",
+            "properties": {
+                "init": {
+                    "type": "object",
+                    "description": "Initializes the contract when started, either by deployment or by peer restart.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "init"
+                            ],
+                            "description": "init function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/initEvent"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "createAsset": {
+                    "type": "object",
+                    "description": "Create an asset. One argument, a JSON encoded event. AssetID is required with zero or more writable properties. Establishes an initial asset state.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "createAsset"
+                            ],
+                            "description": "createAsset function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/event"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "updateAsset": {
+                    "type": "object",
+                    "description": "Update the state of an asset. The one argument is a JSON encoded event. AssetID is required along with one or more writable properties. Establishes the next asset state. ",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "updateAsset"
+                            ],
+                            "description": "updateAsset function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/event"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "deleteAsset": {
+                    "type": "object",
+                    "description": "Delete an asset, its history, and any recent state activity. Argument is a JSON encoded string containing only an assetID.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deleteAsset"
+                            ],
+                            "description": "deleteAsset function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetIDKey"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }, 
+                        "required": [
+                            "assetID"
+                        ]
+                    }
+                },
+                "readAsset": {
+                    "type": "object",
+                    "description": "Returns the state an asset. Argument is a JSON encoded string. AssetID is the only accepted property.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAsset"
+                            ],
+                            "description": "readAsset function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetIDKey"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        },  
+                        "result": {
+                            "$ref": "#/definitions/state"
+                        }
+                    }
+                },
+                "readAssetSchemas": {
+                    "type": "object",
+                    "description": "Returns a string generated from the schema containing APIs and Objects as specified in generate.json in the scripts folder.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAssetSchemas"
+                            ],
+                            "description": "readAssetSchemas function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        },
+                        "result": {
+                            "type": "string",
+                            "description": "JSON encoded object containing selected schemas"
+                        }
+                    }
+                },
+                "readAssetSamples": {
+                    "type": "object",
+                    "description": "Returns a string generated from the schema containing sample Objects as specified in generate.json in the scripts folder.",
+                    "properties": {
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAssetSamples"
+                            ],
+                            "description": "readAssetSamples function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        },
+                        "result": {
+                            "type": "string",
+                            "description": "JSON encoded object containing selected sample data"
+                        }
+                    }
+                }
+            }
+        },
+        "Error": {
+            "type": "object",
+            "properties": {
+                "Error": {
+                    "type": "string",
+                    "description": "A descriptive message explaining the cause of error."
+                }
+            }
+        },
+        "OK": {
+            "type": "object",
+            "properties": {
+                "OK": {
+                    "type": "string",
+                    "description": "A descriptive message confirming a successful request."
+                },
+                "message": {
+                    "type": "string",
+                    "description": "An optional parameter containing additional information about the request."
+                }
+            }
+        },
+        "version": {
+            "type": "string",
+            "description": "The version number of the current contract"
+        },
+        "assetID": {
+            "type": "string",
+            "description": "The ID of a managed asset. The resource focal point for a smart contract."
+        },
+        "assetIDKey": {
+            "type": "object",
+            "description": "An object containing only an assetID for use as an argument to read or delete.",
+            "properties": {
+                "assetID": {
+                    "$ref": "#/definitions/assetID"
+                }
+            },
+            "required": [
+               "assetID"
+            ]
+        },
+        "geo": {
+            "description": "A geographical coordinate",
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "latitude",
+                "longitude"
+            ]
+        },
+        "initEvent": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "$ref": "#/definitions/assetID"
+                }
+            },
+            "required": [
+                "version"
+            ],
+            "description": "event sent to init on deployment"
+        },
+        "event": {
+            "type": "object",
+            "description": "A set of properties that constitute the complete asset state, which is used as an event in this example.",
+            "properties": {
+                "assetID": {
+                    "$ref": "#/definitions/assetID"
+                },
+                "location": {
+                    "$ref": "#/definitions/geo"
+                },
+                "temperature": {
+                    "type": "number",
+                    "description": "Temperature of the asset in CELSIUS."
+                },
+                "carrier": {
+                    "type": "string",
+                    "description": "transport entity currently in possession of asset"
+                }
+            },
+            "required": [
+                "assetID"
+                ]
+        },
+        "state": {
+            "type": "object",
+            "description": "A set of properties that constitute the complete asset state.",
+            "properties": {
+                "assetID": {
+                    "$ref": "#/definitions/assetID"
+                },
+                "location": {
+                    "$ref": "#/definitions/geo"
+                },
+                "temperature": {
+                    "type": "number",
+                    "description": "Temperature of the asset in CELSIUS."
+                },
+                "carrier": {
+                    "type": "string",
+                    "description": "transport entity currently in possession of asset"
+                }
+            },
+            "required": [
+                "assetID"
+                ]
+        },
+        "contractState": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "$ref": "#/definitions/version"
+                }
+            }
+        }
+    }
+}

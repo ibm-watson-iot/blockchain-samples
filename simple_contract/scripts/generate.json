@@ -1,0 +1,25 @@
+{
+  "schemas": {
+    "schemaFilename": "payloadschema.json",
+    "goSchemaFilename": "schemas.go",
+    "API": [
+      "createAsset",
+      "updateAsset",
+      "deleteAsset",
+      "readAsset",
+      "readAssetSchemas",
+      "readAssetSamples"
+    ],
+    "goSchemaElements": [
+      "event",
+      "state"
+    ]
+  },
+  "samples": {
+    "goSampleFilename": "samples.go",
+    "goSampleElements": [
+      "event",
+      "state"
+    ]
+  }
+}
