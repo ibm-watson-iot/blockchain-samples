@@ -51,7 +51,7 @@ class ObcConfigurationForm extends React.Component {
         onSubmit={(obcConfiguration) => this.handleSubmit(obcConfiguration)}>
         <MaterialField model="obcConfiguration.urlRestRoot">
           <TextField
-            hintText="http://169.44.63.199:37687"
+            hintText="http://localhost:3000"
             floatingLabelText = "API Host and Port"
             fullWidth={true}
             />
@@ -67,7 +67,7 @@ class ObcConfigurationForm extends React.Component {
         <br/>
         <MaterialField model="obcConfiguration.secureContext">
           <TextField
-            hintText="user_type0_c9eeb8c268"
+            hintText="user_context"
             floatingLabelText = "Secure Context"
             fullWidth={true}
             />
