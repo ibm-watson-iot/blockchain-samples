@@ -203,6 +203,17 @@ export function sendObcRequest(args, fn, requestType){
   return function(dispatch, getState){
     let state = getState();
 
+    console.log(args);
+    //iterate through the args and delete any empty strings
+
+    for(var propertyName in args){
+      if (args.hasOwnProperty(propertyName)) {
+        if(args[propertyName] === ""){
+          delete args[propertyName]
+        }
+      }
+    }
+
     let requestPayload = {
       "chaincodeSpec":{
         "type": "GOLANG",
