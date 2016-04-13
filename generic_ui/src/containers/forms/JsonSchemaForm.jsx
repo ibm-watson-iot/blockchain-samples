@@ -35,22 +35,6 @@ const log = (type) => console.log.bind(console, type);
 
 import SchemaField from "react-jsonschema-form/lib/components/fields/SchemaField";
 
-const CustomSchemaField = function(props) {
-  console.log(props);
-
-  //check to see if the
-
-  return (
-    <div id="custom">
-      <SchemaField {...props} />
-    </div>
-  );
-};
-
-const fields = {
-  SchemaField: CustomSchemaField
-};
-
 class JsonSchemaForm extends React.Component {
 
   handleSubmit = (data) => {
@@ -100,7 +84,7 @@ class JsonSchemaForm extends React.Component {
         onSubmit={this.handleSubmit}
         onChange={this.handleChange}
         onError={log("errors")}
-        fields={fields}>
+        >
 
         <div style={{textAlign: 'right'}}>
           <FlatButton type="submit" primary={true}>{strings.FORM_JSON_SCHEMA_SUBMIT_BTN_TEXT}</FlatButton>
