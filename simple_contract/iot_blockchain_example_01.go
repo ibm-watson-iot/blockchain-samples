@@ -36,7 +36,6 @@ import (
     "github.com/openblockchain/obc-peer/openchain/chaincode/shim"
 )
 
-//go:generate go run scripts/generate_go_schema.go
 
 // SimpleChaincode example simple Chaincode implementation
 type SimpleChaincode struct {
