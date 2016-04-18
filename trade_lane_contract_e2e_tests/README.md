@@ -30,7 +30,7 @@ The following operations have been tested.
 
 ## Requirements
 
-1. IBM Blockchain peer<br>
+1. IBM Blockchain peer  
 trade_lane_contract_e2e_tests.js was tested with peers running in IBM Bluemix.
 
 2. Node.js, Mocha and additional supporting libraries installed locally on your machine. (Installation steps 1 & 4 below)
@@ -40,34 +40,34 @@ trade_lane_contract_e2e_tests.js was tested with peers running in IBM Bluemix.
 
 1. Install Node.js on your local machine.
 
-2. Clone the blockchain-samples project:<br>
-https://github.com/ibm-watson-iot/blockchain-samples <br>or download the zip of the project. The zip can be downloaded by clicking the Download ZIP button found on the right at the above link.
+2. Clone the blockchain-samples project:  
+https://github.com/ibm-watson-iot/blockchain-samples   or download the zip of the project. The zip can be downloaded by clicking the Download ZIP button found on the right at the above link.
 
 3.  Navigate to the contract tests directory: trade_lane_contract_e2e_tests/  
 
-4. Run the following command:<br>
-npm install<br>
-<br>This generates a folder called node_modules in your contract tests directory. In that folder, you should see the following libraries:<br>
-mocha<br>
-log4js@~0.6.21<br>
-chai@~1.9.1<br>
-chai-http@~0.5.0<br>
-request@~2.44.0<br>
-request-promise@~2.0.1<br>
-promise@~6.0.0<br>
-q@~1.0.1<br>
+4. Run the following command:  
+npm install  
+  This generates a folder called node_modules in your contract tests directory. In that folder, you should see the following libraries:  
+mocha  
+log4js@~0.6.21  
+chai@~1.9.1  
+chai-http@~0.5.0  
+request@~2.44.0  
+request-promise@~2.0.1  
+promise@~6.0.0  
+q@~1.0.1  
 
-5. In the contract tests directory, edit config.js. <br>
-HTTP and HTTPS are well known protocols that run on well known ports: HTTP is synonymous with 80 and HTTPS is equally synonymous with 443.<br>
-Replace the following fields with your own credentials which you get from IBM Blockchain:<br>
-    <br>obcHost: "api_host",<br>
-    obcPort: api_port,<br>
-    secure_context: "username",<br>
+5. In the contract tests directory, edit config.js.  
+HTTP and HTTPS are well known protocols that run on well known ports: HTTP is synonymous with 80 and HTTPS is equally synonymous with 443.  
+Replace the following fields with your own credentials which you get from IBM Blockchain:  
+    <br>obcHost: "api_host",  
+    obcPort: api_port,  
+    secure_context: "username",  
     enroll_secret: "secret"
 
 ## Execution
 
-In the contract tests directory, run:<br>
+In the contract tests directory, run:  
 mocha trade_lane_contract_e2e_tests.js
 
 Note: If you see 400 errors after deploying the chaincode, this is likely a timing issue.  You can a) wait and try again or b) extend the timeout value at line 53 in trade_lane_contract_e2e_tests.js.
