@@ -43,8 +43,7 @@ trade_lane_contract_e2e_tests.js was tested with peers running in IBM Bluemix.
 2. Clone the blockchain-samples project:<br>
 https://github.com/ibm-watson-iot/blockchain-samples <br>or download the zip of the project. The zip can be downloaded by clicking the Download ZIP button found on the right at the above link.
 
-3.  Navigate to the contract tests directory:<br>
-
+3.  Navigate to the contract tests directory: trade_lane_contract_e2e_tests/  
 
 4. Run the following command:<br>
 npm install<br>
