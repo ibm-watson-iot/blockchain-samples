@@ -1,6 +1,6 @@
-Blockchain Generic UI
+Blockchain Monitoring UI
 =========================
-A generic UI for IBM IoT Blockchain.
+A dynamically generated UI for IBM IoT Blockchain.
 
 Requirements
 -----------------
@@ -80,24 +80,18 @@ This is the right most column on the UI and shows the current state of the block
 It is important to note that any transactions that occur against the blockchain will appear within blocks on the blockchain. These include invalid transactions and transactions against other contracts. A common error is to have one user use a particular contract to do an update and another user try to read that change. If the other user does not see the change, there is a chance that they have configured the wrong contract.
 
 #### Configuration Modal
+This modal can be accessed by clicking the `CONFIGURATION` button on the right side of the main App Bar. This modal will allow you to configure the following settings:
 
+API host and port: This should be the in the form of protocol://hostname:port. So for example:
+```
+http://localhost:3000
+```
+Chaincode ID: The ID of the contract that the UI should use to perform operations. For example:
+```
+ff89038cb1db8fcddff9f3c786bba06dc1af9afb2616d8bcb851ac50db383be02e25391d979c5eaa499abf2845df270089eb9ac982cf3dec880d24ff70cf95d9
+```
+These IDs are 128 character hashes that should not trailing nor leading spaces. There should also be no spaces within the ID itself. If copying and pasting this ID from somewhere else, ensure that the Chaincode ID conforms to these parameters.
 
-#### JSON Schema UI Generation
-- Each tab has its own form. The state of each form is managed in the `chaincodeOpsForm` store. Data is persisted even when changing the selected function from the select dropdown. The form data is stored under the `args` property of each function as an array.
-- When a form is submitted for a read function, the response payload will be displayed in a section below the form. Otherwise, a snackbar will be displayed indicated a request was sent. This is because OBC read endpoints are synchronous while invoke endpoints are asynchronous.
-- Click on the switch to enable polling for a particular request.
-- Click on the x button to hide a response panel
-- Use local storage to store configuration
-- Two forms, one for the function dropdown and another for the args.
+Secure Context: The secure context for doing POST requests to the API endpoint, if necessary.
 
-#### Blockchain Viewer
-- The Blockchain display on the right half of the UI shows all validated transactions on the Blockchain. Click on each header to view the details of the transactions for each block.
-- These transactions may have been done against a different contract than yours. In which case, not all assets that appear on the Blockchain will be accessible for Asset Tracking. In order to see those assets, you must switch the contract that you are querying against. This can be found in the configuration modal.
-
-#### Configuration Modal
-- The configuration can be accessed by clicking on the `CONFIGURATION` button located near the top right of the screen. This will bring you to the configuration form, which allows you to configure the UI. The fields that can be modified are:
-
-  * API Host and Port: The host URL and port number written as a web URL. For instance: http://localhost:3000
-  * Chaincode ID: The ID of the contract that the UI should use to perform operations.
-  * Secure Context: Required if the OBC Peer has security enabled.
-  * Number of blocks to display: The number of blocks to display on the right side.
+Number of blocks to display: The number of blocks to display from the blockchain. For instance, if this value was `10`, the most recent 10 blocks would show up on the blockchain display.
