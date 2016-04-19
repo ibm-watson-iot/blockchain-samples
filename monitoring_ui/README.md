@@ -83,16 +83,16 @@ It is important to note that any transactions that occur against the blockchain 
 #### Configuration Modal
 This modal can be accessed by clicking the `CONFIGURATION` button on the right side of the main App Bar. This modal will allow you to configure the following settings:
 
-API host and port: This should be the in the form of protocol://hostname:port. So for example:
+**API host and port**: This should be the in the form of protocol://hostname:port. So for example:
 ```
 http://localhost:3000
 ```
-Chaincode ID: The ID of the contract that the UI should use to perform operations. For example:
+**Chaincode ID**: The ID of the contract that the UI should use to perform operations. For example:
 ```
 ff89038cb1db8fcddff9f3c786bba06dc1af9afb2616d8bcb851ac50db383be02e25391d979c5eaa499abf2845df270089eb9ac982cf3dec880d24ff70cf95d9
 ```
 These IDs are 128 character hashes that should not trailing nor leading spaces. There should also be no spaces within the ID itself. If copying and pasting this ID from somewhere else, ensure that the Chaincode ID conforms to these parameters.
 
-Secure Context: The secure context for doing POST requests to the API endpoint, if necessary.
+**Secure Context**: The secure context for doing POST requests to the API endpoint, if necessary.
 
-Number of blocks to display: The number of blocks to display from the blockchain. For instance, if this value was `10`, the most recent 10 blocks would show up on the blockchain display.
+**Number of blocks to display**: The number of blocks to display from the blockchain. For instance, if this value was `10`, the most recent 10 blocks would show up on the blockchain display.
