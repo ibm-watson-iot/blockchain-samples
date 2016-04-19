@@ -51,6 +51,7 @@ TBD
 
 ### UI Functionality
 The UI is a single page application that is divided into 3 columns. The columns are:
+
 1. Chaincode Operations
 2. Response Payloads
 3. Blockchain
