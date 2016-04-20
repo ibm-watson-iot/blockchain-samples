@@ -29,8 +29,11 @@ import {setConfigDialogDisplay} from '../actions/ConfigurationActions'
 
 import * as strings from '../resources/strings'
 
+import { actions, getField } from 'react-redux-form';
+
 class ConfigurationDialog extends React.Component {
   render() {
+    console.log(this.props);
     return (
       <div>
         <FlatButton label={strings.OBC_CONFIG_DIALOG_TITLE} onTouchTap={this.props.openDialog} style={{color:"#ffffff", marginTop: 8}}/>
@@ -53,19 +56,32 @@ class ConfigurationDialog extends React.Component {
 
 const mapStateToProps = (state) => {
   return{
-    showDialog: state.configuration.showDialog
+    showDialog: state.configuration.showDialog,
+    validChaincodeID: state.configuration.chaincodeId,
+    obcConfigurationForm: state.obcConfigurationForm
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mergeProps = (stateProps, dispatchProps, ownProps) => {
+  const {showDialog, validChaincodeID, obcConfigurationForm} = stateProps;
+  const {dispatch} = dispatchProps;
+
+  console.log(stateProps)
+
   return{
+    ...stateProps,
     closeDialog: () => {
+      if(getField(obcConfigurationForm, 'chaincodeId').errors){
+        dispatch(actions.change('obcConfiguration.chaincodeId',validChaincodeID));
+        dispatch(actions.setValidity('obcConfiguration.chaincodeId',true));
+      }
+
       dispatch(setConfigDialogDisplay(false))
     },
     openDialog: () => {
       dispatch(setConfigDialogDisplay(true))
     }
-  }
+  };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ConfigurationDialog)
+export default connect(mapStateToProps, null, mergeProps)(ConfigurationDialog)

@@ -18,7 +18,7 @@ Alex Nguyen - Initial Contribution
 *****************************************************************************/
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, Form, actions } from 'react-redux-form';
+import { Field, Form, actions, getField } from 'react-redux-form';
 import TextField from 'material-ui/lib/text-field';
 import FlatButton from 'material-ui/lib/flat-button';
 
@@ -38,15 +38,37 @@ class ObcConfigurationForm extends React.Component {
     let { dispatch } = this.props;
 
     console.log(obcConfiguration);
+    let idWithoutSpaces = obcConfiguration.chaincodeId.replace(/ /g,'');
 
-    //set the properties specific to obc in our configuration store
-    dispatch(setConfiguration(obcConfiguration))
+    console.log(idWithoutSpaces);
+    console.log(idWithoutSpaces.length)
 
-    //close the dialog
-    dispatch(setConfigDialogDisplay(false))
+    //submit if the length is correct
+    if(idWithoutSpaces.length === 128){
+      this.props.dispatch(actions.change('obcConfiguration.chaincodeId',obcConfiguration.chaincodeId.replace(/ /g,'')));
+
+      let config = Object.assign({}, obcConfiguration, {
+        chaincodeId: idWithoutSpaces
+      })
+
+      //set the properties specific to obc in our configuration store
+      dispatch(setConfiguration(config))
+
+      //close the dialog
+      dispatch(setConfigDialogDisplay(false))
+      this.props.dispatch(actions.setValidity('obcConfiguration.chaincodeId', true));
+    }else{
+      //set an error message if the length is incorrect
+      //this.props.dispatch(actions.change('obcConfiguration.errors.chaincodeId',strings.CHAINCODE_LENGTH_ERROR(idWithoutSpaces.length)));
+      this.props.dispatch(actions.setValidity('obcConfiguration.chaincodeId', false));
+      //console.log(getField(obcConfiguration, 'chaincodeId').valid)
+      //this.props.dispatch(actions.validate('obcConfiguration.chaincodeId', false))
+    }
+
+
   }
   render() {
-    let { obcConfiguration } = this.props;
+    let { obcConfiguration, obcConfigurationForm } = this.props;
 
     return (
       <Form model="obcConfiguration" noValidate
@@ -64,6 +86,7 @@ class ObcConfigurationForm extends React.Component {
             hintText={strings.OBC_CONFIG_CHAINCODE_ID_HT}
             floatingLabelText = {strings.OBC_CONFIG_CHAINCODE_ID_FL}
             fullWidth={true}
+            errorText={getField(obcConfigurationForm, 'chaincodeId').errors ? strings.CHAINCODE_LENGTH_ERROR : ""}
             />
         </MaterialField>
         <br/>
@@ -92,7 +115,7 @@ class ObcConfigurationForm extends React.Component {
 }
 
 function mapStateToProps(state) {
-  return { obcConfiguration: state.obcConfiguration };
+  return { obcConfiguration: state.obcConfiguration, obcConfigurationForm: state.obcConfigurationForm };
 }
 
 export default connect(mapStateToProps)(ObcConfigurationForm);

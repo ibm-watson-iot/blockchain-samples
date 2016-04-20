@@ -28,3 +28,5 @@ export const APP_BAR_MAIN_TITLE_TEXT = "IoT Blockchain Monitor"
 //text for the word "Block"
 export const BLOCK_CARD_HEADER_TEXT = "Block"
 export const BLOCK_CARD_CONTENTS_TRANSACTION_TEXT = "Transactions"
+
+export const CHAINCODE_LENGTH_ERROR = "This Chaincode ID is invalid. It should be 128 characters long."

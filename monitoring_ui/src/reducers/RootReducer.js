@@ -23,7 +23,7 @@ import {chaincode} from './ChaincodeReducer.js'
 
 import {
   modelReducer,
-  createFormReducer
+  formReducer
 } from 'react-redux-form';
 
 const initialConfigurationState = {
@@ -50,6 +50,7 @@ const rootReducer = combineReducers({
   //obcConfiguration is the model that deals with any configuration related to obc
   obcConfiguration: modelReducer('obcConfiguration', initialConfigurationState),
   chaincodeOpsForm: modelReducer('chaincodeOpsForm', initialChaincodeOpsFormState),
+  obcConfigurationForm: formReducer('obcConfiguration'),
   //
   chaincode
 

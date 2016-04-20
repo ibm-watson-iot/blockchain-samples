@@ -68,7 +68,7 @@ The arguments form is generated when the user selects a particular function from
 
 If all values are valid and submit is clicked, then the UI will create a valid OBC REST payload with the user input as the arguments and send it along with a request to the configured OBC peer. It then waits for a response from the peer. The response will be output to the section in the second column, which is the Request Payload section.
 
-#### Request Payload
+#### Response Payload
 This section of the UI is responsible for displaying the response from the OBC peer. It does so by recursively traversing the payload and outputting the response to the card. Note that it is possible to submit multiple requests from any combination of tabs; the UI will just generate additional cards to display the payload. If a REST request is made with the exact same function and arguments, it will not be shown as an additional card, because it is a duplicate.
 
 When a request payload card initially appears, it will be in the collapsed state. Click the expand button on the right side of the payload's card header to view the contents of the card. You'll see a `Poll for changes` toggle along with a basic formatted string representation of the response payload. When the toggle is on, the UI will actively check for changes to a particular query every time the blockchain height changes. In the case of the simple contract, it is useful for monitoring a particular asset for changes. This toggle is set to off by default.
