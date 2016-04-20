@@ -37,12 +37,7 @@ class ObcConfigurationForm extends React.Component {
   handleSubmit(obcConfiguration) {
     let { dispatch } = this.props;
 
-    console.log(obcConfiguration);
     let idWithoutSpaces = obcConfiguration.chaincodeId.replace(/ /g,'');
-
-    console.log(idWithoutSpaces);
-    console.log(idWithoutSpaces.length)
-
     //submit if the length is correct
     if(idWithoutSpaces.length === 128){
       this.props.dispatch(actions.change('obcConfiguration.chaincodeId',obcConfiguration.chaincodeId.replace(/ /g,'')));
@@ -59,10 +54,7 @@ class ObcConfigurationForm extends React.Component {
       this.props.dispatch(actions.setValidity('obcConfiguration.chaincodeId', true));
     }else{
       //set an error message if the length is incorrect
-      //this.props.dispatch(actions.change('obcConfiguration.errors.chaincodeId',strings.CHAINCODE_LENGTH_ERROR(idWithoutSpaces.length)));
       this.props.dispatch(actions.setValidity('obcConfiguration.chaincodeId', false));
-      //console.log(getField(obcConfiguration, 'chaincodeId').valid)
-      //this.props.dispatch(actions.validate('obcConfiguration.chaincodeId', false))
     }
 
 

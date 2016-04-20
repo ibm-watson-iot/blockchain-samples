@@ -45,8 +45,6 @@ class ResponsePayloadContainer extends React.Component{
   //objToJsx should be an empty array
   readObjProps = (obj, objToJsx, indents) => {
 
-    console.log(Object.prototype.toString.call(obj))
-
     //If the object itself is a primitive and not an array, we just return that as a string.
     //for example {"OK":100}
     if(obj && Object.prototype.toString.call(obj) !== '[object Object]'){
@@ -63,7 +61,7 @@ class ResponsePayloadContainer extends React.Component{
       }
     }
 
-    for(var propertyName in obj){     
+    for(var propertyName in obj){
 
       if (obj.hasOwnProperty(propertyName)) {
 

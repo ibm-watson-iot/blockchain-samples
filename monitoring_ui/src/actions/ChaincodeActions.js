@@ -202,8 +202,6 @@ export function sendObcRequest(args, fn, requestType){
 
   return function(dispatch, getState){
     let state = getState();
-
-    console.log(args);
     //iterate through the args and delete any empty strings
 
     for(var propertyName in args){
@@ -239,12 +237,9 @@ export function sendObcRequest(args, fn, requestType){
       body: JSON.stringify(requestPayload)
     }
 
-    console.log(config)
-
     return fetch(state.configuration.urlRestRoot + '/devops/'+requestType.toLowerCase()+'/', config)
     .then(response => response.json())
     .then(json => {
-      console.log(json);
 
       //TODO: Display error message and then do nothing
       if(json.Error){

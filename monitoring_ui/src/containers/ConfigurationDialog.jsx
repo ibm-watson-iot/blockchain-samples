@@ -33,7 +33,6 @@ import { actions, getField } from 'react-redux-form';
 
 class ConfigurationDialog extends React.Component {
   render() {
-    console.log(this.props);
     return (
       <div>
         <FlatButton label={strings.OBC_CONFIG_DIALOG_TITLE} onTouchTap={this.props.openDialog} style={{color:"#ffffff", marginTop: 8}}/>
@@ -65,8 +64,6 @@ const mapStateToProps = (state) => {
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const {showDialog, validChaincodeID, obcConfigurationForm} = stateProps;
   const {dispatch} = dispatchProps;
-
-  console.log(stateProps)
 
   return{
     ...stateProps,

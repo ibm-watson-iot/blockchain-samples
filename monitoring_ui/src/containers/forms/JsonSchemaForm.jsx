@@ -65,7 +65,6 @@ class JsonSchemaForm extends React.Component {
   }
 
   handleChange = (data) => {
-    console.log(data)
     //dispatch an action to change the form model specifically for the form under a particular tab.
     this.props.dispatch(actions.change('chaincodeOpsForm.'+this.props.currentTab+'.fns['+this.props.fnIndex+'].args',data.formData));
   }
@@ -113,7 +112,7 @@ function mapStateToProps(state) {
   if(state.chaincodeOpsForm[currentTab]){
     fnIndex = state.chaincodeOpsForm[currentTab].selectedFn;
     fnName = state.chaincodeOpsForm[currentTab].fns[fnIndex].name;
-    selectedJsonSchema = state.chaincode.schema.API[fnName].properties.args.items;
+    selectedJsonSchema = state.chaincode.schema ? state.chaincode.schema.API[fnName].properties.args.items : null;
     //console.log(selectedJsonSchema);
   }
 

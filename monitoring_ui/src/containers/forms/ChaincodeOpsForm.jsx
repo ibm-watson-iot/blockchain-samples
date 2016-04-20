@@ -28,20 +28,7 @@ import MenuItem from 'material-ui/lib/menus/menu-item';
 
 class ChaincodeOpsForm extends React.Component {
 
-  handleSubmit(chaincodeOpsForm) {
-    let { dispatch } = this.props;
-
-    console.log(chaincodeOpsForm);
-
-    //set the properties specific to obc in our configuration store
-    //dispatch(setConfiguration(obcConfiguration))
-
-    //close the dialog
-    //dispatch(setConfigDialogDisplay(false))
-  }
-
   handleChange(e,i,v) {
-    console.log(i);
 
     //dispatch an action to change the form model specifically for the form under a particular tab.
     this.props.dispatch(actions.change('chaincodeOpsForm.'+this.props.tab+'.selectedFn',i));
@@ -49,8 +36,6 @@ class ChaincodeOpsForm extends React.Component {
 
   render() {
     let { chaincodeOpsForm, tab } = this.props;
-
-    //console.log(chaincodeOpsForm);
 
     return (
       <Form model="chaincodeOpsForm" noValidate

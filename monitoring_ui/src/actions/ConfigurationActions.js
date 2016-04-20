@@ -75,7 +75,6 @@ export function setConfiguration(obcConfigObj){
 
     //clear the existing interval timer
     let intervalId = state.configuration.chainHeightPollingIntervalId
-    console.log('Interval to clear: ' + intervalId)
     clearInterval(intervalId);
 
     //create a new interval and set it in the state
