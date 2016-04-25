@@ -45,16 +45,18 @@ class ResponsePayloadContainer extends React.Component{
   //objToJsx should be an empty array
   readObjProps = (obj, objToJsx, indents) => {
 
+    console.log(Object.prototype.toString.call(obj));
+
     //If the object itself is a primitive and not an array, we just return that as a string.
     //for example {"OK":100}
     if(obj && Object.prototype.toString.call(obj) !== '[object Object]'){
 
       //first check if it is an array
-      let parsedObj = JSON.parse(obj);
+      //let parsedObj = JSON.parse(obj);
 
-      if(Array.isArray(parsedObj)){
+      if(Array.isArray(obj)){
         //if it is an array, ignore it
-        obj = parsedObj;
+        //obj = parsedObj;
       }else{
         objToJsx.push(<p key={uuid.v4()}>{obj.toString()}</p>);
         return objToJsx;

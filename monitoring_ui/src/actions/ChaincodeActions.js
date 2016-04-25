@@ -213,19 +213,21 @@ export function sendObcRequest(args, fn, requestType){
     }
 
     let requestPayload = {
-      "chaincodeSpec":{
-        "type": "GOLANG",
-        "chaincodeID":{
-          "name":state.configuration.chaincodeId
-        },
-        "ctorMsg":{
-          "function":fn,
-          //we need to stringify the object because contract expects a string as args, not an object.
-          "args": args ? [JSON.stringify(args)] : []
-        },
-        "secureContext":state.configuration.secureContext,
-        "confidentialityLevel":"PUBLIC"
-      }
+      "jsonrpc": "2.0",
+      "method": requestType.toLowerCase(),
+      "params": {
+          "type": 1,
+          "chaincodeID":{
+              "name":state.configuration.chaincodeId
+          },
+          "ctorMsg":{
+            "function":fn,
+            //we need to stringify the object because contract expects a string as args, not an object.
+            "args": args ? [JSON.stringify(args)] : []
+          },
+          "secureContext":state.configuration.secureContext
+      },
+      "id": 5
     }
 
     let config = {
@@ -237,7 +239,7 @@ export function sendObcRequest(args, fn, requestType){
       body: JSON.stringify(requestPayload)
     }
 
-    return fetch(state.configuration.urlRestRoot + '/devops/'+requestType.toLowerCase()+'/', config)
+    return fetch(state.configuration.urlRestRoot + '/chaincode/', config)
     .then(response => response.json())
     .then(json => {
 
@@ -245,6 +247,8 @@ export function sendObcRequest(args, fn, requestType){
       if(json.Error){
         return;
       }
+
+      console.log(json);
 
       let alreadyRequested = false;
       let indexOfMatch = -1;
@@ -265,9 +269,9 @@ export function sendObcRequest(args, fn, requestType){
 
         //we found a match, which means we should be updating, not appending.
         if(alreadyRequested){
-          dispatch(updateResponsePayload(indexOfMatch, json.OK))
+          dispatch(updateResponsePayload(indexOfMatch, JSON.parse(json.result.message)))
         }else{
-          dispatch(addResponsePayload(args, fn, QUERY, json.OK, false, false))
+          dispatch(addResponsePayload(args, fn, QUERY, JSON.parse(json.result.message), false, false))
         }
       }
 
@@ -283,21 +287,22 @@ export function fetchCcSchema(){
   return function (dispatch, getState){
     let state = getState();
 
-    //create the payload to communicate with the obc-peer
     let queryRequestPayload = {
-      "chaincodeSpec":{
-        "type": "GOLANG",
-        "chaincodeID":{
-          "name":state.configuration.chaincodeId
-        },
-        "ctorMsg":{
-          "function":"readAssetSchemas",
-          //we need to stringify the object because contract expects a string as args, not an object.
-          "args":[]
-        },
-        "secureContext":state.configuration.secureContext,
-        "confidentialityLevel":"PUBLIC"
-      }
+      "jsonrpc": "2.0",
+      "method": "query",
+      "params": {
+          "type": 1,
+          "chaincodeID":{
+              "name":state.configuration.chaincodeId
+          },
+          "ctorMsg":{
+            "function":"readAssetSchemas",
+            //we need to stringify the object because contract expects a string as args, not an object.
+            "args": []
+          },
+          "secureContext":state.configuration.secureContext
+      },
+      "id": 5
     }
 
     let config = {
@@ -309,14 +314,17 @@ export function fetchCcSchema(){
       body: JSON.stringify(queryRequestPayload)
     }
 
-    return fetch(state.configuration.urlRestRoot + '/devops/query/', config)
+    return fetch(state.configuration.urlRestRoot + '/chaincode/', config)
     .then(response => response.json())
     .then(json => {
+
+      //console.log(JSON.parse(json.result.message));
+
       //update state to store the object model.
-      dispatch(setCcSchema(json.OK))
+      dispatch(setCcSchema(JSON.parse(json.result.message)))
 
       //then parse through the cc schema and create an object
-      let chaincodeOpsModel = createChaincodeOpsModel(json.OK, state.chaincode.ui.possibleTabs)
+      let chaincodeOpsModel = createChaincodeOpsModel(JSON.parse(json.result.message), state.chaincode.ui.possibleTabs)
 
       //set the chaincode ops
       //this is tied directly to the form model, so we use the react-redux-form actions.change function
