@@ -123,6 +123,20 @@ export const updateResponsePayload = (index, payload) => {
   }
 }
 
+export const OPEN_SNACKBAR = "OPEN_SNACKBAR"
+export const openSnackbar = () => {
+  return{
+    type: OPEN_SNACKBAR
+  }
+}
+
+export const HIDE_SNACKBAR = "HIDE_SNACKBAR"
+export const hideSnackbar = () => {
+  return{
+    type: HIDE_SNACKBAR
+  }
+}
+
 export const TAB_CREATE = "CREATE";
 export const TAB_READ = "READ";
 export const TAB_UPDATE = "UPDATE";

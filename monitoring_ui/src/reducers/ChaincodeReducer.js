@@ -19,7 +19,7 @@ Alex Nguyen - Initial Contribution
 import update from 'react-addons-update'
 import {SET_CC_SCHEMA, SET_CURRENT_TAB,TAB_CREATE, TAB_READ, TAB_UPDATE, TAB_DELETE, SET_CC_OPS, INVOKE, QUERY,
 ENABLE_REMOVE_BTN, DISABLE_REMOVE_BTN, REMOVE_RESPONSE_PAYLOAD, ADD_RESPONSE_PAYLOAD, CLEAR_RESPONSE_PAYLOADS,
-ENABLE_PAYLOAD_POLLING, UPDATE_RESPONSE_PAYLOAD, DISABLE_PAYLOAD_POLLING} from '../actions/ChaincodeActions'
+ENABLE_PAYLOAD_POLLING, UPDATE_RESPONSE_PAYLOAD, DISABLE_PAYLOAD_POLLING, OPEN_SNACKBAR, HIDE_SNACKBAR} from '../actions/ChaincodeActions'
 
 
 //the chaincode reducer default state is an empty object
@@ -44,7 +44,10 @@ export const chaincode = (state={
     */
     responsePayloads:[
 
-    ]
+    ],
+    snackbar:{
+      open: false,
+    }
   }
 }, action) =>{
   switch (action.type){
@@ -161,6 +164,24 @@ export const chaincode = (state={
                 $set: action.payload
               }
             }
+          }
+        }
+      })
+    case OPEN_SNACKBAR:
+      return Object.assign({}, state, {
+        ui:{
+          ...state.ui,
+          snackbar:{
+            open:true
+          }
+        }
+      })
+    case HIDE_SNACKBAR:
+      return Object.assign({}, state, {
+        ui:{
+          ...state.ui,
+          snackbar:{
+            open:false
           }
         }
       })
