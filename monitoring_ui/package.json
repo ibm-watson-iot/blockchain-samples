@@ -1,7 +1,7 @@
 {
   "name": "blockchain-simple-ui",
   "version": "1.0.0",
-  "description": "Simple UI for IoT Blockchain",
+  "description": "Monitoring UI for IoT Blockchain",
   "main": "index.js",
   "scripts": {
     "build": "webpack",

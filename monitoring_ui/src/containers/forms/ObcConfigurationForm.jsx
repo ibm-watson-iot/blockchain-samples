@@ -61,6 +61,8 @@ class ObcConfigurationForm extends React.Component {
   }
   render() {
     let { obcConfiguration, obcConfigurationForm } = this.props;
+    console.log("obc errors");
+    console.log(getField(obcConfigurationForm, 'chaincodeId'));
 
     return (
       <Form model="obcConfiguration" noValidate
@@ -78,7 +80,7 @@ class ObcConfigurationForm extends React.Component {
             hintText={strings.OBC_CONFIG_CHAINCODE_ID_HT}
             floatingLabelText = {strings.OBC_CONFIG_CHAINCODE_ID_FL}
             fullWidth={true}
-            errorText={getField(obcConfigurationForm, 'chaincodeId').errors ? strings.CHAINCODE_LENGTH_ERROR : ""}
+            errorText={getField(obcConfigurationForm, 'chaincodeId').valid ? "" : strings.CHAINCODE_LENGTH_ERROR }
             />
         </MaterialField>
         <br/>
