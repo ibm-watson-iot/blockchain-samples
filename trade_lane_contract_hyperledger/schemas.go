@@ -217,26 +217,35 @@ var schemas = `
                                 "properties": {
                                     "active": {
                                         "items": {
-                                            "description": "Based on the AlertName enum",
-                                            "type": "boolean"
+                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "enum": [
+                                                "OVERTTEMP"
+                                            ],
+                                            "type": "string"
                                         },
-                                        "minItems": 1,
+                                        "minItems": 0,
                                         "type": "array"
                                     },
                                     "cleared": {
                                         "items": {
-                                            "description": "Based on the AlertName enum",
-                                            "type": "boolean"
+                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "enum": [
+                                                "OVERTTEMP"
+                                            ],
+                                            "type": "string"
                                         },
-                                        "minItems": 1,
+                                        "minItems": 0,
                                         "type": "array"
                                     },
                                     "raised": {
                                         "items": {
-                                            "description": "Based on the AlertName enum",
-                                            "type": "boolean"
+                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "enum": [
+                                                "OVERTTEMP"
+                                            ],
+                                            "type": "string"
                                         },
-                                        "minItems": 1,
+                                        "minItems": 0,
                                         "type": "array"
                                     }
                                 },
@@ -343,26 +352,35 @@ var schemas = `
                             "properties": {
                                 "active": {
                                     "items": {
-                                        "description": "Based on the AlertName enum",
-                                        "type": "boolean"
+                                        "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                        "enum": [
+                                            "OVERTTEMP"
+                                        ],
+                                        "type": "string"
                                     },
-                                    "minItems": 1,
+                                    "minItems": 0,
                                     "type": "array"
                                 },
                                 "cleared": {
                                     "items": {
-                                        "description": "Based on the AlertName enum",
-                                        "type": "boolean"
+                                        "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                        "enum": [
+                                            "OVERTTEMP"
+                                        ],
+                                        "type": "string"
                                     },
-                                    "minItems": 1,
+                                    "minItems": 0,
                                     "type": "array"
                                 },
                                 "raised": {
                                     "items": {
-                                        "description": "Based on the AlertName enum",
-                                        "type": "boolean"
+                                        "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                        "enum": [
+                                            "OVERTTEMP"
+                                        ],
+                                        "type": "string"
                                     },
-                                    "minItems": 1,
+                                    "minItems": 0,
                                     "type": "array"
                                 }
                             },
@@ -474,26 +492,35 @@ var schemas = `
                                 "properties": {
                                     "active": {
                                         "items": {
-                                            "description": "Based on the AlertName enum",
-                                            "type": "boolean"
+                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "enum": [
+                                                "OVERTTEMP"
+                                            ],
+                                            "type": "string"
                                         },
-                                        "minItems": 1,
+                                        "minItems": 0,
                                         "type": "array"
                                     },
                                     "cleared": {
                                         "items": {
-                                            "description": "Based on the AlertName enum",
-                                            "type": "boolean"
+                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "enum": [
+                                                "OVERTTEMP"
+                                            ],
+                                            "type": "string"
                                         },
-                                        "minItems": 1,
+                                        "minItems": 0,
                                         "type": "array"
                                     },
                                     "raised": {
                                         "items": {
-                                            "description": "Based on the AlertName enum",
-                                            "type": "boolean"
+                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "enum": [
+                                                "OVERTTEMP"
+                                            ],
+                                            "type": "string"
                                         },
-                                        "minItems": 1,
+                                        "minItems": 0,
                                         "type": "array"
                                     }
                                 },
@@ -593,26 +620,35 @@ var schemas = `
                                 "properties": {
                                     "active": {
                                         "items": {
-                                            "description": "Based on the AlertName enum",
-                                            "type": "boolean"
+                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "enum": [
+                                                "OVERTTEMP"
+                                            ],
+                                            "type": "string"
                                         },
-                                        "minItems": 1,
+                                        "minItems": 0,
                                         "type": "array"
                                     },
                                     "cleared": {
                                         "items": {
-                                            "description": "Based on the AlertName enum",
-                                            "type": "boolean"
+                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "enum": [
+                                                "OVERTTEMP"
+                                            ],
+                                            "type": "string"
                                         },
-                                        "minItems": 1,
+                                        "minItems": 0,
                                         "type": "array"
                                     },
                                     "raised": {
                                         "items": {
-                                            "description": "Based on the AlertName enum",
-                                            "type": "boolean"
+                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "enum": [
+                                                "OVERTTEMP"
+                                            ],
+                                            "type": "string"
                                         },
-                                        "minItems": 1,
+                                        "minItems": 0,
                                         "type": "array"
                                     }
                                 },
@@ -898,26 +934,35 @@ var schemas = `
                     "properties": {
                         "active": {
                             "items": {
-                                "description": "Based on the AlertName enum",
-                                "type": "boolean"
+                                "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                "enum": [
+                                    "OVERTTEMP"
+                                ],
+                                "type": "string"
                             },
-                            "minItems": 1,
+                            "minItems": 0,
                             "type": "array"
                         },
                         "cleared": {
                             "items": {
-                                "description": "Based on the AlertName enum",
-                                "type": "boolean"
+                                "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                "enum": [
+                                    "OVERTTEMP"
+                                ],
+                                "type": "string"
                             },
-                            "minItems": 1,
+                            "minItems": 0,
                             "type": "array"
                         },
                         "raised": {
                             "items": {
-                                "description": "Based on the AlertName enum",
-                                "type": "boolean"
+                                "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                "enum": [
+                                    "OVERTTEMP"
+                                ],
+                                "type": "string"
                             },
-                            "minItems": 1,
+                            "minItems": 0,
                             "type": "array"
                         }
                     },

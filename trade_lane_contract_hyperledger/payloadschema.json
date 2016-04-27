@@ -702,26 +702,23 @@
                 "active": {
                     "type": "array",
                     "items": {
-                        "type": "boolean",
-                        "description": "Based on the AlertName enum"
+                        "$ref": "#/definitions/alertName"
                     },
-                    "minItems": 1
+                    "minItems": 0
                 },
                 "raised": {
                     "type": "array",
                     "items": {
-                        "type": "boolean",
-                        "description": "Based on the AlertName enum"
+                        "$ref": "#/definitions/alertName"
                     },
-                    "minItems": 1
+                    "minItems": 0
                 },
                 "cleared": {
                     "type": "array",
                     "items": {
-                        "type": "boolean",
-                        "description": "Based on the AlertName enum"
+                        "$ref": "#/definitions/alertName"
                     },
-                    "minItems": 1
+                    "minItems": 0
                 }
             }
         },

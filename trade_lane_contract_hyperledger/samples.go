@@ -18,7 +18,7 @@ var samples = `
             "longitude": 123.456
         },
         "temperature": 123.456,
-        "timestamp": "2016-04-16T23:53:38.06854899Z"
+        "timestamp": "2016-04-27T13:03:48.9253142-04:00"
     },
     "initEvent": {
         "nickname": "TRADELANE",
@@ -27,13 +27,13 @@ var samples = `
     "state": {
         "alerts": {
             "active": [
-                true
+                "OVERTTEMP"
             ],
             "cleared": [
-                true
+                "OVERTTEMP"
             ],
             "raised": [
-                true
+                "OVERTTEMP"
             ]
         },
         "assetID": "The ID of a managed asset. The resource focal point for a smart contract.",
@@ -52,6 +52,6 @@ var samples = `
             "longitude": 123.456
         },
         "temperature": 123.456,
-        "timestamp": "2016-04-16T23:53:38.068645155Z"
+        "timestamp": "2016-04-27T13:03:48.9263143-04:00"
     }
 }`
