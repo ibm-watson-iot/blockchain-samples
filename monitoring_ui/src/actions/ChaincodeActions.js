@@ -17,6 +17,8 @@ Contributors:
 Alex Nguyen - Initial Contribution
 *****************************************************************************/
 import equal from 'deep-equal';
+import {openSnackbar, hideSnackbar, setSnackbarMsg} from '../actions/AppActions';
+import * as strings from '../resources/strings'
 
 export const SET_CC_SCHEMA = "SET_CC_SCHEMA"
 export const setCcSchema = (schema) => {
@@ -120,20 +122,6 @@ export const updateResponsePayload = (index, payload) => {
     type: UPDATE_RESPONSE_PAYLOAD,
     index,
     payload
-  }
-}
-
-export const OPEN_SNACKBAR = "OPEN_SNACKBAR"
-export const openSnackbar = () => {
-  return{
-    type: OPEN_SNACKBAR
-  }
-}
-
-export const HIDE_SNACKBAR = "HIDE_SNACKBAR"
-export const hideSnackbar = () => {
-  return{
-    type: HIDE_SNACKBAR
   }
 }
 
@@ -257,38 +245,35 @@ export function sendObcRequest(args, fn, requestType){
     .then(response => response.json())
     .then(json => {
 
-      //TODO: Display error message and then do nothing
-      if(json.Error){
-        return;
-      }
+      if(json.error){
+        dispatch(setSnackbarMsg(json.error.data));
+        dispatch(openSnackbar())
+      }else{
+        let alreadyRequested = false;
+        let indexOfMatch = -1;
 
-      console.log(json);
+        //If this is a query type, then we should display the response payload on the UI.
+        if(requestType === QUERY){
+          //first we check if the response payload already exists. If it does, then we update. Otherwise, we add.
+          for(let i=0; i < state.chaincode.ui.responsePayloads.length; i++){
+            //we compare 3 properties to verify equality: args, fn and type.
+            let payload = state.chaincode.ui.responsePayloads[i];
 
-      let alreadyRequested = false;
-      let indexOfMatch = -1;
+            if(equal(payload.args, args) && payload.fn === fn && payload.opType === requestType){
+              alreadyRequested = true;
+              indexOfMatch = i;
+              break;
+            }
+          }
 
-      //If this is a query type, then we should display the response payload on the UI.
-      if(requestType === QUERY){
-        //first we check if the response payload already exists. If it does, then we update. Otherwise, we add.
-        for(let i=0; i < state.chaincode.ui.responsePayloads.length; i++){
-          //we compare 3 properties to verify equality: args, fn and type.
-          let payload = state.chaincode.ui.responsePayloads[i];
-
-          if(equal(payload.args, args) && payload.fn === fn && payload.opType === requestType){
-            alreadyRequested = true;
-            indexOfMatch = i;
-            break;
+          //we found a match, which means we should be updating, not appending.
+          if(alreadyRequested){
+            dispatch(updateResponsePayload(indexOfMatch, JSON.parse(json.result.message)))
+          }else{
+            dispatch(addResponsePayload(args, fn, QUERY, JSON.parse(json.result.message), false, false))
           }
         }
-
-        //we found a match, which means we should be updating, not appending.
-        if(alreadyRequested){
-          dispatch(updateResponsePayload(indexOfMatch, JSON.parse(json.result.message)))
-        }else{
-          dispatch(addResponsePayload(args, fn, QUERY, JSON.parse(json.result.message), false, false))
-        }
       }
-
     })
   }
 }
@@ -332,17 +317,27 @@ export function fetchCcSchema(){
     .then(response => response.json())
     .then(json => {
 
-      //console.log(JSON.parse(json.result.message));
+      console.log(json);
 
-      //update state to store the object model.
-      dispatch(setCcSchema(JSON.parse(json.result.message)))
+      //if there is an error, display it
+      if(json.error){
+        dispatch(setSnackbarMsg(json.error.data));
+        dispatch(openSnackbar())
 
-      //then parse through the cc schema and create an object
-      let chaincodeOpsModel = createChaincodeOpsModel(JSON.parse(json.result.message), state.chaincode.ui.possibleTabs)
+        //update state to store the object model.
+        dispatch(setCcSchema({}))
 
-      //set the chaincode ops
-      //this is tied directly to the form model, so we use the react-redux-form actions.change function
-      dispatch(actions.change('chaincodeOpsForm', chaincodeOpsModel))
+      }else{
+        //update state to store the object model.
+        dispatch(setCcSchema(JSON.parse(json.result.message)))
+
+        //then parse through the cc schema and create an object
+        let chaincodeOpsModel = createChaincodeOpsModel(JSON.parse(json.result.message), state.chaincode.ui.possibleTabs)
+
+        //set the chaincode ops
+        //this is tied directly to the form model, so we use the react-redux-form actions.change function
+        dispatch(actions.change('chaincodeOpsForm', chaincodeOpsModel))
+      }
     })
 
   }

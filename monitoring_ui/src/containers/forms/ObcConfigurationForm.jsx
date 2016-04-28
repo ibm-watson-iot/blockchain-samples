@@ -61,8 +61,6 @@ class ObcConfigurationForm extends React.Component {
   }
   render() {
     let { obcConfiguration, obcConfigurationForm } = this.props;
-    console.log("obc errors");
-    console.log(getField(obcConfigurationForm, 'chaincodeId'));
 
     return (
       <Form model="obcConfiguration" noValidate
