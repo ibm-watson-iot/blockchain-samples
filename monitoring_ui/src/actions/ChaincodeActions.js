@@ -247,7 +247,7 @@ export function sendObcRequest(args, fn, requestType){
 
       if(json.error){
         dispatch(setSnackbarMsg(json.error.data));
-        dispatch(openSnackbar())
+        dispatch(openSnackbar());
       }else{
         let alreadyRequested = false;
         let indexOfMatch = -1;
