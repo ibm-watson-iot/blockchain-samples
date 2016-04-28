@@ -35,7 +35,6 @@ import * as strings from '../../resources/strings'
 const log = (type) => console.log.bind(console, type);
 
 import SchemaField from "react-jsonschema-form/lib/components/fields/SchemaField";
-import Snackbar from 'material-ui/lib/snackbar';
 
 class JsonSchemaForm extends React.Component {
 
@@ -94,12 +93,7 @@ class JsonSchemaForm extends React.Component {
         <div style={{textAlign: 'right'}}>
           <FlatButton type="submit" primary={true}>{strings.FORM_JSON_SCHEMA_SUBMIT_BTN_TEXT}</FlatButton>
         </div>
-        <Snackbar
-          open={this.props.snackbarIsOpen}
-          message={this.props.snackbarMsg}
-          autoHideDuration={4000}
-          onRequestClose={()=>{this.props.dispatch(hideSnackbar())}}
-        />
+
       </Form>
     );
   }
@@ -134,9 +128,7 @@ function mapStateToProps(state) {
     currentRequestType: currentRequestType,
     //this tells us which function in the list of functions that we are currently dealing with
     fnIndex: fnIndex,
-    fnName: fnName,
-    snackbarIsOpen: state.app.ui.snackbar.open,
-    snackbarMsg: state.app.ui.snackbar.msg
+    fnName: fnName
   };
 }
 
