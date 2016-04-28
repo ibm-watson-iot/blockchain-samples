@@ -1,21 +1,28 @@
-The document 
-[`main.md`](main.md "main go file for trade lane sample contract")
-discusses the main file of the trade lane sample contract for 
-[Hyperledger](https://github.com/hyperledger), which is an open source blockchain fabric under the Linux Foundation. Your understanding of this contract's structure and implementation intent starts with this module, and then proceeds through the supporting modules listed below, in order by your areas of interest. 
+#Sample Trade Lane Contract Documentation
+##Start with the document [`main.md`](main.md "tutorial on the fabric and documentation on the trade lane contract")
+   - a tutorial on the Hyperledger fabric and smart contracts
+   - detailed documentation on the IoT Trade Lane sample contract
 
-> Note that the main document also contains a tutorial on the Hyperledger fabric and smart contracts.
-
-* [`schema.md`](schema.md)
-  - discusses the [JSON SCHEMA v4](http://json-schema.org/documentation.html) compatible schema in the file [`payloadSchema.json`](../payloadSchema.json), which defines the API and data model for the contract
+##Available
 * [`alerts.md`](alerts.md)
   - discusses the alerts module [`alerts.go`](../alerts.go), which supports contract-specific alert conditions
-* [`rules.md`](rules.md)
-  - discusses the rules engine in module [`rules.go`](../rules.go), which is called after every state change in order to perform property manipulation (including calculating new properties) and to test thresholds and raise alerts and then calculate contract compliance for the asset 
+* [`generator.md`](generator.md)
+  - discusses the schema processor script [`generate_go_schema.go`](../scripts/generate_go_schema.go), which is executed when the `go generate` command it typed at the main folder level; the schema processor checks syntax and validates as JSON Schema 4 compatible, generating object model and API samples and schema in Go language for the use of the contract and applications 
+* [`main.md`](main.md "main go file for trade lane sample contract")
+  - discusses the main module [`main.go`](../main.go) of the trade lane sample contract for [Hyperledger](https://github.com/hyperledger), which is an open source blockchain fabric under the Linux Foundation. Your understanding of this contract's structure and implementation intent starts with this module, and then proceeds through the supporting modules listed below, in order by your areas of interest. 
+* [`mapping.md`](mapping.md)
+  - a general discussion of device schema to contract schema mapping as an illustration of how each views its own data model and how these will intersect in an IoT application
 * [`mapUtils.md`](mapUtils.md)
   - discusses the module [`mapUtils.go`](../mapUtils.go) that supports property access in JSON objects plus deep merging of events into state in support of the *Partial State as Event* contract pattern
-* [`recentStates.md`](recentStates.md)
-  - discusses the module [`recentStates.go`](../recentStates.go), which manages a list of state changes across all assets sorted by time most recent first and containing only one event per asset
+* [`rules.md`](rules.md)
+  - discusses the rules engine in module [`rules.go`](../rules.go), which is called after every state change in order to perform property manipulation (including calculating new properties) and to test thresholds and raise alerts and then calculate contract compliance for the asset 
+* [`schema.md`](schema.md)
+  - discusses the [JSON SCHEMA v4](http://json-schema.org/documentation.html) compatible schema in the file [`payloadSchema.json`](../payloadSchema.json), which defines the API and data model for the contract
+
+##Under Construction
+* [`assetHistory.md`](contractState.md)
+  - **Under Construction** discusses the module [assethistory.go](`../assethistory.go`), which manages asset state history sorted by time with the most recent state first; each asset's history is stored in a separate bucket
 * [`contractState.md`](contractState.md)
   - discusses the module[`contractState.go`](../contractState.go), which manages contract state including version, nickname, and activeAssets list
-* [`assetHistory.md`](contractState.md)
-  - discusses the module [assethistory.go](`../assethistory.go`), which manages asset state history sorted by time with the most recent state first; each asset's history is stored in a separate bucket
+* [`recentStates.md`](recentStates.md)
+  - discusses the module [`recentStates.go`](../recentStates.go), which manages a list of state changes across all assets sorted by time most recent first and containing only one event per asset
