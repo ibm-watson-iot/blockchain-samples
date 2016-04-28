@@ -167,24 +167,6 @@ export const chaincode = (state={
           }
         }
       })
-    case OPEN_SNACKBAR:
-      return Object.assign({}, state, {
-        ui:{
-          ...state.ui,
-          snackbar:{
-            open:true
-          }
-        }
-      })
-    case HIDE_SNACKBAR:
-      return Object.assign({}, state, {
-        ui:{
-          ...state.ui,
-          snackbar:{
-            open:false
-          }
-        }
-      })
     default:
       return state
   }

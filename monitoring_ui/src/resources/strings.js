@@ -31,4 +31,4 @@ export const BLOCK_CARD_CONTENTS_TRANSACTION_TEXT = "Transactions"
 
 export const CHAINCODE_LENGTH_ERROR = "This Chaincode ID is invalid. It should be 128 characters long."
 
-export const CHAINCODE_SNACKBAR_MSG = "Your request was successfully sent."
+export const CHAINCODE_SNACKBAR_MSG_REQ_SENT = "Your request was successfully sent."

@@ -26,7 +26,8 @@ import MenuItem from 'material-ui/lib/menus/menu-item';
 
 import { actions } from 'react-redux-form';
 
-import {sendObcRequest, openSnackbar, hideSnackbar} from '../../actions/ChaincodeActions'
+import {sendObcRequest} from '../../actions/ChaincodeActions';
+import {openSnackbar, hideSnackbar, setSnackbarMsg} from '../../actions/AppActions';
 
 import Form from "react-jsonschema-form";
 import * as strings from '../../resources/strings'
@@ -64,6 +65,7 @@ class JsonSchemaForm extends React.Component {
     //dispatch the payload to the appropriate api endpoint
     dispatch(sendObcRequest(args, this.props.fnName, this.props.currentRequestType));
 
+    dispatch(setSnackbarMsg(strings.CHAINCODE_SNACKBAR_MSG_REQ_SENT))
     //show the snackbar
     dispatch(openSnackbar());
   }
@@ -94,7 +96,7 @@ class JsonSchemaForm extends React.Component {
         </div>
         <Snackbar
           open={this.props.snackbarIsOpen}
-          message={strings.CHAINCODE_SNACKBAR_MSG}
+          message={this.props.snackbarMsg}
           autoHideDuration={4000}
           onRequestClose={()=>{this.props.dispatch(hideSnackbar())}}
         />
@@ -133,7 +135,8 @@ function mapStateToProps(state) {
     //this tells us which function in the list of functions that we are currently dealing with
     fnIndex: fnIndex,
     fnName: fnName,
-    snackbarIsOpen: state.chaincode.ui.snackbar.open
+    snackbarIsOpen: state.app.ui.snackbar.open,
+    snackbarMsg: state.app.ui.snackbar.msg
   };
 }
 

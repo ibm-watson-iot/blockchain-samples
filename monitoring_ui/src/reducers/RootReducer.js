@@ -20,6 +20,7 @@ import { combineReducers } from 'redux'
 import {blockchain} from './BlockchainReducer.js'
 import {configuration} from './ConfigurationReducer.js'
 import {chaincode} from './ChaincodeReducer.js'
+import {app} from './AppReducer'
 
 import {
   modelReducer,
@@ -52,7 +53,8 @@ const rootReducer = combineReducers({
   chaincodeOpsForm: modelReducer('chaincodeOpsForm', initialChaincodeOpsFormState),
   obcConfigurationForm: formReducer('obcConfiguration'),
   //
-  chaincode
+  chaincode,
+  app
 
 })
 
