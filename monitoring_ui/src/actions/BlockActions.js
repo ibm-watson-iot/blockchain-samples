@@ -17,6 +17,8 @@ Contributors:
 Alex Nguyen - Initial Contribution
 *****************************************************************************/
 import {sendObcPollingRequests} from './ChaincodeActions'
+import {openSnackbar, hideSnackbar, setSnackbarMsg} from '../actions/AppActions';
+import * as strings from '../resources/strings'
 
 export const REQUEST_BLOCK_INFO = 'REQUEST_BLOCK_INFO'
 function requestBlockInfo(blockNum){
@@ -81,6 +83,11 @@ export function fetchChainHeight(urlRestRoot){
         dispatch(recChainHeight(json.height, state.configuration.blocksPerPage))
         dispatch(sendObcPollingRequests())
       }
+    }).catch(function(err){
+      //set message
+      dispatch(setSnackbarMsg(strings.CHAINCODE_SNACKBAR_MSG_FETCH_ERR))
+      //show the snackbar
+      dispatch(openSnackbar());
     })
 
   }

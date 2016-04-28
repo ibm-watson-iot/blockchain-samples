@@ -46,6 +46,9 @@ import ResponsePayloadContainer from './ResponsePayloadContainer'
 
 import * as strings from '../resources/strings'
 
+import {openSnackbar, hideSnackbar, setSnackbarMsg} from '../actions/AppActions';
+import Snackbar from 'material-ui/lib/snackbar';
+
 class App extends React.Component{
 
   static childContextTypes = {
@@ -87,8 +90,22 @@ class App extends React.Component{
               </Col>
             </Row>
           </Grid>
+
+          <Snackbar
+            open={this.props.snackbarIsOpen}
+            message={this.props.snackbarMsg}
+            autoHideDuration={4000}
+            onRequestClose={()=>{this.props.hideSnackbar()}}
+          />
       </div>
     )
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    snackbarIsOpen: state.app.ui.snackbar.open,
+    snackbarMsg: state.app.ui.snackbar.msg
   }
 }
 
@@ -99,11 +116,14 @@ const mapDispatchToProps = (dispatch) => {
     },
     fetchCcSchema: () => {
       dispatch(fetchCcSchema())
+    },
+    hideSnackbar: () => {
+      dispatch(hideSnackbar())
     }
   }
 }
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(App)
