@@ -1,7 +1,10 @@
 #Sample Trade Lane Contract Documentation
-##Start with the document [`main.md`](main.md "tutorial on the fabric and documentation on the trade lane contract")
-   - a tutorial on the Hyperledger fabric and smart contracts
-   - detailed documentation on the IoT Trade Lane sample contract
+##Start Here
+Read the [Introduction to Hyperledger Smart Contracts for IoT, Best Practices and Patterns](HyperledgerContractsIntroBestPracticesPatterns.md) and its specified pre-reading __before__ reading the detailed contract documents. 
+
+> The tutorial [Customizing the Sample Contract](CustomizingTheSampleContract.md) is under construction and will be available soon.
+
+When you have completed the pre-reading, start with [`main.md`](main.md) for detailed documentation on the IoT Trade Lane sample contract's main body and processing. Then move on to the detailed module documents shown below in your order of interest.
 
 ##Available
 * [`alerts.md`](alerts.md)
@@ -21,7 +24,7 @@
 
 ##Under Construction
 * [`assetHistory.md`](contractState.md)
-  - **Under Construction** discusses the module [assethistory.go](`../assethistory.go`), which manages asset state history sorted by time with the most recent state first; each asset's history is stored in a separate bucket
+  - discusses the module [assethistory.go](`../assethistory.go`), which manages asset state history sorted by time with the most recent state first; each asset's history is stored in a separate bucket
 * [`contractState.md`](contractState.md)
   - discusses the module[`contractState.go`](../contractState.go), which manages contract state including version, nickname, and activeAssets list
 * [`recentStates.md`](recentStates.md)
