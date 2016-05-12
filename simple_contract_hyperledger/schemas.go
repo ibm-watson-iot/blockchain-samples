@@ -9,7 +9,7 @@ var schemas = `
                 "args": {
                     "description": "args are JSON encoded strings",
                     "items": {
-                        "description": "A set of properties that constitute the complete asset state, which is used as an event in this example.",
+                        "description": "A set of fields that constitute the writable fields in an asset's state. AssetID is mandatory along with at least one writable field. In this contract pattern, a partial state is used as an event.",
                         "properties": {
                             "assetID": {
                                 "description": "The ID of a managed asset. The resource focal point for a smart contract.",
@@ -29,10 +29,6 @@ var schemas = `
                                         "type": "number"
                                     }
                                 },
-                                "required": [
-                                    "latitude",
-                                    "longitude"
-                                ],
                                 "type": "object"
                             },
                             "temperature": {
@@ -60,7 +56,7 @@ var schemas = `
             "type": "object"
         },
         "deleteAsset": {
-            "description": "Delete an asset, its history, and any recent state activity. Argument is a JSON encoded string containing only an assetID.",
+            "description": "Delete an asset. Argument is a JSON encoded string containing only an assetID.",
             "properties": {
                 "args": {
                     "description": "args are JSON encoded strings",
@@ -72,9 +68,6 @@ var schemas = `
                                 "type": "string"
                             }
                         },
-                        "required": [
-                            "assetID"
-                        ],
                         "type": "object"
                     },
                     "maxItems": 1,
@@ -87,10 +80,44 @@ var schemas = `
                         "deleteAsset"
                     ],
                     "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "init": {
+            "description": "Initializes the contract when started, either by deployment or by peer restart.",
+            "properties": {
+                "args": {
+                    "description": "args are JSON encoded strings",
+                    "items": {
+                        "description": "event sent to init on deployment",
+                        "properties": {
+                            "nickname": {
+                                "default": "SIMPLE",
+                                "description": "The nickname of the current contract",
+                                "type": "string"
+                            },
+                            "version": {
+                                "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "version"
+                        ],
+                        "type": "object"
+                    },
+                    "maxItems": 1,
+                    "minItems": 1,
+                    "type": "array"
                 },
-                "required": [
-                    "assetID"
-                ]
+                "function": {
+                    "description": "init function",
+                    "enum": [
+                        "init"
+                    ],
+                    "type": "string"
+                }
             },
             "type": "object"
         },
@@ -107,9 +134,6 @@ var schemas = `
                                 "type": "string"
                             }
                         },
-                        "required": [
-                            "assetID"
-                        ],
                         "type": "object"
                     },
                     "maxItems": 1,
@@ -124,7 +148,7 @@ var schemas = `
                     "type": "string"
                 },
                 "result": {
-                    "description": "A set of properties that constitute the complete asset state.",
+                    "description": "A set of fields that constitute the complete asset state.",
                     "properties": {
                         "assetID": {
                             "description": "The ID of a managed asset. The resource focal point for a smart contract.",
@@ -144,10 +168,6 @@ var schemas = `
                                     "type": "number"
                                 }
                             },
-                            "required": [
-                                "latitude",
-                                "longitude"
-                            ],
                             "type": "object"
                         },
                         "temperature": {
@@ -155,9 +175,6 @@ var schemas = `
                             "type": "number"
                         }
                     },
-                    "required": [
-                        "assetID"
-                    ],
                     "type": "object"
                 }
             },
@@ -217,7 +234,7 @@ var schemas = `
                 "args": {
                     "description": "args are JSON encoded strings",
                     "items": {
-                        "description": "A set of properties that constitute the complete asset state, which is used as an event in this example.",
+                        "description": "A set of fields that constitute the writable fields in an asset's state. AssetID is mandatory along with at least one writable field. In this contract pattern, a partial state is used as an event.",
                         "properties": {
                             "assetID": {
                                 "description": "The ID of a managed asset. The resource focal point for a smart contract.",
@@ -237,10 +254,6 @@ var schemas = `
                                         "type": "number"
                                     }
                                 },
-                                "required": [
-                                    "latitude",
-                                    "longitude"
-                                ],
                                 "type": "object"
                             },
                             "temperature": {
@@ -269,8 +282,18 @@ var schemas = `
         }
     },
     "objectModelSchemas": {
+        "assetIDKey": {
+            "description": "An object containing only an assetID for use as an argument to read or delete.",
+            "properties": {
+                "assetID": {
+                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "event": {
-            "description": "A set of properties that constitute the complete asset state, which is used as an event in this example.",
+            "description": "A set of fields that constitute the writable fields in an asset's state. AssetID is mandatory along with at least one writable field. In this contract pattern, a partial state is used as an event.",
             "properties": {
                 "assetID": {
                     "description": "The ID of a managed asset. The resource focal point for a smart contract.",
@@ -290,10 +313,6 @@ var schemas = `
                             "type": "number"
                         }
                     },
-                    "required": [
-                        "latitude",
-                        "longitude"
-                    ],
                     "type": "object"
                 },
                 "temperature": {
@@ -306,8 +325,26 @@ var schemas = `
             ],
             "type": "object"
         },
+        "initEvent": {
+            "description": "event sent to init on deployment",
+            "properties": {
+                "nickname": {
+                    "default": "SIMPLE",
+                    "description": "The nickname of the current contract",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "version"
+            ],
+            "type": "object"
+        },
         "state": {
-            "description": "A set of properties that constitute the complete asset state.",
+            "description": "A set of fields that constitute the complete asset state.",
             "properties": {
                 "assetID": {
                     "description": "The ID of a managed asset. The resource focal point for a smart contract.",
@@ -327,10 +364,6 @@ var schemas = `
                             "type": "number"
                         }
                     },
-                    "required": [
-                        "latitude",
-                        "longitude"
-                    ],
                     "type": "object"
                 },
                 "temperature": {
@@ -338,9 +371,6 @@ var schemas = `
                     "type": "number"
                 }
             },
-            "required": [
-                "assetID"
-            ],
             "type": "object"
         }
     }
