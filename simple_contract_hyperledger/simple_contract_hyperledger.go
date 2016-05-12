@@ -342,13 +342,10 @@ func (t *SimpleChaincode) createOrUpdateAsset(stub *shim.ChaincodeStub, args []s
         oldOne:=old.Field(i)
         newOne:=new.Field(i)
         if ! reflect.ValueOf(newOne.Interface()).IsNil() {
-            fmt.Println("New is", newOne.Interface())
-            fmt.Println("Old is ",oldOne.Interface())
             oldOne.Set(reflect.Value(newOne))
-            fmt.Println("Updated Old is ",oldOne.Interface())
-        } else {
-            fmt.Println("Old is ",oldOne.Interface())
-        }
+        } //else {
+         //   fmt.Println("Old is ",oldOne.Interface())
+        //}
     }
     return oldState, nil
  }
