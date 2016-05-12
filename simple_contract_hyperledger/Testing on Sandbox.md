@@ -29,7 +29,7 @@ A new call to 'read' should give you the updated asset record.
 
 delete:
 ./peer chaincode invoke -l golang -n simhyp -c '{"Function":"deleteAsset" , "Args":["{\"assetID\":\"CON123\"}"]}' 
-Delete asset is not exposed through the platform, the blockchain generally being considered an indelible record of transactions, we didn't think we should explose a function that deletes exisiting asset data
+
 
 
 
