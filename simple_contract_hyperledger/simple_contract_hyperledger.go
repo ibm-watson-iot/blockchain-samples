@@ -196,12 +196,12 @@ func (t *SimpleChaincode) readAsset(stub *shim.ChaincodeStub, args []string) ([]
      // validate input data for number of args, Unmarshaling to asset state and obtain asset id
     stateIn, err:= t.validateInput(args)
     if err != nil {
-        return nil, err
+        return nil, errors.New("Asset does not exist!")
     }
     assetID = *stateIn.AssetID
         // Get the state from the ledger
     assetBytes, err:= stub.GetState(assetID)
-    if err != nil {
+    if err != nil  || len(assetBytes) ==0{
         err = errors.New("Unable to get asset state from ledger")
         return nil, err
     } 
@@ -285,6 +285,7 @@ func (t *SimpleChaincode) createOrUpdateAsset(stub *shim.ChaincodeStub, args []s
     var err error
     var stateIn AssetState
     var stateStub AssetState
+   
 
     // validate input data for number of args, Unmarshaling to asset state and obtain asset id
 
