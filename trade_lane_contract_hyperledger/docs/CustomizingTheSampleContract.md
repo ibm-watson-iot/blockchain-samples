@@ -191,8 +191,6 @@ After:
         },
 ```
 
-The 
-
 ### Rule Change
 Once the threshold is added to the data model, the `OVERTEMP` rule can become sensitive to it. 
 
