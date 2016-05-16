@@ -22,7 +22,7 @@ This sample makes use of the *partial state as event* pattern as introduced in t
 
 In other words, an asset's state builds up as events are received. This pattern allows  creation or update events like `createAsset` or `updateAsset` to carry any combination of the writable properties of the state. 
 
-> Note that events received by the `updateAsset` function will redirect to the `createAsset` function if the asset is not found. This is the default behavior in this contract and can be shut off with this message:
+> Events received by the `updateAsset` function will automatically redirect to the `createAsset` function by default if the asset is not found. This behavior can be changed (as in toggled off or on) with this message:
 
 >``` go
 {
@@ -104,14 +104,14 @@ So as assets move from place to place, the contract receives location updates, t
 
 As discussed above, the temperature rule's behavior can be improved by the addition of a threshold that is specific to the container contents. To keep the tutorial simple, a threshold property is added to asset state for the container only. The `OVERTEMP` rule is adjusted to become sensitive to the presence or absence of the new threshold property. 
 
-> Reminder: Adding the threshold property as an event requires no specialized logic, as the deep merge of event into state will handle the new property, and the combined asset state will be presented to the rules engine so that the `OVERTEMP` rule can see both the temperature and the new threshold.
+> Adding the threshold property as an event requires no specialized logic as the deep merge of event into state handles the new property. The combined asset state is presented to the rules engine before committing to the ledger so that the adjusted `OVERTEMP` rule can now see the temperature and the new threshold.
 
 ###Schema Change
 Two changes are required in the [schema](../payloadSchema.go): 
  - add the `threshold` property to the event object
  - copy it to the state object
 
->Note that the property duplication between event and state is a matter of convenience at this time. This will be adjusted in a future sample.
+>Explicit duplication of properties between event and state as opposed to import of a common set of properties is a matter of history and convenience at this time. To be addressed in a future version of the schema.
 
 Before:
 
@@ -194,7 +194,7 @@ After:
 ### Rule Change
 Once the threshold is added to the data model, the `OVERTEMP` rule can become sensitive to it. 
 
-> Remember: The goal in this style of contract is to build up asset state from incoming events, storing the calculated state in *world state*. Just before the state calculation is completed, the rules engine is run against the new asset state, which must raise or clear its specific alert for the target asset.
+> The goal in this style of contract is to build up asset state from incoming events, storing the calculated state in *world state*. Just before the state calculation is completed, the rules engine is run against the new asset state, which must raise or clear its specific alert for the target asset.
 
 The `OVERTEMP` rule is defined in [rules.go](../rules.go).
 
@@ -248,7 +248,7 @@ func (alerts *AlertStatusInternal) overTempRule (a *ArgsMap) {
 
 The style here is obvious and for most multi-property-dependent rules should be considered mandatory. To clarify the technique: only when every property has been found and correctly asserted to be of the right type should the calculation proceed, raising or clearing the alert as the rule demands. In **all** other cases, the code should fall through to clear the alert.
 
->Note where the assignment of both tbytes and t creates a new var that was not previously declared, but I left the declaration of the threshold var in the rule and then removed the ":" from the assignment. Note also that the compiler actually found that bug :-) because it is pretty subtle.
+>The assignments for tbytes and t use the Go ":=" operator, which creates a new variable without a previous declaration and with an inferred type. For clarity with the newly-dynamic threshold, I changed the declaration of the threshold from a constant to a variable, assigning it from the JSON property, if it exists. Since the variable is predeclared, the ":=" is changed to "=" in the assignment. The compiler actually found the error where I left in the ":=" originally because it is pretty subtle difference. This is a good use of the Go compiler since it is blazingly fast.
 
 ###Generate and Build
 Once the schema changes have been made, the `go generate` command can be executed at the root level of the contract. It relies on a comment at the top of the [main.go](../main.go) file:
@@ -403,13 +403,13 @@ Queries return the entire response immediately:
 }
 ```
 
-> Note that the JSON RPC 2.0 envelope for returned objects forces the contract's output to be stringified, which in turn shows up and escaped strings. This means that POSTMAN is unable to display outputs in a *pretty* format as it could before JSON RPC 2.0 was added. 
+> The JSON RPC 2.0 envelope for contract payloads stringifies inputs and outputs, which shows up as escaped strings. This means that the examples from POSTMAN cannot display objects in *pretty* format. 
 
 The `threshold` tag is clearly visible and its value is 100 degrees Calcuis. The contract shows as being in compliance, since there is no temperature event so far. With nothing to calculate, the rule must clear the alert.
 
 Now we will send a temperature of 99 and the contract will show as being in compliance again. 
 
->Note that the `updateAsset` and `readAsset` calls are used here, but extra detail is left out. Only the update event and the query response are shown from this point on.
+>From here on, `updateAsset` and `readAsset` calls are used but the response from the invoke and the command for the query are left out as unnecessary detail.
 
 ``` json
 {
@@ -471,11 +471,11 @@ And finally, we send the event with temperature as 101 and the contract will go 
 }
 ```
 
-The temperature now shows 101, which is above the threshold of 100. Thus, we now see the `OVERTEMP` both raised and active. Raised says that this specific event raised the alert by changing it from cleared state to reaised state, and active says that the temperature for this asset is too high.
-
-Note also that `incompliance` is now missing, which means that the asset is no longer compliant with the terms in the contract.
+- The temperature now shows 101, which is above the threshold of 100. Thus, we now see the `OVERTEMP` alert as both raised and active. 
+  - Raised means that this specific event raised the alert by changing it from inactive state to active state, and active says that the temperature for this asset is too high at this point in time.
+- The `incompliance` property is now missing, which means that the asset is no longer compliant with the terms in the contract.
 
 ##Conclusion
-This was a basic introduction to customization. The truly simple changes in this article add a significant feature to the contract in that it can now deal with temperatures that are very specific to an asset's cargo.
+This was a basic introduction to customization. The desceptively simple changes in this article add a significant feature to the contract in that it can now deal with temperatures that are specific to an asset's cargo.
 
 The flexibility and simplicity of the *partial state as event* pattern makes data-driven contracts easy to construct and maintain and should be the default design until it fails to meet the goals of the contract.
