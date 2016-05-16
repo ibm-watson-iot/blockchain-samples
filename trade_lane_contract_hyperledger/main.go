@@ -94,6 +94,10 @@ type SimpleChaincode struct {
 const ASSETID string = "assetID"
 // TIMESTAMP is the JSON tag for timestamps, devices must use this tag to be compatible! 
 const TIMESTAMP string = "timestamp"
+// TXNTIMESTAMP is the JSON tag for transaction timestamps, which map directly onto the transaction in the blockchain
+const TXNTIMESTAMP string = "txntimestamp"
+// TXNUUID is the JSON tag for transaction UUIDs, which map directly onto the transaction in the blockchain
+const TXNUUID string = "txnuuid"
 // ArgsMap is a generic map[string]interface{} to be used as a receiver 
 type ArgsMap map[string]interface{} 
 
@@ -206,7 +210,6 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
 	var event interface{}
     var found bool
 	var err error
-    var timeIn time.Time
 
 	log.Info("Entering createAsset")
 
@@ -259,19 +262,17 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
         return nil, err
     }
 
-    // test and set timestamp
-    // TODO get time from the shim as soon as they support it, we cannot
-    // get consensus now because the timestamp is different on all peers.
-    timeInBytes, found := getObject(argsMap, TIMESTAMP)
-    var timeOut = time.Now()
-    if found {
-        timeIn, found = timeInBytes.(time.Time)
-        if found && !timeIn.IsZero() {
-            timeOut = timeIn
-        }
+    // add transaction uuid and timestamp
+    argsMap[TXNUUID] = stub.UUID
+    txnunixtime, err := stub.GetTxTimestamp()
+	if err != nil {
+		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
+        log.Error(err)
+	} else {
+        txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
+        argsMap[TXNTIMESTAMP] = txntimestamp
     }
-    argsMap[TIMESTAMP] = timeOut
-    
+   
     // run the rules and raise or clear alerts
     alerts := newAlertStatus()
     if argsMap.executeRules(&alerts) {
@@ -360,7 +361,6 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
 	var ledgerBytes interface{}
 	var found bool
 	var err error
-    var timeIn time.Time
     
 	log.Info("Entering updateAsset")
 
@@ -419,18 +419,16 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
         return nil, err
     }
 
-    // test and set timestamp
-    // TODO get time from the shim as soon as they support it, we cannot
-    // get consensus now because the timestamp is different on all peers.
-    timeInBytes, found := getObject(argsMap, TIMESTAMP)
-    var timeOut = time.Now()
-    if found {
-        timeIn, found = timeInBytes.(time.Time)
-        if found && !timeIn.IsZero() {
-            timeOut = timeIn
-        }
+    // add transaction uuid and timestamp
+    argsMap[TXNUUID] = stub.UUID
+    txnunixtime, err := stub.GetTxTimestamp()
+	if err != nil {
+		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
+        log.Error(err)
+	} else {
+        txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
+        argsMap[TXNTIMESTAMP] = txntimestamp
     }
-    argsMap[TIMESTAMP] = timeOut
     
     // **********************************
     // find the asset state in the ledger
@@ -751,9 +749,16 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
     }
     log.Debugf("updateAsset AssetID %s final state: %s", assetID, ledgerMap)
 
-    // set timestamp
-    // TODO timestamp from the stub
-    ledgerMap[TIMESTAMP] = time.Now()
+    // add transaction uuid and timestamp
+    argsMap[TXNUUID] = stub.UUID
+    txnunixtime, err := stub.GetTxTimestamp()
+	if err != nil {
+		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
+        log.Error(err)
+	} else {
+        txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
+        argsMap[TXNTIMESTAMP] = txntimestamp
+    }
 
     // handle compliance section
     alerts = newAlertStatus()
@@ -822,7 +827,7 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
 }
 
 // ************************************
-// deletaAllAssets 
+// deleteAllAssets 
 // ************************************
 func (t *SimpleChaincode) deleteAllAssets(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	var assetID string
