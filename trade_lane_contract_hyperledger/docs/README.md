@@ -2,7 +2,7 @@
 ##Start Here
 Read the [Introduction to Hyperledger Smart Contracts for IoT, Best Practices and Patterns](HyperledgerContractsIntroBestPracticesPatterns.md) and its specified pre-reading __before__ reading the detailed contract documents. 
 
-> The tutorial [Customizing the Sample Contract](CustomizingTheSampleContract.md) is under construction and will be available soon.
+Read the tutorial [Customizing the Sample Contract](CustomizingTheSampleContract.md) to get a feel for the simplicity and flexibility inherent in the *partial state as event* pattern that is used heavily in the trade lane sample contract.
 
 When you have completed the pre-reading, start with [`main.md`](main.md) for detailed documentation on the IoT Trade Lane sample contract's main body and processing. Then move on to the detailed module documents shown below in your order of interest.
 
