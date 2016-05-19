@@ -11,9 +11,11 @@ This contract tracks some of the key parameters in a simple fulfillment scenario
 > See [UBL 2.1.10](http://docs.oasis-open.org/ubl/os-UBL-2.1/UBL-2.1.html#S-SHIPMENT-CONSIGNMENT) for a description of the many possible relationships between shipments and consignments.   
 
 ###Scenario
-For simplicity, the consignment, shipper, receiver, consignor and consignee are not identified. The container / package *is* tracked and identified by `assetID` as per the singleton contract instance and multiple managed asset patterns used in this contract. The container's location and temperature are tracked and the carrier that bears responsibility is followed through events that set a new carrier whenever it changes. 
+For simplicity, the consignment, shipper, receiver, consignor and consignee are not identified. The asset that is the target of all update events is either a container or a package, and will be referred to going forward as *the container*. The container is identified by the generic term *asset*, and that is its JSON tag. This contract manages multiple containers at the same time as per the singleton contract instance and multiple managed asset patterns. 
 
-The event stream is fluid and there is no formal state machine with a managed set of statuses. For example, the contract does not track statuses like `idle`, `packing`, `loading`, `shipped`, `arrived`, and so on. 
+All create and update events come through the `createAsset` and `updateAsset` CRUD functions, and they target the container by ID, which is obviously mandatory. These events can contain any combination of the container's location, contents temperature, and the carrier bearing responsibility for the container. Events can contain a `timestamp` property if that is critical, but the contract will copy the blockchain's transaction timestamp into the state property `txntimestamp` regardless of the presence or absence of a device timestamp.
+
+The event stream is fluid in that there is no formal state machine. There is no property denoting a managed set of states or statuses like `idle`, `packing`, `loading`, `shipped`, `in transit`, `arrived`, and so on. 
 
 The container is considered to be moving when location events are received. It is considered contain frozen goods when temperature events are received. This because the contract has an explicit rule that throws the `OVERTEMP` alert when the temperature exceeds 0 degrees Celsuis exclusive. Carrier events are sent when a new carrier assumes reponsibility, which implies that the container has been moved. The state machine is can be thought of as *implied* in this sample. 
 
@@ -22,7 +24,9 @@ This sample makes use of the *partial state as event* pattern as introduced in t
 
 In other words, an asset's state builds up as events are received. This pattern allows  creation or update events like `createAsset` or `updateAsset` to carry any combination of the writable properties of the state. 
 
-> Events received by the `updateAsset` function will automatically redirect to the `createAsset` function by default if the asset is not found. This behavior can be changed (as in toggled off or on) with this message:
+> Events received by the `updateAsset` function will automatically redirect to the `createAsset` function by default if the asset is not found, mimicing a file system like behavior where you create on open or first write (e.g. pipeline.) The reverse is not true, however, in that creation already is the first update with much less to do, so it stands alone and enforces the non-existence of assets.
+
+This behavior can be changed (as in toggled off or on) with this message:
 
 >``` go
 {
@@ -43,17 +47,16 @@ In other words, an asset's state builds up as events are received. This pattern 
 }
 ```
 
-The asset state is essentially the same when a carrier, a temperature and a geo location all arrive as discrete events, or when a single event arrives carrying all three properties. 
+In this patterm, asset state builds up as events arrive and so a carrier, a temperature and a geo location can arrive as discrete events and in any order. Or they can all arrive together in a single event. The final state will have all three properties as events are merged into state automatically.
 
 ###Rules and Alerts
-Differences that can be observed between these two scenarios are related to the calculated alert status in this contract:
+Differences that can be observed when the ordering or content of events change are generally related to the calculated alert status in this contract, which is all about timing. Alerts are shown as the name of the alert in one or more of three alert status arrays names `active`, `raised` or `cleared`. 
 
-- the alert state will be different at the end of the triplet, depending on which contains the temperature, with the raised status being only set once for any given transition gtom cleared to raised, so raised will be set of the temperature is the last event to be received and it will be off if temperature is the first or second to be received
-  - in the second scenario, the temperature is included in the only message, and so raised is definitely on after the event is processed
-  - such behaviors are expected and make perfect sense when the thresholds are interpreted correctly, as in they mean specifically that *the event that generated this asset state raised this alert*, and such a threshold can only happen once in a row
-- in cases where there is a dependency between properties for a complex alert, the order in which they are received may matter, although it would be wise to guard against such a non-deterministic behavior
+- `active`: the alert is active as of the most recent event (which of course leads to a change of the asset's state object), so whether the contract received the three separate properties as discrete events or as a single composite event, the alert appears as `active` in the calculated state, assuming of course that the temperature received was above the `OVERTEMP` threshold
+- `raised`: the alert has just been raised by the most recent event and no longer appears as `active`, and when the next event of any kind arrives the alert no longer appears as `raised` because that happens only on the actual transition event from cleared to raised
+- `cleared`: the alert has just been cleared by the most recent event and no longer appears as `active`, and when the next event of any kind arrives the alert no longer appears as `cleared` because that happens only on the actual transition event from raised to cleared
 
-This flexibility in order of arrival and complexity of event makes such a contract relatively immune to API expansion issues where composite devices with different combinations of sensors might force new API to be developed and deployed in a less flexible design.
+This flexibility in order of arrival and complexity of event makes the sample contract relatively immune to API expansion issues where composite devices with different combinations of sensors might otherwise force new API to be developed and deployed.
 
 And so this contract specifically defines these behaviors:
 
@@ -251,12 +254,14 @@ The style here is obvious and for most multi-property-dependent rules should be 
 >The assignments for tbytes and t use the Go ":=" operator, which creates a new variable without a previous declaration and with an inferred type. For clarity with the newly-dynamic threshold, I changed the declaration of the threshold from a constant to a variable, assigning it from the JSON property, if it exists. Since the variable is predeclared, the ":=" is changed to "=" in the assignment. The compiler actually found the error where I left in the ":=" originally because it is pretty subtle difference. This is a good use of the Go compiler since it is blazingly fast.
 
 ###Generate and Build
-Once the schema changes have been made, the `go generate` command can be executed at the root level of the contract. It relies on a comment at the top of the [main.go](../main.go) file:
+Once the schema changes have been made, the `go generate` command **must** be executed at the root level of the contract. It relies on a comment at the top of the [main.go](../main.go) file:
 
 ``` go
 //go:generate go run scripts/generate_go_schema.go
 ```
 The named go script is executed in the scripts folder and that script generates the `schemas.go` and `samples.go` files that are used to define the key schema elements to be sent to any application when asked for. The Watson IoT Platform uses the `getAssetSchemas` call to return the contents of `schemas.go` and processes the API and Data Model elements returned for its device event to contract event mapping feature.
+
+> It is common practice to manually run go generate whenever the dependencies have been changed, as is true when the schema is changed for any reason. The generated go files are incorporated into the contract and must be committed to the repository just like any other code. This because the contract may be deployed directly out of the repository without the benefit of running `go generate` before the contract is built.
 
 The execution of `go generate` looks like:
 
@@ -289,13 +294,21 @@ The author assumes that the reader has been through the [sandbox document](https
 
 > - The author runs everything from build to execution in the Vagrant environment for its consistency and clarity
 - The author chooses to use git shell windows running bash on a Windows system and the output in this document is all from such a window
-- Follow the sandbox instructions *exactly* as they have changed substantially recently
+- **READ** and follow the [sandbox instructions](https://github.com/hyperledger/fabric/blob/master/docs/API/SandboxSetup.md) *to the letter* as they have evolved substantially and will continue to do so as Hyperledger matures
 
-Once the new contract and the peer are running as per the sandbox instructions, it is time to test the contract's new feature.
+Once the new contract and the peer are running as per the sandbox instructions, it is time to test the contract's new feature. 
 
-Start by deploying the contract in debug mode, which means naming it "mycc".
+###Deploy
+Deploying the contract in debug mode involves naming it "mycc", as you have read in the instructions referenced above. The deploy message actually uses the name directly rather than the path, and the name substitutes for the deployed UUID when a normal fabric is involved.
 
-The command in POSTMAN is:
+> The Hyperledger examples use "mycc" (my chaincode) as the contract's name (substitute for the UUID normally returned by the deploy command), and the author has never felt the need to change it. But you can in fact use any name in the launch command lines and the REST commands, so long as they match everywhere. Looking in the [postman_tests](../postman_tests) folder, you will find that the POSTMAN environment codifies the name so you can plug in your chosen name and run the REST commands without thinking about it again.
+
+---
+
+> The author finds it convenient to use a second computer to run POSTMAN, which is why the postman tests codify the target URL and a selected port that is 3000 by default. The port mapping in the vagrant environment is already setup from 3000 to 5000, so targeting the computer on which the Vagrant environment is running will ensure that the POSTMAN commands are received. Since the debug mechanism runs the native executables in separate windows without DOCKER containers, no further action is required to achieve connectivity to the peer and thus the contract.
+
+
+The REST command to deploy using POSTMAN is:
 
 ``` json
 {
@@ -315,6 +328,7 @@ The command in POSTMAN is:
     "id":1234
 }
 ```
+> It is convenient to leave the `secureContext` user type in whether running with security or not. For simplicity, this document does not discuss debugging with security on because only basic functions are being tested. 
 
 The response is OK in this case, since both are running and communicating:
 
@@ -329,7 +343,7 @@ The response is OK in this case, since both are running and communicating:
 }
 ```
 
-The logs will show that the contract executed, the nickname *THRESHOLD* standing out in the logs:
+The window in which the contract runs shows all of the logs on STDOUT, and they show that the contract executed with the nickname *THRESHOLD* and the contract version standing out as shown:
 
 ``` sh
 2016/05/16 06:50:24 [THRESHOLD-4.0] DEBU PUTContractState: []interface {}{main.ContractState{Version:"4.0", Nickname:"THRESHOLD", ActiveAssets:map[string]bool{}}}
@@ -390,6 +404,8 @@ To verify the asset exists, we can perform a `readAsset` on `asset1`:
 }
 ```
 
+> The `monitoring_ui` in the `blockchain_samples` project is also capable ot showing changes to asset values in near realtime. 
+
 Queries return the entire response immediately:
 
 ``` json
@@ -405,7 +421,7 @@ Queries return the entire response immediately:
 
 > The JSON RPC 2.0 envelope for contract payloads stringifies inputs and outputs, which shows up as escaped strings. This means that the examples from POSTMAN cannot display objects in *pretty* format. 
 
-The `threshold` tag is clearly visible and its value is 100 degrees Calcuis. The contract shows as being in compliance, since there is no temperature event so far. With nothing to calculate, the rule must clear the alert.
+The `threshold` tag is clearly visible and its value is 100 degrees Celsius. The contract shows as being in compliance, since there is no temperature event so far. With nothing to calculate, the rule must clear the alert.
 
 Now we will send a temperature of 99 and the contract will show as being in compliance again. 
 
@@ -471,9 +487,12 @@ And finally, we send the event with temperature as 101 and the contract will go 
 }
 ```
 
-- The temperature now shows 101, which is above the threshold of 100. Thus, we now see the `OVERTEMP` alert as both raised and active. 
+The temperature now shows 101, which is above the threshold of 100. Thus, we now see the `OVERTEMP` alert as both raised and active. 
   - Raised means that this specific event raised the alert by changing it from inactive state to active state, and active says that the temperature for this asset is too high at this point in time.
-- The `incompliance` property is now missing, which means that the asset is no longer compliant with the terms in the contract.
+
+The `incompliance` property is now missing, which means that the asset is no longer compliant with the terms in the contract.
+
+Applications that monitor specific assets will want to know when alerts happen. At this time, polling is necessary to see asset states. An event bus is under development for Hyperledger and the contract will be able to notify subscribed applications with an event saying that an alert is active.
 
 ##Conclusion
 This was a basic introduction to customization. The desceptively simple changes in this article add a significant feature to the contract in that it can now deal with temperatures that are specific to an asset's cargo.
