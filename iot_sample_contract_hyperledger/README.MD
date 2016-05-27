@@ -1,10 +1,14 @@
 #A Hyperledger Sample Contract with Trade Lane Schema
 
-> **This smart contract is described in a set of documents in the `/docs` folder. The [main Go file documentation](./docs/main.md) includes a tutorial on the Hyperledger fabric and smart contract development. See the [README](./docs/README.md) in the `/docs` folder.**
+> **This smart contract is described in a set of documents in the `/docs` folder. See the [README](./docs/README.md) for more informarmation. And please read the introduction and customization documents therein before proceeding through the code base.**
 
-This contract is derived from the openblockchain contract in the folder `trade_lane_contract` to adapt it to the hyperledger project.  
+This contract is originally derived from the openblockchain contract in the folder `trade_lane_contract` to adapt it to the hyperledger project. The intent is for the `iot_` variant to evolve as a generic template for Hyperledger chaincode development with IoTP device event mapping. 
 
-This sample contract implements a simple Trade Lane scenario, moving *assets* from one place to another. It consists of several modules in `package main` that are all small enough to avoid creating separate packages in this first version.
+The `iot_` variant of the contract will be advanced along with Hyperledger itself while the `trade_lane_` variant will be advanced in lock step with Hyperledger Bluemix.
+
+----
+
+This sample contract implements a simple Trade Lane scenario, moving *assets* from one place to another. It consists of several modules in `package main` that are all small enough to avoid creating separate packages in this first version. These add features that can be used without changing the code. 
 
 This sample is used to explore features and patterns that are of interest to smart contract writers in the IoT domain. These are:
 

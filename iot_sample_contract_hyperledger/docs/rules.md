@@ -3,6 +3,10 @@
 
 The rules engine in the contract template is small and compact but very easily expanded. The function `executeRules` is called by each of the contract's event processing functions that can change asset state (except of course for the deletions, which wipe out state completely).
 
+The rules engine is meant to be a place where validation and alert calculations are performed. Validation rules typically test the quality or existence of data in the merged state and can return an error that will cause the entire transaction to fail and all of the state deltas that may have been calculated to be rolled back.
+
+Alert calculations are meant to signal application-or contract specific status for an asset.   
+
 ##When to Call the Rules Engine
 Every time the state is changed, the rules engine must be called just before the state is put into the ledger. This is so that the rules see all of the state's data after the event has been processed, but before the state has been written. The alerts are injected into or removed from the state based on whether there is anything to see. For example, nothing raised and nothing active, but one alert cleared by this event means that the alerts will appear in the state to show what happened to the alert status.
   

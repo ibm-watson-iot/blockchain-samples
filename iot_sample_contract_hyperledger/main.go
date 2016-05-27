@@ -60,6 +60,16 @@ Howard McKinney- Initial Contribution
 //                         Rename Run to Invoke. Change schema to add new /chaincode service end point etc.
 //                         Remove state structs (use schema and mapUtils.) Make fixes based on lint, e.g. fmt.Errorf.
 //                         Update all docs to reflect the changes. 
+// v4.1   KL May 27 2016 Store transaction UUID and timestamp in the state, aligning world state with the transaction 
+//                       (and by definition the block) that is responsible for this specific asset state. Note: Initial
+//                       commit of this version was at 4.0 and was in the trade lane folder. Subsequently moved to the iot 
+//                       folder and updated to 4.1. Also:
+//                         - Additional feature in 4.1 -- issue #4 -- rules engine must return err
+//                         - Tweaks to deletePropertiesFromAsset (a bug found in the alert boilerplate using args instead of ledger)
+//                         - Added postman tests for delete properties from asset and validation test rules
+//                         - Reordered and normalized the rules engine call to make original event available and have consistency
+//                           between create, update and delete properties.
+
 
 package main
 
@@ -268,28 +278,11 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
 	if err != nil {
 		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
         log.Error(err)
-	} else {
-        txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
-        argsMap[TXNTIMESTAMP] = txntimestamp
-    }
+        return nil, err
+	}
+    txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
+    argsMap[TXNTIMESTAMP] = txntimestamp
    
-    // run the rules and raise or clear alerts
-    alerts := newAlertStatus()
-    if argsMap.executeRules(&alerts) {
-        // NOT compliant!
-        log.Noticef("createAsset assetID %s is noncompliant", assetID)
-        argsMap["alerts"] = alerts
-        delete(argsMap, "incompliance")
-    } else {
-        if alerts.AllClear() {
-            // all false, no need to appear
-            delete(argsMap, "alerts")
-        } else {
-            argsMap["alerts"] = alerts
-        }
-        argsMap["incompliance"] = true
-    }
-    
     // copy incoming event to outgoing state
     // this contract respects the fact that createAsset can accept a partial state
     // as the moral equivalent of one or more discrete events
@@ -304,6 +297,28 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
     if len(args) == 2 {
         // in-band protocol for redirect
         stateOut["lastEvent"].(map[string]interface{})["redirectedFromFunction"] = args[1]
+    }
+
+    // run the rules and raise or clear alerts
+    alerts := newAlertStatus()
+    noncompliant, err := stateOut.executeRules(&alerts)
+    if err != nil {
+		err = fmt.Errorf("Rules engine failure: %s", err)
+        log.Error(err)
+        return nil, err
+    }
+    if noncompliant {
+        log.Noticef("createAsset assetID %s is noncompliant", assetID)
+        stateOut["alerts"] = alerts
+        delete(stateOut, "incompliance")
+    } else {
+        if alerts.AllClear() {
+            // all false, no need to appear
+            delete(stateOut, "alerts")
+        } else {
+            stateOut["alerts"] = alerts
+        }
+        stateOut["incompliance"] = true
     }
 
     // marshal to JSON and write
@@ -425,10 +440,10 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
 	if err != nil {
 		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
         log.Error(err)
-	} else {
-        txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
-        argsMap[TXNTIMESTAMP] = txntimestamp
-    }
+        return nil, err
+	}
+    txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
+    argsMap[TXNTIMESTAMP] = txntimestamp
     
     // **********************************
     // find the asset state in the ledger
@@ -464,6 +479,11 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
                           map[string]interface{}(ledgerMap))
     log.Debugf("updateAsset assetID %s merged state: %s", assetID, stateOut)
 
+    // save the original event
+    stateOut["lastEvent"] = make(map[string]interface{})
+    stateOut["lastEvent"].(map[string]interface{})["function"] = "updateAsset"
+    stateOut["lastEvent"].(map[string]interface{})["args"] = args[0]
+
     // handle compliance section
     alerts := newAlertStatus()
     a, found := stateOut["alerts"] // is there an existing alert state?
@@ -476,7 +496,13 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
         alerts.alertStatusFromMap(a.(map[string]interface{}))
     }
     // important: rules need access to the entire calculated state 
-    if ledgerMap.executeRules(&alerts) {
+    noncompliant, err := ledgerMap.executeRules(&alerts)
+    if err != nil {
+		err = fmt.Errorf("Rules engine failure: %s", err)
+        log.Error(err)
+        return nil, err
+    }
+    if noncompliant {
         // true means noncompliant
         log.Noticef("updateAsset assetID %s is noncompliant", assetID)
         // update ledger with new state, if all clear then delete
@@ -492,11 +518,6 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
         stateOut["incompliance"] = true
     }
     
-    // save the original event
-    stateOut["lastEvent"] = make(map[string]interface{})
-    stateOut["lastEvent"].(map[string]interface{})["function"] = "updateAsset"
-    stateOut["lastEvent"].(map[string]interface{})["args"] = args[0]
-
     // Write the new state to the ledger
     stateJSON, err := json.Marshal(ledgerMap)
     if err != nil {
@@ -642,7 +663,7 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
     
     argsMap, found = event.(map[string]interface{})
     if !found {
-        err := errors.New("updateAsset arg is not a map shape")
+        err := errors.New("deletePropertiesFromAsset arg is not a map shape")
         log.Error(err)
         return nil, err
     }
@@ -750,19 +771,24 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
     log.Debugf("updateAsset AssetID %s final state: %s", assetID, ledgerMap)
 
     // add transaction uuid and timestamp
-    argsMap[TXNUUID] = stub.UUID
+    ledgerMap[TXNUUID] = stub.UUID
     txnunixtime, err := stub.GetTxTimestamp()
 	if err != nil {
 		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
         log.Error(err)
-	} else {
-        txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
-        argsMap[TXNTIMESTAMP] = txntimestamp
-    }
+        return nil, err
+	}
+    txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
+    ledgerMap[TXNTIMESTAMP] = txntimestamp
 
+    // save the original event
+    ledgerMap["lastEvent"] = make(map[string]interface{})
+    ledgerMap["lastEvent"].(map[string]interface{})["function"] = "deletePropertiesFromAsset"
+    ledgerMap["lastEvent"].(map[string]interface{})["args"] = args[0]
+    
     // handle compliance section
     alerts = newAlertStatus()
-    a, found := argsMap["alerts"] // is there an existing alert state?
+    a, found := ledgerMap["alerts"] // is there an existing alert state?
     if found {
         // convert to an AlertStatus, which does not work by type assertion
         log.Debugf("deletePropertiesFromAsset Found existing alerts state: %s", a)
@@ -772,7 +798,13 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
         alerts.alertStatusFromMap(a.(map[string]interface{}))
     }
     // important: rules need access to the entire calculated state 
-    if ledgerMap.executeRules(&alerts) {
+    noncompliant, err := ledgerMap.executeRules(&alerts)
+    if err != nil {
+		err = fmt.Errorf("Rules engine failure: %s", err)
+        log.Error(err)
+        return nil, err
+    }
+    if noncompliant {
         // true means noncompliant
         log.Noticef("deletePropertiesFromAsset assetID %s is noncompliant", assetID)
         // update ledger with new state, if all clear then delete
@@ -787,11 +819,6 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
         }
         ledgerMap["incompliance"] = true
     }
-    
-    // save the original event
-    ledgerMap["lastEvent"] = make(map[string]interface{})
-    ledgerMap["lastEvent"].(map[string]interface{})["function"] = "deletePropertiesFromAsset"
-    ledgerMap["lastEvent"].(map[string]interface{})["args"] = args[0]
     
     // Write the new state to the ledger
     stateJSON, err := json.Marshal(ledgerMap)

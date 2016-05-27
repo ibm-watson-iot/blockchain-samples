@@ -36,7 +36,7 @@ import (
 // Major for API break, Minor when adding a feature or behavior, Fix when fixing a bug.
 // If the init comes in with the wrong major version, then  we might consider exiting with
 // an error.
-const MYVERSION string = "4.0"
+const MYVERSION string = "4.1"
 
 // DEFAULTNICKNAME is used when a contract is initialized without giving it a nickname
 const DEFAULTNICKNAME string = "TRADELANE" 

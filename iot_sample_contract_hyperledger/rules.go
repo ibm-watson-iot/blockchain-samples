@@ -27,32 +27,63 @@ Kim Letkeman - Initial Contribution
 
 package main
 
-import ()
+import (
+    "errors"
+)
 
-func (a *ArgsMap) executeRules(alerts *AlertStatus) (bool) {
+func (a *ArgsMap) executeRules(alerts *AlertStatus) (bool, error) {
     log.Debugf("Executing rules input: %v", *alerts)
+    // transform external to internal for easy alert status processing
     var internal = (*alerts).asAlertStatusInternal()
 
-    // rule 1 -- overtemp
-    internal.overTempRule(a)
+    // ------ validation rules
+    // rule 1 -- test validation failure
+    err := internal.testValidationRule(a)
+    // return value is not used, return true, which means noncompliant
+    if err != nil {return true, err}
     // rule 2 -- ???
 
-    // now transform internal back to external in order to give the contract the
-    // appropriate JSON to send externally
+    // ------ alert rules
+    // rule 1 -- overtemp
+    err = internal.overTempRule(a)
+    if err != nil {return true, err}
+    // rule 2 -- ???
+
+    // transform for external consumption
     *alerts = internal.asAlertStatus()
     log.Debugf("Executing rules output: %v", *alerts)
 
     // set compliance true means out of compliance
-    compliant := internal.calculateContractCompliance(a)
+    compliant, err := internal.calculateContractCompliance(a) 
+    if err != nil {return true, err} 
     // returns true if anything at all is active (i.e. NOT compliant)
-    return !compliant
+    return !compliant, nil
 }
 
 //***********************************
-//**           RULES               **
+//**     VALIDATION RULES          **
 //***********************************
 
-func (alerts *AlertStatusInternal) overTempRule (a *ArgsMap) {
+func (alerts *AlertStatusInternal) testValidationRule (a *ArgsMap) error {
+    tbytes, found := getObject(*a, "testValidation")
+    if found {
+        t, found := tbytes.(bool)
+        if found {
+            if t {
+                err := errors.New("testValidation property found and is true") 
+                return err
+            }
+        }
+    }
+    alerts.clearAlert(AlertsOVERTEMP)
+    return nil
+}
+
+//***********************************
+//**        ALERT RULES            **
+//***********************************
+
+func (alerts *AlertStatusInternal) overTempRule (a *ArgsMap) error {
     const temperatureThreshold  float64 = 0 // (inclusive good value)
 
     tbytes, found := getObject(*a, "temperature")
@@ -61,22 +92,23 @@ func (alerts *AlertStatusInternal) overTempRule (a *ArgsMap) {
         if found {
             if t > temperatureThreshold {
                 alerts.raiseAlert(AlertsOVERTEMP)
-                return
+                return nil
             }
         }
     }
     alerts.clearAlert(AlertsOVERTEMP)
+    return nil
 }
 
 //***********************************
 //**         COMPLIANCE            **
 //***********************************
 
-func (alerts *AlertStatusInternal) calculateContractCompliance (a *ArgsMap) (bool) {
+func (alerts *AlertStatusInternal) calculateContractCompliance (a *ArgsMap) (bool, error) {
     // a simplistic calculation for this particular contract, but has access
     // to the entire state object and can thus have at it
     // compliant is no alerts active
-    return alerts.NoAlertsActive()
+    return alerts.NoAlertsActive(), nil
     // NOTE: There could still a "cleared" alert, so don't go
     //       deleting the alerts from the ledger just on this status.
 }
