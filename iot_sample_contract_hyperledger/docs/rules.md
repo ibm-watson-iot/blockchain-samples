@@ -35,7 +35,9 @@ The reality is that the engine and rules do not really need receivers, as there 
 ##Rules and State Changes
 Since pointer receivers and parameters allow the rules engine efficient access to the entire state, and since any property could be in scope for the rules engine, there is no reason why a rule cannot exist to calculate another state property rather than raise or clear alerts.
 
-There is in fact no rule (pun intended) that says that a rule cannot change the state. That might be the whole point of a specific rule in the first place. 
+There is in fact no rule (pun intended) that says that a rule cannot change the state. That might be the whole point of a specific rule in the first place.
+
+And of course rules can now pass an error back to the calling event process to fail the whole transaction. Use this with caution of course. 
 
 ##Compliance
 The state in this pattern contains a property called `inCompliance`, which documents whether the contract considers this specific asset to be in compliance with agreed-to rules (which of course are implemented in code in the rules engine).
