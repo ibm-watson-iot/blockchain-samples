@@ -24,14 +24,14 @@ import FlatButton from 'material-ui/lib/flat-button'
 import CardText from 'material-ui/lib/card/card-text'
 import Toggle from 'material-ui/lib/toggle';
 
-const ResponsePayloadHeaderView = ({args, removeFn, isRemoveBtnEnabled, index}) => (
+const ResponsePayloadHeaderView = ({func, args, removeFn, isRemoveBtnEnabled, index}) => (
   <div>
     {isRemoveBtnEnabled ? <FlatButton label="X" primary={true} onClick={() => {removeFn(index)}}/> :
     <FlatButton label="X" disabled={true}/>
     }
 
     {/*the label for the response payloads are the args used to retrieve it.*/}
-    {JSON.stringify(args)}
+    {func.concat("( ").concat((args==null) ? "" : JSON.stringify(args)).concat(" )")}
   </div>
 )
 
@@ -46,7 +46,7 @@ hideRemoveFn is responsible for hiding the remove asset button that calls remove
 const ResponsePayloadView = ({rPayload, removeFn, displayFn, enableRemoveBtnFn, disableRemoveBtnFn, index, isRemoveBtnEnabled, togglePayloadPolling}) => (
   <Card initiallyExpanded={false}>
     <CardHeader
-      title={<ResponsePayloadHeaderView args={rPayload.args} removeFn={removeFn} isRemoveBtnEnabled={isRemoveBtnEnabled} index={index}/>}
+      title={<ResponsePayloadHeaderView func={rPayload.fn} args={rPayload.args} removeFn={removeFn} isRemoveBtnEnabled={isRemoveBtnEnabled} index={index}/>}
       actAsExpander={false}
       showExpandableButton={true}
       onMouseEnter={() => {enableRemoveBtnFn(index)}}
