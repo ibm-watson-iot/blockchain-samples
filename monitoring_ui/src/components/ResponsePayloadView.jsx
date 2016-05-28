@@ -30,7 +30,7 @@ const ResponsePayloadHeaderView = ({func, args, removeFn, isRemoveBtnEnabled, in
     <FlatButton label="X" disabled={true}/>
     }
 
-    {/*the label for the response payloads are the args used to retrieve it.*/}
+    {/* label for the response payloads is: function() or function(args) if not null */}
     {func.concat("( ").concat((args==null) ? "" : JSON.stringify(args)).concat(" )")}
   </div>
 )
