@@ -47,7 +47,8 @@ class JsonSchemaForm extends React.Component {
     //us to figure out what properties a particular form requires. We cross compare to figure out
     //what the args should be.
     for(var propertyName in data.formData){
-      if (data.formData.hasOwnProperty(propertyName)) {
+      if (data.formData.hasOwnProperty(propertyName) &&
+        (JSON.stringify(data.formData[propertyName]) !== JSON.stringify({}))) {
         //if the id schema contains this property, that means it is a legitimate argument
         if(data.idSchema[propertyName]){
           if(!args){
