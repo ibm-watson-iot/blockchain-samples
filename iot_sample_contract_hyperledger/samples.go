@@ -18,7 +18,7 @@ var samples = `
             "longitude": 123.456
         },
         "temperature": 123.456,
-        "timestamp": "2016-05-27T17:26:45.433463054Z"
+        "timestamp": "2016-05-29T00:41:43.946199143Z"
     },
     "initEvent": {
         "nickname": "TRADELANE",
@@ -38,8 +38,8 @@ var samples = `
         },
         "assetID": "The ID of a managed asset. The resource focal point for a smart contract.",
         "carrier": "transport entity currently in possession of asset",
+        "compliant": true,
         "extension": {},
-        "inCompliance": true,
         "lastEvent": {
             "args": [
                 "parameters to the function, usually args[0] is populated with a JSON encoded event object"
@@ -52,6 +52,6 @@ var samples = `
             "longitude": 123.456
         },
         "temperature": 123.456,
-        "timestamp": "2016-05-27T17:26:45.433555377Z"
+        "timestamp": "2016-05-29T00:41:43.946327379Z"
     }
 }`

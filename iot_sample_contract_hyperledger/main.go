@@ -69,6 +69,9 @@ Howard McKinney- Initial Contribution
 //                         - Added postman tests for delete properties from asset and validation test rules
 //                         - Reordered and normalized the rules engine call to make original event available and have consistency
 //                           between create, update and delete properties.
+// v4.2 KL May 28 2016 Replace all occurences of "incompliance" with "compliant" to remove an obvious source of confusion.
+//                     Remove a copy paste error in the new testValidation rule where it was falling through and clearing
+//                     the OVERTEMP rule, causing total havoc with that rule.
 
 
 package main
@@ -310,7 +313,7 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
     if noncompliant {
         log.Noticef("createAsset assetID %s is noncompliant", assetID)
         stateOut["alerts"] = alerts
-        delete(stateOut, "incompliance")
+        delete(stateOut, "compliant")
     } else {
         if alerts.AllClear() {
             // all false, no need to appear
@@ -318,7 +321,7 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
         } else {
             stateOut["alerts"] = alerts
         }
-        stateOut["incompliance"] = true
+        stateOut["compliant"] = true
     }
 
     // marshal to JSON and write
@@ -507,7 +510,7 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
         log.Noticef("updateAsset assetID %s is noncompliant", assetID)
         // update ledger with new state, if all clear then delete
         stateOut["alerts"] = alerts
-        delete(stateOut, "incompliance")
+        delete(stateOut, "compliant")
     } else {
         if alerts.AllClear() {
             // all false, no need to appear
@@ -515,7 +518,7 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
         } else {
             stateOut["alerts"] = alerts
         }
-        stateOut["incompliance"] = true
+        stateOut["compliant"] = true
     }
     
     // Write the new state to the ledger
@@ -809,7 +812,7 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
         log.Noticef("deletePropertiesFromAsset assetID %s is noncompliant", assetID)
         // update ledger with new state, if all clear then delete
         ledgerMap["alerts"] = alerts
-        delete(ledgerMap, "incompliance")
+        delete(ledgerMap, "compliant")
     } else {
         if alerts.AllClear() {
             // all false, no need to appear
@@ -817,7 +820,7 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
         } else {
             ledgerMap["alerts"] = alerts
         }
-        ledgerMap["incompliance"] = true
+        ledgerMap["compliant"] = true
     }
     
     // Write the new state to the ledger

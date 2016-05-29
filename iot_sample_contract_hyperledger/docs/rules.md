@@ -40,7 +40,7 @@ There is in fact no rule (pun intended) that says that a rule cannot change the 
 And of course rules can now pass an error back to the calling event process to fail the whole transaction. Use this with caution of course. 
 
 ##Compliance
-The state in this pattern contains a property called `inCompliance`, which documents whether the contract considers this specific asset to be in compliance with agreed-to rules (which of course are implemented in code in the rules engine).
+The state in this pattern contains a property called `compliant`, which documents whether the contract considers this specific asset to be in compliance with agreed-to rules (which of course are implemented in code in the rules engine).
 
 ``` go
     // set compliance true means out of compliance

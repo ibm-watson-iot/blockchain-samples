@@ -867,7 +867,7 @@
                     "type": "string",
                     "description": "transport entity currently in possession of asset"
                 },
-                "inCompliance": {
+                "compliant": {
                     "type": "boolean",
                     "description": "A contract-specific indication that this asset is compliant."
                 },

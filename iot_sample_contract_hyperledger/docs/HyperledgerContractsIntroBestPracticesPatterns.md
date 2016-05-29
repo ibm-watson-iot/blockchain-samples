@@ -300,7 +300,7 @@ The term state is generally used as a short form for *World State*, which is the
 
 This contract is focused on assets and so are the `event` and `state` objects:
 - `event` : defines all of the writable properties in the state.
-- `state` : defines all asset properties, as in the `event` properties plus read-only properties such as `alerts` and `inCompliance`
+- `state` : defines all asset properties, as in the `event` properties plus read-only properties such as `alerts` and `compliant`
 
 ####Event
 Having previously established that the function names in this contract API rigidly follow the CRUD pattern, the *partial state as event* pattern defines how arguments are shaped when passed through the `args` string array. Trade lane uses only `Args[0]` and expects a valid JSON encoded `event`, as defined in the [contract payload schema](../payloadSchema.json). 

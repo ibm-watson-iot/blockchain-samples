@@ -413,7 +413,7 @@ Queries return the entire response immediately:
   "jsonrpc": "2.0",
   "result": {
     "status": "OK",
-    "message": "{\"assetID\":\"ASSET1\",\"incompliance\":true,\"lastEvent\":{\"args\":\"{\"assetID\":\"ASSET1\",\"threshold\":100}\",\"function\":\"createAsset\"},\"threshold\":100,\"timestamp\":\"2016-05-16T06:56:51.055683317Z\"}"
+    "message": "{\"assetID\":\"ASSET1\",\"compliant\":true,\"lastEvent\":{\"args\":\"{\"assetID\":\"ASSET1\",\"threshold\":100}\",\"function\":\"createAsset\"},\"threshold\":100,\"timestamp\":\"2016-05-16T06:56:51.055683317Z\"}"
   },
   "id": 1234
 }
@@ -449,7 +449,7 @@ Now we will send a temperature of 99 and the contract will show as being in comp
   "jsonrpc": "2.0",
   "result": {
     "status": "OK",
-    "message": "{\"assetID\":\"ASSET1\",\"incompliance\":true,\"lastEvent\":{\"args\":\"{\"assetID\":\"ASSET1\",\"temperature\":99}\",\"function\":\"updateAsset\"},\"temperature\":99,\"threshold\":100,\"timestamp\":\"2016-05-16T07:07:35.557031032Z\"}"
+    "message": "{\"assetID\":\"ASSET1\",\"compliant\":true,\"lastEvent\":{\"args\":\"{\"assetID\":\"ASSET1\",\"temperature\":99}\",\"function\":\"updateAsset\"},\"temperature\":99,\"threshold\":100,\"timestamp\":\"2016-05-16T07:07:35.557031032Z\"}"
   },
   "id": 1234
 }
@@ -490,7 +490,7 @@ And finally, we send the event with temperature as 101 and the contract will go 
 The temperature now shows 101, which is above the threshold of 100. Thus, we now see the `OVERTEMP` alert as both raised and active. 
   - Raised means that this specific event raised the alert by changing it from inactive state to active state, and active says that the temperature for this asset is too high at this point in time.
 
-The `incompliance` property is now missing, which means that the asset is no longer compliant with the terms in the contract.
+The `compliant` property is now missing, which means that the asset is no longer compliant with the terms in the contract.
 
 Applications that monitor specific assets will want to know when alerts happen. At this time, polling is necessary to see asset states. An event bus is under development for Hyperledger and the contract will be able to notify subscribed applications with an event saying that an alert is active.
 

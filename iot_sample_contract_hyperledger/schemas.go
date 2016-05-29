@@ -259,14 +259,14 @@ var schemas = `
                                 "description": "transport entity currently in possession of asset",
                                 "type": "string"
                             },
+                            "compliant": {
+                                "description": "A contract-specific indication that this asset is compliant.",
+                                "type": "boolean"
+                            },
                             "extension": {
                                 "description": "Application-managed state. Opaque to contract.",
                                 "properties": {},
                                 "type": "object"
-                            },
-                            "inCompliance": {
-                                "description": "A contract-specific indication that this asset is compliant.",
-                                "type": "boolean"
                             },
                             "lastEvent": {
                                 "description": "function and string parameter that created this state object",
@@ -394,14 +394,14 @@ var schemas = `
                             "description": "transport entity currently in possession of asset",
                             "type": "string"
                         },
+                        "compliant": {
+                            "description": "A contract-specific indication that this asset is compliant.",
+                            "type": "boolean"
+                        },
                         "extension": {
                             "description": "Application-managed state. Opaque to contract.",
                             "properties": {},
                             "type": "object"
-                        },
-                        "inCompliance": {
-                            "description": "A contract-specific indication that this asset is compliant.",
-                            "type": "boolean"
                         },
                         "lastEvent": {
                             "description": "function and string parameter that created this state object",
@@ -534,14 +534,14 @@ var schemas = `
                                 "description": "transport entity currently in possession of asset",
                                 "type": "string"
                             },
+                            "compliant": {
+                                "description": "A contract-specific indication that this asset is compliant.",
+                                "type": "boolean"
+                            },
                             "extension": {
                                 "description": "Application-managed state. Opaque to contract.",
                                 "properties": {},
                                 "type": "object"
-                            },
-                            "inCompliance": {
-                                "description": "A contract-specific indication that this asset is compliant.",
-                                "type": "boolean"
                             },
                             "lastEvent": {
                                 "description": "function and string parameter that created this state object",
@@ -662,14 +662,14 @@ var schemas = `
                                 "description": "transport entity currently in possession of asset",
                                 "type": "string"
                             },
+                            "compliant": {
+                                "description": "A contract-specific indication that this asset is compliant.",
+                                "type": "boolean"
+                            },
                             "extension": {
                                 "description": "Application-managed state. Opaque to contract.",
                                 "properties": {},
                                 "type": "object"
-                            },
-                            "inCompliance": {
-                                "description": "A contract-specific indication that this asset is compliant.",
-                                "type": "boolean"
                             },
                             "lastEvent": {
                                 "description": "function and string parameter that created this state object",
@@ -976,14 +976,14 @@ var schemas = `
                     "description": "transport entity currently in possession of asset",
                     "type": "string"
                 },
+                "compliant": {
+                    "description": "A contract-specific indication that this asset is compliant.",
+                    "type": "boolean"
+                },
                 "extension": {
                     "description": "Application-managed state. Opaque to contract.",
                     "properties": {},
                     "type": "object"
-                },
-                "inCompliance": {
-                    "description": "A contract-specific indication that this asset is compliant.",
-                    "type": "boolean"
                 },
                 "lastEvent": {
                     "description": "function and string parameter that created this state object",

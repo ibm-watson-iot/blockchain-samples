@@ -50,7 +50,7 @@ Properties used by trade lane:
     * `carrier` - the entity currently transporting the asset. Generally, a shipping company that is moving the asset between any combination of origin, way points and destination.
 
 ###State
-The `event` is a subset of the asset's `state`. Thus state becomes event plus calculated (as in read-only) properties. These include `alerts`, `incompliance`, and `lastEvent`.
+The `event` is a subset of the asset's `state`. Thus state becomes event plus calculated (as in read-only) properties. These include `alerts`, `compliant`, and `lastEvent`.
 
 ####`State` Schema (output from getAssetSamples)
 The state object looks like:
@@ -70,7 +70,7 @@ The state object looks like:
         "assetID": "The ID of a managed asset. The resource focal point for a smart contract.",
         "carrier": "transport entity currently in possession of asset",
         "extension": {},
-        "inCompliance": true,
+        "compliant": true,
         "lastEvent": {
             "args": [
                 "parameters to the function, usually args[0] is populated with a JSON encoded event object"
@@ -93,7 +93,7 @@ Read-only state properties additional to previously documented event properties:
     * `alerts.active` - alert names that are currently active
     * `alerts.raised` - alert names that were raised by this event, defining the exact moment of transition from clear to active
     * `alerts.cleared` - alert namess that were cleared by this event, defining the exact moment of transition from active to clear
-* `incompliance` - a boolean property specifying whether there are any active alerts for this asset
+* `compliant` - a boolean property specifying whether there are any active alerts for this asset
    * the trade lane sample contract defines *compliant* as *no alerts active*, but derived contracts can have much more complex algorithms
 * `lastEvent` - the event that created this state
    * `function` - the function that handled the incoming event
@@ -125,14 +125,14 @@ fail if assetID is already in ledger
 if timestamp does not exist
     insert one into argsMap using transaction time
 // alerts removed from state if nothing is active, raised or cleared
-// incompliance removed if false 
+// compliant removed if false 
 run rules engine against argsMap to generate alerts
 if any alert is active, raised or cleared
     add alerts to argsMap
-    delete incompliance from argsMap
+    delete compliant from argsMap
 else 
     delete alerts from argsMap
-    add incompliance=true to argsMap
+    add compliant=true to argsMap
 copy argsMap to stateOut
 // lastEvent is the event that specifically created this state
 create lastEvent with function, event, and redirect if present
@@ -168,14 +168,14 @@ assert ledgerBytes as type map[string]interface{} into var ledgerMap of type Arg
 // deepMerge is a function in mapUtils.go
 deep merge argsMap into ledgerMap and assign to stateOut
 // alerts removed from state if nothing is active, raised or cleared
-// incompliance removed if false 
+// compliant removed if false 
 run rules engine against argsMap to generate alerts
 if any alert is active, raised or cleared
     add alerts to argsMap
-    delete incompliance from argsMap
+    delete compliant from argsMap
 else 
     delete alerts from argsMap
-    add incompliance=true to argsMap
+    add compliant=true to argsMap
 // lastEvent is the event that specifically created this state
 create lastEvent with function, event, and redirect if present
 marshal stateOut to JSON
@@ -244,14 +244,14 @@ for all qualified properties to delete
 if timestamp does not exist
     insert one into argsMap using transaction time
 // alerts removed from state if nothing is active, raised or cleared
-// incompliance removed if false 
+// compliant removed if false 
 run rules engine against argsMap to generate alerts
 if any alert is active, raised or cleared
     add alerts to argsMap
-    delete incompliance from argsMap
+    delete compliant from argsMap
 else 
     delete alerts from argsMap
-    add incompliance=true to argsMap
+    add compliant=true to argsMap
 // lastEvent is the event that specifically created this state
 create lastEvent with function, event, and redirect if present
 marshal stateOut to JSON

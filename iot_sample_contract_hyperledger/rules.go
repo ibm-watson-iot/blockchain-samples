@@ -32,7 +32,7 @@ import (
 )
 
 func (a *ArgsMap) executeRules(alerts *AlertStatus) (bool, error) {
-    log.Debugf("Executing rules input: %v", *alerts)
+    log.Debugf("Executing rules input: %+v", *alerts)
     // transform external to internal for easy alert status processing
     var internal = (*alerts).asAlertStatusInternal()
 
@@ -51,7 +51,7 @@ func (a *ArgsMap) executeRules(alerts *AlertStatus) (bool, error) {
 
     // transform for external consumption
     *alerts = internal.asAlertStatus()
-    log.Debugf("Executing rules output: %v", *alerts)
+    log.Debugf("Executing rules output: %+v", *alerts)
 
     // set compliance true means out of compliance
     compliant, err := internal.calculateContractCompliance(a) 
@@ -75,7 +75,6 @@ func (alerts *AlertStatusInternal) testValidationRule (a *ArgsMap) error {
             }
         }
     }
-    alerts.clearAlert(AlertsOVERTEMP)
     return nil
 }
 
@@ -94,6 +93,10 @@ func (alerts *AlertStatusInternal) overTempRule (a *ArgsMap) error {
                 alerts.raiseAlert(AlertsOVERTEMP)
                 return nil
             }
+        } else {
+            log.Warning("overTempRule: temperature not type JSON Number, alert status not changed")
+            // do nothing to the alerts status
+            return nil 
         }
     }
     alerts.clearAlert(AlertsOVERTEMP)
