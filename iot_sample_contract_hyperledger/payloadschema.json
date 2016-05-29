@@ -16,7 +16,7 @@
         "/chaincode": {
             "post": {
                 "summary": "Service endpoint for Chaincode operations",
-                "description": "The /chaincode endpoint receives requests to deploy, invoke, and query a target Chaincode. This service endpoint implements the JSON RPC 2.0 specification with the payload identifying the desired Chaincode operation within the 'method' field.",
+                "description": "The /chaincode endpoint receives requests to deploy, invoke, and query a target Chaincode. This service endpoint implements the JSON RPC 2.0 specification with the payload identifying the desired Chaincode operation within the 'method' property.",
                 "tags": [
                     "Chaincode"
                 ],
@@ -285,7 +285,7 @@
                 },
                 "createAsset": {
                     "type": "object",
-                    "description": "Create an asset. One argument, a JSON encoded event. AssetID is required with zero or more writable properties. Establishes an initial asset state.",
+                    "description": "Create an asset. One argument, a JSON encoded event. The 'assetID' property is required with zero or more writable properties. Establishes an initial asset state.",
                     "properties": {
                         "function": {
                             "type": "string",
@@ -307,7 +307,7 @@
                 },
                 "updateAsset": {
                     "type": "object",
-                    "description": "Update the state of an asset. The one argument is a JSON encoded event. AssetID is required along with one or more writable properties. Establishes the next asset state. ",
+                    "description": "Update the state of an asset. The one argument is a JSON encoded event. The 'assetID' property is required along with one or more writable properties. Establishes the next asset state. ",
                     "properties": {
                         "function": {
                             "type": "string",
@@ -329,7 +329,7 @@
                 },
                 "deleteAsset": {
                     "type": "object",
-                    "description": "Delete an asset, its history, and any recent state activity. Argument is a JSON encoded string containing only an assetID.",
+                    "description": "Delete an asset, its history, and any recent state activity. Argument is a JSON encoded string containing only an 'assetID'.",
                     "properties": {
                         "function": {
                             "type": "string",
@@ -351,7 +351,7 @@
                 },
                 "deletePropertiesFromAsset": {
                     "type": "object",
-                    "description": "Delete one or more properties from an asset. Argument is a JSON encoded string containing an AssetID and an array of qualified property names. An example would be {'assetID':'A1',['event.common.carrier', 'event.customer.temperature']} and the result of that invoke would be the removal of the carrier field and the temperature field with a recalculation of the alert and compliance status.",
+                    "description": "Delete one or more properties from an asset's state. Argument is a JSON encoded string containing an 'assetID' and an array of qualified property names. For example, in an event object containing common and custom properties objects, the argument might look like {'assetID':'A1',['common.location', 'custom.carrier', 'custom.temperature']} and the result of that invoke would be the removal of the location, carrier and temperature properties. The missing temperature would clear a 'OVERTEMP' alert when the rules engine runs.",
                     "properties": {
                         "function": {
                             "type": "string",
@@ -393,7 +393,7 @@
                 },
                 "readAsset": {
                     "type": "object",
-                    "description": "Returns the state an asset. Argument is a JSON encoded string. AssetID is the only accepted property.",
+                    "description": "Returns the state an asset. Argument is a JSON encoded string. The arg is an 'assetID' property.",
                     "properties": {
                         "function": {
                             "type": "string",
@@ -418,7 +418,7 @@
                 },
                 "readAllAssets": {
                     "type": "object",
-                    "description": "Returns the state of all assets as an array of JSON encoded strings. Accepts no arguments. For each managed asset, the state is read from the ledger and added to the returned array. Array is sorted by assetID.",
+                    "description": "Returns the state of all assets as an array of JSON encoded strings. Accepts no arguments. For each managed asset, the state is read from the ledger and added to the returned array. Array is sorted by 'assetID'.",
                     "properties": {
                         "function": {
                             "type": "string",
@@ -441,7 +441,7 @@
                 },
                 "readAssetHistory": {
                     "type": "object",
-                    "description": "Requests a specified number of history states for an assets. Returns an array of states sorted with the most recent first. AssetID is required and count is optional. A missing count, a count of zero, or too large a count returns all existing history states.",
+                    "description": "Requests a specified number of history states for an assets. Returns an array of states sorted with the most recent first. The 'assetID' property is required and the count property is optional. A missing count, a count of zero, or too large a count returns all existing history states.",
                     "properties": {
                         "function": {
                             "type": "string",
@@ -466,7 +466,7 @@
                 },
                 "readAssetSchemas": {
                     "type": "object",
-                    "description": "Returns a string generated from the schema containing APIs and Objects as specified in generate.json in the scripts folder.",
+                    "description": "Returns a string generated from the schema that contains APIs and Objects as specified in the file 'generate.json' in the /scripts folder.",
                     "properties": {
                         "function": {
                             "type": "string",
@@ -490,7 +490,7 @@
                 },
                 "readAssetSamples": {
                     "type": "object",
-                    "description": "Returns a string generated from the schema containing sample Objects as specified in generate.json in the scripts folder.",
+                    "description": "Returns a string generated from the schema that contains sample Objects as specified in the file 'generate.json' in the /scripts folder.",
                     "properties": {
                         "function": {
                             "type": "string",
@@ -537,7 +537,7 @@
                 },
                 "readContractState": {
                     "type": "object",
-                    "description": "Returns the state of the contract, which includes its version, its nickname and a list of assetIDs that are currently managed.",
+                    "description": "Returns the state of the contract, which includes its version, its nickname and a list of 'assetID's that are currently managed.",
                     "properties": {
                         "function": {
                             "type": "string",
@@ -592,7 +592,7 @@
                 },
                 "setCreateOnUpdate": {
                     "type": "object",
-                    "description": "Allow updateAsset to redirect to createAsset when assetID does not exist.",
+                    "description": "Allow updateAsset to redirect to createAsset when 'assetID' does not exist.",
                     "properties": {
                         "function": {
                             "type": "string",
@@ -681,7 +681,7 @@
         },
         "assetIDKey": {
             "type": "object",
-            "description": "An object containing only an assetID for use as an argument to read or delete.",
+            "description": "An object containing only an 'assetID' for use as an argument to read or delete.",
             "properties": {
                 "assetID": {
                     "$ref": "#/definitions/assetID"
@@ -736,7 +736,7 @@
         },
         "assetIDandCount": {
             "type": "object",
-            "description": "Requested assetID with item count.",
+            "description": "Requested 'assetID' with item 'count'.",
             "properties": {
                 "count": {
                     "type": "integer"
@@ -758,7 +758,7 @@
         },
         "assetIDandPropertyArray": {
             "type": "object",
-            "description": "Requested assetID with a list or qualified property names.",
+            "description": "Requested 'assetID' with a list of qualified property names.",
             "properties": {
                 "qualPropsToDelete": {
                     "$ref": "#/definitions/qualPropertyNameArray"
@@ -810,7 +810,7 @@
         },
         "event": {
             "type": "object",
-            "description": "A set of fields that constitute the writable fields in an asset's state. AssetID is mandatory along with at least one writable field. In this contract pattern, a partial state is used as an event.",
+            "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
             "properties": {
                 "assetID": {
                     "$ref": "#/definitions/assetID"
@@ -842,7 +842,7 @@
         },
         "state": {
             "type": "object",
-            "description": "A set of fields that constitute the complete asset state.",
+            "description": "A set of properties that constitute a complete asset state. Includes event properties and any other calculated properties such as compliance related alerts.",
             "properties": {
                 "assetID": {
                     "$ref": "#/definitions/assetID"

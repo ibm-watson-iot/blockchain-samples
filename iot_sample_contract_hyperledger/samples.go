@@ -18,7 +18,7 @@ var samples = `
             "longitude": 123.456
         },
         "temperature": 123.456,
-        "timestamp": "2016-05-29T00:41:43.946199143Z"
+        "timestamp": "2016-05-29T20:13:46.153139729Z"
     },
     "initEvent": {
         "nickname": "TRADELANE",
@@ -52,6 +52,6 @@ var samples = `
             "longitude": 123.456
         },
         "temperature": 123.456,
-        "timestamp": "2016-05-29T00:41:43.946327379Z"
+        "timestamp": "2016-05-29T20:13:46.153209274Z"
     }
 }`
