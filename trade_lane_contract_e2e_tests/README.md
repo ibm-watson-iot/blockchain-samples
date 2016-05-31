@@ -1,7 +1,5 @@
 # Testing the Trade Lane Contract
 
-**WARNING: MAC only at this time.**
-
 This JavaScript test script has been used to explore various functions of the Trade Lane contract. It tests all the REST APIs of the contract, which runs alongside an IBM Blockchain peer.
 
 These are the three main RESTful end points supported by an IBM Blockchain peer. 
@@ -71,6 +69,9 @@ Replace the following fields with your own credentials which you get from IBM Bl
 
 In the contract tests directory, run:  
 mocha trade_lane_contract_e2e_tests.js
+
+On Windows, you may need to run using this command:
+./node_modules/.bin/mocha trade_lane_contract_e2e_tests.js
 
 Note: If you see 400 errors after deploying the chaincode, this is likely a timing issue.  You can a) wait and try again or b) extend the timeout value at line 53 in trade_lane_contract_e2e_tests.js.
 
