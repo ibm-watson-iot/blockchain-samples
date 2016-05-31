@@ -1,5 +1,7 @@
 # Testing the Trade Lane Contract
 
+**WARNING: MAC only at this time.**
+
 This JavaScript test script has been used to explore various functions of the Trade Lane contract. It tests all the REST APIs of the contract, which runs alongside an IBM Blockchain peer.
 
 These are the three main RESTful end points supported by an IBM Blockchain peer. 
