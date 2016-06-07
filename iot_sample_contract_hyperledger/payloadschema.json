@@ -817,7 +817,7 @@
                 },
                 "timestamp": {
                     "type": "string",
-                    "description": "RFC3339nanos formatted timestamp."
+                    "description": "Device timestamp."
                 },
                 "location": {
                     "$ref": "#/definitions/geo"
@@ -849,7 +849,7 @@
                 },
                 "timestamp": {
                     "type": "string",
-                    "description": "RFC3339nanos formatted timestamp."
+                    "description": "Device timestamp."
                 },
                 "location": {
                     "$ref": "#/definitions/geo"
@@ -866,6 +866,14 @@
                 "carrier": {
                     "type": "string",
                     "description": "transport entity currently in possession of asset"
+                },
+                "txntimestamp": {
+                    "type": "string",
+                    "description": "Transaction timestamp matching that in the blockchain."
+                },
+                "txnuuid": {
+                    "type": "string",
+                    "description": "Transaction UUID matching that in the blockchain."
                 },
                 "compliant": {
                     "type": "boolean",

@@ -41,7 +41,7 @@ var schemas = `
                                 "type": "number"
                             },
                             "timestamp": {
-                                "description": "RFC3339nanos formatted timestamp.",
+                                "description": "Device timestamp.",
                                 "type": "string"
                             }
                         },
@@ -306,7 +306,15 @@ var schemas = `
                                 "type": "number"
                             },
                             "timestamp": {
-                                "description": "RFC3339nanos formatted timestamp.",
+                                "description": "Device timestamp.",
+                                "type": "string"
+                            },
+                            "txntimestamp": {
+                                "description": "Transaction timestamp matching that in the blockchain.",
+                                "type": "string"
+                            },
+                            "txnuuid": {
+                                "description": "Transaction UUID matching that in the blockchain.",
                                 "type": "string"
                             }
                         },
@@ -441,7 +449,15 @@ var schemas = `
                             "type": "number"
                         },
                         "timestamp": {
-                            "description": "RFC3339nanos formatted timestamp.",
+                            "description": "Device timestamp.",
+                            "type": "string"
+                        },
+                        "txntimestamp": {
+                            "description": "Transaction timestamp matching that in the blockchain.",
+                            "type": "string"
+                        },
+                        "txnuuid": {
+                            "description": "Transaction UUID matching that in the blockchain.",
                             "type": "string"
                         }
                     },
@@ -581,7 +597,15 @@ var schemas = `
                                 "type": "number"
                             },
                             "timestamp": {
-                                "description": "RFC3339nanos formatted timestamp.",
+                                "description": "Device timestamp.",
+                                "type": "string"
+                            },
+                            "txntimestamp": {
+                                "description": "Transaction timestamp matching that in the blockchain.",
+                                "type": "string"
+                            },
+                            "txnuuid": {
+                                "description": "Transaction UUID matching that in the blockchain.",
                                 "type": "string"
                             }
                         },
@@ -709,7 +733,15 @@ var schemas = `
                                 "type": "number"
                             },
                             "timestamp": {
-                                "description": "RFC3339nanos formatted timestamp.",
+                                "description": "Device timestamp.",
+                                "type": "string"
+                            },
+                            "txntimestamp": {
+                                "description": "Transaction timestamp matching that in the blockchain.",
+                                "type": "string"
+                            },
+                            "txnuuid": {
+                                "description": "Transaction UUID matching that in the blockchain.",
                                 "type": "string"
                             }
                         },
@@ -815,7 +847,7 @@ var schemas = `
                                 "type": "number"
                             },
                             "timestamp": {
-                                "description": "RFC3339nanos formatted timestamp.",
+                                "description": "Device timestamp.",
                                 "type": "string"
                             }
                         },
@@ -899,7 +931,7 @@ var schemas = `
                     "type": "number"
                 },
                 "timestamp": {
-                    "description": "RFC3339nanos formatted timestamp.",
+                    "description": "Device timestamp.",
                     "type": "string"
                 }
             },
@@ -1023,7 +1055,15 @@ var schemas = `
                     "type": "number"
                 },
                 "timestamp": {
-                    "description": "RFC3339nanos formatted timestamp.",
+                    "description": "Device timestamp.",
+                    "type": "string"
+                },
+                "txntimestamp": {
+                    "description": "Transaction timestamp matching that in the blockchain.",
+                    "type": "string"
+                },
+                "txnuuid": {
+                    "description": "Transaction UUID matching that in the blockchain.",
                     "type": "string"
                 }
             },

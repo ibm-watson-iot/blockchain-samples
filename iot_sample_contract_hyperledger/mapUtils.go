@@ -135,6 +135,8 @@ func contains(arr interface{}, val interface{}) bool {
                 }
             }
         case []interface{}:
+        //todo: try cast instead of assertion
+        //todo: use schema to determine if we even call this function or just add the value
             arr2 := arr.([]interface{})
             for _, v := range arr2 {
                 switch tt := val.(type) {
