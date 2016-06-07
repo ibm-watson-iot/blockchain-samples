@@ -60,7 +60,8 @@ var schemas = `
                         "createAsset"
                     ],
                     "type": "string"
-                }
+                },
+                "method": "invoke"
             },
             "type": "object"
         },
@@ -80,7 +81,8 @@ var schemas = `
                         "deleteAllAssets"
                     ],
                     "type": "string"
-                }
+                },
+                "method": "invoke"
             },
             "type": "object"
         },
@@ -109,7 +111,8 @@ var schemas = `
                         "deleteAsset"
                     ],
                     "type": "string"
-                }
+                },
+                "method": "invoke"
             },
             "type": "object"
         },
@@ -149,7 +152,8 @@ var schemas = `
                         "deletePropertiesFromAsset"
                     ],
                     "type": "string"
-                }
+                },
+                "method": "invoke"
             },
             "type": "object"
         },
@@ -186,7 +190,8 @@ var schemas = `
                         "init"
                     ],
                     "type": "string"
-                }
+                },
+                "method": "deploy"
             },
             "type": "object"
         },
@@ -207,6 +212,7 @@ var schemas = `
                     ],
                     "type": "string"
                 },
+                "method": "query",
                 "result": {
                     "description": "an array of states, often for different assets",
                     "items": {
@@ -352,6 +358,7 @@ var schemas = `
                     ],
                     "type": "string"
                 },
+                "method": "query",
                 "result": {
                     "description": "A set of properties that constitute a complete asset state. Includes event properties and any other calculated properties such as compliance related alerts.",
                     "properties": {
@@ -498,6 +505,7 @@ var schemas = `
                     ],
                     "type": "string"
                 },
+                "method": "query",
                 "result": {
                     "description": "an array of states for one asset sorted by timestamp with the most recent entry first",
                     "items": {
@@ -634,6 +642,7 @@ var schemas = `
                     ],
                     "type": "string"
                 },
+                "method": "query",
                 "result": {
                     "description": "an array of states for one asset sorted by timestamp with the most recent entry first",
                     "items": {
@@ -773,7 +782,8 @@ var schemas = `
                         "setCreateOnUpdate"
                     ],
                     "type": "string"
-                }
+                },
+                "method": "invoke"
             },
             "type": "object"
         },
@@ -805,7 +815,8 @@ var schemas = `
                         "setLoggingLevel"
                     ],
                     "type": "string"
-                }
+                },
+                "method": "invoke"
             },
             "type": "object"
         },
@@ -866,7 +877,8 @@ var schemas = `
                         "updateAsset"
                     ],
                     "type": "string"
-                }
+                },
+                "method": "invoke"
             },
             "type": "object"
         }

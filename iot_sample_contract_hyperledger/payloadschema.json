@@ -265,6 +265,7 @@
                     "type": "object",
                     "description": "Initializes the contract when started, either by deployment or by peer restart.",
                     "properties": {
+                        "method": "deploy",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -287,6 +288,7 @@
                     "type": "object",
                     "description": "Create an asset. One argument, a JSON encoded event. The 'assetID' property is required with zero or more writable properties. Establishes an initial asset state.",
                     "properties": {
+                        "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -309,6 +311,7 @@
                     "type": "object",
                     "description": "Update the state of an asset. The one argument is a JSON encoded event. The 'assetID' property is required along with one or more writable properties. Establishes the next asset state. ",
                     "properties": {
+                        "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -331,6 +334,7 @@
                     "type": "object",
                     "description": "Delete an asset, its history, and any recent state activity. Argument is a JSON encoded string containing only an 'assetID'.",
                     "properties": {
+                        "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -353,6 +357,7 @@
                     "type": "object",
                     "description": "Delete one or more properties from an asset's state. Argument is a JSON encoded string containing an 'assetID' and an array of qualified property names. For example, in an event object containing common and custom properties objects, the argument might look like {'assetID':'A1',['common.location', 'custom.carrier', 'custom.temperature']} and the result of that invoke would be the removal of the location, carrier and temperature properties. The missing temperature would clear a 'OVERTEMP' alert when the rules engine runs.",
                     "properties": {
+                        "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -375,6 +380,7 @@
                     "type": "object",
                     "description": "Delete the state of all assets. No arguments are accepted. For each managed asset, the state and history are erased, and the asset is removed if necessary from recent states.",
                     "properties": {
+                        "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -395,6 +401,7 @@
                     "type": "object",
                     "description": "Returns the state an asset. Argument is a JSON encoded string. The arg is an 'assetID' property.",
                     "properties": {
+                        "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -420,6 +427,7 @@
                     "type": "object",
                     "description": "Returns the state of all assets as an array of JSON encoded strings. Accepts no arguments. For each managed asset, the state is read from the ledger and added to the returned array. Array is sorted by 'assetID'.",
                     "properties": {
+                        "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -443,6 +451,7 @@
                     "type": "object",
                     "description": "Requests a specified number of history states for an assets. Returns an array of states sorted with the most recent first. The 'assetID' property is required and the count property is optional. A missing count, a count of zero, or too large a count returns all existing history states.",
                     "properties": {
+                        "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -468,6 +477,7 @@
                     "type": "object",
                     "description": "Returns a string generated from the schema that contains APIs and Objects as specified in the file 'generate.json' in the /scripts folder.",
                     "properties": {
+                        "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -492,6 +502,7 @@
                     "type": "object",
                     "description": "Returns a string generated from the schema that contains sample Objects as specified in the file 'generate.json' in the /scripts folder.",
                     "properties": {
+                        "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -516,6 +527,7 @@
                     "type": "object",
                     "description": "Returns the state of recently updated assets as an array of objects sorted with the most recently updated asset first. Each asset appears exactly once up to a maxmum of 20 in this version of the contract.",
                     "properties": {
+                        "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -539,6 +551,7 @@
                     "type": "object",
                     "description": "Returns the state of the contract, which includes its version, its nickname and a list of 'assetID's that are currently managed.",
                     "properties": {
+                        "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -562,6 +575,7 @@
                     "type": "object",
                     "description": "Sets the logging level in the contract.",
                     "properties": {
+                        "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -594,6 +608,7 @@
                     "type": "object",
                     "description": "Allow updateAsset to redirect to createAsset when 'assetID' does not exist.",
                     "properties": {
+                        "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
