@@ -20,7 +20,8 @@ Kim Letkeman - Initial Contribution
 // KL 04-07 Mar 2016 testing of schema, adaptation of output to contract 3.0.2,
 //                   addition of config file generate.yaml
 // KL 13 Mar 2016 Changed from yaml (lesser GPL) to JSON for config 
-// KL 8 June 2016 Supporting complex events and the "oneOf" keyword
+// KL 8 June 2016 Supporting complex events and the "oneOf" keyword, better support
+//                for arrays, cleanup lint issues
 
 package main
 

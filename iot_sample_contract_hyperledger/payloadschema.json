@@ -208,9 +208,6 @@
                 },
                 {
                     "$ref": "#/definitions/API/readContractState"
-                },
-                {
-                    "$ref": "#/definitions/API/readContractObjectModel"
                 }
             ]
         },

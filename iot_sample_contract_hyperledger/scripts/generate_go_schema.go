@@ -20,6 +20,8 @@ Kim Letkeman - Initial Contribution
 // KL 04-07 Mar 2016 testing of schema, adaptation of output to contract 3.0.2,
 //                   addition of config file generate.yaml
 // KL 13 Mar 2016 Changed from yaml (lesser GPL) to JSON for config 
+// KL 8 June 2016 Supporting complex events and the "oneOf" keyword, better support
+//                for arrays, cleanup lint issues
 
 package main
 
@@ -34,9 +36,7 @@ import (
     "path/filepath"
 )
 
-type OBJ map[string]interface{}
-
-// contents of "generate.json" colocated in scripts folder with this script
+// Config defines contents of "generate.json" colocated in scripts folder with this script
 type Config struct {
     Schemas struct {
         SchemaFilename string           `json:"schemaFilename"`
@@ -80,19 +80,20 @@ func getObject (schema map[string]interface{}, objName string) (map[string]inter
     // return a copy of the selected object
     // handles full path, or path starting after definitions
     if !strings.HasPrefix(objName, "#/definitions/") {
-        if objName == "definitions" {
-            objName = "#/" + objName
-        } else {
-            objName = "#/definitions/" + objName
-        }
+        objName = "#/definitions/" + objName
     } 
     s := strings.Split(objName, "/")
-    var found bool
     // crawl the levels, skipping the # root
     for i := 1; i < len(s); i++ {
-        schema, found = (schema[s[i]]).(map[string]interface{})
+        props, found := (schema["properties"]).(map[string]interface{})
+        if found {
+            schema, found = (props[s[i]]).(map[string]interface{})
+        } else {
+            schema, found = (schema[s[i]]).(map[string]interface{})
+        }
         if !found {
-            fmt.Println("** ERR ** illegal selector for field: ", objName)
+            fmt.Printf("schema[s[i]] called %s looks like: %+v\n", objName, schema[s[i]])
+            fmt.Printf("** ERR ** getObject illegal selector %s at level %d called %s\n", objName, i, s[i])
             return nil
         }
     }
@@ -100,23 +101,42 @@ func getObject (schema map[string]interface{}, objName string) (map[string]inter
 }
 
 // replaces all references recursively in the passed-in object (subschema) using the passed-in schema
-func replaceReferences (schema map[string]interface{}, obj map[string]interface{}) (map[string]interface{}) {
-    for k, v := range obj {
-        switch /* t := */ v.(type) { 
-            default:
-                //fmt.Printf("k: [%s] type: [%s]\n", k, t)
-            case map[string]interface{}:
-                //fmt.Printf("k: [%s] is a map of size: %d\n", k, len(k))
-                r, found := v.(map[string]interface{})["$ref"]
+func replaceReferences (schema map[string]interface{}, obj interface{}) (interface{}) {
+    oArr, isArr := obj.([]interface{})
+    oMap, isMap := obj.(map[string]interface{})
+    switch {
+        default:
+            return obj
+        case isArr:
+            //fmt.Printf("ARR [%s:%+v]\n", k, v)
+            for k, v := range oArr {
+                r, found := v.(map[string]interface{})
                 if found {
-                    // it is a reference so replace it and recursively replace references
-                    obj[k] = replaceReferences(schema, getObject(schema, r.(string)))
+                    ref, found := r["$ref"] 
+                    if found {
+                        // it is a reference so replace it and recursively replace references
+                        oArr[k] = replaceReferences(schema, getObject(schema, ref.(string)))
+                    } else {
+                        oArr[k] = replaceReferences(schema, v)
+                    }
                 } else {
-                    obj[k] = replaceReferences(schema, v.(map[string]interface{}))
+                    //fmt.Printf("** WARN ** array member not a map object [%d:%+v]\n", k, v)
                 }
+            }
+            return oArr 
+        case isMap:
+            //fmt.Printf("MAP [%s:%+v]\n", k, v)
+            for k, v := range oMap {
+                if k == "$ref" {
+                    // it is a reference so replace it and recursively replace references
+                    //fmt.Printf("** INFO ** Should be $ref [%s:%+v]\n", k, v)
+                    oMap = replaceReferences(schema, getObject(schema, v.(string))).(map[string]interface{})
+                } else {
+                    oMap[k] = replaceReferences(schema, v)
+                }
+            }
+            return oMap
         } 
-    }
-    return obj 
 }
 
 // If a reference exists at any level in the passed-in schema, this will return true
@@ -142,15 +162,15 @@ func referencesExist (schema map[string]interface{}) (bool) {
 // can be used to show a complete structure of the object.  
 func generateGoSchemaFile(schema map[string]interface{}, config Config) {
     var obj map[string]interface{}
-    var schemas map[string]interface{} = make(map[string]interface{})
-    var outString string = "package main\n\nvar schemas = `\n"
+    var schemas = make(map[string]interface{})
+    var outString = "package main\n\nvar schemas = `\n"
 
-    var filename string = config.Schemas.GoSchemaFilename
-    var apiFunctions []string = config.Schemas.API
-    var elementNames []string = config.Schemas.GoSchemaElements
+    var filename = config.Schemas.GoSchemaFilename
+    var apiFunctions = config.Schemas.API
+    var elementNames = config.Schemas.GoSchemaElements
     
-    var functionKey string = "API"
-    var objectModelKey string = "objectModelSchemas"
+    var functionKey = "API"
+    var objectModelKey = "objectModelSchemas"
     
     schemas[functionKey] = interface{}(make(map[string]interface{}))
     schemas[objectModelKey] = interface{}(make(map[string]interface{}))
@@ -159,11 +179,11 @@ func generateGoSchemaFile(schema map[string]interface{}, config Config) {
 
     // grab the event API functions for input
     for i := range apiFunctions {
-        functionSchemaName := "API/properties/" + apiFunctions[i]
+        functionSchemaName := "#/definitions/API/" + apiFunctions[i]
         functionName := apiFunctions[i]
         obj = getObject(schema, functionSchemaName)
         if obj == nil {
-            fmt.Printf("** Warning** %s returned nil from getObject\n", functionSchemaName)
+            fmt.Printf("** WARN ** %s returned nil from getObject\n", functionSchemaName)
             return
         }
         schemas[functionKey].(map[string]interface{})[functionName] = obj 
@@ -175,7 +195,7 @@ func generateGoSchemaFile(schema map[string]interface{}, config Config) {
         elementName := elementNames[i]
         obj = getObject(schema, elementName)
         if obj == nil {
-            fmt.Printf("** Warning** %s returned nil from getObject\n", elementName)
+            fmt.Printf("** WARN ** %s returned nil from getObject\n", elementName)
             return
         }
         schemas[objectModelKey].(map[string]interface{})[elementName] = obj 
@@ -184,20 +204,27 @@ func generateGoSchemaFile(schema map[string]interface{}, config Config) {
     // marshal for output to file     
     schemaOut, err := json.MarshalIndent(&schemas, "", "    ")
     if err != nil {
-        fmt.Printf("** Warning** cannot marshal schema file output for writing\n")
+        fmt.Printf("** WARN ** cannot marshal schema file output for writing\n")
         return
     }
     outString += string(schemaOut) + "`"
     ioutil.WriteFile(filename, []byte(outString), 0644)
 }
 
-func sampleType(obj map[string]interface{}, elementName string) (interface{}) {
-    t, found := obj["type"].(string)
+func sampleType(obj interface{}, elementName string) (interface{}) {
+    o, found := obj.(map[string]interface{})
+    if (!found) {
+        return "SCHEMA ELEMENT " + elementName + " IS NOT MAP"
+    }
+    t, found := o["type"].(string)
     if !found {
-        fmt.Printf("**Warning** Element %s has no type field\n", elementName)
+        fmt.Printf("** WARN ** Element %s has no type field\n", elementName)
+        fmt.Printf("Element missing type is: %s [%v]\n\n", elementName, o)
         return "NO TYPE PROPERTY"
     }
     switch t {
+        default :
+            fmt.Printf("** WARN ** Unknown type in sampleType %s\n", t)
         case "number" :
             return 123.456
         case "integer" :
@@ -206,15 +233,15 @@ func sampleType(obj map[string]interface{}, elementName string) (interface{}) {
             if strings.ToLower(elementName) == "timestamp" {
                 return time.Now().Format(time.RFC3339Nano)
             }
-            example, found := obj["example"].(string)
+            example, found := o["example"].(string)
             if found && len(example) > 0 {
                 return example
             }
-            def, found := obj["default"].(string)
+            def, found := o["default"].(string)
             if found && len(def) > 0 {
                 return def
             }
-            enum, found := obj["enum"].([]interface{})
+            enum, found := o["enum"].([]interface{})
             if found {
                 if len(enum) > 1 {
                     return enum[1]
@@ -225,7 +252,7 @@ func sampleType(obj map[string]interface{}, elementName string) (interface{}) {
             }
             // description is a good alternate choice for sample data since it
             // explains the prospective contents
-            desc, found := obj["description"].(string)
+            desc, found := o["description"].(string)
             if found && len(desc) > 0 {
                 return desc
             }
@@ -236,32 +263,78 @@ func sampleType(obj map[string]interface{}, elementName string) (interface{}) {
         case "boolean" :
             return true
         case "array" :
-            var items, found = obj["items"].(map[string]interface{})
+            var items, found = o["items"].(map[string]interface{})
             if (!found) {
-                fmt.Printf("**Warning** Element %s is array with no items property\n", elementName)
+                fmt.Printf("** WARN ** Element %s is array with no items property\n", elementName)
                 return "ARRAY WITH NO ITEMS PROPERTY"
             }
             return arrayFromSchema(items, elementName)
         case "object" : {
-            props, found := obj["properties"]
+            props, found := o["properties"]
             if !found {
-                fmt.Printf("** Warning** %s is type object yet has no properties in SampleType\n", elementName)
+                fmt.Printf("** WARN ** %s is type object yet has no properties in SampleType\n", elementName)
                 return "INVALID OBJECT - MISSING PROPERTIES"
             }
             objOut := make(map[string]interface{})
             for k, v := range props.(map[string]interface{}) {
                 //fmt.Printf("Visiting key %s with value %s\n", k, v)
                 if v == nil {
-                    fmt.Printf("** Warning** Key %s has NIL value in SampleType\n", k)
+                    fmt.Printf("** WARN ** Key %s has NIL value in SampleType\n", k)
                     return "INVALID OBJECT - " + fmt.Sprintf("Key %s has NIL value in SampleType\n", k)
                 }
-                objOut[k] = sampleType(v.(map[string]interface{}), k)
+                aArr, isArr := v.([]interface{})
+                aMap, isMap := v.(map[string]interface{})
+                switch {
+                    case isArr:
+                        if "oneOf" == k {
+                            aOut := make([]interface{}, len(aArr))
+                            // outer loop is anonymous objects
+                            for k2, v2 := range aArr {
+                                //fmt.Printf("SAMTYP outer OneOf: %d [%v]\n", k2, v2)
+                                vObj, found := v2.(map[string]interface{})
+                                if found {
+                                    // inner loop should find one named object
+                                    for k3, v3 := range vObj {
+                                        tmp := make(map[string]interface{}, 1)
+                                        //fmt.Printf("SAMTYP inner OneOf: %s [%v]\n", k3, v3)
+                                        //printObject(k3, v3)
+                                        tmp[k3] = sampleType(v3, k3) 
+                                        aOut[k2] = tmp
+                                    }
+                                }
+                                objOut[k] = aOut
+                            }
+                        } else {
+                            objOut[k] = "UNKNOWN ARRAY OBJECT"
+                        }
+                    case isMap:
+                        objOut[k] = sampleType(aMap, k)
+                }
             }
             return objOut
         }
     }
-    fmt.Printf("** Warning** UNKNOWN TYPE in SampleType: %s\n", t)
+    fmt.Printf("** WARN ** UNKNOWN TYPE in SampleType: %s\n", t)
     return fmt.Sprintf("UNKNOWN TYPE in SampleType: %s\n", t)
+}
+
+func printObject(elementName string, obj interface{}) {
+    aMap, isMap := obj.(map[string]interface{})
+    aArr, isArr := obj.([]interface{})
+    switch {
+        case isArr:
+            fmt.Printf("Element: %s is an ARRAY\n", elementName)
+            for k, v := range aArr {
+                fmt.Printf("[%d] : %+v\n\n", k, v)
+            }
+        case isMap:
+            fmt.Printf("Element: %s is a MAP\n", elementName)
+            for k, v := range aMap {
+                fmt.Printf("[%s] : %+v\n\n", k, v)
+            }
+        default:
+            fmt.Printf("Element: %s is of UNKNOWN shape\n", elementName)
+    }
 }
 
 // Generate a sample array from a schema 
@@ -279,11 +352,11 @@ func arrayFromSchema(schema map[string]interface{}, elementName string) (interfa
 // can be used to show a complete structure of the object.  
 func generateGoSampleFile(schema map[string]interface{}, config Config) {
     var obj map[string]interface{}
-    var samples map[string]interface{} = make(map[string]interface{})
-    var outString string = "package main\n\nvar samples = `\n"
+    var samples = make(map[string]interface{})
+    var outString = "package main\n\nvar samples = `\n"
 
-    var filename string = config.Samples.GoSampleFilename
-    var elementNames []string = config.Samples.GoSampleElements
+    var filename = config.Samples.GoSampleFilename
+    var elementNames = config.Samples.GoSampleElements
 
     fmt.Printf("Generate Go SAMPLE file %s for: \n   %s\n", filename, elementNames)
 
@@ -296,7 +369,7 @@ func generateGoSampleFile(schema map[string]interface{}, config Config) {
             // use the schema subset
             obj = getObject(schema, elementName)
             if obj == nil {
-                fmt.Printf("** Warning** %s returned nil from getObject\n", elementName)
+                fmt.Printf("** WARN ** %s returned nil from getObject\n", elementName)
                 return
             }
         }
@@ -304,7 +377,7 @@ func generateGoSampleFile(schema map[string]interface{}, config Config) {
     }
     samplesOut, err := json.MarshalIndent(&samples, "", "    ")
     if err != nil {
-        fmt.Println("** Warning** cannot marshal sample file output for writing")
+        fmt.Println("** WARN ** cannot marshal sample file output for writing")
         return
     }
     outString += string(samplesOut) + "`"
@@ -327,8 +400,8 @@ func main() {
     var configFileName = "generate.json"
 
     var api string
-    var line int = 1
-    var lineOut int = 1    
+    var line = 1
+    var lineOut = 1
     var offsets [5000]int
     
     // read the configuration from the json file
@@ -349,7 +422,7 @@ func main() {
     // read the schema file, stripping comments and blank lines, calculate offsets for error output
     file, err := os.Open(config.Schemas.SchemaFilename)
     if err != nil {
-        fmt.Printf("** ERR [%s] opening schema file at %s\n", err, config.Schemas.SchemaFilename)
+        fmt.Printf("** ERR ** [%s] opening schema file at %s\n", err, config.Schemas.SchemaFilename)
         return
     }
     defer file.Close()
@@ -385,7 +458,7 @@ func main() {
     // call it for each object, but much simpler to call it once for the 
     // whole schema and simply pick off the objects we want for subschemas
     // and samples.
-    schema = replaceReferences(schema, schema)
+    schema = replaceReferences(schema, schema).(map[string]interface{})
     
     // generate the Go files that the contract needs -- for now, complete schema and 
     // event schema and sample object 

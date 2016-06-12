@@ -115,7 +115,7 @@ var samples = `
         "references": [
             "carpe noctem"
         ],
-        "timestamp": "2016-06-11T17:25:52.459867315Z"
+        "timestamp": "2016-06-12T15:19:48.45276341Z"
     },
     "initEvent": {
         "nickname": "TRADELANE",
@@ -219,7 +219,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-06-11T17:25:52.459987781Z"
+            "timestamp": "2016-06-12T15:19:48.452829951Z"
         },
         "lastEvent": {
             "args": [
