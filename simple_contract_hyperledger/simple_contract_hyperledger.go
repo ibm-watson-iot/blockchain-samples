@@ -250,7 +250,7 @@ func (t *SimpleChaincode) validateInput(args []string) (stateIn AssetState, err 
     jsonData:=args[0]
     assetID = ""
     stateJSON := []byte(jsonData)
-    fmt.Println("Input data ",jsonData)
+    //fmt.Println("Input data ",jsonData)
     err = json.Unmarshal(stateJSON, &stateIn)
     if err != nil {
         err = errors.New("Unable to unmarshal input JSON data")
@@ -263,7 +263,7 @@ func (t *SimpleChaincode) validateInput(args []string) (stateIn AssetState, err 
     
     if stateIn.AssetID !=nil { 
         assetID = strings.TrimSpace(*stateIn.AssetID)
-         fmt.Println("assetID ",assetID)
+         //fmt.Println("assetID ",assetID)
         if assetID==""{
             err = errors.New("AssetID not passed")
             return state, err
@@ -275,7 +275,7 @@ func (t *SimpleChaincode) validateInput(args []string) (stateIn AssetState, err 
     
     
     stateIn.AssetID = &assetID
-     fmt.Println("assetID after val ",*stateIn.AssetID)
+     //fmt.Println("assetID after val ",*stateIn.AssetID)
     return stateIn, nil
 }
 //******************** createOrUpdateAsset ********************/
@@ -293,16 +293,16 @@ func (t *SimpleChaincode) createOrUpdateAsset(stub *shim.ChaincodeStub, args []s
     if err != nil {
         return nil, err
     }
-    fmt.Println("after validate input ")
+    //fmt.Println("after validate input ")
     assetID = *stateIn.AssetID
     // Partial updates introduced here
     // Check if asset record existed in stub
     assetBytes, err:= stub.GetState(assetID)
-    fmt.Println ("error is ", err)
+    //fmt.Println ("error is ", err)
     if err != nil || len(assetBytes)==0{
         // This implies that this is a 'create' scenario
          stateStub = stateIn // The record that goes into the stub is the one that cme in
-         fmt.Println("assetBytes ", *stateStub.AssetID)
+         //fmt.Println("assetBytes ", *stateStub.AssetID)
     } else {
         // This is an update scenario
         err = json.Unmarshal(assetBytes, &stateStub)
