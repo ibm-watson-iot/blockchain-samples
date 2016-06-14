@@ -195,7 +195,7 @@ func generateGoSchemaFile(schema map[string]interface{}, config Config) {
         elementName := elementNames[i]
         obj = getObject(schema, elementName)
         if obj == nil {
-            fmt.Printf("** WARN ** %s returned nil from getObject\n", elementName)
+            fmt.Printf("** ERR ** %s returned nil from getObject\n", elementName)
             return
         }
         schemas[objectModelKey].(map[string]interface{})[elementName] = obj 
@@ -204,7 +204,7 @@ func generateGoSchemaFile(schema map[string]interface{}, config Config) {
     // marshal for output to file     
     schemaOut, err := json.MarshalIndent(&schemas, "", "    ")
     if err != nil {
-        fmt.Printf("** WARN ** cannot marshal schema file output for writing\n")
+        fmt.Printf("** ERR ** cannot marshal schema file output for writing\n")
         return
     }
     outString += string(schemaOut) + "`"
@@ -218,8 +218,11 @@ func sampleType(obj interface{}, elementName string) (interface{}) {
     }
     t, found := o["type"].(string)
     if !found {
-        fmt.Printf("** WARN ** Element %s has no type field\n", elementName)
-        fmt.Printf("Element missing type is: %s [%v]\n\n", elementName, o)
+        //fmt.Printf("** WARN ** Element %s has no type field\n", elementName)
+        //fmt.Printf("Element missing type is: %s [%v]\n\n", elementName, o)
+        if elementName == "oneOf" {
+            return o
+        }
         return "NO TYPE PROPERTY"
     }
     switch t {
@@ -377,7 +380,7 @@ func generateGoSampleFile(schema map[string]interface{}, config Config) {
     }
     samplesOut, err := json.MarshalIndent(&samples, "", "    ")
     if err != nil {
-        fmt.Println("** WARN ** cannot marshal sample file output for writing")
+        fmt.Println("** ERR ** cannot marshal sample file output for writing")
         return
     }
     outString += string(samplesOut) + "`"

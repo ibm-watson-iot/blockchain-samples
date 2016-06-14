@@ -294,12 +294,12 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
     stateOut := argsMap
     
     // save the original event
-    stateOut["lastEvent"] = make(map[string]interface{})
-    stateOut["lastEvent"].(map[string]interface{})["function"] = "createAsset"
-    stateOut["lastEvent"].(map[string]interface{})["args"] = args[0]
+    stateOut["txnEvent"] = make(map[string]interface{})
+    stateOut["txnEvent"].(map[string]interface{})["function"] = "createAsset"
+    stateOut["txnEvent"].(map[string]interface{})["args"] = args[0]
     if len(args) == 2 {
         // in-band protocol for redirect
-        stateOut["lastEvent"].(map[string]interface{})["redirectedFromFunction"] = args[1]
+        stateOut["txnEvent"].(map[string]interface{})["redirectedFromFunction"] = args[1]
     }
 
     // run the rules and raise or clear alerts
@@ -483,9 +483,9 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
     log.Debugf("updateAsset assetID %s merged state: %s", assetID, stateOut)
 
     // save the original event
-    stateOut["lastEvent"] = make(map[string]interface{})
-    stateOut["lastEvent"].(map[string]interface{})["function"] = "updateAsset"
-    stateOut["lastEvent"].(map[string]interface{})["args"] = args[0]
+    stateOut["txnEvent"] = make(map[string]interface{})
+    stateOut["txnEvent"].(map[string]interface{})["function"] = "updateAsset"
+    stateOut["txnEvent"].(map[string]interface{})["args"] = args[0]
 
     // handle compliance section
     alerts := newAlertStatus()
@@ -785,9 +785,9 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
     ledgerMap[TXNTIMESTAMP] = txntimestamp
 
     // save the original event
-    ledgerMap["lastEvent"] = make(map[string]interface{})
-    ledgerMap["lastEvent"].(map[string]interface{})["function"] = "deletePropertiesFromAsset"
-    ledgerMap["lastEvent"].(map[string]interface{})["args"] = args[0]
+    ledgerMap["txnEvent"] = make(map[string]interface{})
+    ledgerMap["txnEvent"].(map[string]interface{})["function"] = "deletePropertiesFromAsset"
+    ledgerMap["txnEvent"].(map[string]interface{})["args"] = args[0]
     
     // handle compliance section
     alerts = newAlertStatus()
