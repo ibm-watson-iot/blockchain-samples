@@ -1,4 +1,4 @@
-#Customize the Trade Lane Sample Contract for Hyperledger
+#Customize the Trade Lane or other IoT Sample Contract for Hyperledger
 ##Prerequisite
 Please read the document [Hyperledger Contracts Introduction to Best Practices and Patterns](./HyperledgerContractsIntroBestPracticesPatterns.md) before reading this document as it helps to have an understanding of the flow that is intended for the sample contract before adding new features.
 ## Introduction
@@ -10,7 +10,7 @@ This contract tracks some of the key parameters in a simple fulfillment scenario
 
 > See [UBL 2.1.10](http://docs.oasis-open.org/ubl/os-UBL-2.1/UBL-2.1.html#S-SHIPMENT-CONSIGNMENT) for a description of the many possible relationships between shipments and consignments.   
 
-###Scenario
+###Basic Trade Lane Scenario
 For simplicity, the consignment, shipper, receiver, consignor and consignee are not identified. The asset that is the target of all update events is either a container or a package, and will be referred to going forward as *the container*. The container is identified by the generic term *asset*, and that is its JSON tag. This contract manages multiple containers at the same time as per the singleton contract instance and multiple managed asset patterns. 
 
 All create and update events come through the `createAsset` and `updateAsset` CRUD functions, and they target the container by ID, which is obviously mandatory. These events can contain any combination of the container's location, contents temperature, and the carrier bearing responsibility for the container. Events can contain a `timestamp` property if that is critical, but the contract will copy the blockchain's transaction timestamp into the state property `txntimestamp` regardless of the presence or absence of a device timestamp.
@@ -24,11 +24,11 @@ This sample makes use of the *partial state as event* pattern as introduced in t
 
 In other words, an asset's state builds up as events are received. This pattern allows  creation or update events like `createAsset` or `updateAsset` to carry any combination of the writable properties of the state. 
 
-> Events received by the `updateAsset` function will automatically redirect to the `createAsset` function by default if the asset is not found, mimicing a file system like behavior where you create on open or first write (e.g. pipeline.) The reverse is not true, however, in that creation already is the first update with much less to do, so it stands alone and enforces the non-existence of assets.
+> Events received by the `updateAsset` function can automatically redirect to the `createAsset` function (which is the default behavior) if the asset is not found, mimicing a file system like behavior where you create on open or on first write (e.g. pipeline.) The reverse is obviously not true, however, in that creation is the first update and has much less to do. It therefore stands alone and enforces the non-existence of assets.
 
 This behavior can be changed (as in toggled off or on) with this message:
 
->``` go
+>``` json
 {
     "jsonrpc": "2.0",
     "method": "invoke",
@@ -47,18 +47,20 @@ This behavior can be changed (as in toggled off or on) with this message:
 }
 ```
 
-In this patterm, asset state builds up as events arrive and so a carrier, a temperature and a geo location can arrive as discrete events and in any order. Or they can all arrive together in a single event. The final state will have all three properties as events are merged into state automatically.
+In this pattern, asset state builds up as events arrive and so a carrier, a temperature and a geo location can arrive as discrete events and in any order. Or they can all arrive together in a single event. The final state will have all three properties as events are merged into state automatically. Note that the object that defines a create or update event is by definition a part of the object that defines asset state, and these objects can be arbitrarily deeply nested.
 
 ###Rules and Alerts
-Differences that can be observed when the ordering or content of events change are generally related to the calculated alert status in this contract, which is all about timing. Alerts are shown as the name of the alert in one or more of three alert status arrays names `active`, `raised` or `cleared`. 
+Rules exist to calculate a result that might add or update a property in the state, or that might raise or clear an alert based on a threshold or some other relationship. Any rule that deals with an alerts is expected -- and indeed **must** -- either raise or clear the alert whenever it executes. There are no exceptions to this when deriving from one of the advanced IoT sample contracts.
+
+Alerts are represented as both a state and a threshold on or off. They appear in the state as an alert name string in one or more of three alert status arrays names `active`, `raised` or `cleared`. 
 
 - `active`: the alert is active as of the most recent event (which of course leads to a change of the asset's state object), so whether the contract received the three separate properties as discrete events or as a single composite event, the alert appears as `active` in the calculated state, assuming of course that the temperature received was above the `OVERTEMP` threshold
 - `raised`: the alert has just been raised by the most recent event and no longer appears as `active`, and when the next event of any kind arrives the alert no longer appears as `raised` because that happens only on the actual transition event from cleared to raised
 - `cleared`: the alert has just been cleared by the most recent event and no longer appears as `active`, and when the next event of any kind arrives the alert no longer appears as `cleared` because that happens only on the actual transition event from raised to cleared
 
-This flexibility in order of arrival and complexity of event makes the sample contract relatively immune to API expansion issues where composite devices with different combinations of sensors might otherwise force new API to be developed and deployed.
+Since thresholds happen only once, differences that can be observed in the final state of a sequence of events based on the ordering of events. The state in which an alert is raised shows both `active` and raised. If the alert remains active after the next event, it shows `active` only, since the most recent event raised it when it was already active. Thus, the exact sequence is all about timing as thresholds move around. And since sensor readings can be combined by for example smarter sensors, the partial state as event pattern allows a level of flexibility in arrival order and event complexity that males these sample contracts relatively immune to API expansion. Composite devices with different combinations of sensors might otherwise force new API to be developed and deployed, but partial state as event accepts any combination of writable event properties without issue.
 
-And so this contract specifically defines these behaviors:
+More specifically now, the trade lane sample contract specificaly defines these behaviors in its boiler plate and rules:
 
 - any combination of properties can arrive in any combination of *discrete* or *composite* events
 - temperature events are relevant to frozen goods and should not be sent when the consignment does not contain frozen goods
@@ -110,7 +112,7 @@ As discussed above, the temperature rule's behavior can be improved by the addit
 > Adding the threshold property as an event requires no specialized logic as the deep merge of event into state handles the new property. The combined asset state is presented to the rules engine before committing to the ledger so that the adjusted `OVERTEMP` rule can now see the temperature and the new threshold.
 
 ###Schema Change
-Two changes are required in the [schema](../payloadSchema.go): 
+Two changes are required in the [schema](../payloadSchema.json): 
  - add the `threshold` property to the event object
  - copy it to the state object
 
