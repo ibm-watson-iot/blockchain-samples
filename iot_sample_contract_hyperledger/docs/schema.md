@@ -93,7 +93,7 @@ This outer JSON RPC payload also has `params`, which contain the inner contract 
 These functions are defined in the schema in the section called API. This looks like:
 
 ``` json
-       "API": {
+        "API": {
             "type": "object",
             "description": "The API for the tradelane sample contract consisting of the init function, the crud functions to change state, and a set of query functions for asset state, asset history, recent states, and so on.",
             "properties": {
@@ -101,6 +101,7 @@ These functions are defined in the schema in the section called API. This looks 
                     "type": "object",
                     "description": "Initializes the contract when started, either by deployment or by peer restart.",
                     "properties": {
+                        "method": "deploy",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -121,8 +122,9 @@ These functions are defined in the schema in the section called API. This looks 
                 },
                 "createAsset": {
                     "type": "object",
-                    "description": "Create an asset. One argument, a JSON encoded event. AssetID is required with zero or more writable properties. Establishes an initial asset state.",
+                    "description": "Create an asset. One argument, a JSON encoded event. The 'assetID' property is required with zero or more writable properties. Establishes an initial asset state.",
                     "properties": {
+                        "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
@@ -142,6 +144,8 @@ These functions are defined in the schema in the section called API. This looks 
                     }
                 },
 ```
+
+> __NEW__ The schema now documents the JSON RPC `method` -- which can be `deploy`, `invoke` or `query` -- so that a mapping or other dynamic user interface can determine which functions are intended as invokes and which are queries.
 
 Contract API is represented as objects inside the API object with names to match the contract's functions. The schema shows the delegation to these functions as a tree from the main chaincode input through layers that are named for deploy, invoke, and query. The actual contract function schemas are shaped to match the expected payload with `function` and `args` being specified. With queries, results are also specified.
 
