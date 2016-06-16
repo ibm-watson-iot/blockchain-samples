@@ -1,98 +1,87 @@
 Blockchain Monitoring UI
 =========================
-A dynamically generated UI for IBM IoT Blockchain.
+The Blockchain Monitoring UI is a dynamically generated user interface for IBM Watson IoT Platform blockchain integration. Use the Monitoring UI to perform actions on the blockchain, see the results of those actions, and monitor the state of your assets in the blockchain ledger.
 
-Requirements
------------------
-* Node installed locally on your machine.
-* An OBC peer with an accessible REST Endpoint.
-* A previously deployed contract on the OBC peer network from step 1.
+## Requirements
+* Node installed locally on your machine.  
+You can install it from https://nodejs.org/.  
+* An IBM Blockchain or Hyperledger peer with an accessible REST Endpoint.  
+For more information, see: https://console.ng.bluemix.net/docs/services/IoT/blockchain/dev_blockchain.html.
+* A deployed contract on the blockchain peer network.
 
-Usage
------------------
-### Downloading
-Download the project using either:
-```
-git clone git@github.com:ibm-watson-iot/blockchain-samples.git
-```
-in the terminal, or by downloading the zip of the project. The zip can be downloaded by clicking the `Download ZIP` button found on the top right.
+## Downloading
 
-### Installing
-In the root directory of the project, run the following command:
+Use `git clone` in the console to clone the following project:  
+https://github.com/ibm-watson-iot/blockchain-samples  
+
+The monitoring UI component is in the monitoring_ui folder. You can also download a compressed file of the project by clicking **Download ZIP** from the project page.  
+
+## Installing
+To install the Monitoring UI on your local workstation, in the root directory of the project, run the following command:
 ```
 npm install
 ```
 
-### Running the UI Locally
-#### Through the filesystem
-Run the following command:
-```
-npm run build
-```
-This should generate a file called bundle.js in the public directory. Go to the public directory in the project and open up index.html in a browser.
+## Running
+You can run the monitoring UI directly from the file system or by running the webpack-dev-server.
 
-#### Using the webpack-dev-server. Ideal for development.
-This will load the project on a webpack-dev-server. Note this is not suitable for production.
-```
-npm run dev-server
-```
+Method	| Command	|Comment
+--- | --- | ---
+Filesystem | `npm run build` | The build command generates the bundle.js file in the public directory. </br>To access the Monitoring UI, go to the `monitoring_ui/public` directory and open the *index.html* file in a browser.
+webpack-dev-server | `npm run dev-server` | This method is ideal for a development environment but not suitable for a production environment. </br>To access the Monitoring UI, open the following URL in a browser: `http://localhost:8081/` </br>**Note:** If you run into an issue with the port already being used, set the `PORT` environment variable to the port you'd like to use. Note that hot reload is enabled for the webpack-dev-server. Changes that you save to the source are immediately reflected in the Monitoring UI. There is no need to manually reload.
 
-Access the UI by going to:
-```
-http://localhost:8081/
-```
+## Configuration
+Before you can access the blockchain information with the Monitoring UI, you must point it to a blockchain peer server and provide a contract ID to monitor. Access the configuration by clicking **CONFIGURATION**.  
+You can configure the following parameters:
 
-If you run into an issue with the port already being used, set the `PORT` environment variable to the port you'd like to use. Note that hot reload is enabled for the webpack-dev-server, so saving changes to the source will be immediately reflected on the UI. No need to reload manually.
+Parameter	|Value	|Comment
+--- | --- | ---
+API Host and Port	| http://peer_URL:port	| The host and port for the IBM Blockchain REST API prepended with `http://`.
+Chaincode ID	| The contract ID that was returned when you registered the contract.	| The contract ID is a 128-character alphanumeric hash that corresponds to the Contract ID entry. </br> **Important:** As you cut-and-paste the contract ID, make sure that no spaces are included in the ID. If the ID is incorrectly entered, the UI will display the blockchain ledger entries, but the asset search function will not work.
+Secure Context|Your fabric user	| This is required for connecting to IBM Blockchain instances on Bluemix. </br>**Important:** For secureContext use the user name that was used to configure the fabric.
+Number of blocks to display	| A positive integer. Default: 10	| The number of blockchain blocks to display.
 
-### Bluemix
-```
-TBD
-```
 
-### UI Functionality
-The UI is a single page application that is divided into 3 columns. The columns are:
+## Exploring the Monitoring UI Features
+Use the Monitoring UI single page application to perform actions on the blockchain, see the results of those actions, and monitor the state of the blockchain ledger.   
 
+The user interface is divided into three columns.  
 1. Chaincode Operations
 2. Response Payloads
 3. Blockchain
 
-UI Configuration can be accessed by clicking the `CONFIGURATION` button on the top right of the App Bar. This will display a modal enabling the user to modify the UI configuration.
+### The Chaincode Operations column
+The first section of the Monitoring UI is dynamically generated through a combination of JSON Schema and convention. The tabs each represent a subset of the available contract functions and are hardcoded in the `ChaincodeReducer.js` file.     
 
-#### Chaincode Operations
-This section of the UI is dynamically generated through a combination of JSON Schema and convention. The tabs are hardcoded in the `ChaincodeReducer.js` file as of now, but will be configurable through a separate configuration file in the near future. Each tab represents a subset of contract functionality. The functions themselves can be selected by clicking the dropdown in the tab's contents and selecting the appropriate function. For instance, assuming that the simple contract is the configured contract, the create tab will have a drop down of one function, `createAsset`. This maps to a function defined in the JSON schema, called `createAsset`. The UI knows to put `createAsset` under the `create` tab because it matches the tab's name as a substring of the function. To see an example of a tab with multiple contract functions, the `read` tab contains three functions, each of which were defined in the JSON schema. Each tab also has a corresponding `type`, which defines whether it should use the OBC invoke or query endpoint.
+The contract functions can be selected from the menu in each tab. The functions and their related input fields are defined in the JSON schema.
 
-The arguments form is generated when the user selects a particular function from the dropdown. This creates a form with input fields for every expected argument defined in the JSON schema. For the simple contract, we have the fields `assetID`, `carrier`, `location`, `temperature` and `timestamp`. There are a few things to note:
-- `assetID` has an asterisk. This means that this field is required. This is defined in the JSON schema.
-- location is a nested object. In other words, it has its own properties, which in turn become fields that we can input data into.
-- validation is defined in the JSON schema and is reflected in the form. For instance, if the form is submitted without an `assetID`, the UI will display a message asking for the user to input a value. If a non-numeric value is input into the latitude or longitude fields, the UI will indicate that the value is not of a type(s) number.
+For example, if we are connected to the IBM sample conctract on the blockchain fabric the **Create** tab includes just one function: `createAsset`. This function maps to the `createAsset` function that is defined in the JSON schema. The UI knows to put `createAsset` under the `create` tab because it matches the tab's name as a substring of the function. The **Read** tab, in contrast, contains three functions each of which are defined in the JSON schema. Each tab also has a corresponding `type`, which controls the use of Hyperledger invoke or query endpoint.
 
-If all values are valid and submit is clicked, then the UI will create a valid OBC REST payload with the user input as the arguments and send it along with a request to the configured OBC peer. It then waits for a response from the peer. The response will be output to the section in the second column, which is the Request Payload section.
+The *arguments* form is generated when you select a particular function. The form creates input fields for the arguments that are defined in the JSON schema. The basic contract includes the following fields: `assetID`, `carrier`, `location`, `temperature`, and `timestamp`.  
 
-#### Response Payload
-This section of the UI is responsible for displaying the response from the OBC peer. It does so by recursively traversing the payload and outputting the response to the card. Note that it is possible to submit multiple requests from any combination of tabs; the UI will just generate additional cards to display the payload. If a REST request is made with the exact same function and arguments, it will not be shown as an additional card, because it is a duplicate.
+**Note:**
+- Fields such as `assetID` that are denoted with asterisk are required. Required fields are defined in the JSON schema.
+- Location is a nested object with its own properties that in turn are exposed as data fields.
+- Validation is defined in the JSON schema and is reflected in the form.  
+For example, if you submit the form without an entry for the required `assetID` field, you are prompted to enter a value. If you enter a non-numeric value in the `latitude` or `longitude` fields, you will also be prompted.
 
-When a request payload card initially appears, it will be in the collapsed state. Click the expand button on the right side of the payload's card header to view the contents of the card. You'll see a `Poll for changes` toggle along with a basic formatted string representation of the response payload. When the toggle is on, the UI will actively check for changes to a particular query every time the blockchain height changes. In the case of the simple contract, it is useful for monitoring a particular asset for changes. This toggle is set to off by default.
+When you submit a form the Monitoring UI creates a valid blockchain REST payload with the field input as arguments. The payload and a request is sent to the configured blockchain peer. The Monitoring UI then waits for a response from the peer. The response is displayed in the Request Payload column.
 
-The user may close an individual card by clicking the `x` button that is on the left of the header. Notice that the button changes colors from gray to orange when hovering over the particular header. This is to facilitate figuring out which card will be closed after clicking the button. If there are many payloads being displayed, the user may also click the clear button on the Request Payload header to remove all payloads from the display.
+### The Response Payload column
+The second column displays the response from the blockchain peer by recursively traversing the payload and writing the responses to the card. If you submit multiple requests from a combination of tabs the Monitoring UI generates cards as needed to display the payload. **Note:** Duplicate REST request with the exact same function and arguments will not create extra cards.
 
-#### Blockchain
-This is the right most column on the UI and shows the current state of the blockchain. The amount of blocks that are displayed is configurable through the configuration modal. To expand a block, click on the expander on the right side of the block header. The contents of the block show what transactions are part of the block and the details of each transaction.
+Request payload cards are displayed in the collapsed state. You must expand the cards to view the contents of the card.
 
-It is important to note that any transactions that occur against the blockchain will appear within blocks on the blockchain. These include invalid transactions and transactions against other contracts. A common error is to have one user use a particular contract to do an update and another user try to read that change. If the other user does not see the change, there is a chance that they have configured the wrong contract.
+Close individual cards by clicking **x** next to the card header.
 
-#### Configuration Modal
-This modal can be accessed by clicking the `CONFIGURATION` button on the right side of the main App Bar. This modal will allow you to configure the following settings:
+Click **Clear** on the Request Payload header to remove all payloads from the display.
 
-**API host and port**: This should be the in the form of protocol://hostname:port. So for example:
-```
-http://localhost:3000
-```
-**Chaincode ID**: The ID of the contract that the UI should use to perform operations. For example:
-```
-ff89038cb1db8fcddff9f3c786bba06dc1af9afb2616d8bcb851ac50db383be02e25391d979c5eaa499abf2845df270089eb9ac982cf3dec880d24ff70cf95d9
-```
-These IDs are 128 character hashes that should not trailing nor leading spaces. There should also be no spaces within the ID itself. If copying and pasting this ID from somewhere else, ensure that the Chaincode ID conforms to these parameters.
+**Tip:** Enable the **Poll for changes** toggle to have the Monitoring UI actively check for changes to a particular query every time the blockchain height changes. For the basic contract, use this feature to monitoring a particular asset for changes.
 
-**Secure Context**: The secure context for doing POST requests to the API endpoint, if necessary.
 
-**Number of blocks to display**: The number of blocks to display from the blockchain. For instance, if this value was `10`, the most recent 10 blocks would show up on the blockchain display.
+### The Blockchain column
+The third column shows the current state of the blockchain.
+
+To expand a block, click the expander. The contents of the block show the transactions in the block and the details for each transaction.
+
+**Important:** Any transactions that occur against a specific blockchain will appear within blocks on the blockchain. These include invalid transactions as well as transactions against other contracts. To see a change on a specific contract, the Monitoring UI must be configured to connect to that contract.
