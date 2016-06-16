@@ -31,7 +31,7 @@ The following contracts are compatible with the latest Hyperledger code base, ex
 
     - The sdk is under construction and its evolution is intended to include future packaging of boiler plate code for asset CRUD interfaces and related features such as asset state history, recent state activity, alerts and rules, and so on. This is intended to shrink the size of derived contracts while improving reliability and productivity.
 
-  - [`iot_sample_contract`]((https://github.com/ibm-watson-iot/blockchain-samples/tree/master/sdk/iot_sample_contract)
+  - [`iot_sample_contract`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/sdk/iot_sample_contract)
     - Introduces saving of transaction timestamp and transaction uuid in asset state such that an audit can trace the state of an asset at any point in time to the specific block and transaction on the chain. Cleans up minor issues and bugs from the Trade Lane sample.
   - [`aviation_sample_contract`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/sdk/aviation_sample_contract)
     - Introduces complex object models with multiple asset classes managed by a single contract.
