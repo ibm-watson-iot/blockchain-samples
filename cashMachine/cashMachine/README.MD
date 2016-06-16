@@ -1,4 +1,9 @@
-#Quick set-up
+#Quick set-up 
+
+##Use case:
+Track cash machine data  - asset id, ActionType (Initial Balance, Deposit or Withdraw), Amount (amount of a particular transaction), Balance (total balance of the Cash Machine) and Timestamp. On create, an initial balance is set for the machine. On update, Deposit or Withdraw action take place and the balance is updated. The current state of the machine, retrieved on read, will have the asset id, the last Action type, the amount for the action type, the current balance and the last action's timestamp. The contract will track history and will return history in descending order. The functions are createCashMachine, updateCashMachine, readCashMachine, readCashMachineHistory and deleteCashMachine.Get monitoring ui to work with the same.
+
+The ask was to be able to run the code on a Sandbox environment, so the instructions below are around how to achieve it. This code is compatible with a newer version of Hyperledger than the one in BlueMix today. Once BlueMix is updated, it can be run on BlueMix.
 
 Assumption : Hyperledger set up and built. 
 Download the cashMachine folder and save it in the go code path . For example: /Users/spnair/go/src/github.com/hyperledger/fabric/examples/chaincode/go
