@@ -1,20 +1,28 @@
 
 # Using the Basic contract sample for Watson IoT Platform integration
 
-You can use the Basic blockchain contract sample to create a contract that stores asset data from a device that is connected to your IBM Watson IoT Platform. The Basic IBM Blockchain sample is the default contract for getting started with writing blockchain contracts. The contract includes create, read, update, and delete asset data operations for tracking device data on the IBM Blockchain ledger.   
+The Basic contract is a sample blockchain contract that is provided by IBM to help you to get started with blockchain development and integration on the IBM Watson IoT Platform.
 
-## Downloading the Trade Lane contract sample
-You can download the Basic IBM Blockchain contract sample from the [IBM Blockchain contracts GitHub repository](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/simple_contract_hyperledger).
-
-The Basic contract is also deployed by default in the sample IBM Blockchain environment.
+You can use the Basic contract sample to create a blockchain contract that tracks and stores asset data from a device that is connected to your Watson IoT Platform organization. The Basic blockchain sample is the default smart contract for getting started with writing blockchain contracts. The contract is developed in GoLang and includes create, read, update, and delete asset data operations for tracking device data on the IBM Blockchain ledger.   
 
 
-So, let us start with a simple contract to create, read, update and delete asset data. We will also include 'ReadAssetSchema' and 'ReadAssetSamples' methods. ReadAssetSchemas  will provide us with the JSON schema of the contracts's methods and properties associated with them. The ReadAssetSamples method provides an example of the sample JSON data.
+## Downloading the Basic sample
+You can download the Basic blockchain contract sample from the [IBM Blockchain contracts](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/simple_contract_hyperledger) repository on GitHub. The Basic contract is also deployed by default in the sample IBM Blockchain environment that you can deploy on Bluemix.
 
-In an editor of your choice, create a .go document that will serve as the base for your contract.
+## Creating the base contract source file
+
+The first step is to create the foundational Go (.go) source file for your contract by using an editor of your choice. You can then use the base .go file to map your own use cases into deployable chain code.
+
+To create a simple contract to create, read, update and delete asset data, you will need to use the following following methods:
+
+|Method|Provides|
+|:---|:---|
+|'ReadAssetSchema'|The JSON schema contract's methods and associated properties|
+|'ReadAssetSamples'|An example of the sample JSON data|
+
 
 ### The SimpleChaincode struct
-To comply with the Chaincode implementation approach, let's begin with defining the SimpleChaincode struct:
+To comply with the chaincode implementation approach, let's begin with defining the SimpleChaincode struct:
 ```go
 type SimpleChaincode struct {
 }
