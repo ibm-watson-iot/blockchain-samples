@@ -9,9 +9,10 @@ You can use the Basic contract sample to create a blockchain contract that track
 ## Downloading the Basic sample
 You can download the Basic blockchain contract sample from the [IBM Blockchain contracts](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/simple_contract_hyperledger) repository on GitHub. The Basic contract is also deployed by default in the sample IBM Blockchain environment that you can deploy on Bluemix.
 
-## Creating the base contract source file
 
-The first step is to create the foundational Go (.go) source file for your contract by using an editor of your choice. You can then use the base .go file to map your own use cases into deployable chain code.
+## Creating the base contract
+
+The first step is to create the base source file for your contract, and then you can map your own use cases into deployable chain code.
 
 To create a simple contract to create, read, update and delete asset data, you will need to use the following following methods:
 
@@ -21,20 +22,21 @@ To create a simple contract to create, read, update and delete asset data, you w
 |'ReadAssetSamples'|An example of the sample JSON data|
 
 
-### The SimpleChaincode struct
-To comply with the chaincode implementation approach, let's begin with defining the SimpleChaincode struct:
+1. Create the Go (.go) source file for your contract by using an editor of your choice.
+2. Define the SimpleChaincode struct:
+To comply with the chaincode implementation approach, define the SimpleChaincode struct as outlined in the following code snippet:
 ```go
 type SimpleChaincode struct {
 }
 ```
-
-### Version
-In our simple example, the ‘deploy’ method is called ‘init’. In this method, the contract is initialized with a version number.  Let’s define a constant to hold the version:
+3. To initialize the contract with a version number, define a constant for the version, as outlined in the following code snippet:
 ```go
 const MYVERSION string = "1.0"
 ```
+In our simple example, the ‘deploy’ method is called ‘init’.
+4. Define a contract state, which in this example will keep track of the contract version.
 
-We will also define a Contract state, which in this simple example will keep track of the contract version. In later examples as we build more complexity into our contract code, we will add more details into contract state and introduce asset states, alerts, etc.
+In later examples as we build more complexity into our contract code, we will add more details into contract state and introduce asset states, alerts, etc.
 ```go
 type ContractState struct {
 	Version string `json:"version"`
