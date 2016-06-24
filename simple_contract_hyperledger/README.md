@@ -1,13 +1,25 @@
 
 # Using the Basic contract sample for Watson IoT Platform integration
 
-The Basic contract is a sample blockchain contract that is provided by IBM to help you to get started with blockchain development and integration on the IBM Watson IoT Platform.
+The Basic contract is a sample hyperledger blockchain contract that is provided by IBM to help you to get started with blockchain development and integration on the IBM Watson IoT Platform.
 
 You can use the Basic contract sample to create a blockchain contract that tracks and stores asset data from a device that is connected to your Watson IoT Platform organization. The Basic blockchain sample is the default smart contract for getting started with writing blockchain contracts. The contract is developed in GoLang and includes create, read, update, and delete asset data operations for tracking device data on the IBM Blockchain ledger.   
 
 
 ## Downloading the Basic sample
 You can download the Basic blockchain contract sample from the [IBM Blockchain contracts](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/simple_contract_hyperledger) repository on GitHub. The Basic contract is also deployed by default in the sample IBM Blockchain environment that you can deploy on Bluemix.
+
+Contract code in IBM Blockchain can be written today in the ‘Go’ programming language, and future support is planned for other languages. Contract code written for IBM Blockchain can include three types of methods:
+
+- `deploy`
+- `invoke`
+- `query`
+
+You can execute contract code from either the command line or from a REST interface. Both methods are possible with the Basic blockchain contract sample, as outlined on this page.
+
+To call a method, you must pass a JSON string to the chaincode instance. This string must include the function name and required arguments passed as key-value pairs. You can have more that one method of a type defined in the contract.   
+
+For more information about setting up REST and Swagger can be found [here](https://github.com/hyperledger/fabric/blob/master/docs/API/CoreAPI.md).  
 
 
 ## Creating the base contract
@@ -44,7 +56,9 @@ type ContractState struct {
 
 var contractState = ContractState{MYVERSION}
 ```
-### Asset data structure
+5. Define the asset data structure.
+
+
 For our simple contract, let’s take the example of an asset that is in transit, being tracked as it moves from one location to another.  The asset data would include a unique alphanumeric id that identifies the asset, and other relevant information like location, temperature and carrier.
 
 So lets define the asset data structure. As you can see, Location has two attributes – Latitude and Longitude. You will notice that all the fields are pointers (They have a '\*' in front of the data type). When a JSON string is Marshaled to a struct, if the string does not have a particular field, a default value, based on the datatype gets assigned. Since a blank value is valid for a string in our use case, and a zero a valid number, this means that missing data types would get incorrect data values assigned to this. An easy way to work around this is to use pointers. If a struct's pointer field isn't represented in the input JSON string, that field's value is not mapped.   Another option would be to use maps and marshal the data into the same. Since a map doesn't have a specific data structure, it will only take the data that is sent in, and will not assign default values to fields, simply because there are not fields defined for the map. However, when a specific data strcuture is expected, like from a specific IoT device in our example,  and types need to be validated, it is good to use structs. Another advantage is that when we marshal or unmarshal json to or from a struct, golang makes every effort to match the fields - it looks for prefect matches, case-insensitive match, and doesnt care about any mismatch in the order of the fields. On the other hand, with a map, you will need to handle case mismatches and assert datatypes explicitly for elements of a map.So lets define the asset data structure. As you can see, Location has two attributes – Latitude and Longitude. You will notice that all the fields are pointers (They have a '\*' in front of the data type). When a JSON string is Marshaled to a struct, if the string does not have a particular field, a default value, based on the datatype gets assigned. Since a blank value is valid for a string in our use case, and a zero a valid number, this means that missing data types would get incorrect data values assigned to this. An easy way to work around this is to use pointers. If a struct's pointer field isn't represented in the input JSON string, that field's value is not mapped.   Another option would be to use maps and marshal the data into the same. Since a map doesn't have a specific data structure, it will only take the data that is sent in, and will not assign default values to fields, simply because there are not fields defined for the map. However, when a specific data strcuture is expected, like from a specific IoT device in our example,  and types need to be validated, it is good to use structs. Another advantage is that when we marshal or unmarshal json to or from a struct, golang makes every effort to match the fields - it looks for prefect matches, case-insensitive match, and doesnt care about any mismatch in the order of the fields. On the other hand, with a map, you will need to handle case mismatches and assert datatypes explicitly for elements of a map.
@@ -62,6 +76,9 @@ type AssetState struct {
     Carrier        *string       `json:"carrier,omitempty"`        // the name of the carrier
 }
 ```
+
+6. Initialize the contract.
+
 
 ### Initializing the contract
 Let’s continue with the init function. The 'Init' function is one of the three standard functions expected and mandated in the chaincode, the others being 'Invoke' and 'Query'. The Init is called as a 'deploy' function, to deploy the chaincode to the fabric. Notice the signature of the function. The Init, Invoke and Query functions share the same arguments - the shim, a function name and an array of strings. Other functions, being called from these standard functions will usually have two arguments, the pointer to the shim and the arg s ttributes. Theshim pointer enables the function to interact with the shim and the args are arguments that need to be consumed by those functions.
@@ -441,30 +458,8 @@ This simple contract is a recipe, an example intended to be tweaked as people ex
 2. The `readAssetSchemas` function.
 The readAssetSchemas function exposes the function names and properties expected by the contract. This function is called by the mapper in order to know what the contract properties are thus enabling mapping of the Event properties to the contract properties.
 
-### Watson IoT Platform Blockchain monitoring UI
-The monitoring UI is a generic UI that understand CRUD syntax as exposed by contracts through the readAssetSchemas function call. It also used hyperledger's Blocckhain APIs to retrieve and display blocks in the blockchain. In addition it has a 'poll for changes' feature by which it can track the changes to an asset and display them.
-   readAssetSchemas function. The UI understands function names that begin with 'create', 'read', 'update' or 'delete' and renders the functions and attributes list on the fly, based on the data provided by the 'readAssetSchemas' function
-   readAsset funtion. The readAsset function is used to poll fot changes to a particular asset that the user wants to observe.
+## Next steps
 
-## Generating code
-{: #generate_code}
-Depending on the content of your contract, you might need to regenerate the deployable contract schema and sample from the GoLang file, you use the go generate prompt. You will see this implemented in the tradelane contract.
-```
-//go:generate go run scripts/generate_go_schema.go
-```
- For example, if you include  have a // go generate  directive in your code, you must run the generate tool
+When your contract is created, you can upload the contract to IBM Blockchain with Watson IoT Platform, or by using the API. For more information, see [Developing for blockchain](https://TBC)
 
-## Upload the contract code to blockchain
-{: #upload_contract_blockchain}
-
-When you have created you contract you can upload the contract to IBM Blockchain with Watson IoT Platform, or by using the API. IBM Blockchain also provides us with a ‘sandbox’ environment to test contract code before we deploy it to the peer network. Directions to set up the Sandbox is over [here](https://github.com/hyperledger/fabric/blob/master/docs/API/SandboxSetup.md).
-
-
-## Calling Contract code
-{: #calling_contract_code}
-
-Contract code in IBM Blockchain can be written today in the ‘Go’ programming language, and future support is planned for other languages. Contract code written for IBM Blockchain can include three types of methods: `deploy`, `invoke`, and `query`. Contract code can be executed from the command line or a REST interface. We will try both approaches in this example.  
-
-To call a method, you must pass a JSON string to the chaincode instance. This string must include the function name and required arguments passed as key-value pairs. You can have more that one method of a type defined in the contract.   
-
-**Tip:** Details on setting up REST and Swagger can be found [here](https://github.com/hyperledger/fabric/blob/master/docs/API/CoreAPI.md).  
+IBM Blockchain also provides us with a sandbox environment to test contract code before we deploy it to the peer network. For more information about how to set up the sandbox, see [Writing, building, and running chaincode in a development environment](https://github.com/hyperledger/fabric/blob/master/docs/API/SandboxSetup.md).
