@@ -73,6 +73,12 @@ Howard McKinney- Initial Contribution
 //                     Remove a copy paste error in the new testValidation rule where it was falling through and clearing
 //                     the OVERTEMP rule, causing total havoc with that rule.
 
+//********** start of history as Aviation Sample
+
+// v4.3 KL June 2016 Added crud interfaces for four asset classes: airline, airplane,
+// assembly, part; modified schema for new asset classes; modified contract state to 
+// treat them separately; 
+
 
 package main
 
@@ -80,9 +86,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
     "strings"
-    "reflect"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -163,16 +167,52 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 
 // Invoke is called in invoke mode to delegate state changing function messages 
 func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-	if function == "createAsset" {
-		return t.createAsset(stub, args)
-	} else if function == "updateAsset" {
-		return t.updateAsset(stub, args)
-	} else if function == "deleteAsset" {
-		return t.deleteAsset(stub, args)
-	} else if function == "deleteAllAssets" {
-		return t.deleteAllAssets(stub, args)
-	} else if function == "deletePropertiesFromAsset" {
-		return t.deletePropertiesFromAsset(stub, args)
+	if function == "createAirline" {
+		return t.createAirline(stub, args)
+/*	} else if function == "createAirplane" {
+		return t.createAirplane(stub, args)
+	} else if function == "createAssembly" {
+		return t.createAssembly(stub, args)
+	} else if function == "createPart" {
+		return t.createPart(stub, args)
+*/
+	} else if function == "updateAirline" {
+		return t.updateAirline(stub, args)
+/*	} else if function == "updateAirplane" {
+		return t.updateAirplane(stub, args)
+	} else if function == "updateAssembly" {
+		return t.updateAssembly(stub, args)
+	} else if function == "updatePart" {
+		return t.updatePart(stub, args)
+*/
+	} else if function == "deleteAirline" {
+		return t.deleteAirline(stub, args)
+/*	} else if function == "deleteAirplane" {
+		return t.deleteAirplane(stub, args)
+	} else if function == "deleteAssembly" {
+		return t.deleteAssembly(stub, args)
+	} else if function == "deletePart" {
+		return t.deletePart(stub, args)
+*/
+	} else if function == "deleteAllAirlines" {
+		return t.deleteAllAirlines(stub, args)
+/*	} else if function == "deleteAllAirplanes" {
+		return t.deleteAllAirplanes(stub, args)
+	} else if function == "deleteAllAssemblies" {
+		return t.deleteAllAssemblies(stub, args)
+	} else if function == "deleteAllParts" {
+		return t.deleteAllParts(stub, args)
+*/
+	} else if function == "deletePropertiesFromAirline" {
+		return t.deletePropertiesFromAirline(stub, args)
+/*	} else if function == "deletePropertiesFromAirplane" {
+		return t.deletePropertiesFromAirplane(stub, args)
+	} else if function == "deletePropertiesFromAssembly" {
+		return t.deletePropertiesFromAssembly(stub, args)
+	} else if function == "deletePropertiesFromPart" {
+		return t.deletePropertiesFromPart(stub, args)
+*/
+
 	} else if function == "setLoggingLevel" {
 		return nil, t.setLoggingLevel(stub, args)
 	} else if function == "setCreateOnUpdate" {
@@ -208,706 +248,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 }
 
 
-//***************************************************
-//***************************************************
-//* ASSET CRUD INTERFACE
-//***************************************************
-//***************************************************
 
-// ************************************
-// createAsset 
-// ************************************
-func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var assetID string
-    var argsMap ArgsMap
-	var event interface{}
-    var found bool
-	var err error
-
-	log.Info("Entering createAsset")
-
-    // allowing 2 args because updateAsset is allowed to redirect when
-    // asset does not exist
-	if len(args) < 1 || len(args) > 2 {
-        err = errors.New("Expecting one JSON event object")
-		log.Error(err)
-		return nil, err
-	}
-    
-    assetID = ""
-    eventBytes := []byte(args[0])
-    log.Debugf("createAsset arg: %s", args[0])
-
-    err = json.Unmarshal(eventBytes, &event)
-    if err != nil {
-        log.Errorf("createAsset failed to unmarshal arg: %s", err)
-		return nil, err
-    } 
-    
-    if event == nil {
-        err = errors.New("createAsset unmarshal arg created nil event")
-        log.Error(err)
-		return nil, err
-    }
-
-    argsMap, found = event.(map[string]interface{})
-    if !found {
-        err := errors.New("createAsset arg is not a map shape")
-        log.Error(err)
-        return nil, err
-    }
-
-    // is assetID present or blank?
-    assetIDBytes, found := getObject(argsMap, ASSETID)
-    if found {
-        assetID, found = assetIDBytes.(string) 
-        if !found || assetID == "" {
-            err := errors.New("createAsset arg does not include assetID")
-            log.Error(err)
-            return nil, err
-        }
-    }
-    
-    found = assetIsActive(stub, assetID)
-    if found {
-        err := fmt.Errorf("createAsset arg asset %s already exists", assetID)
-        log.Error(err)
-        return nil, err
-    }
-
-    // add transaction uuid and timestamp
-    argsMap[TXNUUID] = stub.UUID
-    txnunixtime, err := stub.GetTxTimestamp()
-	if err != nil {
-		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
-        log.Error(err)
-        return nil, err
-	}
-    txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
-    argsMap[TXNTIMESTAMP] = txntimestamp
-   
-    // copy incoming event to outgoing state
-    // this contract respects the fact that createAsset can accept a partial state
-    // as the moral equivalent of one or more discrete events
-    // further: this contract understands that its schema has two discrete objects
-    // that are meant to be used to send events: common, and custom
-    stateOut := argsMap
-    
-    // save the original event
-    stateOut["txnEvent"] = make(map[string]interface{})
-    stateOut["txnEvent"].(map[string]interface{})["function"] = "createAsset"
-    stateOut["txnEvent"].(map[string]interface{})["args"] = args[0]
-    if len(args) == 2 {
-        // in-band protocol for redirect
-        stateOut["txnEvent"].(map[string]interface{})["redirectedFromFunction"] = args[1]
-    }
-
-    // run the rules and raise or clear alerts
-    alerts := newAlertStatus()
-    noncompliant, err := stateOut.executeRules(&alerts)
-    if err != nil {
-		err = fmt.Errorf("Rules engine failure: %s", err)
-        log.Error(err)
-        return nil, err
-    }
-    if noncompliant {
-        log.Noticef("createAsset assetID %s is noncompliant", assetID)
-        stateOut["alerts"] = alerts
-        delete(stateOut, "compliant")
-    } else {
-        if alerts.AllClear() {
-            // all false, no need to appear
-            delete(stateOut, "alerts")
-        } else {
-            stateOut["alerts"] = alerts
-        }
-        stateOut["compliant"] = true
-    }
-
-    // marshal to JSON and write
-    stateJSON, err := json.Marshal(&stateOut)
-    if err != nil {
-        err := fmt.Errorf("createAsset state for assetID %s failed to marshal", assetID)
-        log.Error(err)
-        return nil, err
-    }
-
-    // finally, put the new state
-    log.Infof("Putting new asset state %s to ledger", string(stateJSON))
-    err = stub.PutState(assetID, []byte(stateJSON))
-    if err != nil {
-        err = fmt.Errorf("createAsset AssetID %s PUTSTATE failed: %s", assetID, err)
-        log.Error(err)
-        return nil, err
-    }
-    log.Infof("createAsset AssetID %s state successfully written to ledger: %s", assetID, string(stateJSON))
-
-    // add asset to contract state
-    err = addAssetToContractState(stub, assetID)
-    if err != nil {
-        err := fmt.Errorf("createAsset asset %s failed to write asset state: %s", assetID, err)
-        log.Critical(err)
-        return nil, err 
-    }
-
-    err = pushRecentState(stub, string(stateJSON))
-    if err != nil {
-        err = fmt.Errorf("createAsset AssetID %s push to recentstates failed: %s", assetID, err)
-        log.Error(err)
-        return nil, err
-    }
-
-    // save state history
-    err = createStateHistory(stub, assetID, string(stateJSON))
-    if err != nil {
-        err := fmt.Errorf("createAsset asset %s state history save failed: %s", assetID, err)
-        log.Critical(err)
-        return nil, err 
-    }
-    
-	return nil, nil
-}
-
-// ************************************
-// updateAsset 
-// ************************************
-func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var assetID string
-	var argsMap ArgsMap
-	var event interface{}
-	var ledgerMap ArgsMap
-	var ledgerBytes interface{}
-	var found bool
-	var err error
-    
-	log.Info("Entering updateAsset")
-
-	if len(args) != 1 {
-        err = errors.New("Expecting one JSON event object")
-		log.Error(err)
-		return nil, err
-	}
-    
-    assetID = ""
-    eventBytes := []byte(args[0])
-    log.Debugf("updateAsset arg: %s", args[0])
-    
-    
-    err = json.Unmarshal(eventBytes, &event)
-    if err != nil {
-        log.Errorf("updateAsset failed to unmarshal arg: %s", err)
-        return nil, err
-    }
-
-    if event == nil {
-        err = errors.New("createAsset unmarshal arg created nil event")
-        log.Error(err)
-		return nil, err
-    }
-
-    argsMap, found = event.(map[string]interface{})
-    if !found {
-        err := errors.New("updateAsset arg is not a map shape")
-        log.Error(err)
-        return nil, err
-    }
-    
-    // is assetID present or blank?
-    assetIDBytes, found := getObject(argsMap, ASSETID)
-    if found {
-        assetID, found = assetIDBytes.(string) 
-        if !found || assetID == "" {
-            err := errors.New("updateAsset arg does not include assetID")
-            log.Error(err)
-            return nil, err
-        }
-    }
-    log.Noticef("updateAsset found assetID %s", assetID)
-
-    found = assetIsActive(stub, assetID)
-    if !found {
-        // redirect to createAsset with same parameter list
-        if canCreateOnUpdate(stub) {
-            log.Noticef("updateAsset redirecting asset %s to createAsset", assetID)
-            var newArgs = []string{args[0], "updateAsset"}
-            return t.createAsset(stub, newArgs)
-        }
-        err = fmt.Errorf("updateAsset asset %s does not exist", assetID)
-        log.Error(err)
-        return nil, err
-    }
-
-    // add transaction uuid and timestamp
-    argsMap[TXNUUID] = stub.UUID
-    txnunixtime, err := stub.GetTxTimestamp()
-	if err != nil {
-		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
-        log.Error(err)
-        return nil, err
-	}
-    txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
-    argsMap[TXNTIMESTAMP] = txntimestamp
-    
-    // **********************************
-    // find the asset state in the ledger
-    // **********************************
-    log.Infof("updateAsset: retrieving asset %s state from ledger", assetID)
-    assetBytes, err := stub.GetState(assetID)
-    if err != nil {
-        log.Errorf("updateAsset assetID %s GETSTATE failed: %s", assetID, err)
-        return nil, err
-    }
-
-    // unmarshal the existing state from the ledger to theinterface
-    err = json.Unmarshal(assetBytes, &ledgerBytes)
-    if err != nil {
-        log.Errorf("updateAsset assetID %s unmarshal failed: %s", assetID, err)
-        return nil, err
-    }
-    
-    // assert the existing state as a map
-    ledgerMap, found = ledgerBytes.(map[string]interface{})
-    if !found {
-        log.Errorf("updateAsset assetID %s LEDGER state is not a map shape", assetID)
-        return nil, err
-    }
-    
-    // now add incoming map values to existing state to merge them
-    // this contract respects the fact that updateAsset can accept a partial state
-    // as the moral equivalent of one or more discrete events
-    // further: this contract understands that its schema has two discrete objects
-    // that are meant to be used to send events: common, and custom
-    // ledger has to have common section
-    stateOut := deepMerge(map[string]interface{}(argsMap), 
-                          map[string]interface{}(ledgerMap))
-    log.Debugf("updateAsset assetID %s merged state: %s", assetID, stateOut)
-
-    // save the original event
-    stateOut["txnEvent"] = make(map[string]interface{})
-    stateOut["txnEvent"].(map[string]interface{})["function"] = "updateAsset"
-    stateOut["txnEvent"].(map[string]interface{})["args"] = args[0]
-
-    // handle compliance section
-    alerts := newAlertStatus()
-    a, found := stateOut["alerts"] // is there an existing alert state?
-    if found {
-        // convert to an AlertStatus, which does not work by type assertion
-        log.Debugf("updateAsset Found existing alerts state: %s", a)
-        // complex types are all untyped interfaces, so require conversion to
-        // the structure that is used, but not in the other direction as the
-        // type is properly specified
-        alerts.alertStatusFromMap(a.(map[string]interface{}))
-    }
-    // important: rules need access to the entire calculated state 
-    noncompliant, err := ledgerMap.executeRules(&alerts)
-    if err != nil {
-		err = fmt.Errorf("Rules engine failure: %s", err)
-        log.Error(err)
-        return nil, err
-    }
-    if noncompliant {
-        // true means noncompliant
-        log.Noticef("updateAsset assetID %s is noncompliant", assetID)
-        // update ledger with new state, if all clear then delete
-        stateOut["alerts"] = alerts
-        delete(stateOut, "compliant")
-    } else {
-        if alerts.AllClear() {
-            // all false, no need to appear
-            delete(stateOut, "alerts")
-        } else {
-            stateOut["alerts"] = alerts
-        }
-        stateOut["compliant"] = true
-    }
-    
-    // Write the new state to the ledger
-    stateJSON, err := json.Marshal(ledgerMap)
-    if err != nil {
-        err = fmt.Errorf("updateAsset AssetID %s marshal failed: %s", assetID, err)
-        log.Error(err)
-        return nil, err
-    }
-
-    // finally, put the new state
-    err = stub.PutState(assetID, []byte(stateJSON))
-    if err != nil {
-        err = fmt.Errorf("updateAsset AssetID %s PUTSTATE failed: %s", assetID, err)
-        log.Error(err)
-        return nil, err
-    }
-    err = pushRecentState(stub, string(stateJSON))
-    if err != nil {
-        err = fmt.Errorf("updateAsset AssetID %s push to recentstates failed: %s", assetID, err)
-        log.Error(err)
-        return nil, err
-    }
-
-    // add history state
-    err = updateStateHistory(stub, assetID, string(stateJSON))
-    if err != nil {
-        err = fmt.Errorf("updateAsset AssetID %s push to history failed: %s", assetID, err)
-        log.Error(err)
-        return nil, err
-    }
-
-    // NOTE: Contract state is not updated by updateAsset
-    
-	return nil, nil
-}
-
-// ************************************
-// deleteAsset 
-// ************************************
-func (t *SimpleChaincode) deleteAsset(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var assetID string
-	var argsMap ArgsMap
-	var event interface{}
-    var found bool
-	var err error
-
-	if len(args) != 1 {
-        err = errors.New("Expecting one JSON state object with an assetID")
-		log.Error(err)
-		return nil, err
-	}
-    
-    assetID = ""
-    eventBytes := []byte(args[0])
-    log.Debugf("deleteAsset arg: %s", args[0])
-
-    err = json.Unmarshal(eventBytes, &event)
-    if err != nil {
-        log.Errorf("deleteAsset failed to unmarshal arg: %s", err)
-        return nil, err
-    }
-
-    argsMap, found = event.(map[string]interface{})
-    if !found {
-        err := errors.New("deleteAsset arg is not a map shape")
-        log.Error(err)
-        return nil, err
-    }
-    
-    // is assetID present or blank?
-    assetIDBytes, found := getObject(argsMap, ASSETID)
-    if found {
-        assetID, found = assetIDBytes.(string) 
-        if !found || assetID == "" {
-            err := errors.New("deleteAsset arg does not include assetID")
-            log.Error(err)
-            return nil, err
-        }
-    }
-
-    found = assetIsActive(stub, assetID)
-    if !found {
-        err = fmt.Errorf("deleteAsset assetID %s does not exist", assetID)
-        log.Error(err)
-        return nil, err
-    }
-
-    // Delete the key / asset from the ledger
-    err = stub.DelState(assetID)
-    if err != nil {
-        log.Errorf("deleteAsset assetID %s failed DELSTATE", assetID)
-        return nil, err
-    }
-    // remove asset from contract state
-    err = removeAssetFromContractState(stub, assetID)
-    if err != nil {
-        err := fmt.Errorf("deleteAsset asset %s failed to remove asset from contract state: %s", assetID, err)
-        log.Critical(err)
-        return nil, err 
-    }
-    // save state history
-    err = deleteStateHistory(stub, assetID)
-    if err != nil {
-        err := fmt.Errorf("deleteAsset asset %s state history delete failed: %s", assetID, err)
-        log.Critical(err)
-        return nil, err 
-    }
-    // push the recent state
-    err = removeAssetFromRecentState(stub, assetID)
-    if err != nil {
-        err := fmt.Errorf("deleteAsset asset %s recent state removal failed: %s", assetID, err)
-        log.Critical(err)
-        return nil, err 
-    }
-    
-	return nil, nil
-}
-
-// ************************************
-// deletePropertiesFromAsset 
-// ************************************
-func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var assetID string
-	var argsMap ArgsMap
-	var event interface{}
-    var ledgerMap ArgsMap
-	var ledgerBytes interface{}
-	var found bool
-	var err error
-    var alerts AlertStatus
-
-	if len(args) < 1 {
-        err = errors.New("Not enough arguments. Expecting one JSON object with mandatory AssetID and property name array")
-		log.Error(err)
-		return nil, err
-	}
-    eventBytes := []byte(args[0])
-
-    err = json.Unmarshal(eventBytes, &event)
-    if err != nil {
-        log.Error("deletePropertiesFromAsset failed to unmarshal arg")
-        return nil, err
-    }
-    
-    argsMap, found = event.(map[string]interface{})
-    if !found {
-        err := errors.New("deletePropertiesFromAsset arg is not a map shape")
-        log.Error(err)
-        return nil, err
-    }
-    log.Debugf("deletePropertiesFromAsset arg: %+v", argsMap)
-    
-    // is assetID present or blank?
-    assetIDBytes, found := getObject(argsMap, ASSETID)
-    if found {
-        assetID, found = assetIDBytes.(string) 
-        if !found || assetID == "" {
-            err := errors.New("deletePropertiesFromAsset arg does not include assetID")
-            log.Error(err)
-            return nil, err
-        }
-    }
-
-    found = assetIsActive(stub, assetID)
-    if !found {
-        err = fmt.Errorf("deletePropertiesFromAsset assetID %s does not exist", assetID)
-        log.Error(err)
-        return nil, err
-    }
-
-    // is there a list of property names?
-    var qprops []interface{}
-    qpropsBytes, found := getObject(argsMap, "qualPropsToDelete")
-    if found {
-        qprops, found = qpropsBytes.([]interface{})
-        log.Debugf("deletePropertiesFromAsset qProps: %+v, Found: %+v, Type: %+v", qprops, found, reflect.TypeOf(qprops))
-        if !found || len(qprops) < 1 {
-            log.Errorf("deletePropertiesFromAsset asset %s qualPropsToDelete is not an array or is empty", assetID)
-            return nil, err
-        }
-    } else {
-        log.Errorf("deletePropertiesFromAsset asset %s has no qualPropsToDelete argument", assetID)
-        return nil, err
-    }
-
-    // **********************************
-    // find the asset state in the ledger
-    // **********************************
-    log.Infof("deletePropertiesFromAsset: retrieving asset %s state from ledger", assetID)
-    assetBytes, err := stub.GetState(assetID)
-    if err != nil {
-        err = fmt.Errorf("deletePropertiesFromAsset AssetID %s GETSTATE failed: %s", assetID, err)
-        log.Error(err)
-        return nil, err
-    }
-
-    // unmarshal the existing state from the ledger to the interface
-    err = json.Unmarshal(assetBytes, &ledgerBytes)
-    if err != nil {
-        err = fmt.Errorf("deletePropertiesFromAsset AssetID %s unmarshal failed: %s", assetID, err)
-        log.Error(err)
-        return nil, err
-    }
-    
-    // assert the existing state as a map
-    ledgerMap, found = ledgerBytes.(map[string]interface{})
-    if !found {
-        err = fmt.Errorf("deletePropertiesFromAsset AssetID %s LEDGER state is not a map shape", assetID)
-        log.Error(err)
-        return nil, err
-    }
-
-    // now remove properties from state, they are qualified by level
-    OUTERDELETELOOP:
-    for p := range qprops {
-        prop := qprops[p].(string)
-        log.Debugf("deletePropertiesFromAsset AssetID %s deleting qualified property: %s", assetID, prop)
-        // TODO Ugly, isolate in a function at some point
-        if (CASESENSITIVEMODE  && strings.HasSuffix(prop, ASSETID)) ||
-           (!CASESENSITIVEMODE && strings.HasSuffix(strings.ToLower(prop), strings.ToLower(ASSETID))) {
-            log.Warningf("deletePropertiesFromAsset AssetID %s cannot delete protected qualified property: %s", assetID, prop)
-        } else {
-            levels := strings.Split(prop, ".")
-            lm := (map[string]interface{})(ledgerMap)
-            for l := range levels {
-                // lev is the name of a level
-                lev := levels[l]
-                if l == len(levels)-1 {
-                    // we're here, delete the actual property name from this level of the map
-                    levActual, found := findMatchingKey(lm, lev)
-                    if !found {
-                        log.Warningf("deletePropertiesFromAsset AssetID %s property match %s not found", assetID, lev)
-                        continue OUTERDELETELOOP
-                    }
-                    log.Debugf("deletePropertiesFromAsset AssetID %s deleting %s", assetID, prop)
-                    delete(lm, levActual)
-                } else {
-                    // navigate to the next level object
-                    log.Debugf("deletePropertiesFromAsset AssetID %s navigating to level %s", assetID, lev)
-                    lmBytes, found := findObjectByKey(lm, lev)
-                    if found {
-                        lm, found = lmBytes.(map[string]interface{})
-                        if !found {
-                            log.Noticef("deletePropertiesFromAsset AssetID %s level %s not found in ledger", assetID, lev)
-                            continue OUTERDELETELOOP
-                        }
-                    } 
-                }
-            } 
-        }
-    }
-    log.Debugf("updateAsset AssetID %s final state: %s", assetID, ledgerMap)
-
-    // add transaction uuid and timestamp
-    ledgerMap[TXNUUID] = stub.UUID
-    txnunixtime, err := stub.GetTxTimestamp()
-	if err != nil {
-		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
-        log.Error(err)
-        return nil, err
-	}
-    txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
-    ledgerMap[TXNTIMESTAMP] = txntimestamp
-
-    // save the original event
-    ledgerMap["txnEvent"] = make(map[string]interface{})
-    ledgerMap["txnEvent"].(map[string]interface{})["function"] = "deletePropertiesFromAsset"
-    ledgerMap["txnEvent"].(map[string]interface{})["args"] = args[0]
-    
-    // handle compliance section
-    alerts = newAlertStatus()
-    a, found := ledgerMap["alerts"] // is there an existing alert state?
-    if found {
-        // convert to an AlertStatus, which does not work by type assertion
-        log.Debugf("deletePropertiesFromAsset Found existing alerts state: %s", a)
-        // complex types are all untyped interfaces, so require conversion to
-        // the structure that is used, but not in the other direction as the
-        // type is properly specified
-        alerts.alertStatusFromMap(a.(map[string]interface{}))
-    }
-    // important: rules need access to the entire calculated state 
-    noncompliant, err := ledgerMap.executeRules(&alerts)
-    if err != nil {
-		err = fmt.Errorf("Rules engine failure: %s", err)
-        log.Error(err)
-        return nil, err
-    }
-    if noncompliant {
-        // true means noncompliant
-        log.Noticef("deletePropertiesFromAsset assetID %s is noncompliant", assetID)
-        // update ledger with new state, if all clear then delete
-        ledgerMap["alerts"] = alerts
-        delete(ledgerMap, "compliant")
-    } else {
-        if alerts.AllClear() {
-            // all false, no need to appear
-            delete(ledgerMap, "alerts")
-        } else {
-            ledgerMap["alerts"] = alerts
-        }
-        ledgerMap["compliant"] = true
-    }
-    
-    // Write the new state to the ledger
-    stateJSON, err := json.Marshal(ledgerMap)
-    if err != nil {
-        err = fmt.Errorf("deletePropertiesFromAsset AssetID %s marshal failed: %s", assetID, err)
-        log.Error(err)
-        return nil, err
-    }
-
-    // finally, put the new state
-    err = stub.PutState(assetID, []byte(stateJSON))
-    if err != nil {
-        err = fmt.Errorf("deletePropertiesFromAsset AssetID %s PUTSTATE failed: %s", assetID, err)
-        log.Error(err)
-        return nil, err
-    }
-    err = pushRecentState(stub, string(stateJSON))
-    if err != nil {
-        err = fmt.Errorf("deletePropertiesFromAsset AssetID %s push to recentstates failed: %s", assetID, err)
-        log.Error(err)
-        return nil, err
-    }
-
-    // add history state
-    err = updateStateHistory(stub, assetID, string(stateJSON))
-    if err != nil {
-        err = fmt.Errorf("deletePropertiesFromAsset AssetID %s push to history failed: %s", assetID, err)
-        log.Error(err)
-        return nil, err
-    }
-
-	return nil, nil
-}
-
-// ************************************
-// deleteAllAssets 
-// ************************************
-func (t *SimpleChaincode) deleteAllAssets(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var assetID string
-	var err error
-
-	if len(args) > 0 {
-        err = errors.New("Too many arguments. Expecting none.")
-		log.Error(err)
-		return nil, err
-	}
-    
-    aa, err := getActiveAssets(stub)
-    if err != nil {
-        err = fmt.Errorf("deleteAllAssets failed to get the active assets: %s", err)
-        log.Error(err)
-        return nil, err
-    }
-    for i := range aa {
-        assetID = aa[i]
-        
-        // Delete the key / asset from the ledger
-        err = stub.DelState(assetID)
-        if err != nil {
-            err = fmt.Errorf("deleteAllAssets arg %d assetID %s failed DELSTATE", i, assetID)
-            log.Error(err)
-            return nil, err
-        }
-        // remove asset from contract state
-        err = removeAssetFromContractState(stub, assetID)
-        if err != nil {
-            err = fmt.Errorf("deleteAllAssets asset %s failed to remove asset from contract state: %s", assetID, err)
-            log.Critical(err)
-            return nil, err 
-        }
-        // save state history
-        err = deleteStateHistory(stub, assetID)
-        if err != nil {
-            err := fmt.Errorf("deleteAllAssets asset %s state history delete failed: %s", assetID, err)
-            log.Critical(err)
-            return nil, err 
-        }
-    }
-    err = clearRecentStates(stub)
-    if err != nil {
-        err = fmt.Errorf("deleteAllAssets clearRecentStates failed: %s", err)
-        log.Error(err)
-        return nil, err
-    }
-	return nil, nil
-}
 
 // ************************************
 // readAsset 
