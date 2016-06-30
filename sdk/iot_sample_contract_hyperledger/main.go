@@ -72,7 +72,10 @@ Howard McKinney- Initial Contribution
 // v4.2 KL May 28 2016 Replace all occurences of "incompliance" with "compliant" to remove an obvious source of confusion.
 //                     Remove a copy paste error in the new testValidation rule where it was falling through and clearing
 //                     the OVERTEMP rule, causing total havoc with that rule.
-
+// v4.3 KL June 30 2016 Copied improvements from simple aviation contract 4.2sa. (1) Store the JSON map of the argument 
+//                      in the lastEvent. (2) Store TXNUUID and timestamp in state only. (3) Note position where setter
+//                      subevents are deleted from state, while leaving recorder subevents intact. (4) Make deepcopy of
+//                      args into stateOut in create to avoid infinite loop when args are attached into lastEvent.
 
 package main
 
@@ -275,8 +278,15 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
         return nil, err
     }
 
+    // copy incoming event to outgoing state
+    // this contract respects the fact that createAsset can accept a partial state
+    // as the moral equivalent of one or more discrete events
+    var stateOut ArgsMap
+    stateOut = deepMerge(map[string]interface{}(argsMap), 
+                          make(map[string]interface{}))
+
     // add transaction uuid and timestamp
-    argsMap[TXNUUID] = stub.UUID
+    stateOut[TXNUUID] = stub.UUID
     txnunixtime, err := stub.GetTxTimestamp()
 	if err != nil {
 		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
@@ -284,19 +294,12 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
         return nil, err
 	}
     txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
-    argsMap[TXNTIMESTAMP] = txntimestamp
+    stateOut[TXNTIMESTAMP] = txntimestamp
    
-    // copy incoming event to outgoing state
-    // this contract respects the fact that createAsset can accept a partial state
-    // as the moral equivalent of one or more discrete events
-    // further: this contract understands that its schema has two discrete objects
-    // that are meant to be used to send events: common, and custom
-    stateOut := argsMap
-    
     // save the original event
     stateOut["lastEvent"] = make(map[string]interface{})
     stateOut["lastEvent"].(map[string]interface{})["function"] = "createAsset"
-    stateOut["lastEvent"].(map[string]interface{})["args"] = args[0]
+    stateOut["lastEvent"].(map[string]interface{})["arg"] = argsMap
     if len(args) == 2 {
         // in-band protocol for redirect
         stateOut["lastEvent"].(map[string]interface{})["redirectedFromFunction"] = args[1]
@@ -323,6 +326,10 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
         }
         stateOut["compliant"] = true
     }
+
+    // remove setter or command sub-events now that the incoming event is captured
+    //delete(stateOut, "setter1")
+    //delete(stateOut, "setter2")
 
     // marshal to JSON and write
     stateJSON, err := json.Marshal(&stateOut)
@@ -437,17 +444,6 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
         return nil, err
     }
 
-    // add transaction uuid and timestamp
-    argsMap[TXNUUID] = stub.UUID
-    txnunixtime, err := stub.GetTxTimestamp()
-	if err != nil {
-		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
-        log.Error(err)
-        return nil, err
-	}
-    txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
-    argsMap[TXNTIMESTAMP] = txntimestamp
-    
     // **********************************
     // find the asset state in the ledger
     // **********************************
@@ -482,10 +478,21 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
                           map[string]interface{}(ledgerMap))
     log.Debugf("updateAsset assetID %s merged state: %s", assetID, stateOut)
 
+    // add transaction uuid and timestamp
+    stateOut[TXNUUID] = stub.UUID
+    txnunixtime, err := stub.GetTxTimestamp()
+	if err != nil {
+		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
+        log.Error(err)
+        return nil, err
+	}
+    txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
+    stateOut[TXNTIMESTAMP] = txntimestamp
+    
     // save the original event
     stateOut["lastEvent"] = make(map[string]interface{})
     stateOut["lastEvent"].(map[string]interface{})["function"] = "updateAsset"
-    stateOut["lastEvent"].(map[string]interface{})["args"] = args[0]
+    stateOut["lastEvent"].(map[string]interface{})["arg"] = argsMap
 
     // handle compliance section
     alerts := newAlertStatus()
@@ -521,6 +528,10 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
         stateOut["compliant"] = true
     }
     
+    // remove setter or command sub-events now that the incoming event is captured
+    //delete(stateOut, "setter1")
+    //delete(stateOut, "setter2")
+
     // Write the new state to the ledger
     stateJSON, err := json.Marshal(ledgerMap)
     if err != nil {
@@ -787,7 +798,7 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
     // save the original event
     ledgerMap["lastEvent"] = make(map[string]interface{})
     ledgerMap["lastEvent"].(map[string]interface{})["function"] = "deletePropertiesFromAsset"
-    ledgerMap["lastEvent"].(map[string]interface{})["args"] = args[0]
+    ledgerMap["lastEvent"].(map[string]interface{})["arg"] = argsMap
     
     // handle compliance section
     alerts = newAlertStatus()
