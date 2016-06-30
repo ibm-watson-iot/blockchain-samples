@@ -23,6 +23,8 @@ Kim Letkeman - Initial Contribution
 // KL 12 Mar 2016 Conversion to externally present as alert names
 // KL 29 Mar 2016 Fixed subtle bug in OVERTEMP discovered while
 //                documenting the rules engine for 3.0.5
+// KL 30 Jun 2016 Copy new function call to automatically maintain 
+//                raised and cleared flags. From aviation contract v4.2sa
 // ************************************
 
 package main
@@ -35,6 +37,8 @@ func (a *ArgsMap) executeRules(alerts *AlertStatus) (bool, error) {
     log.Debugf("Executing rules input: %+v", *alerts)
     // transform external to internal for easy alert status processing
     var internal = (*alerts).asAlertStatusInternal()
+
+    internal.clearRaisedAndClearedStatus()
 
     // ------ validation rules
     // rule 1 -- test validation failure

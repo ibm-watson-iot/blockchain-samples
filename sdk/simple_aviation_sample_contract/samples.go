@@ -28,7 +28,7 @@ var samples = `
                 "latitude": 123.456,
                 "longitude": 123.456
             },
-            "timestamp": "2016-06-28T15:44:07.447759544Z"
+            "timestamp": "2016-06-30T01:36:51.218742755Z"
         },
         "lifelimitdeduct": 123.456
     },
@@ -76,7 +76,7 @@ var samples = `
                 "latitude": 123.456,
                 "longitude": 123.456
             },
-            "timestamp": "2016-06-28T15:44:07.447871569Z"
+            "timestamp": "2016-06-30T01:36:51.218830755Z"
         },
         "lastEvent": {
             "arg": {
@@ -98,7 +98,7 @@ var samples = `
                         "latitude": 123.456,
                         "longitude": 123.456
                     },
-                    "timestamp": "2016-06-28T15:44:07.447855645Z"
+                    "timestamp": "2016-06-30T01:36:51.218816228Z"
                 },
                 "lifelimitdeduct": 123.456
             },

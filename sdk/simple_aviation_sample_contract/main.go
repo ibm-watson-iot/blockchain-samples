@@ -474,9 +474,6 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
     // now add incoming map values to existing state to merge them
     // this contract respects the fact that updateAsset can accept a partial state
     // as the moral equivalent of one or more discrete events
-    // further: this contract understands that its schema has two discrete objects
-    // that are meant to be used to send events: common, and custom
-    // ledger has to have common section
     stateOut := deepMerge(map[string]interface{}(argsMap), 
                           map[string]interface{}(ledgerMap))
     log.Debugf("updateAsset assetID %s merged state: %s", assetID, stateOut)
