@@ -1,0 +1,39 @@
+{
+    "devices": [
+	    {
+			"name": "Smart Plug", 
+			"assettype": "smart_plug",
+			"description": "Smart Plug working in XBee network", 
+			"assetid" :"77ce3e45-a5d1-416a-9701-4383aa4bd00b",
+			"create_date": 1417484201541,
+			"last_mod_date": 1417484970337,
+			"last_sample_date": 1417484981903, 
+			"schema_version": 1,
+			"indicators": { 
+				"on_off_state": false
+			} 
+	    },
+	    {
+			"name": "Variable Speed Motor",
+			"assettype": "variable_speed_motor",
+			"description": "Variable Speed Motor managed by Motor Driver through Modbus",
+			"assetid": "66fad0c0-1cfb-11e4-8c21-0800200c9a66",
+			"create_date": 1417484200223,
+			"last_mod_date": 1417484681910,
+			"last_sample_date": 1417484981895,
+			"schema_version": 1,
+			"indicators": {
+				"acceleration_time": 6.0,
+				"on_off_state": true,
+				"direction": false,
+				"stop_method": 1,
+				"base_rpm": 1525,
+				"max_rpm": 3600,
+				"rpm": 2500,
+				"output_current": 10,
+				"output_voltage": 115,
+				"output_frequency": 34.0
+			}
+	    }
+    ]
+}

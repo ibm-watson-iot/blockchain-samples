@@ -1,0 +1,8 @@
+{
+        "contractid":"abc",
+        "host":"localhost",
+        "port":5000,
+        "path":"/chaincode",
+        "method":"invoke",
+        "functionName":"createAsset"
+}
