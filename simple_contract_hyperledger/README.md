@@ -14,7 +14,7 @@ The following information is provided to help you to get started with the Basic 
 
 ## Overview
 {: #overview}
-The Basic blockchain sample, **simple_contract_hyperledger.go**, is the default smart contract for getting started with writing blockchain contracts. The Basic contract includes create, read, update, and delete asset data operations for tracking device data on the IBM Blockchain ledger. Like all other IBM Blockchain contracts, the Basic contract sample is developed in the Go programming language. IBM plan to support contracts written in other languages in the near future.
+The Basic blockchain sample, **simple_contract_hyperledger.go**, is the default smart contract for getting started with writing blockchain contracts. The Basic contract includes create, read, update, and delete asset data operations for tracking device data on the IBM Blockchain ledger. Like all other IBM Blockchain contracts, the Basic contract sample is developed in the Go programming language. IBM plan to support contracts that are written in other languages soon.
 
 You can run your smart contracts for Blockchain from either the command line or from a REST interface. For more information, see
 [Developing smart contracts for Watson IoT Platform blockchain integration](https://console.ng.bluemix.net/docs/services/IoT/blockchain/dev_blockchain.html).
@@ -32,7 +32,7 @@ As outlined in Basic sample, IBM Blockchain contract code includes the following
 When you call any of the methods, you must first pass a JSON string that includes the function name and a set of arguments as key-value pairs to the chain code instance. You can define multiple methods within the same contract.
 
 [Where should this go?]
-To create a simple contract to create, read, update and delete asset data, use the following following methods:
+To create a simple contract to create, read, update, and delete asset data, use the following methods:
 
 |Method|Provides|
 |:---|:---|
@@ -48,7 +48,7 @@ The Watson IoT Platform includes a data mapping component to route your data to 
 
 |Function|Used by the data mapping function to....|
 |:---|:---|
-|`updateAsset`|<ul><li>Create asset records if one doesn't already exist on the ledger</li><li>Update asset data for existing records</li><li>Map the asset ID to the Watson IoT Platform serial ID</li><li>Accept IoT device input data in the form of JSON strings</li></ul>|
+|`updateAsset`|<ul><li>Create asset records if one doesn't exist on the ledger</li><li>Update asset data for existing records</li><li>Map the asset ID to the Watson IoT Platform serial ID</li><li>Accept IoT device input data in the form of JSON strings</li></ul>|
 |`readAssetSchemas`|Expose the function names and properties that are required by the contract so that the data mapper can correctly map the event properties to the contract properties
 
 
@@ -72,7 +72,7 @@ Detailed information about how to complete each step is hyperlinked to the secti
 
 ### 1. Downloading the Basic samples
 {: #downloading}
-Download the Basic blockchain contract sample from the [IBM Blockchain contracts](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/simple_contract_hyperledger) repository on GitHub.  You will need the following Basic sample files, which are provided in the repository folder:
+Download the Basic blockchain contract sample from the [IBM Blockchain contracts](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/simple_contract_hyperledger) repository on GitHub.  You need the following Basic sample files, which are provided in the repository folder:
 
 - **simple_contract_hyperledger.go**|The Basic contract source file
 - **samples.go**|?|
@@ -111,7 +111,7 @@ Note: You can eventually increase the complexity of the `ContractState` code in 
 
 The Basic contract provides the Blockchain contract code that is required for an asset that is in transit and is also being tracked as it moves from one location to another. In this example, the following asset data is tracked:
 
-- Unique alphanumeric id that identifies the asset
+- Unique alphanumeric ID that identifies the asset
 - Location
 - Temperature
 - Carrier
@@ -138,17 +138,17 @@ Location has two attributes, latitude and longitude.
 
 #### Pointers
 
-All the fields in the data structure definition are pointers, which is indicated by a preceding asterix character ('\*'), for example, '\*'float64.
+All the fields in the data structure definition are defined as pointers. A pointer is indicated by a preceding asterix character ('\*'), for example, '\*'float64.
 
-When a JSON string is marshaled to a `struct`, if the string does not have a particular field, a default value for the data type is assigned. Because a blank value is valid for a string, and a zero (0) character is also a valid number, incorrect data values could be assigned to fields with missing data types. To work around this problem, use pointers. If the pointer field of a struct isn't represented in the input JSON string, that field's value is not mapped. Another way to work around the problem is to feed the data into a map. Unlike a 'struct', a map doesn't have a specific data structure and accepts the submitted data without requiring and assigning default field values. However, when a specific data structure is expected and types must be validated, it is good to use structs, for example, in the case of a specific IoT device in this example.
+When a JSON string is marshaled to a `struct`, if the string does not have a particular field, a default value for the data type is assigned. Because a blank value is valid for a string, and a zero (0) character is also a valid number, incorrect data values might be assigned to fields with missing data types. To work around this problem, use pointers. If the pointer field of a struct isn't represented in the input JSON string, that field's value is not mapped. Another way to work around the problem is to feed the data into a map. Unlike a 'struct', a map doesn't have a specific data structure and accepts the submitted data without requiring and assigning default field values. However, when a specific data structure is expected and types must be validated, it is good to use structs, for example, in the case of a specific IoT device in this example.
 
-Another advantage of marshalling JSON values to or from a struct is that Golang makes every effort to match the fields and look for perfect case-insensitive matches, ignoring the order of the fields. Whereas when you define map elements, you need to handle case mismatches and assert data types explicitly.
+Another advantage of marshaling JSON values to or from a struct is that Golang makes every effort to match the fields and look for perfect case-insensitive matches, ignoring the order of the fields. Whereas when you define map elements, you need to handle case mismatches and assert data types explicitly.
 
 
 ### 4. Initializing the contract
 {: #initialize_contract}
 
-The `init` function is one of the three required functions of the chaincode and initializes the contract. The other required functions pf the chaincode are `invoke` and `query`. The `init` function is called as a 'deploy' function to deploy the chaincode to the fabric. Notice the signature of the function. The `init`, `invoke`, and `query` functions share the following arguments:
+The `init` function is one of the three required functions of the chaincode and initializes the contract. The other required functions of the chaincode are `invoke` and `query`. The `init` function is called as a 'deploy' function to deploy the chaincode to the fabric. Notice the signature of the function. The `init`, `invoke`, and `query` functions share the following arguments:
 
 |Argument|Description|
 |:---|:---|
@@ -173,7 +173,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
     var err error
 ```
 
-The following example shows how you can create an instance of ContractState, which we declared earlier in step 2.
+The following example shows how you can create an instance of ContractState, which was declared earlier in step 2.
 
 ```go
 	if len(args) != 1 {
@@ -211,7 +211,7 @@ If the versions match, the contract code continues, and the following code to wr
 ## 5. Defining the invoke methods
 {: #define_invoke_methods}
 
-Define the `invoke` methods for the create, read, update, and delete operations in your contract, which is where the majority of the contract action occurs. The `createAsset`, `updateAsset` and `deleteAsset` methods of the create, retrieve, update, and delete interface are explained in this section.
+Define the `invoke` methods for the create, read, update, and delete operations in your contract, which is where most of the contract action occurs. The `createAsset`, `updateAsset` and `deleteAsset` methods of the create, retrieve, update, and delete interface are explained in this section.
 
 #### Create and update asset data
 
@@ -229,10 +229,10 @@ _,erval:=t. createOr`updateAsset`(stub, args)
 return nil, erval
 }
 ```
-If the asset does not already exist, it is classified as a new asset and is created. If the asset already exists, the new record is classified as an update and the asset is updated with the new values that are retrieved. For example, if, in the new record, only temperature and location values are submitted, only those values of the asset get updated in the shim. Carrier data will be maintained as previously received, if any.
+If the asset doesn't exist, it is classified as a new asset and is created. If the asset does exists, the new record is classified as an update and the asset is updated with the new values that are retrieved. For example, if, in the new record, only temperature and location values are submitted, only those values of the asset get updated in the shim. If carrier data exists, it is maintained in the state that it was previously received.
 
 - `
-Now, let us take a look at this common function. The first step of the `createOrupdateAsset` function is a call to `validateInput`, which is explained later in`‘Validate input data`.
+The first step of the `createOrupdateAsset` common function is a call to `validateInput`, which is explained later in`‘Validate input data`.
 
 ```go
 stateIn, err = t.`validateInput`(args)
@@ -240,7 +240,7 @@ if err != nil {
 return nil, err
 }
 ```
-After you run the code, to confirm whether the asset already exists, insert a call to the `shim.GetState` method. If the asset does not exist, it is a create scenario and the data is saved as received. If the asset exists, a call is made to the `mergePartialState` method to merge old and new data and the updated record gets written to the shim.
+After you run the code, to confirm whether the asset exists, insert a call to the `shim.GetState` method. If the asset does not exist, it is a create scenario and the data is saved as received. If the asset exists, a call is made to the `mergePartialState` method to merge old and new data and the updated record gets written to the shim.
 
 ```go
 //Partial updates introduced here
@@ -248,7 +248,7 @@ After you run the code, to confirm whether the asset already exists, insert a ca
 assetBytes, err:= stub.GetState(assetID)
 if err != nil || len(assetBytes)==0{
 // This implies that this is a 'create' scenario
-stateStub = stateIn // The record that goes into the stub is the one that cme in
+stateStub = stateIn // The record that goes into the stub is the one that came in
 } else {
 // This is an update scenario
 err = json.Unmarshal(assetBytes, &stateStub)
@@ -276,7 +276,7 @@ Use a `query` method to define how the contract data is read. The Basic contract
 - Read asset object model (readAssetObjectModel) method
 
 #### Read asset data (readAsset) method
-The`readAsset` method returns the asset data that is stored in the ledger for the asset ID that is input. Method signature is quite similar to the other methods and so is the call to `validateInput`. The part where it differs is that in this method, we use the asset id to fetch the asset data from the state and return it, raising an error if the asset data does not exist. You will notice that we are using the same stub GetState call here that we've previously come across.
+The`readAsset` method returns the asset data that is stored in the ledger for the asset ID that is input. Method signature is similar to the other methods as is the call to `validateInput`. The only difference is that in this method, the asset ID is used to fetch the asset data from the state and return it, and an error is raised if the asset data does not exist. Note that the same stub GetState call that was used previously in this sample is also used here.
 ```go
     assetID = *stateIn.AssetID
         // Get the state from the ledger
@@ -287,12 +287,12 @@ The`readAsset` method returns the asset data that is stored in the ledger for th
     }
     err = json.Unmarshal(assetBytes, &state)
     if err != nil {
-         err = errors.New("Unable to unmarshal state data obtained from ledger")
+         err = errors.New("Unable to unmarshal state data that is obtained from ledger")
         return nil, err
     }
 ```
 #### Read asset object model (readAssetObjectModel) method
-The `readAssetObjectModel` method returns the object model of the asset data set that the contract expects. The output of the  `readAssetObjectModel` method helps the user interface and mapping component understand the structure of the input JSON string that is expected by the contract. The signature is similar to the others because this is a `query` method.
+The `readAssetObjectModel` method returns the object model of the asset data set that the contract expects. The output of the `readAssetObjectModel` method helps the user interface and mapping component understand the structure of the input JSON string that is expected by the contract. The signature is similar to the others because this is a `query` method.
 
 In the following example, the `readAssetObjectModel` method creates an empty instance of the `AssetState` definition, marshals it to a JSON string, and then returns it so that the caller knows the input data structure.
 
@@ -320,9 +320,17 @@ The **schemas.go** and the **samples.go** files are provided with the Basic cont
 ## 7. Defining the callbacks
 {: #define_callbacks}
 
-In IBM Blockchain contracts, the `init` method handles `init` commands, which are the ones that are called as part of the 'deploy' phase when the code is run. The `invoke` method handles `invoke` method calls and the `query` method handles invocations of type 'query'. We've already implemented 'Init'. Now lets write simple Invoke and Query methods that will call our functions -`createAsset`, `updateAsset`, `deleteAsset`, `readAsset`, `readAssetObjectModel`, `readAssetSchemas` and `readAssetSamples` methods, based on the function name that is passed to the contract invocation.
+In IBM Blockchain contracts, the `init` method handles `init` commands, which are the ones that are called as part of the 'deploy' phase when the code is run. The `invoke` method handles `invoke` method calls and the `query` method handles invocations of type 'query'. In the previous step, you implemented the 'init' comand, so you are now ready to write some simple invoke and query methods to call the following functions:
 
-The following example is for the `invoke` implementation:
+- `createAsset`
+- `updateAsset`
+- `deleteAsset`
+- `readAsset`
+- `readAssetObjectModel`
+- `readAssetSchemas`
+- `readAssetSamples`
+
+The following example is for the `invoke` implementation.
 
 ```go
 func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
@@ -395,7 +403,7 @@ func (t *SimpleChaincode) `validateInput`(args []string) (stateIn AssetState, er
             return state, err
         }
     } else {
-        err = errors.New("Asset id is mandatory in the input JSON data")
+        err = errors.New("Asset ID is mandatory in the input JSON data")
         return state, err
     }
     stateIn.AssetID = &assetID
@@ -427,7 +435,7 @@ The 'main' function creates a 'shim' instance.
 
 Note that we have a fmt.Printf command here. Printf and Println commands can easily be used to debug the chaincode as we write / modify and test chaincode. However, since the chaincode runs inside a docker container, these will get written to the log of the docker instance and space gets filled up very quickly, especially if the environment is running in debug mode. It is prudent to limit or avoid Print statements in actual deployed chaincode as the chaincode is essentially supposed to run in the background.
 
-Best practices around docker log management, like Logrotate, which is supported since Docker V1.8, could be adopted to avoid space issues. You can also optionally incorporate contract logging implementations in your contracts.
+To avoid space issues, implement a procedure for docker log management, for example, you can implement Logrotate, which is supported since Docker V1.8. You can also optionally incorporate contract logging implementations in your contracts.
 ```
 func main() {
 	err := shim.Start(new(SimpleChaincode))
@@ -463,9 +471,9 @@ The following code snippet provides an example of how you can delete assets from
 ## Invoking the contract
 {: #invoking_the_contract}
 
-When you complete all of the required steps in [Developing your IBM Blockchain hyperledger by using the Basic contract sample](#instructions) you will have a simple contract to manage Watson IoT Platform asset data on the blockchain by using a simple create, retrieve, update, and delete operations interface. The next step is to use the contract. IBM Blockchain contracts expose REST APIs and these can be invoked through the command-line, or you can make REST API calls by using either Swagger or Node.js. No matter which method you use, the actual syntax of the calls made to a chaincode does not change. Later on in the more advanced contacts, you can see an example of a sample UI that provides a more user-friendly way of calling the contract.
+When you complete all of the required steps in [Developing your IBM Blockchain hyperledger by using the Basic contract sample](#instructions) you will have a simple contract to manage Watson IoT Platform asset data on the blockchain. Your contract will use a simple create, retrieve, update, and delete operations interface. The next step is to use the contract by invoking it. IBM Blockchain contracts expose REST APIs and these can be invoked through the command-line, or you can make REST API calls by using either Swagger or Node.js. No matter which method you use, the actual syntax of the calls that are made to a chaincode does not change. Later on in the more advanced contacts, you can see an example of a sample UI that provides a more user-friendly way of calling the contract.
 
-As mentioned earlier, IBM Blockchain understands `deploy`, `invoke`, and `query` calls, of of which must contain a JSON string as input. The input string must also include a Function key and an Args key. The Function key is the name of the actual function you are calling, and the Args are the arguments you want to pass on to it.
+As mentioned earlier, IBM Blockchain understands `deploy`, `invoke`, and `query` calls, of which must contain a JSON string as input. The input string must also include a Function key and an Args key. The Function key is the name of the actual function you are calling, and the Args are the arguments you want to pass on to it.
 
 There are several IBM Blockchain resources in GitHub that explain in more detail how you can set up the [DevNet](https://github.com/hyperledger/fabric/blob/master/docs/dev-setup/devnet-setup.md) and [Sandbox](https://github.com/hyperledger/fabric/blob/master/docs/API/SandboxSetup.md) environments, and also how to test contracts in the command line. The Sandbox environment is particularly useful for writing new contracts or modifying existing ones as it provides you with an environment to test and debug chaincode without needing to set up a complete IBM Bluemix Hyperledger network. Let's see some examples of the command-line and rest calls to our sample chaincode.
 
@@ -492,9 +500,9 @@ Where:
 - Function name is 'init'
 - Arguments are listed inside Args: []
 
-Note: Make a note of the signature Also, in IBM Blockchain the content of Args[] can be any string(s), however, since our contract is about Watson IoT Platform data, which is in JSON format, the sample contract requires a JSON string inside Args[].
+Note: Make a note of the signature. Also, note that in IBM Blockchain the content of Args[] can be any string(s), however, since our contract is about Watson IoT Platform data, which is in JSON format, the sample contract requires a JSON string inside Args[].
 
-In command line Sandbox mode, in the tab where you have registered the contract, you can see the response of the Shim, stating that 'init' was received and was successful. If your contract includes print statements, which are useful for debugging, they will be displayed also. Remove print statements when the contract is deployed. IBM Blockchain `deploy` and `invoke` calls are asynchronous.
+In command line Sandbox mode, in the tab where you egistered the contract, you can see the response of the Shim, stating that 'init' was received and was successful. If your contract includes print statements, which are useful for debugging, they will also be displayed. Remove print statements when the contract is deployed. IBM Blockchain `deploy` and `invoke` calls are asynchronous.
 
 A REST call using `curl` would look like the following code example:
 
@@ -543,7 +551,7 @@ The following call returns a lengthy JSON object that lists all functions and th
 
 ###readAssetSamples
 
-The readAssetSamples function provides a sample of what could be passed in.
+The readAssetSamples function provides a sample of what might be passed in.
 ```
 ./peer chaincode query -l golang -n ex01 -c '{"Function":"readAssetSamples", "Args":[]}'
 ```
