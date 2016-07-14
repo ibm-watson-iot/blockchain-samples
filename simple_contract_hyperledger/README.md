@@ -13,7 +13,6 @@ The following information is provided to help you to get started with the Basic 
 - [Next steps](next_steps)
 
 ## Overview
-{: #overview}
 The Basic blockchain sample, **simple_contract_hyperledger.go**, is the default smart contract for getting started with writing blockchain contracts. The Basic contract includes create, read, update, and delete asset data operations for tracking device data on the IBM Blockchain ledger. Like all other IBM Blockchain contracts, the Basic contract sample is developed in the Go programming language. IBM plan to support contracts that are written in other languages soon.
 
 You can run your smart contracts for Blockchain from either the command line or from a REST interface. For more information, see
@@ -23,9 +22,9 @@ As outlined in Basic sample, IBM Blockchain contract code includes the following
 
 |Method|Description|
 |:---|:---|
-|`deploy`|?|  
-|`invoke`|?|
-|`query`|?|
+|`deploy`|`Used to deploy a smart contract`|  
+|`invoke`|`Used to update a smart contract`|
+|`query`|`Used to query a smart contract`|
 
 **Note:** In the Basic contract sample, the `deploy` method is called `init`.
 
