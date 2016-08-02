@@ -296,7 +296,7 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/event"
+                                "$ref": "#/definitions/eventComposite"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -319,7 +319,7 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/event"
+                                "$ref": "#/definitions/eventComposite"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -791,7 +791,7 @@
             "description": "function and string parameter that created this state object",
             "properties": {
                 "arg": {
-                    "$ref": "#/definitions/event"
+                    "$ref": "#/definitions/eventComposite"
                 },
                 "function": {
                     "type": "string",
@@ -818,170 +818,427 @@
             ],
             "description": "event sent to init on deployment"
         },
-        "event": {
+        "airline": {
             "type": "object",
-            "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+            "description": "The writable properties for an airline",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the airline."
+                },
+                "code": {
+                    "type": "string",
+                    "description": "The airline 3 letter code."
+                }
+            }
+        },
+        "airlineEvent": {
+            "type": "object",
+            "description": "The airline CRUD event",
+            "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
+                "airline": {
+                    "$ref": "#/definitions/airline"
+                }
+            }
+        },
+        "airlineState": {
+            "type": "object",
+            "description": "An airline state",
+            "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
+                "airline": {
+                    "$ref": "#/definitions/airline"
+                }
+            }
+        },
+        "aircraft": {
+            "type": "object",
+            "description": "Writable properties for an aircraft. Note that assetID is the aircraft serial number.",
+            "properties": {
+                "airline": {
+                    "type": "string",
+                    "description": "AssetID of airline that owns this airplane"
+                },
+                "operator": {
+                    "type": "string",
+                    "description": "AssetID of operator that flies this airplane"
+                },
+                "tailNumber": {
+                    "type": "string",
+                    "description": "Designated asset ID. Aircraft tail number (airline assigned)"
+                },
+                "model": {
+                    "type": "string",
+                    "description": "Aircraft model -- e.g. 737-5H4"
+                },
+                "variant": {
+                    "type": "string",
+                    "description": "Aircraft model variant -- e.g. B735"
+                },
+                "code": {
+                    "type": "string",
+                    "description": "Aircraft code -- e.g. WN / SWA"
+                },
+                "mode-s": {
+                    "type": "string",
+                    "description": "Aircraft transponder response -- e.g.  A68E4A"
+                },
+                "dateOfBuild": {
+                    "type": "string",
+                    "description": "Aircraft build completed / in service date"
+                }
+            }
+        },
+        "aircraftEvent": {
+            "type": "object",
+            "description": "The aircraft CRUD event",
+            "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
+                "aircraft": {
+                    "$ref": "#/definitions/aircraft"
+                }
+            }
+        },
+        "aircraftState": {
+            "type": "object",
+            "description": "An aircraft state",
+            "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
+                "aircraft": {
+                    "$ref": "#/definitions/aircraft"
+                },
+                "assemblies": {
+                    "type": "array",
+                    "description": "AssetID of airline that owns this airplane",
+                    "items": {
+                        
+                    }
+                },
+                "age": {
+                    "type": "string",
+                    "description": "Aircraft age, computed as today's date minus DOB"
+                },
+                "cycles": {
+                    "type": "number",
+                    "description": "Total number of cycles for this aircraft"
+                },
+                "aCheckCounter": {
+                    "type": "number",
+                    "description": "The total cycles since last reset. Raise ACHECK alert at 10 cycles. Clear only with ACHECK inspection event, which resets counter to zero."
+                },
+                "bCheckCounter": {
+                    "type": "number",
+                    "description": "Count consecutive hard landings. Two consecutive hard landings raises BCHECK alert. Only a BCHECK inspection can clear the alert."
+                }
+            }
+        },
+        "assembly": {
+            "type": "object",
+            "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
+            "properties": {
+                "airplane": {
+                    "type": "string",
+                    "description": "The assetID of the airplane on which this assembly is mounted. Blank if removed for maintenance."
+                },
+                "assemblyNumber": {
+                    "type": "string",
+                    "description": "Assembly type identifier"
+                },
+                "ataCode": {
+                    "type": "string",
+                    "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The assembly name."
+                },
+                "arlsZone": {
+                    "type": "string",
+                    "description": "tbd"
+                },
+                "lifeLimitInitial": {
+                    "type": "integer",
+                    "description": "Initial assembly life limit."
+                }
+            },
+            "required": [
+                "ATAcode",
+                "name"
+            ]
+        },
+        "assemblyEvent": {
+            "type": "object",
+            "description": "The assembly event. Note that assetID is the assembly serial number",
+            "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
+                "assembly": {
+                    "$ref": "#/definitions/assembly"
+                }
+            }
+        },
+        "assemblyState": {
+            "type": "object",
+            "description": "The set of writable properties that define an assembly's state.",
+            "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
+                "assembly": {
+                    "$ref": "#/definitions/assembly"
+                },
+                "cycles": {
+                    "type": "integer",
+                    "description": "Overall cycle count for this assembly."
+                },
+                "lifeLimitAdjusted": {
+                    "type": "integer",
+                    "description": "Overall analytic life limit adjustments for this assembly."
+                },
+                "aCheckCounter": {
+                    "type": "number",
+                    "description": "The total cycles since last reset. Raise ACHECK alert at 10 cycles. Clear only with ACHECK inspection event, which resets counter to zero."
+                },
+                "bCheckCounter": {
+                    "type": "number",
+                    "description": "Count consecutive hard landings. Two consecutive hard landings raises BCHECK alert. Only a BCHECK inspection can clear the alert."
+                }
+            },
+            "required": [
+                "ATAcode",
+                "name"
+            ]
+        },
+        "part": {
+            "type": "object",
+            "description": "TBD -- placeholder for now.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The part name."
+                },
+                "number": {
+                    "type": "string",
+                    "description": "Part number, unique to a specific design iteration."
+                },
+                "serialNumber": {
+                    "type": "string",
+                    "description": "Part serial number, unique to an individual part."
+                },
+                "vendorName": {
+                    "type": "string",
+                    "description": "Vendor name."
+                },
+                "vendorNumber": {
+                    "type": "string",
+                    "description": "Vendor part number."
+                },
+                "lifeLimitInitial": {
+                    "type": "integer",
+                    "description": "Initial part life limit."
+                },
+                "lifeLimitUsed": {
+                    "type": "integer",
+                    "description": "Part life limit that has been used, including adjustments."
+                }
+            },
+            "required": [
+                "partNumber",
+                "name"
+            ]
+        },
+        "flight": {
+            "type": "object",
+            "description": "A takeoiff and a landing",
+            "properties": {
+                "aircraft": {
+                    "type": "string",
+                    "description": "Aircraft tail or serial number (tbd)"
+                },
+                "flightnumber": {
+                    "type": "string",
+                    "description": "A flight number"
+                },
+                "from": {
+                    "type": "string",
+                    "description": "3 letter code of originating airport"
+                },
+                "to": {
+                    "type": "string",
+                    "description": "3 letter code of terminating airport"
+                },
+                "std": {
+                    "type": "string",
+                    "description": "standard time departure"
+                },
+                "atd": {
+                    "type": "string",
+                    "description": "actual time departure"
+                },
+                "sta": {
+                    "type": "string",
+                    "description": "standard time arrival"
+                },
+                "landingType": {
+                    "type": "string",
+                    "description": "code defining landing quality??"
+                },
+                "gForce": {
+                    "type": "number",
+                    "description": "force incurred on landing"
+                }
+            }
+        },
+        "flightEvent": {
+            "type": "object",
+            "description": "flight event, no assetID required since this is an event against an airplane",
+            "properties": {
+                "flight": {
+                    "$ref": "#/definitions/flight"
+                }
+            }
+        },
+        "inspection": {
+            "type": "object",
+            "description": "indicates that an inspection has occured for this aircraft",
+            "properties": {
+                "aircraft": {
+                    "type": "string",
+                    "description": "Aircraft tail or serial number (tbd)"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name"
+                },
+                "enum": [
+                    "select an inspection type",
+                    "ACHECK",
+                    "BCHECK"
+                ]
+            }
+        },
+        "inspectionEvent": {
+            "type": "object",
+            "description": "inspection event, no assetid required",
+            "properties": {
+                "inspection": {
+                    "$ref": "#/definitions/inspection"
+                }
+            }
+        },
+        "analyticAdjustment": {
+            "type": "object",
+            "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+            "properties": {
+                "assembly": {
+                    "type": "string",
+                    "description": "Assembly serial number"
+                },
+                "reducelifelimit": {
+                    "type": "object",
+                    "description": "reduction of life limit",
+                    "properties": {
+                        "reduction": { "type": "number"},
+                        "reason": { "type": "string" }
+                    }
+                },
+                "increaselifelimit": {
+                    "type": "object",
+                    "description": "increase of life limit",
+                    "properties": {
+                        "reduction": { "type": "number"},
+                        "reason": { "type": "string" }
+                    }
+                }
+            }
+        },
+        "analyticAdjustmentEvent": {
+            "type": "object",
+            "description": "analytic adjustment event, no assetid required",
+            "properties": {
+                "analyticAdjustment": {
+                    "$ref": "#/definitions/analyticAdjustment"
+                }
+            }
+        },
+        "iotCommon": {
+            "type": "object",
+            "description": "The set of common writable properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event'.",
             "properties": {
                 "assetID": {
                     "$ref": "#/definitions/assetID"
                 },
-                "iotcommon": {
-                    "type": "object",
-                    "description": "Common properties for IoT contracts",
-                    "properties": {
-                        "timestamp": {
-                            "type": "string",
-                            "description": "Device timestamp."
-                        },
-                        "location": {
-                            "$ref": "#/definitions/geo"
-                        },
-                        "extension": {
-                            "type": "object",
-                            "description": "Application-managed state. Opaque to contract.",
-                            "properties": {}
-                        }
-                    }
-                },
-                "airplane": {
-                    "type": "object",
-                    "description": "A single aircraft object with implied landing gear",
-                    "properties": {
-                        "airline": {
-                            "type": "string",
-                            "description": "Airline name"
-                        },
-                        "acnumber": {
-                            "type": "string",
-                            "description": "Aircraft number"
-                        },
-                        "acmodel": {
-                            "type": "string",
-                            "description": "Aircraft model"
-                        },
-                        "lifelimitinitial": {
-                            "type": "number",
-                            "description": "The initial life limit of the landing gear associated with this aircraft"
-                        }
-                    }
-                },
-                "flight": {
-                    "type": "object",
-                    "description": "A single aircraft with landing gear",
-                    "properties": {
-                        "flightnumber": {
-                            "type": "string",
-                            "description": "A flight number"
-                        },
-                        "hardlanding": {
-                            "type": "boolean",
-                            "description": "Latest landing was hard landing, 2 consecutive raises REQUIRE_BCHECK alert"
-                        }
-                    }
-                },
-                "inspection": {
+                "timestamp": {
                     "type": "string",
-                    "description": "Inspection type: ACHECK on every ten cycles, BCHECK on 2 consecutive hard landings",
-                    "enum": [
-                        "NONE",
-                        "ACHECK",
-                        "BCHECK"
-                    ]
+                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context."
                 },
-                "lifelimitdeduct": {
-                    "type": "number",
-                    "description": "added to lifelimitused as a deduction by analytics, examples are hard landings and rough runways"
+                "location": {
+                    "$ref": "#/definitions/geo"
+                },
+                "extension": {
+                    "type": "array",
+                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                    "minItems": 0,
+                    "items": { "type": "object", "properties": {} }
+                },
+                "references": {
+                    "type": "array",
+                    "description": "An array of external references relevant to this asset.",
+                    "minItems": 0,
+                    "items": { "type": "string" }
                 }
             },
             "required": [
                 "assetID"
             ]
         },
+        "event": {
+            "type": "object",
+            "description": "The set of event objects for this contract.",
+            "properties": {
+                "iotCommon": { "$ref": "#/definitions/iotCommon" },
+                "oneOf": {
+                    "airline": { "$ref": "#/definitions/airline" },
+                    "aircraft": { "$ref": "#/definitions/aircraft" },
+                    "assembly": { "$ref": "#/definitions/assembly" },
+                    "flight": { "$ref": "#/definitions/flight" },
+                    "inspection": { "$ref": "#/definitions/inspection" },
+                    "analyticAdjustment": { "$ref": "#/definitions/analyticAdjustment" }
+                }
+            }
+        },
+        "eventComposite": {
+            "type": "object",
+            "description": "The event for this contract that is processed by the monitoring UI and the IoTP Proxy for mapping device events to this contract. The actual sent event should only contain iotCommon and one of the other objects as described formally in the `event` object.",
+            "properties": {
+                "iotCommon": { "$ref": "#/definitions/iotCommon" },
+                "airline": { "$ref": "#/definitions/airline" },
+                "aircraft": { "$ref": "#/definitions/aircraft" },
+                "assembly": { "$ref": "#/definitions/assembly" },
+                "flight": { "$ref": "#/definitions/flight" },
+                "inspection": { "$ref": "#/definitions/inspection" },
+                "analyticAdjustment": { "$ref": "#/definitions/analyticAdjustment" }
+            }
+        },
         "state": {
             "type": "object",
             "description": "A set of properties that constitute a complete asset state. Includes event properties and any other calculated properties such as compliance related alerts.",
             "properties": {
-                "assetID": {
-                    "$ref": "#/definitions/assetID"
-                },
-                "iotcommon": {
-                    "type": "object",
-                    "description": "Common properties for IoT contracts",
-                    "properties": {
-                        "timestamp": {
-                            "type": "string",
-                            "description": "Device timestamp."
-                        },
-                        "location": {
-                            "$ref": "#/definitions/geo"
-                        },
-                        "extension": {
-                            "type": "object",
-                            "description": "Application-managed state. Opaque to contract.",
-                            "properties": {}
-                        }
-                    }
-                },
-                "airplane": {
-                    "type": "object",
-                    "description": "A single aircraft object with implied landing gear",
-                    "properties": {
-                        "airline": {
-                            "type": "string",
-                            "description": "Airline name"
-                        },
-                        "acnumber": {
-                            "type": "string",
-                            "description": "Aircraft number"
-                        },
-                        "acmodel": {
-                            "type": "string",
-                            "description": "Aircraft model"
-                        },
-                        "initiallifelimit": {
-                            "type": "number",
-                            "description": "The initial life limit of the landing gear associated with this aircraft"
-                        },
-                        "lifelimitused": {
-                            "type": "number",
-                            "description": "The life limit total use plus deductions for the landing gear associated with this aircraft"
-                        },
-                        "hardlanding": {
-                            "type": "boolean",
-                            "description": "The latest landing was a hard landing. Two consecutive hard landings raises BCHECK alert."
-                        },
-                        "cyclecounter": {
-                            "type": "number",
-                            "description": "The total cycles since last reset. Raise ACHECK alert at 10 cycles. Clear only with BCHECK, which resets counter to zero."
-                        }
-                    }
-                },
-                "flight": {
-                    "type": "object",
-                    "description": "A single aircraft with landing gear",
-                    "properties": {
-                        "flightnumber": {
-                            "type": "string",
-                            "description": "A flight number"
-                        },
-                        "hardlanding": {
-                            "type": "boolean",
-                            "description": "Latest landing was hard landing, 2 consecutive raises REQUIRE_BCHECK alert"
-                        }
-                    }
-                },
-                "inspection": {
-                    "type": "string",
-                    "description": "Inspection type: ACHECK on every ten cycles, BCHECK on 2 consecutive hard landings",
-                    "enum": [
-                        "NONE",
-                        "ACHECK",
-                        "BCHECK"
-                    ]
-                },
-                "lifelimitdeduct": {
-                    "type": "number",
-                    "description": "added to lifelimitused as a deduction by analytics, examples are hard landings and rough runways"
+                "iotCommon": { "$ref": "#/definitions/iotCommon" },
+                "oneOf": {
+                    "airline": { "$ref": "#/definitions/airline" },
+                    "aircraft": { "$ref": "#/definitions/aircraft" },
+                    "assembly": { "$ref": "#/definitions/assembly" }
                 },
                 "txntimestamp": {
                     "type": "string",

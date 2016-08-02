@@ -20,6 +20,12 @@
       "assetIDandCount",
       "assetIDKey",
       "initEvent",
+      "airlineEvent",
+      "airlineState",
+      "aircraftEvent",
+      "aircraftState",
+      "assemblyEvent",
+      "assemblyState",
       "event",
       "state"
     ]
@@ -28,9 +34,15 @@
     "goSampleFilename": "samples.go",
     "goSampleElements": [
       "initEvent",
+      "contractState",
+      "airlineEvent",
+      "airlineState",
+      "aircraftEvent",
+      "aircraftState",
+      "assemblyEvent",
+      "assemblyState",
       "event",
-      "state",
-      "contractState"
+      "state"
     ]
   }
 }

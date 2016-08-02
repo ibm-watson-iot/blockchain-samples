@@ -1,12 +1,12 @@
 #A Hyperledger Sample Contract with Simple Aviation Schema
 
-> **This smart contract is described in a set of documents in the `/docs` folder. See the [README](./docs/README.md) for more information. And please read the introduction and customization documents therein before proceeding through the code base.**
+> **This contract is derived from and has contributed to the [Generic IoT Sample Contract](../iot_sample_contract_hyperledger) to adapt it to a simple aviation scenario. 
+ The generic IoT sample contract is described in a set of documents in the `docs` folder. See the [README](../docs/README.md) for more information. And please read the introduction and customization documents therein before proceeding through this code base.**
 
-This contract is derived from and contributed to the [Generic IoT Sample Contract](../iot_sample_contract_hyperledger) to adapt it to a simple aviation scenario. 
+The simple aviation scenario is as follows:
 
-The scenario is as follows:
-
-- A simple airplane object is the tracked asset
+- An airplane object is the primary tracked asset
+- A *composite event* pattern is used in order to simpli
 - using the *partial state as event* pattern, the `airplane` section of the event and state in the schema contains properties describing the airplane
 - additionally, in the state object, `airplane` tracks a cyclecounter that is used to determine when to raise the ACHECK alert, which requires an inspection of the landing gear for wear on tires, etc
     - this counter does not appear in the `airplane` event, but rather it is incremented when a `flight` subevent is received
