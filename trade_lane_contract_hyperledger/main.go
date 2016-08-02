@@ -262,14 +262,26 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
     // test and set timestamp
     // TODO get time from the shim as soon as they support it, we cannot
     // get consensus now because the timestamp is different on all peers.
+    //*************************************************//
+    // Suma quick fix for timestamp  - Aug 1
+    var timeOut = time.Now() // temp initialization of time variable - not really needed.. keeping old line
     timeInBytes, found := getObject(argsMap, TIMESTAMP)
-    var timeOut = time.Now()
+    
     if found {
         timeIn, found = timeInBytes.(time.Time)
         if found && !timeIn.IsZero() {
             timeOut = timeIn
         }
     }
+    txnunixtime, err := stub.GetTxTimestamp()
+	if err != nil {
+		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
+        log.Error(err)
+        return nil, err
+	}
+    txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
+    timeOut = txntimestamp
+    //*************************************************//
     argsMap[TIMESTAMP] = timeOut
     
     // run the rules and raise or clear alerts
@@ -422,16 +434,28 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
     // test and set timestamp
     // TODO get time from the shim as soon as they support it, we cannot
     // get consensus now because the timestamp is different on all peers.
+    
+   //*************************************************//
+    // Suma quick fix for timestamp  - Aug 1
+    var timeOut = time.Now() // temp initialization of time variable - not really needed.. keeping old line
     timeInBytes, found := getObject(argsMap, TIMESTAMP)
-    var timeOut = time.Now()
+    
     if found {
         timeIn, found = timeInBytes.(time.Time)
         if found && !timeIn.IsZero() {
             timeOut = timeIn
         }
     }
+    txnunixtime, err := stub.GetTxTimestamp()
+	if err != nil {
+		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
+        log.Error(err)
+        return nil, err
+	}
+    txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
+    timeOut = txntimestamp
+    //*************************************************//
     argsMap[TIMESTAMP] = timeOut
-    
     // **********************************
     // find the asset state in the ledger
     // **********************************
@@ -753,8 +777,18 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
 
     // set timestamp
     // TODO timestamp from the stub
-    ledgerMap[TIMESTAMP] = time.Now()
-
+    //ledgerMap[TIMESTAMP] = time.Now()
+    //*************************************************//
+    // Suma quick fix for timestamp  - Aug 1
+     txnunixtime, err := stub.GetTxTimestamp()
+	if err != nil {
+		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
+        log.Error(err)
+        return nil, err
+	}
+    txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
+    ledgerMap[TIMESTAMP] = txntimestamp
+    //*************************************************//
     // handle compliance section
     alerts = newAlertStatus()
     a, found := argsMap["alerts"] // is there an existing alert state?
