@@ -35,8 +35,8 @@ To create a simple contract to create, read, update, and delete asset data, use 
 
 |Method|Provides|
 |:---|:---|
-|'ReadAssetSchema'|The methods and associated properties of the JSON schema contract|  
-|'ReadAssetSamples'|An example of the sample JSON data|
+|'readAssetSchemas'|The methods and associated properties of the JSON schema contract|  
+|'readAssetSamples'|An example of the sample JSON data|
 
 For more information about setting up REST and Swagger, see [here](https://github.com/hyperledger/fabric/blob/master/docs/API/CoreAPI.md).
 
