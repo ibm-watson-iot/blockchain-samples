@@ -25,7 +25,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-07-27T13:33:19.900240086Z"
+            "timestamp": "2016-08-02T12:52:33.786007053Z"
         }
     },
     "aircraftState": {
@@ -57,7 +57,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-07-27T13:33:19.900252144Z"
+            "timestamp": "2016-08-02T12:52:33.786022139Z"
         },
         "cycles": 123.456
     },
@@ -78,7 +78,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-07-27T13:33:19.900178375Z"
+            "timestamp": "2016-08-02T12:52:33.785941682Z"
         }
     },
     "airlineState": {
@@ -98,7 +98,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-07-27T13:33:19.90022825Z"
+            "timestamp": "2016-08-02T12:52:33.785997275Z"
         }
     },
     "assemblyEvent": {
@@ -122,7 +122,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-07-27T13:33:19.9002655Z"
+            "timestamp": "2016-08-02T12:52:33.786035269Z"
         }
     },
     "assemblyState": {
@@ -148,7 +148,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-07-27T13:33:19.900275617Z"
+            "timestamp": "2016-08-02T12:52:33.786051752Z"
         },
         "cycles": 789,
         "lifeLimitAdjusted": 789
@@ -173,7 +173,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-07-27T13:33:19.900287362Z"
+            "timestamp": "2016-08-02T12:52:33.786060133Z"
         },
         "oneOf": {
             "aircraft": {
@@ -394,7 +394,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-07-27T13:33:19.900364639Z"
+            "timestamp": "2016-08-02T12:52:33.786106228Z"
         },
         "lastEvent": {
             "arg": {
@@ -459,7 +459,7 @@ var samples = `
                     "references": [
                         "carpe noctem"
                     ],
-                    "timestamp": "2016-07-27T13:33:19.900323187Z"
+                    "timestamp": "2016-08-02T12:52:33.786077453Z"
                 }
             },
             "function": "function that created this state object",

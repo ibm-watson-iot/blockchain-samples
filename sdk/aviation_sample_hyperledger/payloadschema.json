@@ -1,16 +1,13 @@
 {
     "swagger": "2.0",
     "info": {
-        "version": "4.2",
-        "title": "IBM IoT Blockchain Aviation Sample Contract Schema",
-        "id": "https://github.com/ibm-watson-iot/blockchain-samples/blob/master/aviation_sample_hyperledger/payloadschema.json",
-        "description": "A schema for a generic sample aviation contract to track life limited parts. This schema follows the 'multi-asset', 'CRUD API' and 'partial state as event' IoT blochchain contract patterns. The use of JSON Schema is more for definition and documentation purposes than strict validation purposes at this time."
+        "version": "3.1",
+        "title": "IBM IoT Blockchain Trade Lane Sample Contract API",
+        "description": "Interact with the API and schema for IoT trade lane sample contract. Based on the CRUD contract pattern, which is implemented as a pseudo-RPC payload in the chain code inputs (function string and args string array) of the deploy, invoke and query end points. Similar in concept to a JSON-RPC encoding. Note that the interface shown in this schema defines the chaincode inputs as an array of objects, but those objects are always in fact a single JSON encoded string. The sections before Definitions are redacted versions of the rest_api.json file in the Open Block Chain project. This schema builds on the paths by defining the payloads for the devops resource APIs. This file can be explored in the Swagger GUI, but it throws an error on the choice verb 'oneOf', which is very useful for defining payloads related to one endpoint, such as query. This schema uses references everywhere to avoid data duplication, but the generate command runs a script that can resolve all references and create a schema with all data fully realized."
     },
     "host": "127.0.0.1:3000",
     "schemes": [
-        "http",
-        "https",
-        "tls"
+        "http"
     ],
     "produces": [
         "application/json"
@@ -299,7 +296,7 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/event"
+                                "$ref": "#/definitions/eventComposite"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -322,7 +319,7 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/event"
+                                "$ref": "#/definitions/eventComposite"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -706,7 +703,9 @@
         "alertName": {
             "type": "string",
             "enum": [
-                "OVERTTEMP"
+                "NONE",
+                "ACHECK",
+                "BCHECK"
             ],
             "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance."
         },
@@ -791,12 +790,8 @@
             "type": "object",
             "description": "function and string parameter that created this state object",
             "properties": {
-                "args": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "description": "parameters to the function, usually args[0] is populated with a JSON encoded event object"
-                    }
+                "arg": {
+                    "$ref": "#/definitions/eventComposite"
                 },
                 "function": {
                     "type": "string",
@@ -825,7 +820,7 @@
         },
         "airline": {
             "type": "object",
-            "description": "The set of writable properties that define an airline's state.",
+            "description": "The writable properties for an airline",
             "properties": {
                 "name": {
                     "type": "string",
@@ -835,34 +830,130 @@
                     "type": "string",
                     "description": "The airline 3 letter code."
                 }
-            },
-            "required": [
-                "name",
-                "code"
-            ]
+            }
         },
-        "airplane": {
+        "airlineEvent": {
             "type": "object",
-            "description": "The set of writable properties that define an airplane's state.",
+            "description": "The airline CRUD event",
             "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
+                "airline": {
+                    "$ref": "#/definitions/airline"
+                }
+            }
+        },
+        "airlineState": {
+            "type": "object",
+            "description": "An airline state",
+            "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
+                "airline": {
+                    "$ref": "#/definitions/airline"
+                }
+            }
+        },
+        "aircraft": {
+            "type": "object",
+            "description": "Writable properties for an aircraft. Note that assetID is the aircraft serial number.",
+            "properties": {
+                "airline": {
+                    "type": "string",
+                    "description": "AssetID of airline that owns this airplane"
+                },
+                "operator": {
+                    "type": "string",
+                    "description": "AssetID of operator that flies this airplane"
+                },
+                "tailNumber": {
+                    "type": "string",
+                    "description": "Designated asset ID. Aircraft tail number (airline assigned)"
+                },
                 "model": {
                     "type": "string",
-                    "description": "The airplane model or family name."
+                    "description": "Aircraft model -- e.g. 737-5H4"
                 },
                 "variant": {
                     "type": "string",
-                    "description": "A manufacturer-specific variant identifier for this airplane."
+                    "description": "Aircraft model variant -- e.g. B735"
+                },
+                "code": {
+                    "type": "string",
+                    "description": "Aircraft code -- e.g. WN / SWA"
+                },
+                "mode-s": {
+                    "type": "string",
+                    "description": "Aircraft transponder response -- e.g.  A68E4A"
+                },
+                "dateOfBuild": {
+                    "type": "string",
+                    "description": "Aircraft build completed / in service date"
                 }
-            },
-            "required": [
-                "model"
-            ]
+            }
+        },
+        "aircraftEvent": {
+            "type": "object",
+            "description": "The aircraft CRUD event",
+            "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
+                "aircraft": {
+                    "$ref": "#/definitions/aircraft"
+                }
+            }
+        },
+        "aircraftState": {
+            "type": "object",
+            "description": "An aircraft state",
+            "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
+                "aircraft": {
+                    "$ref": "#/definitions/aircraft"
+                },
+                "assemblies": {
+                    "type": "array",
+                    "description": "AssetID of airline that owns this airplane",
+                    "items": {
+                        
+                    }
+                },
+                "age": {
+                    "type": "string",
+                    "description": "Aircraft age, computed as today's date minus DOB"
+                },
+                "cycles": {
+                    "type": "number",
+                    "description": "Total number of cycles for this aircraft"
+                },
+                "aCheckCounter": {
+                    "type": "number",
+                    "description": "The total cycles since last reset. Raise ACHECK alert at 10 cycles. Clear only with ACHECK inspection event, which resets counter to zero."
+                },
+                "bCheckCounter": {
+                    "type": "number",
+                    "description": "Count consecutive hard landings. Two consecutive hard landings raises BCHECK alert. Only a BCHECK inspection can clear the alert."
+                }
+            }
         },
         "assembly": {
             "type": "object",
-            "description": "The set of writable properties that define an assembly's state.",
+            "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
             "properties": {
-                "ATAcode": {
+                "airplane": {
+                    "type": "string",
+                    "description": "The assetID of the airplane on which this assembly is mounted. Blank if removed for maintenance."
+                },
+                "assemblyNumber": {
+                    "type": "string",
+                    "description": "Assembly type identifier"
+                },
+                "ataCode": {
                     "type": "string",
                     "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering."
                 },
@@ -870,17 +961,57 @@
                     "type": "string",
                     "description": "The assembly name."
                 },
-                "ALRS": {
+                "arlsZone": {
                     "type": "string",
-                    "description": "Alerting service zone."
+                    "description": "tbd"
                 },
                 "lifeLimitInitial": {
                     "type": "integer",
                     "description": "Initial assembly life limit."
+                }
+            },
+            "required": [
+                "ATAcode",
+                "name"
+            ]
+        },
+        "assemblyEvent": {
+            "type": "object",
+            "description": "The assembly event. Note that assetID is the assembly serial number",
+            "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
                 },
-                "lifeLimitUsed": {
+                "assembly": {
+                    "$ref": "#/definitions/assembly"
+                }
+            }
+        },
+        "assemblyState": {
+            "type": "object",
+            "description": "The set of writable properties that define an assembly's state.",
+            "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
+                "assembly": {
+                    "$ref": "#/definitions/assembly"
+                },
+                "cycles": {
                     "type": "integer",
-                    "description": "Assembly life limit that has been used, including adjustments."
+                    "description": "Overall cycle count for this assembly."
+                },
+                "lifeLimitAdjusted": {
+                    "type": "integer",
+                    "description": "Overall analytic life limit adjustments for this assembly."
+                },
+                "aCheckCounter": {
+                    "type": "number",
+                    "description": "The total cycles since last reset. Raise ACHECK alert at 10 cycles. Clear only with ACHECK inspection event, which resets counter to zero."
+                },
+                "bCheckCounter": {
+                    "type": "number",
+                    "description": "Count consecutive hard landings. Two consecutive hard landings raises BCHECK alert. Only a BCHECK inspection can clear the alert."
                 }
             },
             "required": [
@@ -890,15 +1021,19 @@
         },
         "part": {
             "type": "object",
-            "description": "The set of writable properties that define a part's state.",
+            "description": "TBD -- placeholder for now.",
             "properties": {
                 "name": {
                     "type": "string",
                     "description": "The part name."
                 },
-                "partNumber": {
+                "number": {
                     "type": "string",
-                    "description": "Part number."
+                    "description": "Part number, unique to a specific design iteration."
+                },
+                "serialNumber": {
+                    "type": "string",
+                    "description": "Part serial number, unique to an individual part."
                 },
                 "vendorName": {
                     "type": "string",
@@ -922,33 +1057,130 @@
                 "name"
             ]
         },
-        "activity": {
+        "flight": {
             "type": "object",
-            "description": "The set of writable properties that define an activity.",
+            "description": "A takeoiff and a landing",
             "properties": {
-                "activityType": {
+                "aircraft": {
                     "type": "string",
-                    "description": "The type of the activity."
+                    "description": "Aircraft tail or serial number (tbd)"
                 },
-                "activityNumber": {
+                "flightnumber": {
                     "type": "string",
-                    "description": "Activity number."
+                    "description": "A flight number"
                 },
-                "activityDate": {
+                "from": {
                     "type": "string",
-                    "description": "Date the activity occured (e.g. date from aechive of activities being copied into this ledger)."
+                    "description": "3 letter code of originating airport"
                 },
-                "activityDetail": {
+                "to": {
                     "type": "string",
-                    "description": "Detailed description of the activity."
+                    "description": "3 letter code of terminating airport"
+                },
+                "std": {
+                    "type": "string",
+                    "description": "standard time departure"
+                },
+                "atd": {
+                    "type": "string",
+                    "description": "actual time departure"
+                },
+                "sta": {
+                    "type": "string",
+                    "description": "standard time arrival"
+                },
+                "landingType": {
+                    "type": "string",
+                    "description": "code defining landing quality??"
+                },
+                "gForce": {
+                    "type": "number",
+                    "description": "force incurred on landing"
                 }
-            },
-            "required": [
-                "type",
-                "name"
-            ]
+            }
         },
-        "eventCommon": {
+        "flightEvent": {
+            "type": "object",
+            "description": "flight event, assetID defines airplane against which the event occurred",
+            "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
+                "flight": {
+                    "$ref": "#/definitions/flight"
+                }
+            }
+        },
+        "inspection": {
+            "type": "object",
+            "description": "indicates that an inspection has occured for this aircraft",
+            "properties": {
+                "aircraft": {
+                    "type": "string",
+                    "description": "Aircraft tail or serial number (tbd)"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name"
+                },
+                "enum": [
+                    "select an inspection type",
+                    "ACHECK",
+                    "BCHECK"
+                ]
+            }
+        },
+        "inspectionEvent": {
+            "type": "object",
+            "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+            "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
+                "inspection": {
+                    "$ref": "#/definitions/inspection"
+                }
+            }
+        },
+        "analyticAdjustment": {
+            "type": "object",
+            "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+            "properties": {
+                "assembly": {
+                    "type": "string",
+                    "description": "Assembly serial number"
+                },
+                "reducelifelimit": {
+                    "type": "object",
+                    "description": "reduction of life limit",
+                    "properties": {
+                        "reduction": { "type": "number"},
+                        "reason": { "type": "string" }
+                    }
+                },
+                "increaselifelimit": {
+                    "type": "object",
+                    "description": "increase of life limit",
+                    "properties": {
+                        "reduction": { "type": "number"},
+                        "reason": { "type": "string" }
+                    }
+                }
+            }
+        },
+        "analyticAdjustmentEvent": {
+            "type": "object",
+            "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
+            "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
+                "analyticAdjustment": {
+                    "$ref": "#/definitions/analyticAdjustment"
+                }
+            }
+        },
+        "iotCommon": {
             "type": "object",
             "description": "The set of common writable properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event'.",
             "properties": {
@@ -979,82 +1211,55 @@
                 "assetID"
             ]
         },
-        "eventAirline": {
+        "assets": {
             "type": "object",
-            "description": "The set of writable properties for an airline crud event.",
+            "description": "The set of asset objects for this contract.",
             "properties": {
-                "commonevent": {
-                    "$ref": "#/definitions/eventCommon"
-                },
-                "airlineevent": {
-                    "$ref": "#/definitions/airline"
-                },
-                "activityevent": {
-                    "$ref": "#/definitions/activity"
-                }
-            }
-        },
-        "eventAirplane": {
-            "type": "object",
-            "description": "The set of writable properties for an airplane crud event.",
-            "properties": {
-                "commonevent": {
-                    "$ref": "#/definitions/eventCommon"
-                },
-                "airplaneevent": {
-                    "$ref": "#/definitions/airplane"
-                },
-                "activityevent": {
-                    "$ref": "#/definitions/activity"
-                }
-            }
-        },
-        "eventAssembly": {
-            "type": "object",
-            "description": "The set of writable properties for an assembly crud event.",
-            "properties": {
-                "commonevent": {
-                    "$ref": "#/definitions/eventCommon"
-                },
-                "assemblyevent": {
-                    "$ref": "#/definitions/assembly"
-                },
-                "activityevent": {
-                    "$ref": "#/definitions/activity"
-                }
-            }
-        },
-        "eventPart": {
-            "type": "object",
-            "description": "The set of writable properties for a part crud event.",
-            "properties": {
-                "commonevent": {
-                    "$ref": "#/definitions/eventCommon"
-                },
-                "partevent": {
-                    "$ref": "#/definitions/part"
-                },
-                "activityevent": {
-                    "$ref": "#/definitions/activity"
+                "oneOf": {
+                    "airline": { "$ref": "#/definitions/airline" },
+                    "aircraft": { "$ref": "#/definitions/aircraft" },
+                    "assembly": { "$ref": "#/definitions/assembly" }
                 }
             }
         },
         "event": {
             "type": "object",
-            "description": "The set of event objects for this contract.",
+            "description": "The set of event objects for this contract. Assets can be events too, so this is a superset of assets and pure events.",
             "properties": {
+                "iotCommon": { "$ref": "#/definitions/iotCommon" },
                 "oneOf": {
-                    "airline": { "$ref": "#/definitions/eventAirline" },
-                     "airplane": { "$ref": "#/definitions/eventAirplane" },
-                     "assembly": { "$ref": "#/definitions/eventAssembly" },
-                     "part": { "$ref": "#/definitions/eventPart" }
+                    "airline": { "$ref": "#/definitions/airline" },
+                    "aircraft": { "$ref": "#/definitions/aircraft" },
+                    "assembly": { "$ref": "#/definitions/assembly" },
+                    "flight": { "$ref": "#/definitions/flight" },
+                    "inspection": { "$ref": "#/definitions/inspection" },
+                    "analyticAdjustment": { "$ref": "#/definitions/analyticAdjustment" }
                 }
             }
         },
-        "stateCommon": {
+        "eventComposite": {
+            "type": "object",
+            "description": "The event for this contract that is processed by the monitoring UI and the IoTP Proxy for mapping device events to this contract. The actual sent event should only contain iotCommon and one of the other objects as described formally in the `event` object.",
+            "properties": {
+                "iotCommon": { "$ref": "#/definitions/iotCommon" },
+                "airline": { "$ref": "#/definitions/airline" },
+                "aircraft": { "$ref": "#/definitions/aircraft" },
+                "assembly": { "$ref": "#/definitions/assembly" },
+                "flight": { "$ref": "#/definitions/flight" },
+                "inspection": { "$ref": "#/definitions/inspection" },
+                "analyticAdjustment": { "$ref": "#/definitions/analyticAdjustment" }
+            }
+        },
+        "state": {
             "type": "object",
             "description": "A set of properties that constitute a complete asset state. Includes event properties and any other calculated properties such as compliance related alerts.",
             "properties": {
+                "iotCommon": { "$ref": "#/definitions/iotCommon" },
+                "oneOf": {
+                    "airline": { "$ref": "#/definitions/airline" },
+                    "aircraft": { "$ref": "#/definitions/aircraft" },
+                    "assembly": { "$ref": "#/definitions/assembly" }
+                },
                 "txntimestamp": {
                     "type": "string",
                     "description": "Transaction timestamp matching that in the blockchain."
@@ -1070,117 +1275,8 @@
                 "alerts": {
                     "$ref": "#/definitions/alertStatus"
                 },
-                "txnEvent": {
+                "lastEvent": {
                     "$ref": "#/definitions/eventWithFunction"
-                }
-            }
-        },
-        "stateAirline": {
-            "type": "object",
-            "description": "The set of all properties for an airline ledger state.",
-            "properties": {
-                "airlinestate": {
-                    "$ref": "#/definitions/eventAirline"
-                },
-                "commonstate": {
-                    "$ref": "#/definitions/stateCommon"
-                },
-                "airplanes": {
-                    "type": "array",
-                    "description": "An array of airplane IDs belonging to this airline.",
-                    "items": {
-                        "$ref": "#/definitions/assetID"
-                    }
-                },
-                "activities": {
-                    "type": "array",
-                    "description": "An array of activity IDs that occured for this airline.",
-                    "items": {
-                        "$ref": "#/definitions/assetID"
-                    }
-                }
-            }
-        },
-        "stateAirplane": {
-            "type": "object",
-            "description": "The set of all properties for an airplane ledger state.",
-            "properties": {
-                "airplanestate": {
-                    "$ref": "#/definitions/eventAirplane"
-                },
-                "commonstate": {
-                    "$ref": "#/definitions/stateCommon"
-                },
-                "assemblies": {
-                    "type": "array",
-                    "description": "An array of assembly IDs belonging to this airplane.",
-                    "items": {
-                        "$ref": "#/definitions/assetID"
-                    }
-                },
-                "activities": {
-                    "type": "array",
-                    "description": "An array of activity IDs that occured on this airplane.",
-                    "items": {
-                        "$ref": "#/definitions/assetID"
-                    }
-                }
-            }
-        },
-        "stateAssembly": {
-            "type": "object",
-            "description": "The set of all properties for an assembly ledger state.",
-            "properties": {
-                "assemblystate": {
-                    "$ref": "#/definitions/eventAssembly"
-                },
-                "commonstate": {
-                    "$ref": "#/definitions/stateCommon"
-                },
-                "parts": {
-                    "type": "array",
-                    "description": "An array of part IDs belonging to this assembly.",
-                    "items": {
-                        "$ref": "#/definitions/assetID"
-                    }
-                },
-                "activities": {
-                    "type": "array",
-                    "description": "An array of activity IDs that occured on this assembly.",
-                    "items": {
-                        "$ref": "#/definitions/assetID"
-                    }
-                }
-            }
-        },
-        "statePart": {
-            "type": "object",
-            "description": "The set of all properties for a part ledger state.",
-            "properties": {
-                "partstate": {
-                    "$ref": "#/definitions/eventPart"
-                },
-                "commonstate": {
-                    "$ref": "#/definitions/stateCommon"
-                },
-                "activities": {
-                    "type": "array",
-                    "description": "An array of activity IDs that occured on this part.",
-                    "items": {
-                        "$ref": "#/definitions/assetID"
-                    }
-                }
-            }
-        },
-        "state": {
-            "type": "object",
-            "description": "The set of state objects for this contract.",
-            "properties": {
-                "oneOf": {
-                    "airline": { "$ref": "#/definitions/stateAirline" },
-                     "airplane": { "$ref": "#/definitions/stateAirplane" },
-                     "assembly": { "$ref": "#/definitions/stateAssembly" },
-                     "part": { "$ref": "#/definitions/statePart" }
                 }
             }
         },

@@ -29,7 +29,10 @@ import (
     "encoding/json"
 )
 
-var CASESENSITIVEMODE bool = false
+// CASESENSITIVEMODE defines whether property names in the EVENT have to strictly 
+// follow JSON RPC conventions of case matching. Default is loose matching, but
+// secure environments should turn this to true.
+var CASESENSITIVEMODE = false
 
 // finds an object by its qualified name, which looks like "location.latitude"
 // as one example. Returns as map[string]interface{} 
@@ -44,23 +47,84 @@ func getObject (objIn interface{}, qname string) (interface{}, bool) {
             return nil, false
         }
     }
-    obj = map[string]interface{}(obj)
-    var returnObj interface{} = obj
+    searchObj := map[string]interface{}(obj)
     s := strings.Split(qname, ".")
-    // crawl the levels, skipping the # root
+    // crawl the levels
     for i, v := range s {
-        //fmt.Printf("Prop %d is: %s\n", i, v)
-        if i+1 == len(s) {
-            // last level, has to be here
-            return findObjectByKey(returnObj, v)
-        }
-        returnObj, found = (returnObj.(map[string]interface{})[v]).(map[string]interface{})
-        if !found {
-            log.Debugf("getObject cannot find level: %s", v)
-            return nil, false
+        //fmt.Printf("**** FIND level [%d] %s in %+v\n", i, v, searchObj)
+        if i+1 < len(s) {
+            tmp, found := searchObj[v]
+            //fmt.Printf("** tmp is %+v\n", tmp)
+            if found {
+                searchObj, found = tmp.(map[string]interface{})
+                //fmt.Printf("** tmp->searchObj AS MAP is %+v\n", searchObj)
+                if !found {
+                    searchObj, found = tmp.(ArgsMap)
+                    //fmt.Printf("** tmp->searchObj AS ARGSMAP is %+v\n", searchObj)
+                }
+            }
+            if !found {
+                log.Warningf("getObject cannot find level or is not map shape: %s", v)
+                return nil, false
+            }
+        } else {
+            returnObj, found := searchObj[v]
+            if !found {
+                log.Warningf("getObject cannot find final level: %s", v)
+                return nil, false
+            }
+            return returnObj, true
         }
     }
     return nil, false
+}
+
+func getObjectAsString(objIn interface{}, qname string) (string, bool) {
+    tbytes, found := getObject(objIn, qname)
+    if found {
+        t, found := tbytes.(string)
+        if found {
+            return t, true
+        }
+    }
+    log.Warningf("getObjectAsString object is not a string: %s", qname)
+    return "", false
+}
+
+func getObjectAsBoolean(objIn interface{}, qname string) (bool, bool) {
+    tbytes, found := getObject(objIn, qname)
+    if found {
+        t, found := tbytes.(bool)
+        if found {
+            return t, true
+        }
+    }
+    log.Warningf("getObjectAsBoolean object is not a boolean: %s", qname)
+    return false, false
+}
+
+func getObjectAsNumber(objIn interface{}, qname string) (float64, bool) {
+    tbytes, found := getObject(objIn, qname)
+    if found {
+        t, found := tbytes.(float64)
+        if found {
+            return t, true
+        }
+    }
+    log.Warningf("getObjectAsNumber object is not a number (float64): %s", qname)
+    return 0, false
+}
+
+func getObjectAsInteger(objIn interface{}, qname string) (int, bool) {
+    tbytes, found := getObject(objIn, qname)
+    if found {
+        t, found := tbytes.(int)
+        if found {
+            return t, found
+        }
+    }
+    log.Warningf("getObjectAsInteger object is not an integer: %s", qname)
+    return 0, found
 }
 
 // this small function isolates the getting of the object in case
@@ -100,11 +164,11 @@ func findMatchingKey (objIn interface{}, key string) (string, bool) {
     // we must visit all keys and compare using tolower on each side
     for k := range objMap {
         if strings.ToLower(k) == strings.ToLower(key) {
-            log.Debugf("findMatchingKey found match! %s %s", k, key)
+            log.Debugf("findMatchingKey found match! %+v %+v", k, key)
             return k, true
         }
     }
-    log.Warningf("findMatchingKey did not find key %s", key)
+    log.Warningf("findMatchingKey did not find key %+v", key)
     return "", false
 }
 

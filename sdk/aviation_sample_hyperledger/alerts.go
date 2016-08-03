@@ -19,6 +19,7 @@ Kim Letkeman - Initial Contribution
 // KL 16 Feb 2016 Initial alert package
 // KL 22 Feb 2016 add AllClear method and associated constant
 // KL 18 Apr 2016 Adapt new external JSON alerts (names instead of booleans) from orig 3.1/4.0
+// KL 28 Jun 2016 Remove OVERTEMP and add ACHECK and BCHECK
 // ************************************
 
 package main
@@ -30,21 +31,25 @@ import (
 type Alerts int32
 
 const (
-    // AlertsOVERTEMP the over temperature alert 
-    AlertsOVERTEMP    Alerts = 0
+    // AlertsACHECK the needs 10 cycle inspection alert 
+    AlertsACHECK    Alerts = 0
+    // AlertsBCHECK the needs 10 cycle inspection alert 
+    AlertsBCHECK    Alerts = 1
 
     // AlertsSIZE is to be maintained always as 1 greater than the last alert, giving a size  
-	AlertsSIZE        Alerts = 1
+	AlertsSIZE        Alerts = 2
 )
 
 // AlertsName is a map of ID to name
 var AlertsName = map[int]string{
-	0: "OVERTEMP",
+	0: "ACHECK",
+	1: "BCHECK",
 }
 
 // AlertsValue is a map of name to ID
 var AlertsValue = map[string]int32{
-	"OVERTEMP": 0,
+	"ACHECK": 0,
+	"BCHECK": 1,
 }
 
 func (x Alerts) String() string {
@@ -62,13 +67,14 @@ var NOALERTSACTIVEINTERNAL = AlertArrayInternal{}
 // NOALERTSACTIVE is the zero value of an external alerts array (string names)
 var NOALERTSACTIVE = AlertNameArray{}
 
-// AlertStatusInternal contains the three possible statuses for alerts
+// AlertStatusInternal contains the three possible statuses for alerts as booleans
 type AlertStatusInternal struct {
     Active  AlertArrayInternal  
     Raised  AlertArrayInternal  
     Cleared AlertArrayInternal  
 }
 
+// AlertStatus contains the three possible statuses for alerts as string names
 type AlertStatus struct {
     Active  AlertNameArray  `json:"active"`
     Raised  AlertNameArray  `json:"raised"`
@@ -147,6 +153,17 @@ func (a *AlertStatusInternal) clearAlert (alert Alerts) {
     }
 }
 
+func (a *AlertStatusInternal) clearRaisedAndClearedStatus () {
+    for i := range a.Active {
+        if a.Active[i] {
+            a.Raised[i] = false
+        } else {
+            a.Cleared[i] = false
+        }
+    }
+}
+
+
 func newAlertStatus() (AlertStatus) {
     var a AlertStatus
     a.Active = make([]string, 0, AlertsSIZE)
@@ -169,15 +186,15 @@ func (arr *AlertNameArray) copyFrom (s []interface{}) {
 }
 
 // NoAlertsActive returns true when no alerts are active in the asset's status at this time
-func (arr *AlertStatusInternal) NoAlertsActive() (bool) {
-    return (arr.Active == NOALERTSACTIVEINTERNAL)
+func (a *AlertStatusInternal) NoAlertsActive() (bool) {
+    return (a.Active == NOALERTSACTIVEINTERNAL)
 }
 
 // AllClear returns true when no alerts are active, raised or cleared in the asset's status at this time
-func (arr *AlertStatusInternal) AllClear() (bool) {
-    return  (arr.Active == NOALERTSACTIVEINTERNAL) &&
-            (arr.Raised == NOALERTSACTIVEINTERNAL) &&
-            (arr.Cleared == NOALERTSACTIVEINTERNAL) 
+func (a *AlertStatusInternal) AllClear() (bool) {
+    return  (a.Active == NOALERTSACTIVEINTERNAL) &&
+            (a.Raised == NOALERTSACTIVEINTERNAL) &&
+            (a.Cleared == NOALERTSACTIVEINTERNAL) 
 }
 
 // NoAlertsActive returns true when no alerts are active in the asset's status at this time

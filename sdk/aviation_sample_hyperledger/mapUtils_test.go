@@ -74,7 +74,9 @@ var testparm1 = `
 {
     "assetID": "ASSET001",
     "carrier": "UPS",
-    "temperature": 2
+    "temperature": 2.0,
+    "integer": 2,
+    "bool": true
 }`
 
 func printUnmarshalError(js string, err interface{}) {
@@ -106,9 +108,8 @@ func getTestObjects (t *testing.T) (map[string]interface{}) {
         omap, found := o.(map[string]interface{})
         if found { 
             return omap
-        } else {
-            t.Fatalf("test samples not map shape, is: %s", reflect.TypeOf(o))
         }
+        t.Fatalf("test samples not map shape, is: %s", reflect.TypeOf(o))
     }
     return make(map[string]interface{})
 }
@@ -216,10 +217,26 @@ func TestParms(t *testing.T)  {
 func TestArgsMap(t *testing.T)  {
     fmt.Println("Enter TestArgsMap")
     o := getTestParms(t)
-    var a ArgsMap = ArgsMap(o.(map[string]interface{})) 
+    var a ArgsMap = o.(map[string]interface{}) 
     aid1, found := getObject(a, "assetID")
     if !found {
         t.Fatal("assetID not found")
     }
     fmt.Println("AssetID: ", aid1, " TypeOF parms: ", reflect.TypeOf(a))
+}
+
+func TestGetByType(t *testing.T)  {
+    fmt.Println("Enter TestByType")
+    o := getTestParms(t)
+    s, found := getObjectAsString(a, "assetID")
+    if !found {
+        t.Fatal("assetID not a string")
+    }
+    fmt.Println("AssetID: ", s, " TypeOF s: ", reflect.TypeOf(s))
+
+    s, found := getObjectAsFloat64(a, "temperature")
+    if !found {
+        t.Fatal("temperature not a string")
+    }
+    fmt.Println("Temperature: ", s, " TypeOF s: ", reflect.TypeOf(s))
 }

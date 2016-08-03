@@ -1101,8 +1101,11 @@
         },
         "flightEvent": {
             "type": "object",
-            "description": "flight event, no assetID required since this is an event against an airplane",
+            "description": "flight event, assetID defines airplane against which the event occurred",
             "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
                 "flight": {
                     "$ref": "#/definitions/flight"
                 }
@@ -1129,8 +1132,11 @@
         },
         "inspectionEvent": {
             "type": "object",
-            "description": "inspection event, no assetid required",
+            "description": "inspection event, assetid defines the airplane against which the inspection occurred",
             "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
                 "inspection": {
                     "$ref": "#/definitions/inspection"
                 }
@@ -1164,8 +1170,11 @@
         },
         "analyticAdjustmentEvent": {
             "type": "object",
-            "description": "analytic adjustment event, no assetid required",
+            "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
             "properties": {
+                "common": {
+                    "$ref": "#/definitions/iotCommon"
+                },
                 "analyticAdjustment": {
                     "$ref": "#/definitions/analyticAdjustment"
                 }
@@ -1202,9 +1211,20 @@
                 "assetID"
             ]
         },
+        "assets": {
+            "type": "object",
+            "description": "The set of asset objects for this contract.",
+            "properties": {
+                "oneOf": {
+                    "airline": { "$ref": "#/definitions/airline" },
+                    "aircraft": { "$ref": "#/definitions/aircraft" },
+                    "assembly": { "$ref": "#/definitions/assembly" }
+                }
+            }
+        },
         "event": {
             "type": "object",
-            "description": "The set of event objects for this contract.",
+            "description": "The set of event objects for this contract. Assets can be events too, so this is a superset of assets and pure events.",
             "properties": {
                 "iotCommon": { "$ref": "#/definitions/iotCommon" },
                 "oneOf": {

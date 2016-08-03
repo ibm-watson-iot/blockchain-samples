@@ -26,6 +26,8 @@
       "aircraftState",
       "assemblyEvent",
       "assemblyState",
+      "assets",
+      "eventComposite",
       "event",
       "state"
     ]

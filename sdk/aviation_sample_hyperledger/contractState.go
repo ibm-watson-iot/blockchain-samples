@@ -36,10 +36,10 @@ import (
 // Major for API break, Minor when adding a feature or behavior, Fix when fixing a bug.
 // If the init comes in with the wrong major version, then  we might consider exiting with
 // an error.
-const MYVERSION string = "4.3"
+const MYVERSION string = "4.2sa"
 
 // DEFAULTNICKNAME is used when a contract is initialized without giving it a nickname
-const DEFAULTNICKNAME string = "AVIATION" 
+const DEFAULTNICKNAME string = "SIMPLE_AVIATION" 
 
 // CONTRACTSTATEKEY is used to store contract state, including version, nickname and activeAssets
 const CONTRACTSTATEKEY string = "ContractStateKey"
@@ -49,17 +49,12 @@ const CONTRACTSTATEKEY string = "ContractStateKey"
 type ContractState struct {
 	Version      string           `json:"version"`
     Nickname     string           `json:"nickname"`
-	ActiveAirlines map[string]bool  `json:"activeAirlines"`
-	ActiveAirplanes map[string]bool  `json:"activeAirplanes"`
-	ActiveAssemblies map[string]bool  `json:"activeAssemblies"`
-	ActiveParts map[string]bool  `json:"activeParts"`
+	ActiveAssets map[string]bool  `json:"activeAssets"`
 }
 
 // GETContractStateFromLedger retrieves state from ledger and returns to caller
 func GETContractStateFromLedger(stub *shim.ChaincodeStub) (ContractState, error) {
-    var state = ContractState{ MYVERSION, DEFAULTNICKNAME, 
-        make(map[string]bool), make(map[string]bool), 
-        make(map[string]bool), make(map[string]bool) }
+    var state = ContractState{ MYVERSION, DEFAULTNICKNAME, make(map[string]bool) }
     var err error
 	contractStateBytes, err := stub.GetState(CONTRACTSTATEKEY)
     // minimum string is {"version":""} and version cannot be empty 
@@ -80,17 +75,8 @@ func GETContractStateFromLedger(stub *shim.ChaincodeStub) (ContractState, error)
 		log.Noticef("Initialized newly deployed contract state version %s", state.Version)
 	}
     // this MUST be here
-    if state.ActiveAirlines == nil {
-        state.ActiveAirlines = make(map[string]bool)
-    }
-    if state.ActiveAirplanes == nil {
-        state.ActiveAirplanes = make(map[string]bool)
-    }
-    if state.ActiveAssemblies == nil {
-        state.ActiveAssemblies = make(map[string]bool)
-    }
-    if state.ActiveParts == nil {
-        state.ActiveParts = make(map[string]bool)
+    if state.ActiveAssets == nil {
+        state.ActiveAssets = make(map[string]bool)
     }
     log.Debug("GETContractState successful")
     return state, nil 
@@ -116,163 +102,40 @@ func PUTContractStateToLedger(stub *shim.ChaincodeStub, state ContractState) (er
     return nil 
 }
 
-func addAirlineToContractState(stub *shim.ChaincodeStub, airlineID string) (error) {
+func addAssetToContractState(stub *shim.ChaincodeStub, assetID string) (error) {
     var state ContractState
     var err error
     state, err = GETContractStateFromLedger(stub)  
     if err != nil {
         return err
     }
-    log.Debugf("Adding airline %s to contract", airlineID)
-    state.ActiveAirlines[airlineID] = true
+    log.Debugf("Adding asset %s to contract", assetID)
+    state.ActiveAssets[assetID] = true
     return PUTContractStateToLedger(stub, state)
 }
 
-func addAirplaneToContractState(stub *shim.ChaincodeStub, airplaneID string) (error) {
+func removeAssetFromContractState(stub *shim.ChaincodeStub, assetID string) (error) {
     var state ContractState
     var err error
     state, err = GETContractStateFromLedger(stub)  
     if err != nil {
         return err
     }
-    log.Debugf("Adding airplane %s to contract", airplaneID)
-    state.ActiveAirplanes[airplaneID] = true
+    log.Debugf("Deleting asset %s from contract", assetID)
+    delete(state.ActiveAssets, assetID)
     return PUTContractStateToLedger(stub, state)
 }
 
-func addAssemblyToContractState(stub *shim.ChaincodeStub, assemblyID string) (error) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)  
-    if err != nil {
-        return err
-    }
-    log.Debugf("Adding assemblie %s to contract", assemblyID)
-    state.ActiveAssemblies[assemblyID] = true
-    return PUTContractStateToLedger(stub, state)
-}
-
-func addPartToContractState(stub *shim.ChaincodeStub, partID string) (error) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)  
-    if err != nil {
-        return err
-    }
-    log.Debugf("Adding part %s to contract", partID)
-    state.ActiveParts[partID] = true
-    return PUTContractStateToLedger(stub, state)
-}
-
-func removeAirlineFromContractState(stub *shim.ChaincodeStub, airlineID string) (error) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)  
-    if err != nil {
-        return err
-    }
-    log.Debugf("Adding airline %s to contract", airlineID)
-    delete(state.ActiveAirlines, airlineID)
-    return PUTContractStateToLedger(stub, state)
-}
-
-func removeAirplaneFromContractState(stub *shim.ChaincodeStub, airplaneID string) (error) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)  
-    if err != nil {
-        return err
-    }
-    log.Debugf("Adding airplane %s to contract", airplaneID)
-    delete(state.ActiveAirplanes, airplaneID)
-    return PUTContractStateToLedger(stub, state)
-}
-
-func removeAssemblyFromContractState(stub *shim.ChaincodeStub, assemblyID string) (error) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)  
-    if err != nil {
-        return err
-    }
-    log.Debugf("Adding assemblie %s to contract", assemblyID)
-    delete(state.ActiveAssemblies, assemblyID)
-    return PUTContractStateToLedger(stub, state)
-}
-
-func removePartFromContractState(stub *shim.ChaincodeStub, partID string) (error) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)  
-    if err != nil {
-        return err
-    }
-    log.Debugf("Adding part %s to contract", partID)
-    delete(state.ActiveParts, partID)
-    return PUTContractStateToLedger(stub, state)
-}
-
-func getActiveAirlines(stub *shim.ChaincodeStub) ([]string, error) {
+func getActiveAssets(stub *shim.ChaincodeStub) ([]string, error) {
     var state ContractState
     var err error
     state, err = GETContractStateFromLedger(stub)  
     if err != nil {
         return []string{}, err
     }
-    var a = make([]string, len(state.ActiveAirlines))
+    var a = make([]string, len(state.ActiveAssets))
     i := 0
-    for id := range state.ActiveAirlines {
-        a[i] = id
-        i++ 
-    }
-    sort.Strings(a)
-    return a, nil
-}
-
-func getActiveAirplanes(stub *shim.ChaincodeStub) ([]string, error) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)  
-    if err != nil {
-        return []string{}, err
-    }
-    var a = make([]string, len(state.ActiveAirplanes))
-    i := 0
-    for id := range state.ActiveAirplanes {
-        a[i] = id
-        i++ 
-    }
-    sort.Strings(a)
-    return a, nil
-}
-
-func getActiveAssemblies(stub *shim.ChaincodeStub) ([]string, error) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)  
-    if err != nil {
-        return []string{}, err
-    }
-    var a = make([]string, len(state.ActiveAssemblies))
-    i := 0
-    for id := range state.ActiveAssemblies {
-        a[i] = id
-        i++ 
-    }
-    sort.Strings(a)
-    return a, nil
-}
-
-func getActiveParts(stub *shim.ChaincodeStub) ([]string, error) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)  
-    if err != nil {
-        return []string{}, err
-    }
-    var a = make([]string, len(state.ActiveParts))
-    i := 0
-    for id := range state.ActiveParts {
+    for id := range state.ActiveAssets {
         a[i] = id
         i++ 
     }
@@ -312,38 +175,11 @@ func getLedgerContractVersion(stub *shim.ChaincodeStub) (string, error) {
     return state.Version, nil   
 }
 
-func airlineIsActive(stub *shim.ChaincodeStub, airlineID string) (bool) {
+func assetIsActive(stub *shim.ChaincodeStub, assetID string) (bool) {
     var state ContractState
     var err error
     state, err = GETContractStateFromLedger(stub)
     if err != nil { return false}
-    found, _ := state.ActiveAirlines[airlineID]
-    return found
-}                      
-
-func airplaneIsActive(stub *shim.ChaincodeStub, airplaneID string) (bool) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)
-    if err != nil { return false}
-    found, _ := state.ActiveAirlines[airplaneID]
-    return found
-}                      
-
-func assemblyIsActive(stub *shim.ChaincodeStub, assemblyID string) (bool) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)
-    if err != nil { return false}
-    found, _ := state.ActiveAirlines[assemblyID]
-    return found
-}                      
-
-func partIsActive(stub *shim.ChaincodeStub, partID string) (bool) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)
-    if err != nil { return false}
-    found, _ := state.ActiveAirlines[partID]
+    found, _ := state.ActiveAssets[assetID]
     return found
 }                      
