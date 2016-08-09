@@ -113,7 +113,7 @@ const pf string = "%s [%s] %.4s %s"
 
 func buildLogString(module string, level LogLevel, msg interface{}) (string) {
     var a = fmt.Sprint(msg)
-    var t = time.Now().Format("2006/01/02 15:04:05") 
+    var t = time.Now().Format("15:04:05.000") 
     return fmt.Sprintf(pf, t, module, logLevelNames[level], a) 
 }
 

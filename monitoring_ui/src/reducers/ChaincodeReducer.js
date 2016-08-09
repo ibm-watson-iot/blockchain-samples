@@ -17,7 +17,7 @@ Contributors:
 Alex Nguyen - Initial Contribution
 *****************************************************************************/
 import update from 'react-addons-update'
-import {SET_CC_SCHEMA, SET_CURRENT_TAB,TAB_CREATE, TAB_READ, TAB_UPDATE, TAB_DELETE, SET_CC_OPS, INVOKE, QUERY,
+import {SET_CC_SCHEMA, SET_CURRENT_TAB,TAB_CREATE, TAB_READ, TAB_UPDATE, TAB_DELETE, TAB_EVENT, TAB_SET, SET_CC_OPS, INVOKE, QUERY,
 ENABLE_REMOVE_BTN, DISABLE_REMOVE_BTN, REMOVE_RESPONSE_PAYLOAD, ADD_RESPONSE_PAYLOAD, CLEAR_RESPONSE_PAYLOADS,
 ENABLE_PAYLOAD_POLLING, UPDATE_RESPONSE_PAYLOAD, DISABLE_PAYLOAD_POLLING, OPEN_SNACKBAR, HIDE_SNACKBAR} from '../actions/ChaincodeActions'
 
@@ -30,7 +30,9 @@ export const chaincode = (state={
       {name: TAB_CREATE, type: INVOKE},
       {name:TAB_READ, type: QUERY},
       {name: TAB_UPDATE, type: INVOKE},
-      {name: TAB_DELETE, type: INVOKE}
+      {name: TAB_DELETE, type: INVOKE},
+      {name: TAB_EVENT, type: INVOKE},
+      {name: TAB_SET, type: INVOKE}
     ],
     /*this is the list of payloads that we need to display on the ui
       {

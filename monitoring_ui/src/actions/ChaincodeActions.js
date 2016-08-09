@@ -129,6 +129,8 @@ export const TAB_CREATE = "CREATE";
 export const TAB_READ = "READ";
 export const TAB_UPDATE = "UPDATE";
 export const TAB_DELETE = "DELETE";
+export const TAB_EVENT = "EVENT";
+export const TAB_SET = "SET";
 
 export const INVOKE = "INVOKE";
 export const QUERY = "QUERY";

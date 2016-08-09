@@ -51,6 +51,7 @@ func getObject (objIn interface{}, qname string) (interface{}, bool) {
     s := strings.Split(qname, ".")
     // crawl the levels
     for i, v := range s {
+        //fmt.Printf("**** FIND level [%d] %s\n", i, v)
         //fmt.Printf("**** FIND level [%d] %s in %+v\n", i, v, searchObj)
         if i+1 < len(s) {
             tmp, found := searchObj[v]
@@ -73,10 +74,54 @@ func getObject (objIn interface{}, qname string) (interface{}, bool) {
                 log.Warningf("getObject cannot find final level: %s", v)
                 return nil, false
             }
+            //fmt.Printf("**** Found level [%d] %s\n", i, v)
             return returnObj, true
         }
     }
     return nil, false
+}
+
+// finds an object by its qualified name, which looks like "location.latitude"
+// as one example. Returns as map[string]interface{} 
+func putObject (objIn interface{}, qname string, value interface{}) (bool) {
+    // overwrite the value of the selected object, create if necessary
+    // handles full qualified name, starting at object's root
+    obj, found := objIn.(map[string]interface{})
+    if !found {
+        obj, found = objIn.(ArgsMap)
+        if !found {
+            log.Errorf("getObject passed a non-map / non-ArgsMap: %#v", objIn)
+            return false
+        }
+    }
+    searchObj := map[string]interface{}(obj)
+    s := strings.Split(qname, ".")
+    // crawl the levels
+    for i, v := range s {
+        //fmt.Printf("**** FIND level [%d] %s\n", i, v)
+        //fmt.Printf("**** FIND level [%d] %s in %+v\n", i, v, searchObj)
+        if i+1 < len(s) {
+            tmp, found := searchObj[v]
+            //fmt.Printf("** tmp is %+v\n", tmp)
+            if found {
+                searchObj, found = tmp.(map[string]interface{})
+                //fmt.Printf("** tmp->searchObj AS MAP is %+v\n", searchObj)
+                if !found {
+                    searchObj, found = tmp.(ArgsMap)
+                    //fmt.Printf("** tmp->searchObj AS ARGSMAP is %+v\n", searchObj)
+                }
+            }
+            if !found {
+                log.Warningf("getObject cannot find level or is not map shape: %s", v)
+                return false
+            }
+        } else {
+            searchObj[v] = value
+            //fmt.Printf("**** Found level [%d] %s\n", i, v)
+            return true
+        }
+    }
+    return false
 }
 
 func getObjectAsString(objIn interface{}, qname string) (string, bool) {
@@ -86,8 +131,8 @@ func getObjectAsString(objIn interface{}, qname string) (string, bool) {
         if found {
             return t, true
         }
+        log.Warningf("getObjectAsString object is not a string: %s", qname)
     }
-    log.Warningf("getObjectAsString object is not a string: %s", qname)
     return "", false
 }
 
@@ -98,8 +143,8 @@ func getObjectAsBoolean(objIn interface{}, qname string) (bool, bool) {
         if found {
             return t, true
         }
+        log.Warningf("getObjectAsBoolean object is not a boolean: %s", qname)
     }
-    log.Warningf("getObjectAsBoolean object is not a boolean: %s", qname)
     return false, false
 }
 
@@ -110,8 +155,8 @@ func getObjectAsNumber(objIn interface{}, qname string) (float64, bool) {
         if found {
             return t, true
         }
+        log.Warningf("getObjectAsNumber object is not a number (float64): %s", qname)
     }
-    log.Warningf("getObjectAsNumber object is not a number (float64): %s", qname)
     return 0, false
 }
 
@@ -122,8 +167,8 @@ func getObjectAsInteger(objIn interface{}, qname string) (int, bool) {
         if found {
             return t, found
         }
+        log.Warningf("getObjectAsInteger object is not an integer: %s", qname)
     }
-    log.Warningf("getObjectAsInteger object is not an integer: %s", qname)
     return 0, found
 }
 

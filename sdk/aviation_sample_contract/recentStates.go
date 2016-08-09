@@ -25,6 +25,7 @@ package main // sitting beside the main file for now
 import (
 	"encoding/json"
     "errors"
+    "fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -45,11 +46,6 @@ const RECENTSTATESKEY string = "RecentStatesKey"
 type RecentStates struct {
     RecentStates []string `json:"recentStates"`
 }
-
-// AssetIDT is assetID as type, used for simple unmarshaling
-type AssetIDT struct {
-    ID string `json:"assetID"`
-} 
 
 // MaxRecentStates is an arbitrary limit on how many asset states we track across the 
 // entire contract
@@ -160,32 +156,33 @@ func removeAssetFromRecentState (stub *shim.ChaincodeStub, assetID string) (erro
 }
 
 func getAssetIDFromState(state string) (string, error) {
-    var substate AssetIDT
+    var substate interface{}
     var err error
+    fmt.Println("getAssetIDFromState: state=[", state, "]")
     err = json.Unmarshal([]byte(state), &substate)
     if err != nil {
         log.Errorf("getAssetIDFromState state unmarshal to AssetID failed: %s", err)
         return "", err
     }
-    if len(substate.ID) == 0 {
-        err = errors.New("getAssetIDFromState substate.common.assetID is blank")
+    fmt.Println("getAssetIDFromState: unmarshalled state=[", prettyPrint(substate), "]")
+    assetID, found := getObjectAsString(substate, "common.assetID")
+    if !found || len(assetID) == 0 {
+        err = errors.New("getAssetIDFromState common.assetID is missing or blank")
         log.Error(err)
         return "", err
     }
-    return substate.ID, nil 
+    return assetID, nil 
 }
 
 func findAssetInRecent (assetID string, rstate RecentStates) (int, error) {
     // returns -1 to signify not found (or error)
-    var err error
-    var substate AssetIDT
     for i := 0; i < len(rstate.RecentStates); i++ {
-        err = json.Unmarshal([]byte(rstate.RecentStates[i]), &substate)
+        assetID2, err := getAssetIDFromState(rstate.RecentStates[i])
         if err != nil {
-            log.Errorf("findAssetInRecent JSON unmarshal of entry %d failed [%#v]", i, rstate.RecentStates[i])
+            log.Errorf("findAssetInRecent get assetID from state failed row=%d entry=%s", i, rstate.RecentStates[i])
             return -1, err
         }
-        if substate.ID == assetID {
+        if assetID2 == assetID {
         	log.Debugf("findAssetInRecent found assetID %s at position %d in recent states", assetID, i)
             return i, nil
         }

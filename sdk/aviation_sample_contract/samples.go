@@ -15,6 +15,7 @@ var samples = `
         },
         "common": {
             "assetID": "The ID of a managed asset. The resource focal point for a smart contract.",
+            "assetName": "aircraft",
             "extension": [
                 {}
             ],
@@ -25,11 +26,10 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-03T13:33:38.060650239Z"
+            "timestamp": "2016-08-09T00:48:33.516671245Z"
         }
     },
     "aircraftState": {
-        "aCheckCounter": 123.456,
         "age": "Aircraft age, computed as today's date minus DOB",
         "aircraft": {
             "airline": "AssetID of airline that owns this airplane",
@@ -42,11 +42,11 @@ var samples = `
             "variant": "Aircraft model variant -- e.g. B735"
         },
         "assemblies": [
-            "NO TYPE PROPERTY"
+            "The ID of a managed asset. The resource focal point for a smart contract."
         ],
-        "bCheckCounter": 123.456,
         "common": {
             "assetID": "The ID of a managed asset. The resource focal point for a smart contract.",
+            "assetName": "aircraft",
             "extension": [
                 {}
             ],
@@ -57,7 +57,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-03T13:33:38.060659178Z"
+            "timestamp": "2016-08-09T00:48:33.516691649Z"
         },
         "cycles": 123.456
     },
@@ -68,6 +68,7 @@ var samples = `
         },
         "common": {
             "assetID": "The ID of a managed asset. The resource focal point for a smart contract.",
+            "assetName": "aircraft",
             "extension": [
                 {}
             ],
@@ -78,7 +79,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-03T13:33:38.060542124Z"
+            "timestamp": "2016-08-09T00:48:33.5166064Z"
         }
     },
     "airlineState": {
@@ -88,6 +89,7 @@ var samples = `
         },
         "common": {
             "assetID": "The ID of a managed asset. The resource focal point for a smart contract.",
+            "assetName": "aircraft",
             "extension": [
                 {}
             ],
@@ -98,12 +100,12 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-03T13:33:38.060638505Z"
+            "timestamp": "2016-08-09T00:48:33.516661463Z"
         }
     },
     "assemblyEvent": {
         "assembly": {
-            "airplane": "The assetID of the airplane on which this assembly is mounted. Blank if removed for maintenance.",
+            "aircraft": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
             "arlsZone": "tbd",
             "assemblyNumber": "Assembly type identifier",
             "ataCode": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
@@ -112,6 +114,7 @@ var samples = `
         },
         "common": {
             "assetID": "The ID of a managed asset. The resource focal point for a smart contract.",
+            "assetName": "aircraft",
             "extension": [
                 {}
             ],
@@ -122,13 +125,13 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-03T13:33:38.060719521Z"
+            "timestamp": "2016-08-09T00:48:33.516701991Z"
         }
     },
     "assemblyState": {
         "aCheckCounter": 123.456,
         "assembly": {
-            "airplane": "The assetID of the airplane on which this assembly is mounted. Blank if removed for maintenance.",
+            "aircraft": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
             "arlsZone": "tbd",
             "assemblyNumber": "Assembly type identifier",
             "ataCode": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
@@ -138,6 +141,7 @@ var samples = `
         "bCheckCounter": 123.456,
         "common": {
             "assetID": "The ID of a managed asset. The resource focal point for a smart contract.",
+            "assetName": "aircraft",
             "extension": [
                 {}
             ],
@@ -148,21 +152,19 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-03T13:33:38.060734607Z"
+            "timestamp": "2016-08-09T00:48:33.516712333Z"
         },
         "cycles": 789,
         "lifeLimitAdjusted": 789
     },
     "contractState": {
-        "activeAssets": [
-            "The ID of a managed asset. The resource focal point for a smart contract."
-        ],
         "nickname": "TRADELANE",
         "version": "The version number of the current contract"
     },
     "event": {
         "iotCommon": {
             "assetID": "The ID of a managed asset. The resource focal point for a smart contract.",
+            "assetName": "aircraft",
             "extension": [
                 {}
             ],
@@ -173,7 +175,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-03T13:33:38.060785731Z"
+            "timestamp": "2016-08-09T00:48:33.516722395Z"
         },
         "oneOf": {
             "aircraft": {
@@ -265,8 +267,8 @@ var samples = `
             "assembly": {
                 "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                 "properties": {
-                    "airplane": {
-                        "description": "The assetID of the airplane on which this assembly is mounted. Blank if removed for maintenance.",
+                    "aircraft": {
+                        "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
                         "type": "string"
                     },
                     "arlsZone": {
@@ -384,6 +386,7 @@ var samples = `
         "compliant": true,
         "iotCommon": {
             "assetID": "The ID of a managed asset. The resource focal point for a smart contract.",
+            "assetName": "aircraft",
             "extension": [
                 {}
             ],
@@ -394,7 +397,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-03T13:33:38.061017324Z"
+            "timestamp": "2016-08-09T00:48:33.516763762Z"
         },
         "lastEvent": {
             "arg": {
@@ -424,7 +427,7 @@ var samples = `
                     }
                 },
                 "assembly": {
-                    "airplane": "The assetID of the airplane on which this assembly is mounted. Blank if removed for maintenance.",
+                    "aircraft": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
                     "arlsZone": "tbd",
                     "assemblyNumber": "Assembly type identifier",
                     "ataCode": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
@@ -449,6 +452,7 @@ var samples = `
                 },
                 "iotCommon": {
                     "assetID": "The ID of a managed asset. The resource focal point for a smart contract.",
+                    "assetName": "aircraft",
                     "extension": [
                         {}
                     ],
@@ -459,7 +463,7 @@ var samples = `
                     "references": [
                         "carpe noctem"
                     ],
-                    "timestamp": "2016-08-03T13:33:38.060929324Z"
+                    "timestamp": "2016-08-09T00:48:33.516755656Z"
                 }
             },
             "function": "function that created this state object",
@@ -521,8 +525,8 @@ var samples = `
             "assembly": {
                 "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                 "properties": {
-                    "airplane": {
-                        "description": "The assetID of the airplane on which this assembly is mounted. Blank if removed for maintenance.",
+                    "aircraft": {
+                        "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
                         "type": "string"
                     },
                     "arlsZone": {

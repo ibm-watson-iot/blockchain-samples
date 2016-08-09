@@ -76,7 +76,7 @@ Howard McKinney- Initial Contribution
 //************** Life begins as simple aviation contract
 
 // v4.2sa KL June 24-28  Schema for simple life limited part scenario with a couple of alerts.
-// v4.3 KL July-August 2016  Move simple aviation changes into aviation contract to begin expansion into multiple assets and events with indexes etc
+// v4.3 KL July-August 2016  Move simple aviation changes into aviation contract to begin expansion into multiple assets and events with indexes etc.
 
 
 package main
@@ -109,9 +109,11 @@ type SimpleChaincode struct {
 }
 
 // ASSETID is the JSON tag for the assetID
-const ASSETID string = "assetID"
+const ASSETID string = "common.assetID"
+// EVENTTYPE is the JSON tag for the the event type for any incoming CRUD event
+const EVENTNAME string = "common.eventName"
 // TIMESTAMP is the JSON tag for timestamps, devices must use this tag to be compatible! 
-const TIMESTAMP string = "timestamp"
+const TIMESTAMP string = "common.timestamp"
 // TXNTIMESTAMP is the JSON tag for transaction timestamps, which map directly onto the transaction in the blockchain
 const TXNTIMESTAMP string = "txntimestamp"
 // TXNUUID is the JSON tag for transaction UUIDs, which map directly onto the transaction in the blockchain
@@ -173,16 +175,36 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 
 // Invoke is called in invoke mode to delegate state changing function messages 
 func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-	if function == "createAsset" {
-		return t.createAsset(stub, args)
-	} else if function == "updateAsset" {
-		return t.updateAsset(stub, args)
-	} else if function == "deleteAsset" {
-		return t.deleteAsset(stub, args)
-	} else if function == "deleteAllAssets" {
-		return t.deleteAllAssets(stub, args)
-	} else if function == "deletePropertiesFromAsset" {
-		return t.deletePropertiesFromAsset(stub, args)
+	if function == "createAssetAirline" {
+		return t.createAssetAirline(stub, args)
+    } else if function == "createAssetAircraft" {
+		return t.createAssetAircraft(stub, args)
+    } else if function == "createAssetAssembly" {
+		return t.createAssetAssembly(stub, args)
+	} else if function == "updateAssetAirline" {
+		return t.updateAssetAirline(stub, args)
+	} else if function == "updateAssetAircraft" {
+		return t.updateAssetAircraft(stub, args)
+	} else if function == "updateAssetAssembly" {
+		return t.updateAssetAssembly(stub, args)
+	} else if function == "deleteAssetAirline" {
+		return t.deleteAssetAirline(stub, args)
+	} else if function == "deleteAssetAircraft" {
+		return t.deleteAssetAircraft(stub, args)
+	} else if function == "deleteAssetAssembly" {
+		return t.deleteAssetAssembly(stub, args)
+	} else if function == "deleteAllAssetsAirline" {
+		return t.deleteAllAssetsAirline(stub, args)
+	} else if function == "deleteAllAssetsAircraft" {
+		return t.deleteAllAssetsAircraft(stub, args)
+	} else if function == "deleteAllAssetsAssembly" {
+		return t.deleteAllAssetsAssembly(stub, args)
+	} else if function == "deletePropertiesFromAssetAirline" {
+		return t.deletePropertiesFromAssetAirline(stub, args)
+	} else if function == "deletePropertiesFromAssetAircraft" {
+		return t.deletePropertiesFromAssetAircraft(stub, args)
+	} else if function == "deletePropertiesFromAssetAssembly" {
+		return t.deletePropertiesFromAssetAssembly(stub, args)
 	} else if function == "setLoggingLevel" {
 		return nil, t.setLoggingLevel(stub, args)
 	} else if function == "setCreateOnUpdate" {
@@ -195,14 +217,26 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 
 // Query is called in query mode to delegate non-state-changing queries
 func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-	if function == "readAsset" {
-		return t.readAsset(stub, args)
-    } else if function == "readAllAssets" {
-		return t.readAllAssets(stub, args)
+	if function == "readAssetAirline" {
+		return t.readAssetAirline(stub, args)
+    } else if function == "readAssetAircraft" {
+		return t.readAssetAircraft(stub, args)
+    } else if function == "readAssetAssembly" {
+		return t.readAssetAssembly(stub, args)
+    } else if function == "readAllAssetsAirline" {
+		return t.readAllAssetsAirline(stub, args)
+    } else if function == "readAllAssetsAircraft" {
+		return t.readAllAssetsAircraft(stub, args)
+    } else if function == "readAllAssetsAssembly" {
+		return t.readAllAssetsAssembly(stub, args)
 	} else if function == "readRecentStates" {
 		return readRecentStates(stub)
-	} else if function == "readAssetHistory" {
-		return t.readAssetHistory(stub, args)
+	} else if function == "readAssetAirlineHistory" {
+		return t.readAssetAirlineHistory(stub, args)
+	} else if function == "readAssetAircraftHistory" {
+		return t.readAssetAircraftHistory(stub, args)
+	} else if function == "readAssetAssemblyHistory" {
+		return t.readAssetAssemblyHistory(stub, args)
 	} else if function == "readAssetSamples" {
 		return t.readAssetSamples(stub, args)
 	} else if function == "readAssetSchemas" {
@@ -228,6 +262,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 // createAsset 
 // ************************************
 func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+    var eventName string
 	var assetID string
     var argsMap ArgsMap
 	var event interface{}
@@ -244,10 +279,9 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
 		return nil, err
 	}
     
-    assetID = ""
-    eventBytes := []byte(args[0])
     log.Debugf("createAsset arg: %s", args[0])
 
+    eventBytes := []byte(args[0])
     err = json.Unmarshal(eventBytes, &event)
     if err != nil {
         log.Errorf("createAsset failed to unmarshal arg: %s", err)
@@ -267,23 +301,26 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
         return nil, err
     }
 
-    // is assetID present or blank?
-    assetIDBytes, found := getObject(argsMap, ASSETID)
-    if found {
-        assetID, found = assetIDBytes.(string) 
-        if !found || assetID == "" {
-            err := errors.New("createAsset arg does not include assetID")
-            log.Error(err)
-            return nil, err
-        }
+    // validate the asset name and save it
+    // note that only assets are valid in create, cannot create an event!
+    if eventName, err = validateAssetName("createAsset", argsMap); err != nil {
+        return nil, err
     }
-    
-    found = assetIsActive(stub, assetID)
-    if found {
-        err := fmt.Errorf("createAsset arg asset %s already exists", assetID)
+
+    // validate the assetID and save the *internal* version for storing and reading state
+    if assetID, err = validateAssetID("createAsset", eventName, argsMap); err != nil {
+        return nil, err
+    }
+
+    fmt.Println("CREATEASSET eventname = " + eventName + " assetID = " + assetID + " -- argsMap " + prettyPrint(argsMap))
+    _, err = assetIsActive(stub, assetID)
+    if err != nil {
+        err := fmt.Errorf("createAsset arg asset %s already exists: %s", assetID, err.Error())
         log.Error(err)
         return nil, err
     }
+
+    log.Noticef("createAsset processing %s with assetID %s", eventName, assetID)
 
     // copy incoming event to outgoing state
     // this contract respects the fact that createAsset can accept a partial state
@@ -294,15 +331,15 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
 
     // add transaction uuid and timestamp
     stateOut[TXNUUID] = stub.UUID
-/*    txnunixtime, err := stub.GetTxTimestamp()
+    txnunixtime, err := stub.GetTxTimestamp()
 	if err != nil {
 		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
         log.Error(err)
         return nil, err
 	}
     txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
-*/
-    stateOut[TXNTIMESTAMP] = /* txntimestamp */ time.Now()
+
+    stateOut[TXNTIMESTAMP] = txntimestamp
    
     // save the original event
     stateOut["lastEvent"] = make(map[string]interface{})
@@ -336,10 +373,6 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
         stateOut["compliant"] = true
     }
 
-    // remove sub-events as the incoming event is captured
-    delete(stateOut, "flight")
-    delete(stateOut, "inspection")
-
     // marshal to JSON and write
     stateJSON, err := json.Marshal(&stateOut)
     if err != nil {
@@ -358,14 +391,6 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
     }
     log.Infof("createAsset AssetID %s state successfully written to ledger: %s", assetID, string(stateJSON))
 
-    // add asset to contract state
-    err = addAssetToContractState(stub, assetID)
-    if err != nil {
-        err := fmt.Errorf("createAsset asset %s failed to write asset state: %s", assetID, err)
-        log.Critical(err)
-        return nil, err 
-    }
-
     err = pushRecentState(stub, string(stateJSON))
     if err != nil {
         err = fmt.Errorf("createAsset AssetID %s push to recentstates failed: %s", assetID, err)
@@ -373,7 +398,7 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
         return nil, err
     }
 
-    // save state history
+    // save state history using the *internal* prefixed assetID
     err = createStateHistory(stub, assetID, string(stateJSON))
     if err != nil {
         err := fmt.Errorf("createAsset asset %s state history save failed: %s", assetID, err)
@@ -389,6 +414,8 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
 // ************************************
 func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	var assetID string
+    var eventName string
+    var stateOut ArgsMap
 	var argsMap ArgsMap
 	var event interface{}
 	var ledgerMap ArgsMap
@@ -404,11 +431,9 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
 		return nil, err
 	}
     
-    assetID = ""
-    eventBytes := []byte(args[0])
     log.Debugf("updateAsset arg: %s", args[0])
-    
-    
+
+    eventBytes := []byte(args[0])
     err = json.Unmarshal(eventBytes, &event)
     if err != nil {
         log.Errorf("updateAsset failed to unmarshal arg: %s", err)
@@ -428,38 +453,32 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
         return nil, err
     }
     
-    // is assetID present or blank?
-    assetIDBytes, found := getObject(argsMap, ASSETID)
-    if found {
-        assetID, found = assetIDBytes.(string) 
-        if !found || assetID == "" {
-            err := errors.New("updateAsset arg does not include assetID")
-            log.Error(err)
-            return nil, err
-        }
+    // validate the event name and save it
+    // note that all events are valid in update, non-assets will be forked from assets
+    if eventName, err = validateEventName("updateAsset", argsMap); err != nil {
+        return nil, err
     }
-    log.Noticef("updateAsset found assetID %s", assetID)
 
-    found = assetIsActive(stub, assetID)
-    if !found {
+    // validate the assetID and save the *internal* version for storing and reading state
+    if assetID, err = validateAssetID("updateAsset", eventName, argsMap); err != nil {
+        return nil, err
+    }
+
+    log.Noticef("updateAsset processing %s with assetID %s", eventName, assetID)
+
+    // **********************************
+    // find the asset state in the ledger
+    // **********************************
+    assetBytes, err := assetIsActive(stub, assetID)
+    if err != nil {
         // redirect to createAsset with same parameter list
         if canCreateOnUpdate(stub) {
             log.Noticef("updateAsset redirecting asset %s to createAsset", assetID)
             var newArgs = []string{args[0], "updateAsset"}
             return t.createAsset(stub, newArgs)
         }
-        err = fmt.Errorf("updateAsset asset %s does not exist", assetID)
+        err = fmt.Errorf("updateAsset asset %s does not exist: %s", assetID, err.Error())
         log.Error(err)
-        return nil, err
-    }
-
-    // **********************************
-    // find the asset state in the ledger
-    // **********************************
-    log.Infof("updateAsset: retrieving asset %s state from ledger", assetID)
-    assetBytes, err := stub.GetState(assetID)
-    if err != nil {
-        log.Errorf("updateAsset assetID %s GETSTATE failed: %s", assetID, err)
         return nil, err
     }
 
@@ -477,24 +496,37 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
         return nil, err
     }
     
-    // now add incoming map values to existing state to merge them
-    // this contract respects the fact that updateAsset can accept a partial state
-    // as the moral equivalent of one or more discrete events
-    stateOut := deepMerge(map[string]interface{}(argsMap), 
-                          map[string]interface{}(ledgerMap))
-    log.Debugf("updateAsset assetID %s merged state: %s", assetID, stateOut)
-
+    //*******************
+    // Here we fork the processing briefly:
+    // -- if the eventName is an asset, then we proceed as normal
+    // -- else we process the event, passing the asset to which it is directed
+    //    and when done, we continue after the point where the deep merge would
+    //    have happend. In other words -- merge partial state or handle event
+    //*******************
+    
+    if isAssetName(eventName) {
+        // now add incoming map values to existing state to merge them
+        // this contract respects the fact that updateAsset can accept a partial state
+        // as the moral equivalent of one or more discrete events
+        stateOut = deepMerge(map[string]interface{}(argsMap), 
+                            map[string]interface{}(ledgerMap))
+        log.Debugf("updateAsset assetID %s merged state: %s", assetID, stateOut)
+    } else {
+        stateOut = handleEvent(stub, eventName, assetID, argsMap, ledgerMap)        
+        log.Debugf("updateAsset assetID %s post %s event state: %s", assetID, eventName, stateOut)
+    }
+    
     // add transaction uuid and timestamp
     stateOut[TXNUUID] = stub.UUID
-/*    txnunixtime, err := stub.GetTxTimestamp()
+    txnunixtime, err := stub.GetTxTimestamp()
 	if err != nil {
 		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
         log.Error(err)
         return nil, err
 	}
     txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
-*/
-    stateOut[TXNTIMESTAMP] = /* txntimestamp */ time.Now()
+
+    stateOut[TXNTIMESTAMP] = txntimestamp
     
     // save the original event
     stateOut["lastEvent"] = make(map[string]interface{})
@@ -535,10 +567,6 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
         stateOut["compliant"] = true
     }
     
-    // remove sub-events as the incoming event is captured
-    delete(stateOut, "flight")
-    delete(stateOut, "inspection")
-
     // Write the new state to the ledger
     stateJSON, err := json.Marshal(ledgerMap)
     if err != nil {
@@ -546,14 +574,13 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
         log.Error(err)
         return nil, err
     }
-
-    // finally, put the new state
     err = stub.PutState(assetID, []byte(stateJSON))
     if err != nil {
         err = fmt.Errorf("updateAsset AssetID %s PUTSTATE failed: %s", assetID, err)
         log.Error(err)
         return nil, err
     }
+
     err = pushRecentState(stub, string(stateJSON))
     if err != nil {
         err = fmt.Errorf("updateAsset AssetID %s push to recentstates failed: %s", assetID, err)
@@ -569,8 +596,6 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
         return nil, err
     }
 
-    // NOTE: Contract state is not updated by updateAsset
-    
 	return nil, nil
 }
 
@@ -618,9 +643,9 @@ func (t *SimpleChaincode) deleteAsset(stub *shim.ChaincodeStub, args []string) (
         }
     }
 
-    found = assetIsActive(stub, assetID)
-    if !found {
-        err = fmt.Errorf("deleteAsset assetID %s does not exist", assetID)
+    _, err = assetIsActive(stub, assetID)
+    if err != nil {
+        err = fmt.Errorf("deleteAsset assetID %s does not exist: %s", assetID, err.Error())
         log.Error(err)
         return nil, err
     }
@@ -631,13 +656,7 @@ func (t *SimpleChaincode) deleteAsset(stub *shim.ChaincodeStub, args []string) (
         log.Errorf("deleteAsset assetID %s failed DELSTATE", assetID)
         return nil, err
     }
-    // remove asset from contract state
-    err = removeAssetFromContractState(stub, assetID)
-    if err != nil {
-        err := fmt.Errorf("deleteAsset asset %s failed to remove asset from contract state: %s", assetID, err)
-        log.Critical(err)
-        return nil, err 
-    }
+
     // save state history
     err = deleteStateHistory(stub, assetID)
     if err != nil {
@@ -645,6 +664,7 @@ func (t *SimpleChaincode) deleteAsset(stub *shim.ChaincodeStub, args []string) (
         log.Critical(err)
         return nil, err 
     }
+
     // push the recent state
     err = removeAssetFromRecentState(stub, assetID)
     if err != nil {
@@ -701,13 +721,6 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
         }
     }
 
-    found = assetIsActive(stub, assetID)
-    if !found {
-        err = fmt.Errorf("deletePropertiesFromAsset assetID %s does not exist", assetID)
-        log.Error(err)
-        return nil, err
-    }
-
     // is there a list of property names?
     var qprops []interface{}
     qpropsBytes, found := getObject(argsMap, "qualPropsToDelete")
@@ -726,10 +739,9 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
     // **********************************
     // find the asset state in the ledger
     // **********************************
-    log.Infof("deletePropertiesFromAsset: retrieving asset %s state from ledger", assetID)
-    assetBytes, err := stub.GetState(assetID)
+    assetBytes, err := assetIsActive(stub, assetID)
     if err != nil {
-        err = fmt.Errorf("deletePropertiesFromAsset AssetID %s GETSTATE failed: %s", assetID, err)
+        err = fmt.Errorf("deletePropertiesFromAsset assetID %s does not exist: %s", assetID, err.Error())
         log.Error(err)
         return nil, err
     }
@@ -793,15 +805,15 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
 
     // add transaction uuid and timestamp
     ledgerMap[TXNUUID] = stub.UUID
-/*    txnunixtime, err := stub.GetTxTimestamp()
+    txnunixtime, err := stub.GetTxTimestamp()
 	if err != nil {
 		err = fmt.Errorf("Error getting transaction timestamp: %s", err)
         log.Error(err)
         return nil, err
 	}
     txntimestamp := time.Unix(txnunixtime.Seconds, int64(txnunixtime.Nanos))
-*/
-    ledgerMap[TXNTIMESTAMP] = /* txntimestamp */ time.Now()
+
+    ledgerMap[TXNTIMESTAMP] = txntimestamp
 
     // save the original event
     ledgerMap["lastEvent"] = make(map[string]interface{})
@@ -879,7 +891,6 @@ func (t *SimpleChaincode) deletePropertiesFromAsset(stub *shim.ChaincodeStub, ar
 // deleteAllAssets 
 // ************************************
 func (t *SimpleChaincode) deleteAllAssets(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var assetID string
 	var err error
 
 	if len(args) > 0 {
@@ -888,30 +899,26 @@ func (t *SimpleChaincode) deleteAllAssets(stub *shim.ChaincodeStub, args []strin
 		return nil, err
 	}
     
-    aa, err := getActiveAssets(stub)
+    iter, err := stub.RangeQueryState("", "")
     if err != nil {
-        err = fmt.Errorf("deleteAllAssets failed to get the active assets: %s", err)
-        log.Error(err)
+        err = fmt.Errorf("readAllAssets failed to get a range query iterator: %s", err)
+		log.Error(err)
         return nil, err
     }
-    for i := range aa {
-        assetID = aa[i]
-        
-        // Delete the key / asset from the ledger
-        err = stub.DelState(assetID)
+    defer iter.Close()
+    for iter.HasNext() {
+        assetID, _, err := iter.Next()
         if err != nil {
-            err = fmt.Errorf("deleteAllAssets arg %d assetID %s failed DELSTATE", i, assetID)
+            err = fmt.Errorf("readAllAssets iter.Next() failed: %s", err)
             log.Error(err)
             return nil, err
         }
-        // remove asset from contract state
-        err = removeAssetFromContractState(stub, assetID)
+        err = stub.DelState(assetID)
         if err != nil {
-            err = fmt.Errorf("deleteAllAssets asset %s failed to remove asset from contract state: %s", assetID, err)
-            log.Critical(err)
-            return nil, err 
+            err = fmt.Errorf("deleteAllAssets assetID %s failed DELSTATE", assetID)
+            log.Error(err)
+            return nil, err
         }
-        // save state history
         err = deleteStateHistory(stub, assetID)
         if err != nil {
             err := fmt.Errorf("deleteAllAssets asset %s state history delete failed: %s", assetID, err)
@@ -925,6 +932,7 @@ func (t *SimpleChaincode) deleteAllAssets(stub *shim.ChaincodeStub, args []strin
         log.Error(err)
         return nil, err
     }
+   
 	return nil, nil
 }
 
@@ -933,6 +941,7 @@ func (t *SimpleChaincode) deleteAllAssets(stub *shim.ChaincodeStub, args []strin
 // ************************************
 func (t *SimpleChaincode) readAsset(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
     var assetID string
+    var eventName string
 	var argsMap ArgsMap
 	var request interface{}
     var assetBytes []byte
@@ -961,30 +970,24 @@ func (t *SimpleChaincode) readAsset(stub *shim.ChaincodeStub, args []string) ([]
         return nil, err
     }
     
-    // is assetID present or blank?
-    assetIDBytes, found := getObject(argsMap, ASSETID)
-    if found {
-        assetID, found = assetIDBytes.(string) 
-        if !found || assetID == "" {
-            err := errors.New("readAsset arg does not include assetID")
-            log.Error(err)
-            return nil, err
-        }
-    }
-    
-    found = assetIsActive(stub, assetID)
-    if !found {
-        err := fmt.Errorf("readAsset arg asset %s does not exist", assetID)
-        log.Error(err)
+    // validate the asset name and save it
+    // note that only assets are valid in create, cannot create an event!
+    if eventName, err = validateAssetName("readAsset", argsMap); err != nil {
         return nil, err
     }
 
-    // Get the state from the ledger
-    assetBytes, err = stub.GetState(assetID)
-    if err != nil {
-        log.Errorf("readAsset assetID %s failed GETSTATE", assetID)
+    // validate the assetID and save the *internal* version for storing and reading state
+    if assetID, err = validateAssetID("readAsset", eventName, argsMap); err != nil {
         return nil, err
-    } 
+    }
+    
+    // Get the state from the ledger
+    assetBytes, err = assetIsActive(stub, assetID)
+    if err != nil {
+        err := fmt.Errorf("readAsset arg asset %s does not exist: %s", assetID, err.Error())
+        log.Error(err)
+        return nil, err
+    }
 
 	return assetBytes, nil
 }
@@ -993,7 +996,6 @@ func (t *SimpleChaincode) readAsset(stub *shim.ChaincodeStub, args []string) ([]
 // readAllAssets 
 // ************************************
 func (t *SimpleChaincode) readAllAssets(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var assetID string
 	var err error
     var results []interface{}
     var state interface{}
@@ -1003,41 +1005,39 @@ func (t *SimpleChaincode) readAllAssets(stub *shim.ChaincodeStub, args []string)
 		log.Error(err)
 		return nil, err
 	}
-    
-    aa, err := getActiveAssets(stub)
+
+    iter, err := stub.RangeQueryState("", "")
     if err != nil {
-        err = fmt.Errorf("readAllAssets failed to get the active assets: %s", err)
+        err = fmt.Errorf("readAllAssets failed to get a range query iterator: %s", err)
 		log.Error(err)
         return nil, err
     }
-    results = make([]interface{}, 0, len(aa))
-    for i := range aa {
-        assetID = aa[i]
-        // Get the state from the ledger
-        assetBytes, err := stub.GetState(assetID)
+    defer iter.Close()
+    results = make([]interface{}, 0, 1000)
+    for iter.HasNext() {
+        _, assetBytes, err := iter.Next()
         if err != nil {
-            // best efforts, return what we can
-            log.Errorf("readAllAssets assetID %s failed GETSTATE", assetID)
-            continue
-        } else {
-            err = json.Unmarshal(assetBytes, &state)
-            if err != nil {
-                // best efforts, return what we can
-                log.Errorf("readAllAssets assetID %s failed to unmarshal", assetID)
-                continue
-            }
-            results = append(results, state)
+            err = fmt.Errorf("readAllAssets iter.Next() failed: %s", err)
+            log.Error(err)
+            return nil, err
         }
+        err = json.Unmarshal(assetBytes, &state)
+        if err != nil {
+            err = fmt.Errorf("readAllAssets unmarshal failed: %s", err)
+            log.Error(err)
+            return nil, err
+        }
+        results = append(results, state)
     }
     
-    resultsStr, err := json.Marshal(results)
+    resultsBytes, err := json.Marshal(&results)
     if err != nil {
         err = fmt.Errorf("readallAssets failed to marshal results: %s", err)
         log.Error(err)
         return nil, err
     }
 
-	return []byte(resultsStr), nil
+	return resultsBytes, nil
 }
 
 // ************************************
@@ -1085,9 +1085,9 @@ func (t *SimpleChaincode) readAssetHistory(stub *shim.ChaincodeStub, args []stri
         }
     }
     
-    found = assetIsActive(stub, assetID)
-    if !found {
-        err := fmt.Errorf("readAssetHistory arg asset %s does not exist", assetID)
+    _, err = assetIsActive(stub, assetID)
+    if err != nil {
+        err := fmt.Errorf("readAssetHistory arg asset %s does not exist: %s", assetID, err.Error())
         log.Error(err)
         return nil, err
     }
@@ -1179,7 +1179,7 @@ func (t *SimpleChaincode) readAssetSchemas(stub *shim.ChaincodeStub, args []stri
 // readContractObjectModel 
 // ************************************
 func (t *SimpleChaincode) readContractObjectModel(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var state = ContractState{MYVERSION, DEFAULTNICKNAME, make(map[string]bool)}
+	var state = ContractState{MYVERSION, DEFAULTNICKNAME}
 
 	stateJSON, err := json.Marshal(state)
 	if err != nil {

@@ -21,13 +21,14 @@ Kim Letkeman - Initial Contribution
 // v3.0.3 KL             backported from original 3.1/4.0 
 // v4.0 KL 17 Mar 2016 Update version number to 4.0 for Hyperledger compatibility.
 //                     Clean up lint issues.
+// v4.3 KL August 2016 Remove activeAssets array as it is not useful in a multi-asset
+//                     contract. World state is polled instead. 
 
 package main
 
 import (
 	"encoding/json"
     "fmt"
-    "sort"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -49,12 +50,11 @@ const CONTRACTSTATEKEY string = "ContractStateKey"
 type ContractState struct {
 	Version      string           `json:"version"`
     Nickname     string           `json:"nickname"`
-	ActiveAssets map[string]bool  `json:"activeAssets"`
 }
 
 // GETContractStateFromLedger retrieves state from ledger and returns to caller
 func GETContractStateFromLedger(stub *shim.ChaincodeStub) (ContractState, error) {
-    var state = ContractState{ MYVERSION, DEFAULTNICKNAME, make(map[string]bool) }
+    var state = ContractState{ MYVERSION, DEFAULTNICKNAME }
     var err error
 	contractStateBytes, err := stub.GetState(CONTRACTSTATEKEY)
     // minimum string is {"version":""} and version cannot be empty 
@@ -74,10 +74,6 @@ func GETContractStateFromLedger(stub *shim.ChaincodeStub) (ContractState, error)
         // empty state already initialized 
 		log.Noticef("Initialized newly deployed contract state version %s", state.Version)
 	}
-    // this MUST be here
-    if state.ActiveAssets == nil {
-        state.ActiveAssets = make(map[string]bool)
-    }
     log.Debug("GETContractState successful")
     return state, nil 
 }
@@ -100,47 +96,6 @@ func PUTContractStateToLedger(stub *shim.ChaincodeStub, state ContractState) (er
     } 
     log.Debugf("PUTContractState: %#v", state)
     return nil 
-}
-
-func addAssetToContractState(stub *shim.ChaincodeStub, assetID string) (error) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)  
-    if err != nil {
-        return err
-    }
-    log.Debugf("Adding asset %s to contract", assetID)
-    state.ActiveAssets[assetID] = true
-    return PUTContractStateToLedger(stub, state)
-}
-
-func removeAssetFromContractState(stub *shim.ChaincodeStub, assetID string) (error) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)  
-    if err != nil {
-        return err
-    }
-    log.Debugf("Deleting asset %s from contract", assetID)
-    delete(state.ActiveAssets, assetID)
-    return PUTContractStateToLedger(stub, state)
-}
-
-func getActiveAssets(stub *shim.ChaincodeStub) ([]string, error) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)  
-    if err != nil {
-        return []string{}, err
-    }
-    var a = make([]string, len(state.ActiveAssets))
-    i := 0
-    for id := range state.ActiveAssets {
-        a[i] = id
-        i++ 
-    }
-    sort.Strings(a)
-    return a, nil
 }
 
 func initializeContractState(stub *shim.ChaincodeStub, version string, nickname string) (error) {
@@ -175,11 +130,16 @@ func getLedgerContractVersion(stub *shim.ChaincodeStub) (string, error) {
     return state.Version, nil   
 }
 
-func assetIsActive(stub *shim.ChaincodeStub, assetID string) (bool) {
-    var state ContractState
-    var err error
-    state, err = GETContractStateFromLedger(stub)
-    if err != nil { return false}
-    found, _ := state.ActiveAssets[assetID]
-    return found
-}                      
+// In the multi-asset version of contract state, we no longer remember the asset list
+// in memory, relying instead on retrieval from world state. This means, though, that
+// this function expects the *internal* assetID, which prepends the assetName's 
+// 2-letter prefix.
+func assetIsActive(stub *shim.ChaincodeStub, assetID string) ([]byte, error) {
+    stateBytes, err := stub.GetState(assetID)
+    if err != nil { 
+        err = fmt.Errorf("assetIsActive: assetID %s: %s %s", assetID, string(stateBytes), err)
+        log.Error(err)
+        return nil, err
+    }
+    return stateBytes, nil
+}

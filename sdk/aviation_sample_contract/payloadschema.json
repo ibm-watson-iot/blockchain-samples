@@ -162,16 +162,40 @@
             "description": "the payload for an invoke message",
             "oneOf": [
                 {
-                    "$ref": "#/definitions/API/createAsset"
+                    "$ref": "#/definitions/API/createAssetAirline"
                 },
                 {
-                    "$ref": "#/definitions/API/updateAsset"
+                    "$ref": "#/definitions/API/createAssetAircraft"
                 },
                 {
-                    "$ref": "#/definitions/API/deleteAsset"
+                    "$ref": "#/definitions/API/createAssetAssembly"
                 },
                 {
-                    "$ref": "#/definitions/API/deletePropertiesFromAsset"
+                    "$ref": "#/definitions/API/updateAssetAirline"
+                },
+                {
+                    "$ref": "#/definitions/API/updateAssetAircraft"
+                },
+                {
+                    "$ref": "#/definitions/API/updateAssetAssembly"
+                },
+                {
+                    "$ref": "#/definitions/API/deleteAssetAirline"
+                },
+                {
+                    "$ref": "#/definitions/API/deleteAssetAircraft"
+                },
+                {
+                    "$ref": "#/definitions/API/deleteAssetAssembly"
+                },
+                {
+                    "$ref": "#/definitions/API/deletePropertiesFromAssetAirline"
+                },
+                {
+                    "$ref": "#/definitions/API/deletePropertiesFromAssetAircraft"
+                },
+                {
+                    "$ref": "#/definitions/API/deletePropertiesFromAssetAssembly"
                 },
                 {
                     "$ref": "#/definitions/API/setLoggingLevel"
@@ -180,7 +204,13 @@
                     "$ref": "#/definitions/API/setCreateOnUpdate"
                 },
                 {
-                    "$ref": "#/definitions/API/deleteAllAssets"
+                    "$ref": "#/definitions/API/deleteAllAssetsAirline"
+                },
+                {
+                    "$ref": "#/definitions/API/deleteAllAssetsAircraft"
+                },
+                {
+                    "$ref": "#/definitions/API/deleteAllAssetsAssembly"
                 }
             ]
         },
@@ -189,13 +219,31 @@
             "description": "the payload for a query message",
             "oneOf": [
                 {
-                    "$ref": "#/definitions/API/readAsset"
+                    "$ref": "#/definitions/API/readAssetAirline"
                 },
                 {
-                    "$ref": "#/definitions/API/readAllAssets"
+                    "$ref": "#/definitions/API/readAssetAircraft"
                 },
                 {
-                    "$ref": "#/definitions/API/readAssetHistory"
+                    "$ref": "#/definitions/API/readAssetAssembly"
+                },
+                {
+                    "$ref": "#/definitions/API/readAllAssetsAirline"
+                },
+                {
+                    "$ref": "#/definitions/API/readAllAssetsAircraft"
+                },
+                {
+                    "$ref": "#/definitions/API/readAllAssetsAssembly"
+                },
+                {
+                    "$ref": "#/definitions/API/readAssetAirlineHistory"
+                },
+                {
+                    "$ref": "#/definitions/API/readAssetAircraftHistory"
+                },
+                {
+                    "$ref": "#/definitions/API/readAssetAssemblyHistory"
                 },
                 {
                     "$ref": "#/definitions/API/readAssetSamples"
@@ -281,22 +329,22 @@
                         }
                     }
                 },
-                "createAsset": {
+                "createAssetAirline": {
                     "type": "object",
-                    "description": "Create an asset. One argument, a JSON encoded event. The 'assetID' property is required with zero or more writable properties. Establishes an initial asset state.",
+                    "description": "Create an airline asset. One argument, a JSON encoded event. The 'assetID' property is required with zero or more writable properties. Establishes an initial asset state.",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "createAsset"
+                                "createAssetAirline"
                             ],
-                            "description": "createAsset function"
+                            "description": "createAssetAirline function"
                         },
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/eventComposite"
+                                "$ref": "#/definitions/airlineEvent"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -304,22 +352,22 @@
                         }
                     }
                 },
-                "updateAsset": {
+                "createAssetAircraft": {
                     "type": "object",
-                    "description": "Update the state of an asset. The one argument is a JSON encoded event. The 'assetID' property is required along with one or more writable properties. Establishes the next asset state. ",
+                    "description": "Create an aircraft asset. One argument, a JSON encoded event. The 'assetID' property is required with zero or more writable properties. Establishes an initial asset state.",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "updateAsset"
+                                "createAssetAircraft"
                             ],
-                            "description": "updateAsset function"
+                            "description": "createAssetAircraft function"
                         },
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/eventComposite"
+                                "$ref": "#/definitions/aircraftEvent"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -327,22 +375,22 @@
                         }
                     }
                 },
-                "deleteAsset": {
+                "createAssetAssembly": {
                     "type": "object",
-                    "description": "Delete an asset, its history, and any recent state activity. Argument is a JSON encoded string containing only an 'assetID'.",
+                    "description": "Create an assembly asset. One argument, a JSON encoded event. The 'assetID' property is required with zero or more writable properties. Establishes an initial asset state.",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "deleteAsset"
+                                "createAssetAssembly"
                             ],
-                            "description": "deleteAsset function"
+                            "description": "createAssetAssembly function"
                         },
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/assetIDKey"
+                                "$ref": "#/definitions/assemblyEvent"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -350,7 +398,145 @@
                         }
                     }
                 },
-                "deletePropertiesFromAsset": {
+                "updateAssetAirline": {
+                    "type": "object",
+                    "description": "Update the state of an airline asset. The one argument is a JSON encoded event. The 'assetID' property is required along with one or more writable properties. Establishes the next asset state. ",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "updateAssetAirline"
+                            ],
+                            "description": "updateAssetAirline function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/airlineEvent"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "updateAssetAircraft": {
+                    "type": "object",
+                    "description": "Update the state of an aircraft asset. The one argument is a JSON encoded event. The 'assetID' property is required along with one or more writable properties. Establishes the next asset state. ",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "updateAssetAircraft"
+                            ],
+                            "description": "updateAssetAircraft function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/aircraftEvent"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "updateAssetAssembly": {
+                    "type": "object",
+                    "description": "Update the state of an assembly asset. The one argument is a JSON encoded event. The 'assetID' property is required along with one or more writable properties. Establishes the next asset state. ",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "updateAssetAssembly"
+                            ],
+                            "description": "updateAssetAssembly function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assemblyEvent"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "deleteAssetAirline": {
+                    "type": "object",
+                    "description": "Delete an airline asset, its history, and any recent state activity. Argument is a JSON encoded string containing only an 'assetID'.",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deleteAssetAirline"
+                            ],
+                            "description": "deleteAssetAirline function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetID"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "deleteAssetAircraft": {
+                    "type": "object",
+                    "description": "Delete an aircraft asset, its history, and any recent state activity. Argument is a JSON encoded string containing only an 'assetID'.",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deleteAssetAircraft"
+                            ],
+                            "description": "deleteAssetAircraft function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetID"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "deleteAssetAssembly": {
+                    "type": "object",
+                    "description": "Delete an assembly asset, its history, and any recent state activity. Argument is a JSON encoded string containing only an 'assetID'.",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deleteAssetAssembly"
+                            ],
+                            "description": "deleteAssetAssembly function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetID"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "deletePropertiesFromAssetAirline": {
                     "type": "object",
                     "description": "Delete one or more properties from an asset's state. Argument is a JSON encoded string containing an 'assetID' and an array of qualified property names. For example, in an event object containing common and custom properties objects, the argument might look like {'assetID':'A1',['common.location', 'custom.carrier', 'custom.temperature']} and the result of that invoke would be the removal of the location, carrier and temperature properties. The missing temperature would clear a 'OVERTEMP' alert when the rules engine runs.",
                     "properties": {
@@ -358,14 +544,14 @@
                         "function": {
                             "type": "string",
                             "enum": [
-                                "deletePropertiesFromAsset"
+                                "deletePropertiesFromAssetAirline"
                             ],
-                            "description": "deletePropertiesFromAsset function"
+                            "description": "deletePropertiesFromAssetAirline function"
                         },
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/assetIDandPropertyArray"
+                                "$ref": "#/definitions/assetIDAndPropertyArray"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -373,7 +559,53 @@
                         }
                     }
                 },
-                "deleteAllAssets": {
+                "deletePropertiesFromAssetAircraft": {
+                    "type": "object",
+                    "description": "Delete one or more properties from an asset's state. Argument is a JSON encoded string containing an 'assetID' and an array of qualified property names. For example, in an event object containing common and custom properties objects, the argument might look like {'assetID':'A1',['common.location', 'custom.carrier', 'custom.temperature']} and the result of that invoke would be the removal of the location, carrier and temperature properties. The missing temperature would clear a 'OVERTEMP' alert when the rules engine runs.",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deletePropertiesFromAssetAircraft"
+                            ],
+                            "description": "deletePropertiesFromAssetAircraft function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetIDAndPropertyArray"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "deletePropertiesFromAssetAssembly": {
+                    "type": "object",
+                    "description": "Delete one or more properties from an asset's state. Argument is a JSON encoded string containing an 'assetID' and an array of qualified property names. For example, in an event object containing common and custom properties objects, the argument might look like {'assetID':'A1',['common.location', 'custom.carrier', 'custom.temperature']} and the result of that invoke would be the removal of the location, carrier and temperature properties. The missing temperature would clear a 'OVERTEMP' alert when the rules engine runs.",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deletePropertiesFromAssetAssembly"
+                            ],
+                            "description": "deletePropertiesFromAssetAssembly function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetIDAndPropertyArray"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "deleteAllAssetsAirline": {
                     "type": "object",
                     "description": "Delete the state of all assets. No arguments are accepted. For each managed asset, the state and history are erased, and the asset is removed if necessary from recent states.",
                     "properties": {
@@ -381,9 +613,9 @@
                         "function": {
                             "type": "string",
                             "enum": [
-                                "deleteAllAssets"
+                                "deleteAllAssetsAirline"
                             ],
-                            "description": "deleteAllAssets function"
+                            "description": "deleteAllAssetsAirline function"
                         },
                         "args": {
                             "type": "array",
@@ -394,22 +626,64 @@
                         }
                     }
                 },
-                "readAsset": {
+                "deleteAllAssetsAircraft": {
                     "type": "object",
-                    "description": "Returns the state an asset. Argument is a JSON encoded string. The arg is an 'assetID' property.",
+                    "description": "Delete the state of all assets. No arguments are accepted. For each managed asset, the state and history are erased, and the asset is removed if necessary from recent states.",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deleteAllAssetsAircraft"
+                            ],
+                            "description": "deleteAllAssetsAircraft function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        }
+                    }
+                },
+                "deleteAllAssetsAssembly": {
+                    "type": "object",
+                    "description": "Delete the state of all assets. No arguments are accepted. For each managed asset, the state and history are erased, and the asset is removed if necessary from recent states.",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deleteAllAssetsAssembly"
+                            ],
+                            "description": "deleteAllAssetsAssembly function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        }
+                    }
+                },
+                "readAssetAirline": {
+                    "type": "object",
+                    "description": "Returns the state of an airline asset. Argument is a JSON encoded string. The arg is an 'assetID' property.",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "readAsset"
+                                "readAssetAirline"
                             ],
-                            "description": "readAsset function"
+                            "description": "readAssetAirline function"
                         },
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/assetIDKey"
+                                "$ref": "#/definitions/assetID"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -420,17 +694,69 @@
                         }
                     }
                 },
-                "readAllAssets": {
+                "readAssetAircraft": {
                     "type": "object",
-                    "description": "Returns the state of all assets as an array of JSON encoded strings. Accepts no arguments. For each managed asset, the state is read from the ledger and added to the returned array. Array is sorted by 'assetID'.",
+                    "description": "Returns the state of an aircraft asset. Argument is a JSON encoded string. The arg is an 'assetID' property.",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "readAllAssets"
+                                "readAssetAircraft"
                             ],
-                            "description": "readAllAssets function"
+                            "description": "readAssetAircraft function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetID"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        },
+                        "result": {
+                            "$ref": "#/definitions/state"
+                        }
+                    }
+                },
+                "readAssetAssembly": {
+                    "type": "object",
+                    "description": "Returns the state of an assembly asset. Argument is a JSON encoded string. The arg is an 'assetID' property.",
+                    "properties": {
+                        "method": "query",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAssetAssembly"
+                            ],
+                            "description": "readAssetAssembly function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetID"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        },
+                        "result": {
+                            "$ref": "#/definitions/state"
+                        }
+                    }
+                },
+                "readAllAssetsAirline": {
+                    "type": "object",
+                    "description": "Returns the state of all airline assets as an array of JSON encoded strings. Accepts no arguments. For each managed asset, the state is read from the ledger and added to the returned array. Array is sorted by 'assetID'.",
+                    "properties": {
+                        "method": "query",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAllAssetsAirline"
+                            ],
+                            "description": "readAllAssetsAirline function"
                         },
                         "args": {
                             "type": "array",
@@ -444,22 +770,122 @@
                         }
                     }
                 },
-                "readAssetHistory": {
+                "readAllAssetsAircraft": {
                     "type": "object",
-                    "description": "Requests a specified number of history states for an assets. Returns an array of states sorted with the most recent first. The 'assetID' property is required and the count property is optional. A missing count, a count of zero, or too large a count returns all existing history states.",
+                    "description": "Returns the state of all aircraft assets as an array of JSON encoded strings. Accepts no arguments. For each managed asset, the state is read from the ledger and added to the returned array. Array is sorted by 'assetID'.",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "readAssetHistory"
+                                "readAllAssetsAircraft"
                             ],
-                            "description": "readAssetHistory function"
+                            "description": "readAllAssetsAircraft function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        },
+                        "result": {
+                            "$ref": "#/definitions/stateArray"
+                        }
+                    }
+                },
+                "readAllAssetsAssembly": {
+                    "type": "object",
+                    "description": "Returns the state of all assembly assets as an array of JSON encoded strings. Accepts no arguments. For each managed asset, the state is read from the ledger and added to the returned array. Array is sorted by 'assetID'.",
+                    "properties": {
+                        "method": "query",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAllAssetsAssembly"
+                            ],
+                            "description": "readAllAssetsAssembly function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        },
+                        "result": {
+                            "$ref": "#/definitions/stateArray"
+                        }
+                    }
+                },
+                "readAssetAirlineHistory": {
+                    "type": "object",
+                    "description": "Requests a specified number of history states for airline assets. Returns an array of states sorted with the most recent first. The 'assetID' property is required and the count property is optional. A missing count, a count of zero, or too large a count returns all existing history states.",
+                    "properties": {
+                        "method": "query",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAssetAirlineHistory"
+                            ],
+                            "description": "readAssetAirlineHistory function"
                         },
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/assetIDandCount"
+                                "$ref": "#/definitions/assetIDNameAndCount"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        },
+                        "result": {
+                            "$ref": "#/definitions/stateArrayRecentFirst"
+                        }
+                    }
+                },
+                "readAssetAircraftHistory": {
+                    "type": "object",
+                    "description": "Requests a specified number of history states for aircraft assets. Returns an array of states sorted with the most recent first. The 'assetID' property is required and the count property is optional. A missing count, a count of zero, or too large a count returns all existing history states.",
+                    "properties": {
+                        "method": "query",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAssetAircraftHistory"
+                            ],
+                            "description": "readAssetAircraftHistory function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetIDNameAndCount"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        },
+                        "result": {
+                            "$ref": "#/definitions/stateArrayRecentFirst"
+                        }
+                    }
+                },
+                "readAssetAssemblyHistory": {
+                    "type": "object",
+                    "description": "Requests a specified number of history states for assembly assets. Returns an array of states sorted with the most recent first. The 'assetID' property is required and the count property is optional. A missing count, a count of zero, or too large a count returns all existing history states.",
+                    "properties": {
+                        "method": "query",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAssetAssemblyHistory"
+                            ],
+                            "description": "readAssetAssemblyHistory function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetIDNameAndCount"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -583,21 +1009,24 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "logLevel": {
-                                    "type": "string",
-                                    "enum": [
-                                        "CRITICAL",
-                                        "ERROR",
-                                        "WARNING",
-                                        "NOTICE",
-                                        "INFO",
-                                        "DEBUG"                                    
-                                    ]
+                                "type": "object",
+                                "description": "A logging level for the fabric.",
+                                "properties": {
+                                    "logLevel": {
+                                        "type": "string",
+                                        "enum": [
+                                            "CRITICAL",
+                                            "ERROR",
+                                            "WARNING",
+                                            "NOTICE",
+                                            "INFO",
+                                            "DEBUG"                                    
+                                        ]
+                                    }
                                 }
                             },
                             "minItems": 1,
-                            "maxItems": 1,
-                            "description": "logging levels indicate what you see"
+                            "maxItems": 1
                         }
                     }
                 },
@@ -616,13 +1045,16 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "setCreateOnUpdate": {
-                                    "type": "boolean"
+                                "type": "object",
+                                "description": "True to redirect on missing asset to create.",
+                                "properties": {
+                                    "setCreateOnUpdate": {
+                                        "type": "boolean"
+                                    }
                                 }
                             },
                             "minItems": 1,
-                            "maxItems": 1,
-                            "description": "True for redirect allowed, false for error on asset does not exist."
+                            "maxItems": 1
                         }
                     }
                 }
@@ -691,14 +1123,21 @@
             "type": "string",
             "description": "The ID of a managed asset. The resource focal point for a smart contract."
         },
-        "assetIDKey": {
+        "assetIDAndNameKey": {
             "type": "object",
-            "description": "An object containing only an 'assetID' for use as an argument to read or delete.",
+            "description": "An object containing an 'assetID' and an 'assetName' for use as an argument to read or delete.",
             "properties": {
                 "assetID": {
                     "$ref": "#/definitions/assetID"
+                },
+                "assetName": {
+                    "$ref": "#/definitions/assetName"
                 }
-            }
+            },
+            "required": [
+                "assetID",
+                "assetName"
+            ]
         },
         "alertName": {
             "type": "string",
@@ -748,19 +1187,23 @@
                 }
             }
         },
-        "assetIDandCount": {
+        "assetIDNameAndCount": {
             "type": "object",
-            "description": "Requested 'assetID' with item 'count'.",
+            "description": "Requested 'assetID' with 'assetName' with item 'count'.",
             "properties": {
                 "count": {
                     "type": "integer"
                 },
                 "assetID": {
                     "$ref": "#/definitions/assetID"
+                },
+                "assetName": {
+                    "$ref": "#/definitions/assetName"
                 }
             },
             "required": [
-                "assetID"
+                "assetID",
+                "assetName"
             ]
         },
         "qualPropertyNameArray": {
@@ -770,7 +1213,7 @@
                 "description": "The qualified name of a property. E.g. 'event.common.carrier', 'event.custom.temperature', etc." 
             }
         },
-        "assetIDandPropertyArray": {
+        "assetIDAndPropertyArray": {
             "type": "object",
             "description": "Requested 'assetID' with a list of qualified property names.",
             "properties": {
@@ -779,6 +1222,9 @@
                 },
                 "assetID": {
                     "$ref": "#/definitions/assetID"
+                },
+                "assetName": {
+                    "$ref": "#/definitions/assetName"
                 }
             },
             "required": [
@@ -918,9 +1364,9 @@
                 },
                 "assemblies": {
                     "type": "array",
-                    "description": "AssetID of airline that owns this airplane",
+                    "description": "*Internal prefixed* assetIDs of assemblies that are mounted on this airplane",
                     "items": {
-                        
+                        "$ref": "#/definitions/assetID"
                     }
                 },
                 "age": {
@@ -930,14 +1376,6 @@
                 "cycles": {
                     "type": "number",
                     "description": "Total number of cycles for this aircraft"
-                },
-                "aCheckCounter": {
-                    "type": "number",
-                    "description": "The total cycles since last reset. Raise ACHECK alert at 10 cycles. Clear only with ACHECK inspection event, which resets counter to zero."
-                },
-                "bCheckCounter": {
-                    "type": "number",
-                    "description": "Count consecutive hard landings. Two consecutive hard landings raises BCHECK alert. Only a BCHECK inspection can clear the alert."
                 }
             }
         },
@@ -945,9 +1383,9 @@
             "type": "object",
             "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
             "properties": {
-                "airplane": {
+                "aircraft": {
                     "type": "string",
-                    "description": "The assetID of the airplane on which this assembly is mounted. Blank if removed for maintenance."
+                    "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance."
                 },
                 "assemblyNumber": {
                     "type": "string",
@@ -1180,10 +1618,34 @@
                 }
             }
         },
+        "eventName": {
+            "description": "Defines an event that can be sent to updateAsset. The complete list is in the enum property. Events that are also assets (see the subset definition 'assetName') will be treated using the 'partial state as event' pattern. Events that are not assets will be redirected to a 'handleEvent' function. Note that the contract checks this list and will refuse to handle events that are not named here.",
+            "type": "string",
+            "enum": [
+                "airline",
+                "aircraft",
+                "assembly",
+                "flight",
+                "inspection",
+                "analyticAdjustment"
+            ]
+        },
+        "assetName": {
+            "description": "Defines an asset that is handled by this smart contract. The complete list is in the enum property and is a proper subset of 'eventName'. These asset event names can be sent to createAsset, updateAsset, deleteAsset and removePropertiesFromAsset. These will be handled using the 'partial state as event' pattern, which includes deep merging into the asset state when updating. Note that the contract checks this list and will refuse to handle assets that are not named here.",
+            "type": "string",
+            "enum": [
+                "airline",
+                "aircraft",
+                "assembly"
+            ]
+        },
         "iotCommon": {
             "type": "object",
-            "description": "The set of common writable properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event'.",
+            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
             "properties": {
+                "assetName": {
+                    "$ref": "#/definitions/eventName"
+                },
                 "assetID": {
                     "$ref": "#/definitions/assetID"
                 },
@@ -1208,7 +1670,8 @@
                 }
             },
             "required": [
-                "assetID"
+                "assetID",
+                "assetName"
             ]
         },
         "event": {
@@ -1305,13 +1768,6 @@
                 },
                 "nickname": {
                     "$ref": "#/definitions/nickname"
-                },
-                "activeAssets": {
-                    "type": "array",
-                    "description": "array containing actively managed asset IDs",
-                    "items": {
-                        "$ref": "#/definitions/assetID"
-                    }
                 }
             }
         }
