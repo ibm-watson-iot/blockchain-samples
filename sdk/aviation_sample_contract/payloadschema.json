@@ -329,6 +329,75 @@
                         }
                     }
                 },
+                "eventFlight": {
+                    "type": "object",
+                    "description": "Post a flight event to the contract. One argument, a JSON encoded event. The 'assetID' property is the target for the event, which is an aircraft in the case of the flight event.",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "eventFlight"
+                            ],
+                            "description": "eventFlight function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/flightEvent"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "eventInspection": {
+                    "type": "object",
+                    "description": "Post an inspection event to the contract. One argument, a JSON encoded event. The 'assetID' property is the target for the event, which is an assembly in the case of the inspection event.",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "eventInspection"
+                            ],
+                            "description": "eventInspection function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/inspectionEvent"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
+                "eventAnalyticAdjustment": {
+                    "type": "object",
+                    "description": "Post an analytic adjustment event to the contract. One argument, a JSON encoded event. The 'assetID' property is the target for the event, which is an assembly in the case of the analytic adjustment event.",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "eventAnalyticAdjustment"
+                            ],
+                            "description": "eventAnalyticAdjustment function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/analyticAdjustmentEvent"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
                 "createAssetAirline": {
                     "type": "object",
                     "description": "Create an airline asset. One argument, a JSON encoded event. The 'assetID' property is required with zero or more writable properties. Establishes an initial asset state.",
@@ -482,7 +551,7 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/assetID"
+                                "$ref": "#/definitions/assetIDObj"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -505,7 +574,7 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/assetID"
+                                "$ref": "#/definitions/assetIDObj"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -528,7 +597,7 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/assetID"
+                                "$ref": "#/definitions/assetIDObj"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -683,7 +752,7 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/assetID"
+                                "$ref": "#/definitions/assetIDObj"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -709,7 +778,7 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/assetID"
+                                "$ref": "#/definitions/assetIDObj"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -735,7 +804,7 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/assetID"
+                                "$ref": "#/definitions/assetIDObj"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -833,7 +902,7 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/assetIDNameAndCount"
+                                "$ref": "#/definitions/assetIDAndCount"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -859,7 +928,7 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/assetIDNameAndCount"
+                                "$ref": "#/definitions/assetIDAndCount"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -885,7 +954,7 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/assetIDNameAndCount"
+                                "$ref": "#/definitions/assetIDAndCount"
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -1123,22 +1192,6 @@
             "type": "string",
             "description": "The ID of a managed asset. The resource focal point for a smart contract."
         },
-        "assetIDAndNameKey": {
-            "type": "object",
-            "description": "An object containing an 'assetID' and an 'assetName' for use as an argument to read or delete.",
-            "properties": {
-                "assetID": {
-                    "$ref": "#/definitions/assetID"
-                },
-                "assetName": {
-                    "$ref": "#/definitions/assetName"
-                }
-            },
-            "required": [
-                "assetID",
-                "assetName"
-            ]
-        },
         "alertName": {
             "type": "string",
             "enum": [
@@ -1187,23 +1240,31 @@
                 }
             }
         },
-        "assetIDNameAndCount": {
+        "assetIDAndCount": {
             "type": "object",
-            "description": "Requested 'assetID' with 'assetName' with item 'count'.",
+            "description": "Requested 'assetID' with item 'count'.",
             "properties": {
                 "count": {
                     "type": "integer"
                 },
                 "assetID": {
                     "$ref": "#/definitions/assetID"
-                },
-                "assetName": {
-                    "$ref": "#/definitions/assetName"
                 }
             },
             "required": [
-                "assetID",
-                "assetName"
+                "assetID"
+            ]
+        },
+        "assetIDObj": {
+            "type": "object",
+            "description": "Requested 'assetID' in an object.",
+            "properties": {
+                "assetID": {
+                    "$ref": "#/definitions/assetID"
+                }
+            },
+            "required": [
+                "assetID"
             ]
         },
         "qualPropertyNameArray": {
@@ -1222,9 +1283,6 @@
                 },
                 "assetID": {
                     "$ref": "#/definitions/assetID"
-                },
-                "assetName": {
-                    "$ref": "#/definitions/assetName"
                 }
             },
             "required": [
@@ -1237,7 +1295,7 @@
             "description": "function and string parameter that created this state object",
             "properties": {
                 "arg": {
-                    "$ref": "#/definitions/eventComposite"
+                    "$ref": "#/definitions/event"
                 },
                 "function": {
                     "type": "string",
@@ -1619,19 +1677,16 @@
             }
         },
         "eventName": {
-            "description": "Defines an event that can be sent to updateAsset. The complete list is in the enum property. Events that are also assets (see the subset definition 'assetName') will be treated using the 'partial state as event' pattern. Events that are not assets will be redirected to a 'handleEvent' function. Note that the contract checks this list and will refuse to handle events that are not named here.",
+            "description": "Defines an event that is related to an asset. The complete list is in the enum property.",
             "type": "string",
             "enum": [
-                "airline",
-                "aircraft",
-                "assembly",
                 "flight",
                 "inspection",
                 "analyticAdjustment"
             ]
         },
         "assetName": {
-            "description": "Defines an asset that is handled by this smart contract. The complete list is in the enum property and is a proper subset of 'eventName'. These asset event names can be sent to createAsset, updateAsset, deleteAsset and removePropertiesFromAsset. These will be handled using the 'partial state as event' pattern, which includes deep merging into the asset state when updating. Note that the contract checks this list and will refuse to handle assets that are not named here.",
+            "description": "Defines an asset that is handled by this smart contract. The complete list is in the enum property. Assets follow the 'partial state as event' pattern, which includes deep merging into the asset state when updating.",
             "type": "string",
             "enum": [
                 "airline",
@@ -1643,9 +1698,6 @@
             "type": "object",
             "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
             "properties": {
-                "assetName": {
-                    "$ref": "#/definitions/eventName"
-                },
                 "assetID": {
                     "$ref": "#/definitions/assetID"
                 },
@@ -1670,36 +1722,22 @@
                 }
             },
             "required": [
-                "assetID",
-                "assetName"
+                "assetID"
             ]
         },
         "event": {
             "type": "object",
-            "description": "The set of event objects for this contract. Assets can be events too, so this is a superset of assets and pure events.",
+            "description": "A set of properties that constitute a message to the contract.",
             "properties": {
                 "iotCommon": { "$ref": "#/definitions/iotCommon" },
                 "oneOf": {
-                    "airline": { "$ref": "#/definitions/airline" },
-                    "aircraft": { "$ref": "#/definitions/aircraft" },
-                    "assembly": { "$ref": "#/definitions/assembly" },
-                    "flight": { "$ref": "#/definitions/flight" },
-                    "inspection": { "$ref": "#/definitions/inspection" },
-                    "analyticAdjustment": { "$ref": "#/definitions/analyticAdjustment" }
+                    "airline": { "$ref": "#/definitions/airlineEvent" },
+                    "aircraft": { "$ref": "#/definitions/aircraftEvent" },
+                    "assembly": { "$ref": "#/definitions/assemblyEvent" },
+                    "flight": { "$ref": "#/definitions/flightEvent" },
+                    "inspection": { "$ref": "#/definitions/inspectionEvent" },
+                    "analyticAdjustment": { "$ref": "#/definitions/analyticAdjustmentEvent" }
                 }
-            }
-        },
-        "eventComposite": {
-            "type": "object",
-            "description": "The event for this contract that is processed by the monitoring UI and the IoTP Proxy for mapping device events to this contract. The actual sent event should only contain iotCommon and one of the other objects as described formally in the 'event' object.",
-            "properties": {
-                "iotCommon": { "$ref": "#/definitions/iotCommon" },
-                "airline": { "$ref": "#/definitions/airline" },
-                "aircraft": { "$ref": "#/definitions/aircraft" },
-                "assembly": { "$ref": "#/definitions/assembly" },
-                "flight": { "$ref": "#/definitions/flight" },
-                "inspection": { "$ref": "#/definitions/inspection" },
-                "analyticAdjustment": { "$ref": "#/definitions/analyticAdjustment" }
             }
         },
         "state": {

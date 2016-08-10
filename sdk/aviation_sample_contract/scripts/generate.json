@@ -4,6 +4,9 @@
     "goSchemaFilename": "schemas.go",
     "API": [
       "init",
+      "eventFlight",
+      "eventInspection",
+      "eventAnalyticAdjustment",
       "createAssetAirline",
       "createAssetAircraft",
       "createAssetAssembly",
@@ -45,7 +48,6 @@
       "flightEvent",
       "inspectionEvent",
       "analyticAdjustmentEvent",
-      "eventComposite",
       "event",
       "state"
     ]
@@ -54,14 +56,12 @@
     "goSampleFilename": "samples.go",
     "goSampleElements": [
       "initEvent",
-      "contractState",
       "airlineEvent",
-      "airlineState",
       "aircraftEvent",
-      "aircraftState",
       "assemblyEvent",
-      "assemblyState",
-      "event",
+      "flightEvent",
+      "inspectionEvent",
+      "analyticAdjustmentEvent",
       "state"
     ]
   }

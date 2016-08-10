@@ -126,7 +126,7 @@ func (cl *ContractLogger) Critical(msg interface{}) {
 // Criticalf logs a message using CRITICAL as log level.
 func (cl *ContractLogger) Criticalf(format string, args ...interface{}) {
     if CRITICAL > cl.level { return }
-	logMessage(CRITICAL, buildLogString(cl.module, CRITICAL, fmt.Sprintf(format, args)))
+	logMessage(CRITICAL, buildLogString(cl.module, CRITICAL, fmt.Sprintf(format, args...)))
 }
 
 // Error logs a message using ERROR as log level.
@@ -138,7 +138,7 @@ func (cl *ContractLogger) Error(msg interface{}) {
 // Errorf logs a message using ERROR as log level.
 func (cl *ContractLogger) Errorf(format string, args ...interface{}) {
     if ERROR > cl.level { return }
-	logMessage(ERROR, buildLogString(cl.module, ERROR, fmt.Sprintf(format, args)))
+	logMessage(ERROR, buildLogString(cl.module, ERROR, fmt.Sprintf(format, args...)))
 }
 
 // Warning logs a message using WARNING as log level.
@@ -150,7 +150,7 @@ func (cl *ContractLogger) Warning(msg interface{}) {
 // Warningf logs a message using WARNING as log level.
 func (cl *ContractLogger) Warningf(format string, args ...interface{}) {
     if WARNING > cl.level { return }
-	logMessage(WARNING, buildLogString(cl.module, WARNING, fmt.Sprintf(format, args)))
+	logMessage(WARNING, buildLogString(cl.module, WARNING, fmt.Sprintf(format, args...)))
 }
 
 // Notice logs a message using NOTICE as log level.
@@ -162,7 +162,7 @@ func (cl *ContractLogger) Notice(msg interface{}) {
 // Noticef logs a message using NOTICE as log level.
 func (cl *ContractLogger) Noticef(format string, args ...interface{}) {
     if NOTICE > cl.level { return }
-	logMessage(NOTICE, buildLogString(cl.module, NOTICE, fmt.Sprintf(format, args)))
+	logMessage(NOTICE, buildLogString(cl.module, NOTICE, fmt.Sprintf(format, args...)))
 }
 
 // Info logs a message using INFO as log level.
@@ -174,7 +174,7 @@ func (cl *ContractLogger) Info(msg interface{}) {
 // Infof logs a message using INFO as log level.
 func (cl *ContractLogger) Infof(format string, args ...interface{}) {
     if INFO > cl.level { return }
-	logMessage(INFO, buildLogString(cl.module, INFO, fmt.Sprintf(format, args)))
+	logMessage(INFO, buildLogString(cl.module, INFO, fmt.Sprintf(format, args...)))
 }
 
 // Debug logs a message using DEBUG as log level.
@@ -186,7 +186,7 @@ func (cl *ContractLogger) Debug(msg interface{}) {
 // Debugf logs a message using DEBUG as log level.
 func (cl *ContractLogger) Debugf(format string, args ...interface{}) {
     if DEBUG > cl.level { return }
-	logMessage(DEBUG, buildLogString(cl.module, DEBUG, fmt.Sprintf(format, args)))
+	logMessage(DEBUG, buildLogString(cl.module, DEBUG, fmt.Sprintf(format, args...)))
 }
 
 func logMessage(ll LogLevel, msg string) {

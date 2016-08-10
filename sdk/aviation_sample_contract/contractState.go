@@ -37,7 +37,7 @@ import (
 // Major for API break, Minor when adding a feature or behavior, Fix when fixing a bug.
 // If the init comes in with the wrong major version, then  we might consider exiting with
 // an error.
-const MYVERSION string = "4.3"
+const MYVERSION string = "4.4"
 
 // DEFAULTNICKNAME is used when a contract is initialized without giving it a nickname
 const DEFAULTNICKNAME string = "AVIATION_SAMPLE" 
@@ -128,18 +128,4 @@ func getLedgerContractVersion(stub *shim.ChaincodeStub) (string, error) {
         return "", err
     }
     return state.Version, nil   
-}
-
-// In the multi-asset version of contract state, we no longer remember the asset list
-// in memory, relying instead on retrieval from world state. This means, though, that
-// this function expects the *internal* assetID, which prepends the assetName's 
-// 2-letter prefix.
-func assetIsActive(stub *shim.ChaincodeStub, assetID string) ([]byte, error) {
-    stateBytes, err := stub.GetState(assetID)
-    if err != nil { 
-        err = fmt.Errorf("assetIsActive: assetID %s: %s %s", assetID, string(stateBytes), err)
-        log.Error(err)
-        return nil, err
-    }
-    return stateBytes, nil
 }

@@ -33,7 +33,7 @@ import (
     // "errors"
 )
 
-func (a *ArgsMap) executeRules(alerts *AlertStatus) (bool, error) {
+func (a *ArgsMap) executeRules(eventName string, alerts *AlertStatus) (bool, error) {
     log.Debugf("Executing rules input: %+v", *alerts)
     // transform external to internal for easy alert status processing
     var internal = (*alerts).asAlertStatusInternal()
@@ -74,7 +74,7 @@ func (a *ArgsMap) executeRules(alerts *AlertStatus) (bool, error) {
 func (alerts *AlertStatusInternal) inspectionsRule (a *ArgsMap) error {
     const temperatureThreshold  float64 = 0 // (inclusive good value)
 
-    apbytes, found := getObject(*a, "airplane")
+    apbytes, found := getObject(*a, "aircraft")
     if found {
         ap, found := apbytes.(map[string]interface{})
         if found {
@@ -104,7 +104,7 @@ func (alerts *AlertStatusInternal) inspectionsRule (a *ArgsMap) error {
 func (alerts *AlertStatusInternal) cyclecountsRule (a *ArgsMap) error {
     const acheckThreshold  float64 = 5 // alert raised on 5th cycle for testing
 
-    apbytes, found := getObject(*a, "airplane")
+    apbytes, found := getObject(*a, "aircraft")
     if found {
         ap, found := apbytes.(map[string]interface{})
         if found {
@@ -137,7 +137,7 @@ func (alerts *AlertStatusInternal) cyclecountsRule (a *ArgsMap) error {
 // NOTE: This rule cannot clear an active BCHECK for any reason. Only a BCHECK
 //       inspection can do that.
 func (alerts *AlertStatusInternal) hardlandingsRule (a *ArgsMap) error {
-    apbytes, found := getObject(*a, "airplane")
+    apbytes, found := getObject(*a, "aircraft")
     if found {
         ap, found := apbytes.(map[string]interface{})
         if found {

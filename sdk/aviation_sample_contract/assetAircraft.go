@@ -24,73 +24,43 @@ import (
 )
 
 func (t *SimpleChaincode) createAssetAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    var me = "createAssetAircraft"
-    var eventName = "aircraft"
-    argsMap, err := getUnmarshalledArgument(stub, me, args)
-    if err != nil { return nil, err }
-    assetID, err := validateAssetID(me, eventName, argsMap)
-    if err != nil { return nil, err }
-    state := deepMerge(argsMap, make(map[string]interface{}))
-    state, err = addTXNTimestampToState(stub, me, state)
-    if err != nil { return nil, err }
-    state = addLastEventToState(stub, me, argsMap, state, "")
-    state, err = handleAlertsAndRules(stub, me, eventName, assetID, argsMap, state)
-    if err != nil { return nil, err }
-    err = putMarshalledState(stub, me, eventName, assetID, state)
-    if err != nil { return nil, err }
-    return nil, nil
+    return createAsset(stub, args, "aircraft", "createAssetAircraft")
 }
 
 func (t *SimpleChaincode) updateAssetAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    var me = "updateAssetAircraft"
-    var eventName = "aircraft"
-    argsMap, err := getUnmarshalledArgument(stub, me, args)
-    if err != nil { return nil, err }
-    assetID, err := validateAssetID(me, eventName, argsMap)
-    if err != nil { return nil, err }
-    state, err := getUnmarshalledState(stub, me, eventName, assetID)
-    if err != nil { return nil, err }
-    state = deepMerge(argsMap, state)
-    state, err = addTXNTimestampToState(stub, me, state)
-    if err != nil { return nil, err }
-    state = addLastEventToState(stub, me, argsMap, state, "")
-    state, err = handleAlertsAndRules(stub, me, eventName, assetID, argsMap, state)
-    if err != nil { return nil, err }
-    err = putMarshalledState(stub, me, eventName, assetID, state)
-    if err != nil { return nil, err }
-    return nil, nil
+    return updateAsset(stub, args, "aircraft", "updateAssetAircraft")
 }
 
 func (t *SimpleChaincode) deleteAssetAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return nil, nil
+    return deleteAsset(stub, args, "aircraft", "deleteAssetAircraft")
 }
 
 func (t *SimpleChaincode) deleteAllAssetsAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return nil, nil
+    return deleteAllAssets(stub, args, "aircraft", "deleteAllAssetsAircraft")
 }
 
 func (t *SimpleChaincode) deletePropertiesFromAssetAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return nil, nil
+    return deletePropertiesFromAsset(stub, args, "aircraft", "deletePropertiesFromAssetAircraft")
 }
 
 func (t *SimpleChaincode) readAssetAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return nil, nil
+    return readAsset(stub, args, "aircraft", "readAssetAircraft")
 }
 
 func (t *SimpleChaincode) readAllAssetsAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return nil, nil
+    return readAllAssets(stub, args, "aircraft", "readAllAssetsAircraft")
 }
 
 func (t *SimpleChaincode) readAssetAircraftHistory (stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return nil, nil
+    return readAssetHistory(stub, args, "aircraft", "readAssetAircraftHistory")
 }
 
 
 
 
 
-func handleAircraftEvent(stub *shim.ChaincodeStub, eventName string, assetID string, argsMap ArgsMap, ledgerMap ArgsMap) ArgsMap {
-    switch eventName {
+func handleAircraftEvent(stub *shim.ChaincodeStub, assetName string, assetID string, argsMap ArgsMap, ledgerMap ArgsMap) ArgsMap {
+    switch assetName {
         case "flight": 
             // running count of cycles in perpetuity
             cycles, found := getObjectAsInteger(ledgerMap, "aircraft.cycles")
@@ -100,18 +70,18 @@ func handleAircraftEvent(stub *shim.ChaincodeStub, eventName string, assetID str
                 cycles = 1
             }
             putObject(ledgerMap, "aircraft.cycles", cycles)
-            propagateEventToAssemblies(stub, eventName, assetID, argsMap, ledgerMap)
+            propagateEventToAssemblies(stub, assetName, assetID, argsMap, ledgerMap)
             return ledgerMap
         default:
             // NOTE: If your schema and contractConfig are correctly set up, this
             // CANNOT happen.
-            err := fmt.Errorf("handleAircraftEvent: received incorrect event %s for asset %s", eventName, assetID)
+            err := fmt.Errorf("handleAircraftEvent: received incorrect event %s for asset %s", assetName, assetID)
             log.Error(err)
             return nil
     }
 }
 
-func propagateEventToAssemblies(stub *shim.ChaincodeStub, eventName string, assetID string, argsMap ArgsMap, ledgerMap ArgsMap) (error) {
+func propagateEventToAssemblies(stub *shim.ChaincodeStub, assetName string, assetID string, argsMap ArgsMap, ledgerMap ArgsMap) (error) {
     var me = "propagateEventToAssemblies"
     assemBytes, found := getObject(ledgerMap, "aircraft.assemblies")
     if found {
@@ -123,15 +93,15 @@ func propagateEventToAssemblies(stub *shim.ChaincodeStub, eventName string, asse
                 // keys for connection
                 // NOTE: This is the moral equivalent of "updateAsset"
                 assembly := assemblies[assem]
-                state, err := getUnmarshalledState(stub, me, eventName, assembly)
+                state, err := getUnmarshalledState(stub, me, assembly)
                 if err != nil { return err }  // already logged
-                state = handleAssemblyEvent(stub, eventName, assembly, argsMap, state)
+                state = handleAssemblyEvent(stub, assetName, assembly, argsMap, state)
                 state, err = addTXNTimestampToState(stub, me, state)
                 if err != nil { return err }  // already logged
                 state = addLastEventToState(stub, me, argsMap, state, "")
-                state, err = handleAlertsAndRules(stub, me, eventName, assembly, argsMap, state)
+                state, err = handleAlertsAndRules(stub, me, assetName, assembly, argsMap, state)
                 if err != nil { return err }  // already logged
-                err = putMarshalledState(stub, me, eventName, assembly, state)
+                err = putMarshalledState(stub, me, assetName, assembly, state)
                 if err != nil { return err }  // already logged
             }
         }

@@ -213,7 +213,7 @@ func findMatchingKey (objIn interface{}, key string) (string, bool) {
             return k, true
         }
     }
-    log.Warningf("findMatchingKey did not find key %+v", key)
+    log.Debugf("findMatchingKey did not find key %+v", key)
     return "", false
 }
 
@@ -273,13 +273,19 @@ func contains(arr interface{}, val interface{}) bool {
 func deepMerge(srcIn interface{}, dstIn interface{}) (map[string]interface{}){
     src, found := srcIn.(map[string]interface{})
     if !found {
-        log.Criticalf("Deep Merge passed source map of type: %s", reflect.TypeOf(srcIn)) 
-        return nil 
+        src, found = srcIn.(ArgsMap)
+        if !found {
+            log.Criticalf("Deep Merge passed source map of type: %s", reflect.TypeOf(srcIn)) 
+            return nil 
+        }
     }
     dst, found := dstIn.(map[string]interface{})
     if !found {
-        log.Criticalf("Deep Merge passed dest map of type: %s", reflect.TypeOf(dstIn)) 
-        return nil 
+        dst, found = dstIn.(ArgsMap)
+        if !found {
+            log.Criticalf("Deep Merge passed dest map of type: %s", reflect.TypeOf(dstIn)) 
+            return nil 
+        }
     }
     for k, v := range src {
         switch v.(type) {

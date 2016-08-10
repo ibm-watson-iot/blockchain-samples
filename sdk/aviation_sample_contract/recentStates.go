@@ -25,7 +25,6 @@ package main // sitting beside the main file for now
 import (
 	"encoding/json"
     "errors"
-    "fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -66,7 +65,6 @@ func GETRecentStatesFromLedger(stub *shim.ChaincodeStub) (RecentStates, error) {
     if state.RecentStates == nil || len(state.RecentStates) == 0 {
         state.RecentStates = make([]string, 0, MaxRecentStates)
     }
-    log.Debugf("GETRecentStates returns: %#v", state)
     return state, nil 
 }
 
@@ -84,7 +82,6 @@ func PUTRecentStatesToLedger(stub *shim.ChaincodeStub, state RecentStates) (erro
         log.Criticalf("Failed to PUTSTATE recent states: %s", err)
         return err
     } 
-    log.Debugf("PUTRecentStates: %#v", state)
     return nil 
 }
 
@@ -126,13 +123,21 @@ func pushRecentState (stub *shim.ChaincodeStub, state string) (error) {
         }
     }
     rstate.RecentStates[0] = state
+    log.Debug("pushRecentStates succeeded for asset " + assetID)
     return PUTRecentStatesToLedger(stub, rstate)
 }
 
 // typically called when an asset is deleted
-func removeAssetFromRecentState (stub *shim.ChaincodeStub, assetID string) (error) {
+func removeAssetFromRecentStates (stub *shim.ChaincodeStub, assetID string) (error) {
     var rstate RecentStates
     var err error
+    
+    // strip the internal 2-character world state prefix because it is compared to the external
+    // version inside the actual states
+    assetID, err = assetIDToExternal(assetID) 
+    if err != nil {
+        return err
+    }
     rstate, err = GETRecentStatesFromLedger(stub)
     if err != nil {
         return err
@@ -158,13 +163,13 @@ func removeAssetFromRecentState (stub *shim.ChaincodeStub, assetID string) (erro
 func getAssetIDFromState(state string) (string, error) {
     var substate interface{}
     var err error
-    fmt.Println("getAssetIDFromState: state=[", state, "]")
+    //fmt.Println("getAssetIDFromState: state=[", state, "]")
     err = json.Unmarshal([]byte(state), &substate)
     if err != nil {
         log.Errorf("getAssetIDFromState state unmarshal to AssetID failed: %s", err)
         return "", err
     }
-    fmt.Println("getAssetIDFromState: unmarshalled state=[", prettyPrint(substate), "]")
+    //fmt.Println("getAssetIDFromState: unmarshalled state=[", prettyPrint(substate), "]")
     assetID, found := getObjectAsString(substate, "common.assetID")
     if !found || len(assetID) == 0 {
         err = errors.New("getAssetIDFromState common.assetID is missing or blank")

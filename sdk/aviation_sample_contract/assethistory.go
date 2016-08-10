@@ -18,6 +18,9 @@ Kim Letkeman - Initial Contribution
 
 // v3.0 HM 25 Feb 2016 Moved the asset state history code into a separate package.
 // v3.0.1 HM 03 Mar 2016 Store the state history in descending order.  
+// v4.3  KL  August 2016 redirect to "create" from "update" so that the context of the 
+//                       update is no longer required. This flexibility is needed when using
+//                       abstract / boilerplate code. 
 
 package main
 
@@ -26,8 +29,14 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
-const STATEHISTORYKEY string = ".StateHistory"
+// Changing to prepend history key so that an asset's history is separated from it's 
+// current state. 
 
+// STATEHISTORYKEY is used to separate history from current asset state and is prepended
+// to the assetID
+const STATEHISTORYKEY string = "StateHistory."
+
+// AssetStateHistory is used to hold the array of states as strings.
 type AssetStateHistory struct {
 	AssetHistory []string `json:"assetHistory"`
 }
@@ -35,7 +44,7 @@ type AssetStateHistory struct {
 // Create a new history entry in the ledger for an asset.,\
 func createStateHistory(stub *shim.ChaincodeStub, assetID string, stateJSON string) error {
 
-	var ledgerKey = assetID + STATEHISTORYKEY
+	var ledgerKey = STATEHISTORYKEY + assetID
 	var assetStateHistory = AssetStateHistory{make([]string, 1)}
 	assetStateHistory.AssetHistory[0] = stateJSON
 
@@ -48,24 +57,28 @@ func createStateHistory(stub *shim.ChaincodeStub, assetID string, stateJSON stri
 
 }
 
-// Update the ledger with new state history for an asset. States are stored in the ledger in descending order by timestamp.
+// Update the ledger with new state history for an asset. States are stored in the ledger 
+// in descending order by timestamp. Note that the assetID is expected to by the *internal*
+// assetID with asset prefix.
 func updateStateHistory(stub *shim.ChaincodeStub, assetID string, stateJSON string) error {
 
-	var ledgerKey = assetID + STATEHISTORYKEY
+	var ledgerKey = STATEHISTORYKEY + assetID
 	var historyBytes []byte
 	var assetStateHistory AssetStateHistory
 	
 	historyBytes, err := stub.GetState(ledgerKey)
 	if err != nil {
-		return err
+		// assume that this is a new asset.
+		return createStateHistory(stub, assetID, stateJSON)
 	}
 
 	err = json.Unmarshal(historyBytes, &assetStateHistory)
 	if err != nil {
-		return err
+		// assume that history is corrupted, so reset.
+		return createStateHistory(stub, assetID, stateJSON)
 	}
 
-	var newSlice []string = make([]string, 0)
+	var newSlice = make([]string, 0)
 	newSlice = append(newSlice, stateJSON)
 	newSlice = append(newSlice, assetStateHistory.AssetHistory...)
 	assetStateHistory.AssetHistory = newSlice
@@ -74,7 +87,7 @@ func updateStateHistory(stub *shim.ChaincodeStub, assetID string, stateJSON stri
 	if err != nil {
 		return err
 	}
-
+	log.Debug("Update state history succedded for asset " + assetID)
 	return stub.PutState(ledgerKey, []byte(assetState))
 
 }
@@ -82,7 +95,7 @@ func updateStateHistory(stub *shim.ChaincodeStub, assetID string, stateJSON stri
 // Delete an state history from the ledger.
 func deleteStateHistory(stub *shim.ChaincodeStub, assetID string) error {
 
-	var ledgerKey = assetID + STATEHISTORYKEY
+	var ledgerKey = STATEHISTORYKEY + assetID
 	return stub.DelState(ledgerKey)
 
 }
@@ -90,18 +103,18 @@ func deleteStateHistory(stub *shim.ChaincodeStub, assetID string) error {
 // Get the state history for an asset.
 func readStateHistory(stub *shim.ChaincodeStub, assetID string) (AssetStateHistory, error) {
 
-	var ledgerKey = assetID + STATEHISTORYKEY
+	var ledgerKey = STATEHISTORYKEY + assetID
 	var assetStateHistory AssetStateHistory
 	var historyBytes []byte
 
 	historyBytes, err := stub.GetState(ledgerKey)
 	if err != nil {
-		return assetStateHistory, err
+		return AssetStateHistory{}, err
 	}
 
 	err = json.Unmarshal(historyBytes, &assetStateHistory)
 	if err != nil {
-		return assetStateHistory, err
+		return AssetStateHistory{}, err
 	}
 
 	return assetStateHistory, nil

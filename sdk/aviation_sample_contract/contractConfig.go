@@ -14,6 +14,12 @@ Contributors:
 Kim Letkeman - Initial Contribution
 */
 
+//
+//  This module is mainly about storage of asset data. In order to properly partition
+//  k:v pairs in the database, we need a prefix for the keys based on asset. Prepending 
+//  the prefix to the assetID when storing and referencing makes it easy to later crawl
+//  an iterator over the keyset for queries.
+//
 
 // v1 KL 03 Aug 2016 Created to provide configuration data denoting the set of assets
 //                   and their database (world state) prefixes, the set of pure events, 
@@ -26,8 +32,8 @@ import (
     "errors"
 )
 
-var eventMaps map[string]interface{}
-var schema map[string]interface{}
+var eventMaps = initEventMaps()
+var schema = initSchema()
 
 // Translation table for event names and prefixes. Includes isAsset property for
 // convenience and performance.
@@ -86,27 +92,36 @@ const eventNamePrefixMaps string =
         }
     }`
 
-func configInit() error {
-    // schemas is the var created by the "go generate" command in schemas.go
-    err := json.Unmarshal([]byte(schemas), &schema)
-    if err != nil {
-        // schema has syntax error
-        log.Criticalf("The generated schema failed to unmarshal: %s\n", err)
-        return err
-    }
-    //log.Debugf("GENERATED SCHEMA: %#v\n", schema)
-
+func initEventMaps() (map[string]interface{}) {
+    var myeventMaps map[string]interface{}
     // eventMap is used to move quickly between name and prefix
-    err = json.Unmarshal([]byte(eventNamePrefixMaps), &eventMaps)
+    err := json.Unmarshal([]byte(eventNamePrefixMaps), &myeventMaps)
     if err != nil {
         // eventMap has syntax error
         log.Criticalf("eventNamePrefixMaps failed to unmarshal: %s\n", err)
-        return err
+        return nil
     }
     //log.Debugf("Conversion maps: %#v\n", eventMaps)
-    
+    return myeventMaps
+}
+
+func initSchema() (map[string]interface{}) {
+    var myschema map[string]interface{}
+    // schemas is the var created by the "go generate" command in schemas.go
+    err := json.Unmarshal([]byte(schemas), &myschema)
+    if err != nil {
+        // schema has syntax error
+        log.Criticalf("The generated schema failed to unmarshal: %s\n", err)
+        return nil
+    }
+    //log.Debugf("GENERATED SCHEMA: %#v\n", schema)
+    return myschema
+}
+
+func configInit() error {
+
     // perform assertions to provide a basic alignment check of schema and config
-    err = checkSchema("objectModelSchemas.airlineEvent"); if err != nil {return err}
+    err := checkSchema("objectModelSchemas.airlineEvent"); if err != nil {return err}
     err = checkSchema("objectModelSchemas.aircraftEvent"); if err != nil {return err}
     err = checkSchema("objectModelSchemas.assemblyEvent"); if err != nil {return err}
     err = checkSchema("objectModelSchemas.airlineState"); if err != nil {return err}
@@ -222,7 +237,7 @@ func eventPrefixToEventName (eventPrefix string) (string, error) {
 }
 
 func assetIDToInternal (eventName string, assetID string) (string, error) {
-    p, found := getObjectAsString(eventMaps, "nameToPrefix." + eventName + ".prefix")
+    p, found := getObjectAsString(eventMaps, "eventNameConfig." + eventName + ".prefix")
     if found {
         return p + assetID, nil
     }
@@ -232,7 +247,8 @@ func assetIDToInternal (eventName string, assetID string) (string, error) {
 }
 
 func assetIDToExternal (assetID string) (string, error) {
-    _, found := getObject(eventMaps, "prefixToName." + assetID[0:2])
+    log.Debugf("assetIDToExternal ASSETID: %s", assetID)
+    _, found := getObject(eventMaps, "prefixToEventName." + assetID[0:2])
     if found {
         return assetID[2:], nil
     }

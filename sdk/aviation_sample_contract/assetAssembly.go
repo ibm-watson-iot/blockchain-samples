@@ -23,32 +23,35 @@ import (
 )
 
 func (t *SimpleChaincode) createAssetAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return nil, nil
+    return createAsset(stub, args, "assembly", "createAssetAssembly")
 }
+
 func (t *SimpleChaincode) updateAssetAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return nil, nil
+    return updateAsset(stub, args, "assembly", "updateAssetAssembly")
 }
+
 func (t *SimpleChaincode) deleteAssetAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return nil, nil
+    return deleteAsset(stub, args, "assembly", "deleteAssetAssembly")
 }
+
 func (t *SimpleChaincode) deleteAllAssetsAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return nil, nil
+    return deleteAllAssets(stub, args, "assembly", "deleteAllAssetsAssembly")
 }
 
 func (t *SimpleChaincode) deletePropertiesFromAssetAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return nil, nil
+    return deletePropertiesFromAsset(stub, args, "assembly", "deletePropertiesFromAssetAssembly")
 }
 
 func (t *SimpleChaincode) readAssetAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return nil, nil
+    return readAsset(stub, args, "assembly", "readAssetAssembly")
 }
 
 func (t *SimpleChaincode) readAllAssetsAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return nil, nil
+    return readAllAssets(stub, args, "assembly", "readAllAssetsAssembly")
 }
 
 func (t *SimpleChaincode) readAssetAssemblyHistory (stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return nil, nil
+    return readAssetHistory(stub, args, "assembly", "readAssetAssemblyHistory")
 }
 
 
