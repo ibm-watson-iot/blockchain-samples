@@ -1,25 +1,27 @@
-#A Hyperledger Sample Contract with Simple Aviation Schema
+#Aviation Sample Contract
 
-> **This contract is derived from and has contributed to the [Generic IoT Sample Contract](../iot_sample_contract_hyperledger) to adapt it to a simple aviation scenario. 
+> **This contract is derived from the [Generic IoT Sample Contract](../iot_sample_contract) to adapt it to an aviation scenario. 
  The generic IoT sample contract is described in a set of documents in the `docs` folder. See the [README](../docs/README.md) for more information. And please read the introduction and customization documents therein before proceeding through this code base.**
 
-The simple aviation scenario is as follows:
+The aviation scenario is as follows:
 
-- An airplane object is the primary tracked asset
-- A *composite event* pattern is used in order to simpli
-- using the *partial state as event* pattern, the `airplane` section of the event and state in the schema contains properties describing the airplane
-- additionally, in the state object, `airplane` tracks a cyclecounter that is used to determine when to raise the ACHECK alert, which requires an inspection of the landing gear for wear on tires, etc
-    - this counter does not appear in the `airplane` event, but rather it is incremented when a `flight` subevent is received
-- the `flight` subevent carries only the flight number and a boolean property documenting whether there was a hard landing
-    - two consecutive hard landings will raise the BCHECK alert, which requires an inspection of the landing gear for damage
-- a second subevent called `inspection` can be sent at any time, indicating that the ACHECK or BCHECK inspection has been performed, which clears the associated alert
-    - an inspection is the __*only way*__ to clear one of these alerts
+- Three primary asset classes:
+    - Airline -- owns zero to many aircraft
+    - Aircraft -- encompasses zero ro many assemblies
+    - Assembly -- landing gear, wing, etc. These are life limited parts.
+- The CRUD features for each asset are abstracted in the module [assetCommon.go](./assetCommon.go), which makes heavy use of abstracted services in [crudCommon.go](./crudCommon.go)  
+- each asset follows the *partial state as event* pattern, where the asset's writable properties make up its primary `event` to be passed to create and update
+- additional events exist to record, well, events in the environment
+    - flight events record a takeoff and landing sequence, which is known as a cycle
+    - inspection events record an inspection against an assembly
+    - analyticAdjustment events record calculated changes in life limits based on such analytics as weather patterns and runway conditions
+    - maintenance events record the mounting and unmounting of assemblies on the aircraft (with unmounted assemblies being attached to an inventory asset)
 
-> Note that the usual common properties such as geolocation, extension, etc. are available in the new iotCommon subsection of event and state.
+- rules exist to track cycles and hard landings
+    - ACHECK rule follows cycles against assemblies and when an assembly crosses the threshold, it raises the ACHECK inspection alert
+    - BCHECK rule follows consecutive hard landings and when an assembly crosses the threshold for consecutive hard landings, it raises the BCHECK alert
+    
+- inspection events clear alerts via rules
 
-Improvements over version 4.2 of the generic iot contract include:
-- Store the JSON map of the argument in the lastEvent. This offers access to the incoming event for more complex rules. (See the simple aviation rules engine.)
-    - Make deepcopy of args into stateOut in the `createAsset` function to avoid infinite loop when args are attached into lastEvent. 
-- Store TXNUUID and timestamp in state only. It was polluting the lastEvent object for no good reason.
-- Indicate position where setter or command subevents (if they are in use) are deleted from state, while leaving recorder subevents intact. 
-    >- Partial state as event relies on the deepmerge of recorder style property sections. But in addition, setter or command sections can be sent to the contract through the single `updateAsset` API and then deleted from state just before committing it to the ledger. See the simple aviation contract for an example of this with hard landings and the cycle counter.
+> Note that the usual common properties such as geolocation, extension, etc. are available in the `common` subsection of event and state.
+
