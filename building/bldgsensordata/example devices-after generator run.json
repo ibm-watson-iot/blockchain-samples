@@ -1,0 +1,117 @@
+{
+    "devices": [
+        {
+            "name": "Smart Plug",
+            "assettype": "smart_plug",
+            "description": "Smart Plug working in XBee network",
+            "assetid": "77ce3e45-a5d1-416a-9701-4383aa4bd00b",
+            "create_date": 1417484201541,
+            "last_mod_date": 1417484970337,
+            "last_sample_date": 1417484981903,
+            "schema_version": 1,
+            "indicators": {
+                "on_off_state": false
+            }
+        },
+        {
+            "name": "Variable Speed Motor",
+            "assettype": "variable_speed_motor",
+            "description": "Variable Speed Motor managed by Motor Driver through Modbus",
+            "assetid": "66fad0c0-1cfb-11e4-8c21-0800200c9a66",
+            "create_date": 1417484200223,
+            "last_mod_date": 1417484681910,
+            "last_sample_date": 1417484981895,
+            "schema_version": 1,
+            "indicators": {
+                "acceleration_time": 6,
+                "on_off_state": true,
+                "direction": false,
+                "stop_method": 1,
+                "base_rpm": 1525,
+                "max_rpm": 3600,
+                "rpm": 2500,
+                "output_current": 10,
+                "output_voltage": 115,
+                "output_frequency": 34
+            }
+        },
+        {
+            "name": "Smart Plug - New device 1",
+            "description": "Smart Plug working in XBee network - New device1",
+            "assetid": "qzeRwsTO-nrL2-UyCP-2nwu-UEmTIqV45kXq",
+            "create_date": 1075119929732,
+            "last_mod_date": 1293159805710,
+            "last_sample_date": 1324601773861,
+            "schema_version": 1,
+            "indicators": {
+                "on_off_state": false
+            }
+        },
+        {
+            "name": "Variable Speed Motor - New device 2",
+            "description": "Variable Speed Motor managed by Motor Driver through Modbu - New device2",
+            "assetid": "GU5IH9yZ-ixhC-svct-pTJc-eU3iUBp9gYc2",
+            "create_date": 1324454787238,
+            "last_mod_date": 1399964784033,
+            "last_sample_date": 1310588688888,
+            "schema_version": 1,
+            "indicators": {
+                "acceleration_time": 6.3,
+                "on_off_state": false,
+                "direction": true,
+                "stop_method": 1,
+                "base_rpm": 1259,
+                "max_rpm": 1704,
+                "rpm": 822,
+                "output_current": 86,
+                "output_voltage": 23,
+                "output_frequency": 49.4
+            }
+        },
+        {
+            "name": "Variable Speed Motor - New device 3",
+            "description": "Variable Speed Motor managed by Motor Driver through Modbu - New device3",
+            "assetid": "RhmCAwzn-HmQ1-DRzB-QKYH-eYrTA4T2EDLt",
+            "create_date": 1065143947331,
+            "last_mod_date": 1170401239253,
+            "last_sample_date": 1229984068539,
+            "schema_version": 1,
+            "indicators": {
+                "acceleration_time": 7.1,
+                "on_off_state": true,
+                "direction": false,
+                "stop_method": 0,
+                "base_rpm": 2216,
+                "max_rpm": 3560,
+                "rpm": 865,
+                "output_current": 40,
+                "output_voltage": 86,
+                "output_frequency": 55
+            }
+        },
+        {
+            "name": "Smart Plug - New device 4",
+            "description": "Smart Plug working in XBee network - New device4",
+            "assetid": "IEMJe8wC-gSLN-pl81-ifqV-tk3yknqKnePO",
+            "create_date": 1063043493088,
+            "last_mod_date": 1052875382760,
+            "last_sample_date": 1336992271474,
+            "schema_version": 1,
+            "indicators": {
+                "on_off_state": true
+            }
+        },
+        {
+            "name": "Smart Plug - New device 5",
+            "description": "Smart Plug working in XBee network - New device5",
+            "assetid": "wMqCJDI7-9Maq-Rbrf-NbPc-MFBPDtFoaUK5",
+            "create_date": 1368304401981,
+            "last_mod_date": 1186266244288,
+            "last_sample_date": 1125188097976,
+            "schema_version": 1,
+            "indicators": {
+                "on_off_state": true
+            }
+        }
+    ]
+}

@@ -1,0 +1,9 @@
+{
+        "contractid":"dba97fd3239b41a591bdad67b1a367cf9e3e86912cc2129675695c57ec892a48e0310c0b40de0e7b0d4ed20bb796723b28f2b496282de5b7e635d22e17ee66ae",
+        "host":"175b352b-a26a-4e54-940f-47050erab89f_vp1-api.blockchain.ibm.com",
+        "port":80,
+        "path":"/chaincode",
+        "method":"invoke",
+        "functionName":"createAsset",
+        "securecontext":"user_type1_798389e89b"
+}
