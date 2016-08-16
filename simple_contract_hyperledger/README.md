@@ -30,7 +30,6 @@ As outlined in Basic sample, IBM Blockchain contract code includes the following
 
 When you call any of the methods, you must first pass a JSON string that includes the function name and a set of arguments as key-value pairs to the chain code instance. You can define multiple methods within the same contract.
 
-[Where should this go?]
 To create a simple contract to create, read, update, and delete asset data, use the following methods:
 
 |Method|Provides|
@@ -41,7 +40,6 @@ To create a simple contract to create, read, update, and delete asset data, use 
 For more information about setting up REST and Swagger, see [here](https://github.com/hyperledger/fabric/blob/master/docs/API/CoreAPI.md).
 
 ## Requirements
-{: #requirements}
 
 The Watson IoT Platform includes a data mapping component to route your data to the Blockchain contract. To correctly map the Watson IoT Platform event properties to the corresponding Blockchain contract properties, use the following required functions:
 
@@ -52,7 +50,6 @@ The Watson IoT Platform includes a data mapping component to route your data to 
 
 
 ## Developing your IBM Blockchain hyperledger by using the Basic contract sample
-{: #instructions}
 
 The Basic contract is an example recipe that is designed for you to customize and use to experiment with contract development for Blockchain. The current version of the Basic contract is simplistic with similar functions to create and update asset data.
 
@@ -70,7 +67,7 @@ To use the Basic sample **simple_contract_hyperledger.go** sample contract as a 
 Detailed information about how to complete each step is hyperlinked to the sections that follow.
 
 ### 1. Downloading the Basic samples
-{: #downloading}
+
 Download the Basic blockchain contract sample from the [IBM Blockchain contracts](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/simple_contract_hyperledger) repository on GitHub.  You need the following Basic sample files, which are provided in the repository folder:
 
 - **simple_contract_hyperledger.go**|The Basic contract source file
@@ -81,7 +78,6 @@ Download the Basic blockchain contract sample from the [IBM Blockchain contracts
 
 
 ### 2. Creating the base contract
-{: #create_base}
 
 To create the base source file for your Blockchain contract:
 
@@ -106,7 +102,6 @@ var contractState = ContractState{MYVERSION}
 Note: You can eventually increase the complexity of the `ContractState` code in your contract, for example, you can add more contract state details, introduce asset state alerts, and other items that are outlined in other more advanced examples.
 
 ### 3. Defining the asset data structure
-{: #define_asset_data}
 
 The Basic contract provides the Blockchain contract code that is required for an asset that is in transit and is also being tracked as it moves from one location to another. In this example, the following asset data is tracked:
 
@@ -145,7 +140,6 @@ Another advantage of marshaling JSON values to or from a struct is that Golang m
 
 
 ### 4. Initializing the contract
-{: #initialize_contract}
 
 The `init` function is one of the three required functions of the chaincode and initializes the contract. The other required functions of the chaincode are `invoke` and `query`. The `init` function is called as a 'deploy' function to deploy the chaincode to the fabric. Notice the signature of the function. The `init`, `invoke`, and `query` functions share the following arguments:
 
@@ -208,7 +202,6 @@ If the versions match, the contract code continues, and the following code to wr
 }
 ```
 ## 5. Defining the invoke methods
-{: #define_invoke_methods}
 
 Define the `invoke` methods for the create, read, update, and delete operations in your contract, which is where most of the contract action occurs. The `createAsset`, `updateAsset` and `deleteAsset` methods of the create, retrieve, update, and delete interface are explained in this section.
 
@@ -267,7 +260,6 @@ return nil,err
 ```
 
 ## 6. Defining the 'query' methods
-{: #define_query_methods}
 
 Use a `query` method to define how the contract data is read. The Basic contract sample uses the following blockchain query implementation methods:
 
@@ -317,7 +309,6 @@ The **schemas.go** and the **samples.go** files are provided with the Basic cont
 
 
 ## 7. Defining the callbacks
-{: #define_callbacks}
 
 In IBM Blockchain contracts, the `init` method handles `init` commands, which are the ones that are called as part of the 'deploy' phase when the code is run. The `invoke` method handles `invoke` method calls and the `query` method handles invocations of type 'query'. In the previous step, you implemented the 'init' comand, so you are now ready to write some simple invoke and query methods to call the following functions:
 
@@ -446,7 +437,6 @@ func main() {
 
 
 ### 8. Developing the contract further
-{: #more_methods}
 
 #### Deleting asset data
 Use the `deleteAsset` method to remove asset data from the current blockchain state by asset ID. Blockchain is a decentralized transaction ledger. Every single validated transaction is retained in the blockchain. When the record for a specific asset is created and updated in the blockchain, all activity is recorded in the ledger. The `deleteAsset` method removes all data for the specified asset from the current state but does not remove it from the blockchain. If you need to retrieve or view any data pertaining to an asset that was deleted from the current state, you can still retrieve it from the blockchain ledger if you need to.
@@ -468,7 +458,6 @@ The following code snippet provides an example of how you can delete assets from
 **Important:** IBM Blockchain retains every single validated transaction in a decentralized peer-to-peer fashion. Peers can keep a copy of the complete ledger, meaning that every piece of data can be potentially retrieved and inspected at any point in time. IBM Blockchain maintains a state database in the context of a contract, which is somewhat analogous to Ethereum's state database or Bitcoin's UTXO set. Use the asset delete feature to remove your asset data from the current state as and when you need to. An advantage of the peer-to-peer feature is that in contracts where history is maintained, typically you query the state database rather than finding all transactions for a given contract and simulating the state history yourself.
 
 ## Invoking the contract
-{: #invoking_the_contract}
 
 When you complete all of the required steps in [Developing your IBM Blockchain hyperledger by using the Basic contract sample](#instructions) you will have a simple contract to manage Watson IoT Platform asset data on the blockchain. Your contract will use a simple create, retrieve, update, and delete operations interface. The next step is to use the contract by invoking it. IBM Blockchain contracts expose REST APIs and these can be invoked through the command-line, or you can make REST API calls by using either Swagger or Node.js. No matter which method you use, the actual syntax of the calls that are made to a chaincode does not change. Later on in the more advanced contacts, you can see an example of a sample UI that provides a more user-friendly way of calling the contract.
 
@@ -583,7 +572,6 @@ another`readAsset`with return the updated asset data [??]
 
 
 ## Generating code
-{: #generate_code}
 
 Depending on the content of your contract, you might need to regenerate the deployable contract schema and sample from the GoLang file. for example, if you include a '//'' go generate directive in your code. To generate contract code, use the following `go generate` command:
 
@@ -592,9 +580,8 @@ Depending on the content of your contract, you might need to regenerate the depl
 ```
 
 ## Next steps
-{: #next_steps}
 
-After you create your contract, upload it to IBM Blockchain with Watson IoT Platform or by using the API. The Watson IoT Platform includes a data mapping component to route data to the Blockchain contract. For more information, see [Developing for blockchain](https://console.ng.bluemix.net/docs/services/IoT/blockchain/dev_blockchain.html)
+After you create your contract, deploy it to your blockchain (IBM Blockchain or Hyperledger). Then use the Watson IoT Platform to route your device data to your contract. For more information, see [Developing for blockchain](https://console.ng.bluemix.net/docs/services/IoT/blockchain/dev_blockchain.html)
 
 There are more sample contracts available for download in the IBM Blockchain samples folder on [GitHub](https://github.com/ibm-watson-iot/blockchain-samples). Experiment with the available samples, for example, the Trade Lane blockchain contract. Use the samples to enhance your Blockchain smart contracts further.
 
