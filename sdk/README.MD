@@ -26,3 +26,7 @@ A set of articles discussing patterns, practices, customization of these samples
 ##common packages
 
 The intent is to evolve to a set of shared packages that can be used to power any Hyperledger Smart Contract using IoT contract patterns like recorder, partial state as event, multi-asset, and crud API. 
+
+##POSTMAN Scripts
+
+There are postman scripts that are intended to be imported into Postman as a collection, and environments that can be imported to set values for the postman REST commands.
