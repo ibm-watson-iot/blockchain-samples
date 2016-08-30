@@ -175,7 +175,7 @@ func generateGoSchemaFile(schema map[string]interface{}, config Config) {
     schemas[functionKey] = interface{}(make(map[string]interface{}))
     schemas[objectModelKey] = interface{}(make(map[string]interface{}))
 
-    fmt.Printf("Generate Go SCHEMA file %s for: \n   %s and: \n   %s\n", filename, apiFunctions, elementNames)
+    //fmt.Printf("Generate Go SCHEMA file %s for: \n   %s and: \n   %s\n", filename, apiFunctions, elementNames)
 
     // grab the event API functions for input
     for i := range apiFunctions {
@@ -361,7 +361,7 @@ func generateGoSampleFile(schema map[string]interface{}, config Config) {
     var filename = config.Samples.GoSampleFilename
     var elementNames = config.Samples.GoSampleElements
 
-    fmt.Printf("Generate Go SAMPLE file %s for: \n   %s\n", filename, elementNames)
+    //fmt.Printf("Generate Go SAMPLE file %s for: \n   %s\n", filename, elementNames)
 
     for i := range elementNames {
         elementName := elementNames[i]
@@ -389,8 +389,8 @@ func generateGoSampleFile(schema map[string]interface{}, config Config) {
 
 func generateGoObjectModel(schema map[string]interface{}, config Config) () {
     for i := range config.ObjectModels.ObjectModelElements {
-        fmt.Println("Generating object model for: ", 
-                    config.ObjectModels.ObjectModelElements[i])
+        //fmt.Println("Generating object model for: ", 
+        //             config.ObjectModels.ObjectModelElements[i])
         obj := getObject(schema, config.ObjectModels.ObjectModelElements[i])
         fmt.Printf("%s: %s\n\n", config.ObjectModels.ObjectModelElements[i], obj)
     }
@@ -409,7 +409,7 @@ func main() {
     
     // read the configuration from the json file
     filename, _ := filepath.Abs("./scripts/" + configFileName)
-    fmt.Printf("JSON CONFIG FILEPATH:\n   %s\n", filename)
+    //fmt.Printf("JSON CONFIG FILEPATH:\n   %s\n", filename)
     jsonFile, err := ioutil.ReadFile(filename)
     if err != nil {
         fmt.Println("error reading json file")

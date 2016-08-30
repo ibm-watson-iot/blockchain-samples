@@ -38,8 +38,12 @@ var schemas = `
                                         "description": "AssetID of operator that flies this airplane",
                                         "type": "string"
                                     },
+                                    "serialNumber": {
+                                        "description": "Aircraft serial number (manufacturer assigned)",
+                                        "type": "string"
+                                    },
                                     "tailNumber": {
-                                        "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                        "description": "Aircraft tail number (airline assigned)",
                                         "type": "string"
                                     },
                                     "variant": {
@@ -210,10 +214,6 @@ var schemas = `
                             "assembly": {
                                 "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                 "properties": {
-                                    "aircraft": {
-                                        "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                        "type": "string"
-                                    },
                                     "arlsZone": {
                                         "description": "tbd",
                                         "type": "string"
@@ -599,83 +599,25 @@ var schemas = `
                         "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
                         "properties": {
                             "analyticAdjustment": {
-                                "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+                                "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
                                 "properties": {
+                                    "action": {
+                                        "enum": [
+                                            "adjustLifeLimit"
+                                        ],
+                                        "type": "string"
+                                    },
+                                    "amount": {
+                                        "type": "number"
+                                    },
                                     "assembly": {
                                         "description": "Assembly serial number",
                                         "type": "string"
                                     },
-                                    "increaselifelimit": {
-                                        "description": "increase of life limit",
-                                        "properties": {
-                                            "reason": {
-                                                "type": "string"
-                                            },
-                                            "reduction": {
-                                                "type": "number"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "reducelifelimit": {
-                                        "description": "reduction of life limit",
-                                        "properties": {
-                                            "reason": {
-                                                "type": "string"
-                                            },
-                                            "reduction": {
-                                                "type": "number"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object"
-                            },
-                            "common": {
-                                "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                "properties": {
-                                    "assetID": {
-                                        "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                        "type": "string"
-                                    },
-                                    "extension": {
-                                        "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                        "items": {
-                                            "properties": {},
-                                            "type": "object"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
-                                    },
-                                    "location": {
-                                        "description": "A geographical coordinate",
-                                        "properties": {
-                                            "latitude": {
-                                                "type": "number"
-                                            },
-                                            "longitude": {
-                                                "type": "number"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "references": {
-                                        "description": "An array of external references relevant to this asset.",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
-                                    },
-                                    "timestamp": {
-                                        "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                    "reason": {
                                         "type": "string"
                                     }
                                 },
-                                "required": [
-                                    "assetID"
-                                ],
                                 "type": "object"
                             }
                         },
@@ -704,52 +646,6 @@ var schemas = `
                     "items": {
                         "description": "flight event, assetID defines airplane against which the event occurred",
                         "properties": {
-                            "common": {
-                                "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                "properties": {
-                                    "assetID": {
-                                        "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                        "type": "string"
-                                    },
-                                    "extension": {
-                                        "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                        "items": {
-                                            "properties": {},
-                                            "type": "object"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
-                                    },
-                                    "location": {
-                                        "description": "A geographical coordinate",
-                                        "properties": {
-                                            "latitude": {
-                                                "type": "number"
-                                            },
-                                            "longitude": {
-                                                "type": "number"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "references": {
-                                        "description": "An array of external references relevant to this asset.",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
-                                    },
-                                    "timestamp": {
-                                        "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [
-                                    "assetID"
-                                ],
-                                "type": "object"
-                            },
                             "flight": {
                                 "description": "A takeoiff and a landing",
                                 "properties": {
@@ -772,6 +668,10 @@ var schemas = `
                                     "gForce": {
                                         "description": "force incurred on landing",
                                         "type": "number"
+                                    },
+                                    "hardlanding": {
+                                        "description": "landing considered hard by pilot or analytics",
+                                        "type": "boolean"
                                     },
                                     "landingType": {
                                         "description": "code defining landing quality??",
@@ -816,68 +716,22 @@ var schemas = `
                 "args": {
                     "description": "args are JSON encoded strings",
                     "items": {
-                        "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+                        "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
                         "properties": {
-                            "common": {
-                                "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                "properties": {
-                                    "assetID": {
-                                        "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                        "type": "string"
-                                    },
-                                    "extension": {
-                                        "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                        "items": {
-                                            "properties": {},
-                                            "type": "object"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
-                                    },
-                                    "location": {
-                                        "description": "A geographical coordinate",
-                                        "properties": {
-                                            "latitude": {
-                                                "type": "number"
-                                            },
-                                            "longitude": {
-                                                "type": "number"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "references": {
-                                        "description": "An array of external references relevant to this asset.",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
-                                    },
-                                    "timestamp": {
-                                        "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [
-                                    "assetID"
-                                ],
-                                "type": "object"
-                            },
                             "inspection": {
-                                "description": "indicates that an inspection has occured for this aircraft",
+                                "description": "indicates that an inspection has occured for this assembly",
                                 "properties": {
-                                    "aircraft": {
-                                        "description": "Aircraft tail or serial number (tbd)",
+                                    "action": {
+                                        "description": "inspection that has been performed",
+                                        "enum": [
+                                            "ACHECK",
+                                            "BCHECK",
+                                            "HARDLANDING"
+                                        ],
                                         "type": "string"
                                     },
-                                    "enum": [
-                                        "select an inspection type",
-                                        "ACHECK",
-                                        "BCHECK"
-                                    ],
-                                    "type": {
-                                        "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name",
+                                    "aircraft": {
+                                        "description": "Aircraft serial number",
                                         "type": "string"
                                     }
                                 },
@@ -894,6 +748,65 @@ var schemas = `
                     "description": "eventInspection function",
                     "enum": [
                         "eventInspection"
+                    ],
+                    "type": "string"
+                },
+                "method": "invoke"
+            },
+            "type": "object"
+        },
+        "eventMaintenance": {
+            "description": "Post a maintenance event to the contract. One argument, a JSON encoded event. The 'assetID' property is the target for the event, which is an assembly in the case of the maintenance event.",
+            "properties": {
+                "args": {
+                    "description": "args are JSON encoded strings",
+                    "items": {
+                        "description": "maintenance event",
+                        "properties": {
+                            "maintenance": {
+                                "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                                "properties": {
+                                    "action": {
+                                        "enum": [
+                                            "commission",
+                                            "install",
+                                            "uninstall",
+                                            "startMaintenance",
+                                            "endMaintenance",
+                                            "scrap"
+                                        ],
+                                        "type": "string"
+                                    },
+                                    "aircraft": {
+                                        "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                                        "type": "string"
+                                    },
+                                    "assembly": {
+                                        "description": "This assembly's serial number",
+                                        "type": "string"
+                                    },
+                                    "note": {
+                                        "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "assembly",
+                                    "action"
+                                ],
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "maxItems": 1,
+                    "minItems": 1,
+                    "type": "array"
+                },
+                "function": {
+                    "description": "eventMaintenance function",
+                    "enum": [
+                        "eventMaintenance"
                     ],
                     "type": "string"
                 },
@@ -943,9 +856,51 @@ var schemas = `
             "description": "Returns the state of all aircraft assets as an array of JSON encoded strings. Accepts no arguments. For each managed asset, the state is read from the ledger and added to the returned array. Array is sorted by 'assetID'.",
             "properties": {
                 "args": {
-                    "description": "accepts no arguments",
-                    "items": {},
-                    "maxItems": 0,
+                    "description": "accepts one optional argument, a filter",
+                    "items": {
+                        "description": "A filter that can be used to restrict a read operation to a subset of objects that meet a criteria.",
+                        "properties": {
+                            "filter": {
+                                "properties": {
+                                    "entries": {
+                                        "description": "Array of qualified propery name and value pairs.",
+                                        "items": {
+                                            "properties": {
+                                                "qprop": {
+                                                    "description": "A qualified property as dot separated levels terminated by a leaf node. An example would be 'common.assetID'.",
+                                                    "type": "string"
+                                                },
+                                                "value": {
+                                                    "description": "The value to be compared.",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "type": "array"
+                                    },
+                                    "matchhow": {
+                                        "enum": [
+                                            "matchall",
+                                            "matchany",
+                                            "matchnone"
+                                        ],
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "entries",
+                                    "matchhow"
+                                ],
+                                "type": "object"
+                            }
+                        },
+                        "required": [
+                            "filter"
+                        ],
+                        "type": "object"
+                    },
+                    "maxItems": 1,
                     "minItems": 0,
                     "type": "array"
                 },
@@ -967,11 +922,11 @@ var schemas = `
                                 "properties": {
                                     "active": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -980,11 +935,11 @@ var schemas = `
                                     },
                                     "cleared": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -993,11 +948,11 @@ var schemas = `
                                     },
                                     "raised": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -1140,8 +1095,12 @@ var schemas = `
                                                                     "description": "AssetID of operator that flies this airplane",
                                                                     "type": "string"
                                                                 },
+                                                                "serialNumber": {
+                                                                    "description": "Aircraft serial number (manufacturer assigned)",
+                                                                    "type": "string"
+                                                                },
                                                                 "tailNumber": {
-                                                                    "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                                                    "description": "Aircraft tail number (airline assigned)",
                                                                     "type": "string"
                                                                 },
                                                                 "variant": {
@@ -1270,83 +1229,25 @@ var schemas = `
                                                     "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
                                                     "properties": {
                                                         "analyticAdjustment": {
-                                                            "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+                                                            "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
                                                             "properties": {
+                                                                "action": {
+                                                                    "enum": [
+                                                                        "adjustLifeLimit"
+                                                                    ],
+                                                                    "type": "string"
+                                                                },
+                                                                "amount": {
+                                                                    "type": "number"
+                                                                },
                                                                 "assembly": {
                                                                     "description": "Assembly serial number",
                                                                     "type": "string"
                                                                 },
-                                                                "increaselifelimit": {
-                                                                    "description": "increase of life limit",
-                                                                    "properties": {
-                                                                        "reason": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "reduction": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "reducelifelimit": {
-                                                                    "description": "reduction of life limit",
-                                                                    "properties": {
-                                                                        "reason": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "reduction": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                }
-                                                            },
-                                                            "type": "object"
-                                                        },
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                            "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                    "type": "string"
-                                                                },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                                "reason": {
                                                                     "type": "string"
                                                                 }
                                                             },
-                                                            "required": [
-                                                                "assetID"
-                                                            ],
                                                             "type": "object"
                                                         }
                                                     },
@@ -1358,10 +1259,6 @@ var schemas = `
                                                         "assembly": {
                                                             "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                                             "properties": {
-                                                                "aircraft": {
-                                                                    "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                                                    "type": "string"
-                                                                },
                                                                 "arlsZone": {
                                                                     "description": "tbd",
                                                                     "type": "string"
@@ -1441,52 +1338,6 @@ var schemas = `
                                                 "flight": {
                                                     "description": "flight event, assetID defines airplane against which the event occurred",
                                                     "properties": {
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                            "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                    "type": "string"
-                                                                },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "assetID"
-                                                            ],
-                                                            "type": "object"
-                                                        },
                                                         "flight": {
                                                             "description": "A takeoiff and a landing",
                                                             "properties": {
@@ -1509,6 +1360,10 @@ var schemas = `
                                                                 "gForce": {
                                                                     "description": "force incurred on landing",
                                                                     "type": "number"
+                                                                },
+                                                                "hardlanding": {
+                                                                    "description": "landing considered hard by pilot or analytics",
+                                                                    "type": "boolean"
                                                                 },
                                                                 "landingType": {
                                                                     "description": "code defining landing quality??",
@@ -1533,71 +1388,64 @@ var schemas = `
                                                     "type": "object"
                                                 },
                                                 "inspection": {
-                                                    "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+                                                    "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
                                                     "properties": {
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                        "inspection": {
+                                                            "description": "indicates that an inspection has occured for this assembly",
                                                             "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                                                                "action": {
+                                                                    "description": "inspection that has been performed",
+                                                                    "enum": [
+                                                                        "ACHECK",
+                                                                        "BCHECK",
+                                                                        "HARDLANDING"
+                                                                    ],
                                                                     "type": "string"
                                                                 },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
+                                                                "aircraft": {
+                                                                    "description": "Aircraft serial number",
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "maintenance": {
+                                                    "description": "maintenance event",
+                                                    "properties": {
+                                                        "maintenance": {
+                                                            "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                                                            "properties": {
+                                                                "action": {
+                                                                    "enum": [
+                                                                        "commission",
+                                                                        "install",
+                                                                        "uninstall",
+                                                                        "startMaintenance",
+                                                                        "endMaintenance",
+                                                                        "scrap"
+                                                                    ],
+                                                                    "type": "string"
                                                                 },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
+                                                                "aircraft": {
+                                                                    "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                                                                    "type": "string"
                                                                 },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
+                                                                "assembly": {
+                                                                    "description": "This assembly's serial number",
+                                                                    "type": "string"
                                                                 },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                                "note": {
+                                                                    "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
                                                                     "type": "string"
                                                                 }
                                                             },
                                                             "required": [
-                                                                "assetID"
+                                                                "assembly",
+                                                                "action"
                                                             ],
-                                                            "type": "object"
-                                                        },
-                                                        "inspection": {
-                                                            "description": "indicates that an inspection has occured for this aircraft",
-                                                            "properties": {
-                                                                "aircraft": {
-                                                                    "description": "Aircraft tail or serial number (tbd)",
-                                                                    "type": "string"
-                                                                },
-                                                                "enum": [
-                                                                    "select an inspection type",
-                                                                    "ACHECK",
-                                                                    "BCHECK"
-                                                                ],
-                                                                "type": {
-                                                                    "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name",
-                                                                    "type": "string"
-                                                                }
-                                                            },
                                                             "type": "object"
                                                         }
                                                     },
@@ -1646,8 +1494,12 @@ var schemas = `
                                             "description": "AssetID of operator that flies this airplane",
                                             "type": "string"
                                         },
+                                        "serialNumber": {
+                                            "description": "Aircraft serial number (manufacturer assigned)",
+                                            "type": "string"
+                                        },
                                         "tailNumber": {
-                                            "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                            "description": "Aircraft tail number (airline assigned)",
                                             "type": "string"
                                         },
                                         "variant": {
@@ -1674,10 +1526,6 @@ var schemas = `
                                 "assembly": {
                                     "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                     "properties": {
-                                        "aircraft": {
-                                            "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                            "type": "string"
-                                        },
                                         "arlsZone": {
                                             "description": "tbd",
                                             "type": "string"
@@ -1727,9 +1575,51 @@ var schemas = `
             "description": "Returns the state of all airline assets as an array of JSON encoded strings. Accepts no arguments. For each managed asset, the state is read from the ledger and added to the returned array. Array is sorted by 'assetID'.",
             "properties": {
                 "args": {
-                    "description": "accepts no arguments",
-                    "items": {},
-                    "maxItems": 0,
+                    "description": "accepts one optional argument, a filter",
+                    "items": {
+                        "description": "A filter that can be used to restrict a read operation to a subset of objects that meet a criteria.",
+                        "properties": {
+                            "filter": {
+                                "properties": {
+                                    "entries": {
+                                        "description": "Array of qualified propery name and value pairs.",
+                                        "items": {
+                                            "properties": {
+                                                "qprop": {
+                                                    "description": "A qualified property as dot separated levels terminated by a leaf node. An example would be 'common.assetID'.",
+                                                    "type": "string"
+                                                },
+                                                "value": {
+                                                    "description": "The value to be compared.",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "type": "array"
+                                    },
+                                    "matchhow": {
+                                        "enum": [
+                                            "matchall",
+                                            "matchany",
+                                            "matchnone"
+                                        ],
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "entries",
+                                    "matchhow"
+                                ],
+                                "type": "object"
+                            }
+                        },
+                        "required": [
+                            "filter"
+                        ],
+                        "type": "object"
+                    },
+                    "maxItems": 1,
                     "minItems": 0,
                     "type": "array"
                 },
@@ -1751,11 +1641,11 @@ var schemas = `
                                 "properties": {
                                     "active": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -1764,11 +1654,11 @@ var schemas = `
                                     },
                                     "cleared": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -1777,11 +1667,11 @@ var schemas = `
                                     },
                                     "raised": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -1924,8 +1814,12 @@ var schemas = `
                                                                     "description": "AssetID of operator that flies this airplane",
                                                                     "type": "string"
                                                                 },
+                                                                "serialNumber": {
+                                                                    "description": "Aircraft serial number (manufacturer assigned)",
+                                                                    "type": "string"
+                                                                },
                                                                 "tailNumber": {
-                                                                    "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                                                    "description": "Aircraft tail number (airline assigned)",
                                                                     "type": "string"
                                                                 },
                                                                 "variant": {
@@ -2054,83 +1948,25 @@ var schemas = `
                                                     "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
                                                     "properties": {
                                                         "analyticAdjustment": {
-                                                            "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+                                                            "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
                                                             "properties": {
+                                                                "action": {
+                                                                    "enum": [
+                                                                        "adjustLifeLimit"
+                                                                    ],
+                                                                    "type": "string"
+                                                                },
+                                                                "amount": {
+                                                                    "type": "number"
+                                                                },
                                                                 "assembly": {
                                                                     "description": "Assembly serial number",
                                                                     "type": "string"
                                                                 },
-                                                                "increaselifelimit": {
-                                                                    "description": "increase of life limit",
-                                                                    "properties": {
-                                                                        "reason": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "reduction": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "reducelifelimit": {
-                                                                    "description": "reduction of life limit",
-                                                                    "properties": {
-                                                                        "reason": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "reduction": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                }
-                                                            },
-                                                            "type": "object"
-                                                        },
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                            "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                    "type": "string"
-                                                                },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                                "reason": {
                                                                     "type": "string"
                                                                 }
                                                             },
-                                                            "required": [
-                                                                "assetID"
-                                                            ],
                                                             "type": "object"
                                                         }
                                                     },
@@ -2142,10 +1978,6 @@ var schemas = `
                                                         "assembly": {
                                                             "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                                             "properties": {
-                                                                "aircraft": {
-                                                                    "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                                                    "type": "string"
-                                                                },
                                                                 "arlsZone": {
                                                                     "description": "tbd",
                                                                     "type": "string"
@@ -2225,52 +2057,6 @@ var schemas = `
                                                 "flight": {
                                                     "description": "flight event, assetID defines airplane against which the event occurred",
                                                     "properties": {
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                            "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                    "type": "string"
-                                                                },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "assetID"
-                                                            ],
-                                                            "type": "object"
-                                                        },
                                                         "flight": {
                                                             "description": "A takeoiff and a landing",
                                                             "properties": {
@@ -2293,6 +2079,10 @@ var schemas = `
                                                                 "gForce": {
                                                                     "description": "force incurred on landing",
                                                                     "type": "number"
+                                                                },
+                                                                "hardlanding": {
+                                                                    "description": "landing considered hard by pilot or analytics",
+                                                                    "type": "boolean"
                                                                 },
                                                                 "landingType": {
                                                                     "description": "code defining landing quality??",
@@ -2317,71 +2107,64 @@ var schemas = `
                                                     "type": "object"
                                                 },
                                                 "inspection": {
-                                                    "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+                                                    "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
                                                     "properties": {
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                        "inspection": {
+                                                            "description": "indicates that an inspection has occured for this assembly",
                                                             "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                                                                "action": {
+                                                                    "description": "inspection that has been performed",
+                                                                    "enum": [
+                                                                        "ACHECK",
+                                                                        "BCHECK",
+                                                                        "HARDLANDING"
+                                                                    ],
                                                                     "type": "string"
                                                                 },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
+                                                                "aircraft": {
+                                                                    "description": "Aircraft serial number",
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "maintenance": {
+                                                    "description": "maintenance event",
+                                                    "properties": {
+                                                        "maintenance": {
+                                                            "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                                                            "properties": {
+                                                                "action": {
+                                                                    "enum": [
+                                                                        "commission",
+                                                                        "install",
+                                                                        "uninstall",
+                                                                        "startMaintenance",
+                                                                        "endMaintenance",
+                                                                        "scrap"
+                                                                    ],
+                                                                    "type": "string"
                                                                 },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
+                                                                "aircraft": {
+                                                                    "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                                                                    "type": "string"
                                                                 },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
+                                                                "assembly": {
+                                                                    "description": "This assembly's serial number",
+                                                                    "type": "string"
                                                                 },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                                "note": {
+                                                                    "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
                                                                     "type": "string"
                                                                 }
                                                             },
                                                             "required": [
-                                                                "assetID"
+                                                                "assembly",
+                                                                "action"
                                                             ],
-                                                            "type": "object"
-                                                        },
-                                                        "inspection": {
-                                                            "description": "indicates that an inspection has occured for this aircraft",
-                                                            "properties": {
-                                                                "aircraft": {
-                                                                    "description": "Aircraft tail or serial number (tbd)",
-                                                                    "type": "string"
-                                                                },
-                                                                "enum": [
-                                                                    "select an inspection type",
-                                                                    "ACHECK",
-                                                                    "BCHECK"
-                                                                ],
-                                                                "type": {
-                                                                    "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name",
-                                                                    "type": "string"
-                                                                }
-                                                            },
                                                             "type": "object"
                                                         }
                                                     },
@@ -2430,8 +2213,12 @@ var schemas = `
                                             "description": "AssetID of operator that flies this airplane",
                                             "type": "string"
                                         },
+                                        "serialNumber": {
+                                            "description": "Aircraft serial number (manufacturer assigned)",
+                                            "type": "string"
+                                        },
                                         "tailNumber": {
-                                            "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                            "description": "Aircraft tail number (airline assigned)",
                                             "type": "string"
                                         },
                                         "variant": {
@@ -2458,10 +2245,6 @@ var schemas = `
                                 "assembly": {
                                     "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                     "properties": {
-                                        "aircraft": {
-                                            "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                            "type": "string"
-                                        },
                                         "arlsZone": {
                                             "description": "tbd",
                                             "type": "string"
@@ -2511,9 +2294,51 @@ var schemas = `
             "description": "Returns the state of all assembly assets as an array of JSON encoded strings. Accepts no arguments. For each managed asset, the state is read from the ledger and added to the returned array. Array is sorted by 'assetID'.",
             "properties": {
                 "args": {
-                    "description": "accepts no arguments",
-                    "items": {},
-                    "maxItems": 0,
+                    "description": "accepts one optional argument, a filter",
+                    "items": {
+                        "description": "A filter that can be used to restrict a read operation to a subset of objects that meet a criteria.",
+                        "properties": {
+                            "filter": {
+                                "properties": {
+                                    "entries": {
+                                        "description": "Array of qualified propery name and value pairs.",
+                                        "items": {
+                                            "properties": {
+                                                "qprop": {
+                                                    "description": "A qualified property as dot separated levels terminated by a leaf node. An example would be 'common.assetID'.",
+                                                    "type": "string"
+                                                },
+                                                "value": {
+                                                    "description": "The value to be compared.",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "type": "array"
+                                    },
+                                    "matchhow": {
+                                        "enum": [
+                                            "matchall",
+                                            "matchany",
+                                            "matchnone"
+                                        ],
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "entries",
+                                    "matchhow"
+                                ],
+                                "type": "object"
+                            }
+                        },
+                        "required": [
+                            "filter"
+                        ],
+                        "type": "object"
+                    },
+                    "maxItems": 1,
                     "minItems": 0,
                     "type": "array"
                 },
@@ -2535,11 +2360,11 @@ var schemas = `
                                 "properties": {
                                     "active": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -2548,11 +2373,11 @@ var schemas = `
                                     },
                                     "cleared": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -2561,11 +2386,11 @@ var schemas = `
                                     },
                                     "raised": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -2708,8 +2533,12 @@ var schemas = `
                                                                     "description": "AssetID of operator that flies this airplane",
                                                                     "type": "string"
                                                                 },
+                                                                "serialNumber": {
+                                                                    "description": "Aircraft serial number (manufacturer assigned)",
+                                                                    "type": "string"
+                                                                },
                                                                 "tailNumber": {
-                                                                    "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                                                    "description": "Aircraft tail number (airline assigned)",
                                                                     "type": "string"
                                                                 },
                                                                 "variant": {
@@ -2838,83 +2667,25 @@ var schemas = `
                                                     "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
                                                     "properties": {
                                                         "analyticAdjustment": {
-                                                            "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+                                                            "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
                                                             "properties": {
+                                                                "action": {
+                                                                    "enum": [
+                                                                        "adjustLifeLimit"
+                                                                    ],
+                                                                    "type": "string"
+                                                                },
+                                                                "amount": {
+                                                                    "type": "number"
+                                                                },
                                                                 "assembly": {
                                                                     "description": "Assembly serial number",
                                                                     "type": "string"
                                                                 },
-                                                                "increaselifelimit": {
-                                                                    "description": "increase of life limit",
-                                                                    "properties": {
-                                                                        "reason": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "reduction": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "reducelifelimit": {
-                                                                    "description": "reduction of life limit",
-                                                                    "properties": {
-                                                                        "reason": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "reduction": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                }
-                                                            },
-                                                            "type": "object"
-                                                        },
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                            "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                    "type": "string"
-                                                                },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                                "reason": {
                                                                     "type": "string"
                                                                 }
                                                             },
-                                                            "required": [
-                                                                "assetID"
-                                                            ],
                                                             "type": "object"
                                                         }
                                                     },
@@ -2926,10 +2697,6 @@ var schemas = `
                                                         "assembly": {
                                                             "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                                             "properties": {
-                                                                "aircraft": {
-                                                                    "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                                                    "type": "string"
-                                                                },
                                                                 "arlsZone": {
                                                                     "description": "tbd",
                                                                     "type": "string"
@@ -3009,52 +2776,6 @@ var schemas = `
                                                 "flight": {
                                                     "description": "flight event, assetID defines airplane against which the event occurred",
                                                     "properties": {
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                            "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                    "type": "string"
-                                                                },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "assetID"
-                                                            ],
-                                                            "type": "object"
-                                                        },
                                                         "flight": {
                                                             "description": "A takeoiff and a landing",
                                                             "properties": {
@@ -3077,6 +2798,10 @@ var schemas = `
                                                                 "gForce": {
                                                                     "description": "force incurred on landing",
                                                                     "type": "number"
+                                                                },
+                                                                "hardlanding": {
+                                                                    "description": "landing considered hard by pilot or analytics",
+                                                                    "type": "boolean"
                                                                 },
                                                                 "landingType": {
                                                                     "description": "code defining landing quality??",
@@ -3101,71 +2826,64 @@ var schemas = `
                                                     "type": "object"
                                                 },
                                                 "inspection": {
-                                                    "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+                                                    "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
                                                     "properties": {
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                        "inspection": {
+                                                            "description": "indicates that an inspection has occured for this assembly",
                                                             "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                                                                "action": {
+                                                                    "description": "inspection that has been performed",
+                                                                    "enum": [
+                                                                        "ACHECK",
+                                                                        "BCHECK",
+                                                                        "HARDLANDING"
+                                                                    ],
                                                                     "type": "string"
                                                                 },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
+                                                                "aircraft": {
+                                                                    "description": "Aircraft serial number",
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "maintenance": {
+                                                    "description": "maintenance event",
+                                                    "properties": {
+                                                        "maintenance": {
+                                                            "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                                                            "properties": {
+                                                                "action": {
+                                                                    "enum": [
+                                                                        "commission",
+                                                                        "install",
+                                                                        "uninstall",
+                                                                        "startMaintenance",
+                                                                        "endMaintenance",
+                                                                        "scrap"
+                                                                    ],
+                                                                    "type": "string"
                                                                 },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
+                                                                "aircraft": {
+                                                                    "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                                                                    "type": "string"
                                                                 },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
+                                                                "assembly": {
+                                                                    "description": "This assembly's serial number",
+                                                                    "type": "string"
                                                                 },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                                "note": {
+                                                                    "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
                                                                     "type": "string"
                                                                 }
                                                             },
                                                             "required": [
-                                                                "assetID"
+                                                                "assembly",
+                                                                "action"
                                                             ],
-                                                            "type": "object"
-                                                        },
-                                                        "inspection": {
-                                                            "description": "indicates that an inspection has occured for this aircraft",
-                                                            "properties": {
-                                                                "aircraft": {
-                                                                    "description": "Aircraft tail or serial number (tbd)",
-                                                                    "type": "string"
-                                                                },
-                                                                "enum": [
-                                                                    "select an inspection type",
-                                                                    "ACHECK",
-                                                                    "BCHECK"
-                                                                ],
-                                                                "type": {
-                                                                    "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name",
-                                                                    "type": "string"
-                                                                }
-                                                            },
                                                             "type": "object"
                                                         }
                                                     },
@@ -3214,8 +2932,12 @@ var schemas = `
                                             "description": "AssetID of operator that flies this airplane",
                                             "type": "string"
                                         },
+                                        "serialNumber": {
+                                            "description": "Aircraft serial number (manufacturer assigned)",
+                                            "type": "string"
+                                        },
                                         "tailNumber": {
-                                            "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                            "description": "Aircraft tail number (airline assigned)",
                                             "type": "string"
                                         },
                                         "variant": {
@@ -3242,10 +2964,6 @@ var schemas = `
                                 "assembly": {
                                     "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                     "properties": {
-                                        "aircraft": {
-                                            "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                            "type": "string"
-                                        },
                                         "arlsZone": {
                                             "description": "tbd",
                                             "type": "string"
@@ -3329,11 +3047,11 @@ var schemas = `
                             "properties": {
                                 "active": {
                                     "items": {
-                                        "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                        "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                         "enum": [
-                                            "NONE",
                                             "ACHECK",
-                                            "BCHECK"
+                                            "BCHECK",
+                                            "HARDLANDING"
                                         ],
                                         "type": "string"
                                     },
@@ -3342,11 +3060,11 @@ var schemas = `
                                 },
                                 "cleared": {
                                     "items": {
-                                        "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                        "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                         "enum": [
-                                            "NONE",
                                             "ACHECK",
-                                            "BCHECK"
+                                            "BCHECK",
+                                            "HARDLANDING"
                                         ],
                                         "type": "string"
                                     },
@@ -3355,11 +3073,11 @@ var schemas = `
                                 },
                                 "raised": {
                                     "items": {
-                                        "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                        "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                         "enum": [
-                                            "NONE",
                                             "ACHECK",
-                                            "BCHECK"
+                                            "BCHECK",
+                                            "HARDLANDING"
                                         ],
                                         "type": "string"
                                     },
@@ -3502,8 +3220,12 @@ var schemas = `
                                                                 "description": "AssetID of operator that flies this airplane",
                                                                 "type": "string"
                                                             },
+                                                            "serialNumber": {
+                                                                "description": "Aircraft serial number (manufacturer assigned)",
+                                                                "type": "string"
+                                                            },
                                                             "tailNumber": {
-                                                                "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                                                "description": "Aircraft tail number (airline assigned)",
                                                                 "type": "string"
                                                             },
                                                             "variant": {
@@ -3632,83 +3354,25 @@ var schemas = `
                                                 "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
                                                 "properties": {
                                                     "analyticAdjustment": {
-                                                        "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+                                                        "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
                                                         "properties": {
+                                                            "action": {
+                                                                "enum": [
+                                                                    "adjustLifeLimit"
+                                                                ],
+                                                                "type": "string"
+                                                            },
+                                                            "amount": {
+                                                                "type": "number"
+                                                            },
                                                             "assembly": {
                                                                 "description": "Assembly serial number",
                                                                 "type": "string"
                                                             },
-                                                            "increaselifelimit": {
-                                                                "description": "increase of life limit",
-                                                                "properties": {
-                                                                    "reason": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "reduction": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "reducelifelimit": {
-                                                                "description": "reduction of life limit",
-                                                                "properties": {
-                                                                    "reason": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "reduction": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                        "properties": {
-                                                            "assetID": {
-                                                                "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                "type": "string"
-                                                            },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                "items": {
-                                                                    "properties": {},
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "timestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                            "reason": {
                                                                 "type": "string"
                                                             }
                                                         },
-                                                        "required": [
-                                                            "assetID"
-                                                        ],
                                                         "type": "object"
                                                     }
                                                 },
@@ -3720,10 +3384,6 @@ var schemas = `
                                                     "assembly": {
                                                         "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                                         "properties": {
-                                                            "aircraft": {
-                                                                "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                                                "type": "string"
-                                                            },
                                                             "arlsZone": {
                                                                 "description": "tbd",
                                                                 "type": "string"
@@ -3803,52 +3463,6 @@ var schemas = `
                                             "flight": {
                                                 "description": "flight event, assetID defines airplane against which the event occurred",
                                                 "properties": {
-                                                    "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                        "properties": {
-                                                            "assetID": {
-                                                                "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                "type": "string"
-                                                            },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                "items": {
-                                                                    "properties": {},
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "timestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "assetID"
-                                                        ],
-                                                        "type": "object"
-                                                    },
                                                     "flight": {
                                                         "description": "A takeoiff and a landing",
                                                         "properties": {
@@ -3871,6 +3485,10 @@ var schemas = `
                                                             "gForce": {
                                                                 "description": "force incurred on landing",
                                                                 "type": "number"
+                                                            },
+                                                            "hardlanding": {
+                                                                "description": "landing considered hard by pilot or analytics",
+                                                                "type": "boolean"
                                                             },
                                                             "landingType": {
                                                                 "description": "code defining landing quality??",
@@ -3895,71 +3513,64 @@ var schemas = `
                                                 "type": "object"
                                             },
                                             "inspection": {
-                                                "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+                                                "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
                                                 "properties": {
-                                                    "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                    "inspection": {
+                                                        "description": "indicates that an inspection has occured for this assembly",
                                                         "properties": {
-                                                            "assetID": {
-                                                                "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                                                            "action": {
+                                                                "description": "inspection that has been performed",
+                                                                "enum": [
+                                                                    "ACHECK",
+                                                                    "BCHECK",
+                                                                    "HARDLANDING"
+                                                                ],
                                                                 "type": "string"
                                                             },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                "items": {
-                                                                    "properties": {},
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
+                                                            "aircraft": {
+                                                                "description": "Aircraft serial number",
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "maintenance": {
+                                                "description": "maintenance event",
+                                                "properties": {
+                                                    "maintenance": {
+                                                        "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                                                        "properties": {
+                                                            "action": {
+                                                                "enum": [
+                                                                    "commission",
+                                                                    "install",
+                                                                    "uninstall",
+                                                                    "startMaintenance",
+                                                                    "endMaintenance",
+                                                                    "scrap"
+                                                                ],
+                                                                "type": "string"
                                                             },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
+                                                            "aircraft": {
+                                                                "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                                                                "type": "string"
                                                             },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
+                                                            "assembly": {
+                                                                "description": "This assembly's serial number",
+                                                                "type": "string"
                                                             },
-                                                            "timestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                            "note": {
+                                                                "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
                                                                 "type": "string"
                                                             }
                                                         },
                                                         "required": [
-                                                            "assetID"
+                                                            "assembly",
+                                                            "action"
                                                         ],
-                                                        "type": "object"
-                                                    },
-                                                    "inspection": {
-                                                        "description": "indicates that an inspection has occured for this aircraft",
-                                                        "properties": {
-                                                            "aircraft": {
-                                                                "description": "Aircraft tail or serial number (tbd)",
-                                                                "type": "string"
-                                                            },
-                                                            "enum": [
-                                                                "select an inspection type",
-                                                                "ACHECK",
-                                                                "BCHECK"
-                                                            ],
-                                                            "type": {
-                                                                "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name",
-                                                                "type": "string"
-                                                            }
-                                                        },
                                                         "type": "object"
                                                     }
                                                 },
@@ -4008,8 +3619,12 @@ var schemas = `
                                         "description": "AssetID of operator that flies this airplane",
                                         "type": "string"
                                     },
+                                    "serialNumber": {
+                                        "description": "Aircraft serial number (manufacturer assigned)",
+                                        "type": "string"
+                                    },
                                     "tailNumber": {
-                                        "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                        "description": "Aircraft tail number (airline assigned)",
                                         "type": "string"
                                     },
                                     "variant": {
@@ -4036,10 +3651,6 @@ var schemas = `
                             "assembly": {
                                 "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                 "properties": {
-                                    "aircraft": {
-                                        "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                        "type": "string"
-                                    },
                                     "arlsZone": {
                                         "description": "tbd",
                                         "type": "string"
@@ -4125,11 +3736,11 @@ var schemas = `
                                 "properties": {
                                     "active": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -4138,11 +3749,11 @@ var schemas = `
                                     },
                                     "cleared": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -4151,11 +3762,11 @@ var schemas = `
                                     },
                                     "raised": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -4298,8 +3909,12 @@ var schemas = `
                                                                     "description": "AssetID of operator that flies this airplane",
                                                                     "type": "string"
                                                                 },
+                                                                "serialNumber": {
+                                                                    "description": "Aircraft serial number (manufacturer assigned)",
+                                                                    "type": "string"
+                                                                },
                                                                 "tailNumber": {
-                                                                    "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                                                    "description": "Aircraft tail number (airline assigned)",
                                                                     "type": "string"
                                                                 },
                                                                 "variant": {
@@ -4428,83 +4043,25 @@ var schemas = `
                                                     "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
                                                     "properties": {
                                                         "analyticAdjustment": {
-                                                            "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+                                                            "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
                                                             "properties": {
+                                                                "action": {
+                                                                    "enum": [
+                                                                        "adjustLifeLimit"
+                                                                    ],
+                                                                    "type": "string"
+                                                                },
+                                                                "amount": {
+                                                                    "type": "number"
+                                                                },
                                                                 "assembly": {
                                                                     "description": "Assembly serial number",
                                                                     "type": "string"
                                                                 },
-                                                                "increaselifelimit": {
-                                                                    "description": "increase of life limit",
-                                                                    "properties": {
-                                                                        "reason": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "reduction": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "reducelifelimit": {
-                                                                    "description": "reduction of life limit",
-                                                                    "properties": {
-                                                                        "reason": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "reduction": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                }
-                                                            },
-                                                            "type": "object"
-                                                        },
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                            "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                    "type": "string"
-                                                                },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                                "reason": {
                                                                     "type": "string"
                                                                 }
                                                             },
-                                                            "required": [
-                                                                "assetID"
-                                                            ],
                                                             "type": "object"
                                                         }
                                                     },
@@ -4516,10 +4073,6 @@ var schemas = `
                                                         "assembly": {
                                                             "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                                             "properties": {
-                                                                "aircraft": {
-                                                                    "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                                                    "type": "string"
-                                                                },
                                                                 "arlsZone": {
                                                                     "description": "tbd",
                                                                     "type": "string"
@@ -4599,52 +4152,6 @@ var schemas = `
                                                 "flight": {
                                                     "description": "flight event, assetID defines airplane against which the event occurred",
                                                     "properties": {
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                            "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                    "type": "string"
-                                                                },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "assetID"
-                                                            ],
-                                                            "type": "object"
-                                                        },
                                                         "flight": {
                                                             "description": "A takeoiff and a landing",
                                                             "properties": {
@@ -4667,6 +4174,10 @@ var schemas = `
                                                                 "gForce": {
                                                                     "description": "force incurred on landing",
                                                                     "type": "number"
+                                                                },
+                                                                "hardlanding": {
+                                                                    "description": "landing considered hard by pilot or analytics",
+                                                                    "type": "boolean"
                                                                 },
                                                                 "landingType": {
                                                                     "description": "code defining landing quality??",
@@ -4691,71 +4202,64 @@ var schemas = `
                                                     "type": "object"
                                                 },
                                                 "inspection": {
-                                                    "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+                                                    "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
                                                     "properties": {
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                        "inspection": {
+                                                            "description": "indicates that an inspection has occured for this assembly",
                                                             "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                                                                "action": {
+                                                                    "description": "inspection that has been performed",
+                                                                    "enum": [
+                                                                        "ACHECK",
+                                                                        "BCHECK",
+                                                                        "HARDLANDING"
+                                                                    ],
                                                                     "type": "string"
                                                                 },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
+                                                                "aircraft": {
+                                                                    "description": "Aircraft serial number",
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "maintenance": {
+                                                    "description": "maintenance event",
+                                                    "properties": {
+                                                        "maintenance": {
+                                                            "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                                                            "properties": {
+                                                                "action": {
+                                                                    "enum": [
+                                                                        "commission",
+                                                                        "install",
+                                                                        "uninstall",
+                                                                        "startMaintenance",
+                                                                        "endMaintenance",
+                                                                        "scrap"
+                                                                    ],
+                                                                    "type": "string"
                                                                 },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
+                                                                "aircraft": {
+                                                                    "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                                                                    "type": "string"
                                                                 },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
+                                                                "assembly": {
+                                                                    "description": "This assembly's serial number",
+                                                                    "type": "string"
                                                                 },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                                "note": {
+                                                                    "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
                                                                     "type": "string"
                                                                 }
                                                             },
                                                             "required": [
-                                                                "assetID"
+                                                                "assembly",
+                                                                "action"
                                                             ],
-                                                            "type": "object"
-                                                        },
-                                                        "inspection": {
-                                                            "description": "indicates that an inspection has occured for this aircraft",
-                                                            "properties": {
-                                                                "aircraft": {
-                                                                    "description": "Aircraft tail or serial number (tbd)",
-                                                                    "type": "string"
-                                                                },
-                                                                "enum": [
-                                                                    "select an inspection type",
-                                                                    "ACHECK",
-                                                                    "BCHECK"
-                                                                ],
-                                                                "type": {
-                                                                    "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name",
-                                                                    "type": "string"
-                                                                }
-                                                            },
                                                             "type": "object"
                                                         }
                                                     },
@@ -4804,8 +4308,12 @@ var schemas = `
                                             "description": "AssetID of operator that flies this airplane",
                                             "type": "string"
                                         },
+                                        "serialNumber": {
+                                            "description": "Aircraft serial number (manufacturer assigned)",
+                                            "type": "string"
+                                        },
                                         "tailNumber": {
-                                            "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                            "description": "Aircraft tail number (airline assigned)",
                                             "type": "string"
                                         },
                                         "variant": {
@@ -4832,10 +4340,6 @@ var schemas = `
                                 "assembly": {
                                     "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                     "properties": {
-                                        "aircraft": {
-                                            "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                            "type": "string"
-                                        },
                                         "arlsZone": {
                                             "description": "tbd",
                                             "type": "string"
@@ -4919,11 +4423,11 @@ var schemas = `
                             "properties": {
                                 "active": {
                                     "items": {
-                                        "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                        "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                         "enum": [
-                                            "NONE",
                                             "ACHECK",
-                                            "BCHECK"
+                                            "BCHECK",
+                                            "HARDLANDING"
                                         ],
                                         "type": "string"
                                     },
@@ -4932,11 +4436,11 @@ var schemas = `
                                 },
                                 "cleared": {
                                     "items": {
-                                        "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                        "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                         "enum": [
-                                            "NONE",
                                             "ACHECK",
-                                            "BCHECK"
+                                            "BCHECK",
+                                            "HARDLANDING"
                                         ],
                                         "type": "string"
                                     },
@@ -4945,11 +4449,11 @@ var schemas = `
                                 },
                                 "raised": {
                                     "items": {
-                                        "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                        "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                         "enum": [
-                                            "NONE",
                                             "ACHECK",
-                                            "BCHECK"
+                                            "BCHECK",
+                                            "HARDLANDING"
                                         ],
                                         "type": "string"
                                     },
@@ -5092,8 +4596,12 @@ var schemas = `
                                                                 "description": "AssetID of operator that flies this airplane",
                                                                 "type": "string"
                                                             },
+                                                            "serialNumber": {
+                                                                "description": "Aircraft serial number (manufacturer assigned)",
+                                                                "type": "string"
+                                                            },
                                                             "tailNumber": {
-                                                                "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                                                "description": "Aircraft tail number (airline assigned)",
                                                                 "type": "string"
                                                             },
                                                             "variant": {
@@ -5222,83 +4730,25 @@ var schemas = `
                                                 "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
                                                 "properties": {
                                                     "analyticAdjustment": {
-                                                        "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+                                                        "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
                                                         "properties": {
+                                                            "action": {
+                                                                "enum": [
+                                                                    "adjustLifeLimit"
+                                                                ],
+                                                                "type": "string"
+                                                            },
+                                                            "amount": {
+                                                                "type": "number"
+                                                            },
                                                             "assembly": {
                                                                 "description": "Assembly serial number",
                                                                 "type": "string"
                                                             },
-                                                            "increaselifelimit": {
-                                                                "description": "increase of life limit",
-                                                                "properties": {
-                                                                    "reason": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "reduction": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "reducelifelimit": {
-                                                                "description": "reduction of life limit",
-                                                                "properties": {
-                                                                    "reason": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "reduction": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                        "properties": {
-                                                            "assetID": {
-                                                                "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                "type": "string"
-                                                            },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                "items": {
-                                                                    "properties": {},
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "timestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                            "reason": {
                                                                 "type": "string"
                                                             }
                                                         },
-                                                        "required": [
-                                                            "assetID"
-                                                        ],
                                                         "type": "object"
                                                     }
                                                 },
@@ -5310,10 +4760,6 @@ var schemas = `
                                                     "assembly": {
                                                         "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                                         "properties": {
-                                                            "aircraft": {
-                                                                "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                                                "type": "string"
-                                                            },
                                                             "arlsZone": {
                                                                 "description": "tbd",
                                                                 "type": "string"
@@ -5393,52 +4839,6 @@ var schemas = `
                                             "flight": {
                                                 "description": "flight event, assetID defines airplane against which the event occurred",
                                                 "properties": {
-                                                    "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                        "properties": {
-                                                            "assetID": {
-                                                                "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                "type": "string"
-                                                            },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                "items": {
-                                                                    "properties": {},
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "timestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "assetID"
-                                                        ],
-                                                        "type": "object"
-                                                    },
                                                     "flight": {
                                                         "description": "A takeoiff and a landing",
                                                         "properties": {
@@ -5461,6 +4861,10 @@ var schemas = `
                                                             "gForce": {
                                                                 "description": "force incurred on landing",
                                                                 "type": "number"
+                                                            },
+                                                            "hardlanding": {
+                                                                "description": "landing considered hard by pilot or analytics",
+                                                                "type": "boolean"
                                                             },
                                                             "landingType": {
                                                                 "description": "code defining landing quality??",
@@ -5485,71 +4889,64 @@ var schemas = `
                                                 "type": "object"
                                             },
                                             "inspection": {
-                                                "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+                                                "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
                                                 "properties": {
-                                                    "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                    "inspection": {
+                                                        "description": "indicates that an inspection has occured for this assembly",
                                                         "properties": {
-                                                            "assetID": {
-                                                                "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                                                            "action": {
+                                                                "description": "inspection that has been performed",
+                                                                "enum": [
+                                                                    "ACHECK",
+                                                                    "BCHECK",
+                                                                    "HARDLANDING"
+                                                                ],
                                                                 "type": "string"
                                                             },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                "items": {
-                                                                    "properties": {},
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
+                                                            "aircraft": {
+                                                                "description": "Aircraft serial number",
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "maintenance": {
+                                                "description": "maintenance event",
+                                                "properties": {
+                                                    "maintenance": {
+                                                        "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                                                        "properties": {
+                                                            "action": {
+                                                                "enum": [
+                                                                    "commission",
+                                                                    "install",
+                                                                    "uninstall",
+                                                                    "startMaintenance",
+                                                                    "endMaintenance",
+                                                                    "scrap"
+                                                                ],
+                                                                "type": "string"
                                                             },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
+                                                            "aircraft": {
+                                                                "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                                                                "type": "string"
                                                             },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
+                                                            "assembly": {
+                                                                "description": "This assembly's serial number",
+                                                                "type": "string"
                                                             },
-                                                            "timestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                            "note": {
+                                                                "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
                                                                 "type": "string"
                                                             }
                                                         },
                                                         "required": [
-                                                            "assetID"
+                                                            "assembly",
+                                                            "action"
                                                         ],
-                                                        "type": "object"
-                                                    },
-                                                    "inspection": {
-                                                        "description": "indicates that an inspection has occured for this aircraft",
-                                                        "properties": {
-                                                            "aircraft": {
-                                                                "description": "Aircraft tail or serial number (tbd)",
-                                                                "type": "string"
-                                                            },
-                                                            "enum": [
-                                                                "select an inspection type",
-                                                                "ACHECK",
-                                                                "BCHECK"
-                                                            ],
-                                                            "type": {
-                                                                "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name",
-                                                                "type": "string"
-                                                            }
-                                                        },
                                                         "type": "object"
                                                     }
                                                 },
@@ -5598,8 +4995,12 @@ var schemas = `
                                         "description": "AssetID of operator that flies this airplane",
                                         "type": "string"
                                     },
+                                    "serialNumber": {
+                                        "description": "Aircraft serial number (manufacturer assigned)",
+                                        "type": "string"
+                                    },
                                     "tailNumber": {
-                                        "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                        "description": "Aircraft tail number (airline assigned)",
                                         "type": "string"
                                     },
                                     "variant": {
@@ -5626,10 +5027,6 @@ var schemas = `
                             "assembly": {
                                 "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                 "properties": {
-                                    "aircraft": {
-                                        "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                        "type": "string"
-                                    },
                                     "arlsZone": {
                                         "description": "tbd",
                                         "type": "string"
@@ -5715,11 +5112,11 @@ var schemas = `
                                 "properties": {
                                     "active": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -5728,11 +5125,11 @@ var schemas = `
                                     },
                                     "cleared": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -5741,11 +5138,11 @@ var schemas = `
                                     },
                                     "raised": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -5888,8 +5285,12 @@ var schemas = `
                                                                     "description": "AssetID of operator that flies this airplane",
                                                                     "type": "string"
                                                                 },
+                                                                "serialNumber": {
+                                                                    "description": "Aircraft serial number (manufacturer assigned)",
+                                                                    "type": "string"
+                                                                },
                                                                 "tailNumber": {
-                                                                    "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                                                    "description": "Aircraft tail number (airline assigned)",
                                                                     "type": "string"
                                                                 },
                                                                 "variant": {
@@ -6018,83 +5419,25 @@ var schemas = `
                                                     "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
                                                     "properties": {
                                                         "analyticAdjustment": {
-                                                            "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+                                                            "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
                                                             "properties": {
+                                                                "action": {
+                                                                    "enum": [
+                                                                        "adjustLifeLimit"
+                                                                    ],
+                                                                    "type": "string"
+                                                                },
+                                                                "amount": {
+                                                                    "type": "number"
+                                                                },
                                                                 "assembly": {
                                                                     "description": "Assembly serial number",
                                                                     "type": "string"
                                                                 },
-                                                                "increaselifelimit": {
-                                                                    "description": "increase of life limit",
-                                                                    "properties": {
-                                                                        "reason": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "reduction": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "reducelifelimit": {
-                                                                    "description": "reduction of life limit",
-                                                                    "properties": {
-                                                                        "reason": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "reduction": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                }
-                                                            },
-                                                            "type": "object"
-                                                        },
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                            "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                    "type": "string"
-                                                                },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                                "reason": {
                                                                     "type": "string"
                                                                 }
                                                             },
-                                                            "required": [
-                                                                "assetID"
-                                                            ],
                                                             "type": "object"
                                                         }
                                                     },
@@ -6106,10 +5449,6 @@ var schemas = `
                                                         "assembly": {
                                                             "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                                             "properties": {
-                                                                "aircraft": {
-                                                                    "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                                                    "type": "string"
-                                                                },
                                                                 "arlsZone": {
                                                                     "description": "tbd",
                                                                     "type": "string"
@@ -6189,52 +5528,6 @@ var schemas = `
                                                 "flight": {
                                                     "description": "flight event, assetID defines airplane against which the event occurred",
                                                     "properties": {
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                            "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                    "type": "string"
-                                                                },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "assetID"
-                                                            ],
-                                                            "type": "object"
-                                                        },
                                                         "flight": {
                                                             "description": "A takeoiff and a landing",
                                                             "properties": {
@@ -6257,6 +5550,10 @@ var schemas = `
                                                                 "gForce": {
                                                                     "description": "force incurred on landing",
                                                                     "type": "number"
+                                                                },
+                                                                "hardlanding": {
+                                                                    "description": "landing considered hard by pilot or analytics",
+                                                                    "type": "boolean"
                                                                 },
                                                                 "landingType": {
                                                                     "description": "code defining landing quality??",
@@ -6281,71 +5578,64 @@ var schemas = `
                                                     "type": "object"
                                                 },
                                                 "inspection": {
-                                                    "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+                                                    "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
                                                     "properties": {
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                        "inspection": {
+                                                            "description": "indicates that an inspection has occured for this assembly",
                                                             "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                                                                "action": {
+                                                                    "description": "inspection that has been performed",
+                                                                    "enum": [
+                                                                        "ACHECK",
+                                                                        "BCHECK",
+                                                                        "HARDLANDING"
+                                                                    ],
                                                                     "type": "string"
                                                                 },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
+                                                                "aircraft": {
+                                                                    "description": "Aircraft serial number",
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "maintenance": {
+                                                    "description": "maintenance event",
+                                                    "properties": {
+                                                        "maintenance": {
+                                                            "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                                                            "properties": {
+                                                                "action": {
+                                                                    "enum": [
+                                                                        "commission",
+                                                                        "install",
+                                                                        "uninstall",
+                                                                        "startMaintenance",
+                                                                        "endMaintenance",
+                                                                        "scrap"
+                                                                    ],
+                                                                    "type": "string"
                                                                 },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
+                                                                "aircraft": {
+                                                                    "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                                                                    "type": "string"
                                                                 },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
+                                                                "assembly": {
+                                                                    "description": "This assembly's serial number",
+                                                                    "type": "string"
                                                                 },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                                "note": {
+                                                                    "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
                                                                     "type": "string"
                                                                 }
                                                             },
                                                             "required": [
-                                                                "assetID"
+                                                                "assembly",
+                                                                "action"
                                                             ],
-                                                            "type": "object"
-                                                        },
-                                                        "inspection": {
-                                                            "description": "indicates that an inspection has occured for this aircraft",
-                                                            "properties": {
-                                                                "aircraft": {
-                                                                    "description": "Aircraft tail or serial number (tbd)",
-                                                                    "type": "string"
-                                                                },
-                                                                "enum": [
-                                                                    "select an inspection type",
-                                                                    "ACHECK",
-                                                                    "BCHECK"
-                                                                ],
-                                                                "type": {
-                                                                    "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name",
-                                                                    "type": "string"
-                                                                }
-                                                            },
                                                             "type": "object"
                                                         }
                                                     },
@@ -6394,8 +5684,12 @@ var schemas = `
                                             "description": "AssetID of operator that flies this airplane",
                                             "type": "string"
                                         },
+                                        "serialNumber": {
+                                            "description": "Aircraft serial number (manufacturer assigned)",
+                                            "type": "string"
+                                        },
                                         "tailNumber": {
-                                            "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                            "description": "Aircraft tail number (airline assigned)",
                                             "type": "string"
                                         },
                                         "variant": {
@@ -6422,10 +5716,6 @@ var schemas = `
                                 "assembly": {
                                     "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                     "properties": {
-                                        "aircraft": {
-                                            "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                            "type": "string"
-                                        },
                                         "arlsZone": {
                                             "description": "tbd",
                                             "type": "string"
@@ -6509,11 +5799,11 @@ var schemas = `
                             "properties": {
                                 "active": {
                                     "items": {
-                                        "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                        "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                         "enum": [
-                                            "NONE",
                                             "ACHECK",
-                                            "BCHECK"
+                                            "BCHECK",
+                                            "HARDLANDING"
                                         ],
                                         "type": "string"
                                     },
@@ -6522,11 +5812,11 @@ var schemas = `
                                 },
                                 "cleared": {
                                     "items": {
-                                        "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                        "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                         "enum": [
-                                            "NONE",
                                             "ACHECK",
-                                            "BCHECK"
+                                            "BCHECK",
+                                            "HARDLANDING"
                                         ],
                                         "type": "string"
                                     },
@@ -6535,11 +5825,11 @@ var schemas = `
                                 },
                                 "raised": {
                                     "items": {
-                                        "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                        "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                         "enum": [
-                                            "NONE",
                                             "ACHECK",
-                                            "BCHECK"
+                                            "BCHECK",
+                                            "HARDLANDING"
                                         ],
                                         "type": "string"
                                     },
@@ -6682,8 +5972,12 @@ var schemas = `
                                                                 "description": "AssetID of operator that flies this airplane",
                                                                 "type": "string"
                                                             },
+                                                            "serialNumber": {
+                                                                "description": "Aircraft serial number (manufacturer assigned)",
+                                                                "type": "string"
+                                                            },
                                                             "tailNumber": {
-                                                                "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                                                "description": "Aircraft tail number (airline assigned)",
                                                                 "type": "string"
                                                             },
                                                             "variant": {
@@ -6812,83 +6106,25 @@ var schemas = `
                                                 "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
                                                 "properties": {
                                                     "analyticAdjustment": {
-                                                        "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+                                                        "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
                                                         "properties": {
+                                                            "action": {
+                                                                "enum": [
+                                                                    "adjustLifeLimit"
+                                                                ],
+                                                                "type": "string"
+                                                            },
+                                                            "amount": {
+                                                                "type": "number"
+                                                            },
                                                             "assembly": {
                                                                 "description": "Assembly serial number",
                                                                 "type": "string"
                                                             },
-                                                            "increaselifelimit": {
-                                                                "description": "increase of life limit",
-                                                                "properties": {
-                                                                    "reason": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "reduction": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "reducelifelimit": {
-                                                                "description": "reduction of life limit",
-                                                                "properties": {
-                                                                    "reason": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "reduction": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                        "properties": {
-                                                            "assetID": {
-                                                                "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                "type": "string"
-                                                            },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                "items": {
-                                                                    "properties": {},
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "timestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                            "reason": {
                                                                 "type": "string"
                                                             }
                                                         },
-                                                        "required": [
-                                                            "assetID"
-                                                        ],
                                                         "type": "object"
                                                     }
                                                 },
@@ -6900,10 +6136,6 @@ var schemas = `
                                                     "assembly": {
                                                         "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                                         "properties": {
-                                                            "aircraft": {
-                                                                "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                                                "type": "string"
-                                                            },
                                                             "arlsZone": {
                                                                 "description": "tbd",
                                                                 "type": "string"
@@ -6983,52 +6215,6 @@ var schemas = `
                                             "flight": {
                                                 "description": "flight event, assetID defines airplane against which the event occurred",
                                                 "properties": {
-                                                    "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                        "properties": {
-                                                            "assetID": {
-                                                                "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                "type": "string"
-                                                            },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                "items": {
-                                                                    "properties": {},
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "timestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "assetID"
-                                                        ],
-                                                        "type": "object"
-                                                    },
                                                     "flight": {
                                                         "description": "A takeoiff and a landing",
                                                         "properties": {
@@ -7051,6 +6237,10 @@ var schemas = `
                                                             "gForce": {
                                                                 "description": "force incurred on landing",
                                                                 "type": "number"
+                                                            },
+                                                            "hardlanding": {
+                                                                "description": "landing considered hard by pilot or analytics",
+                                                                "type": "boolean"
                                                             },
                                                             "landingType": {
                                                                 "description": "code defining landing quality??",
@@ -7075,71 +6265,64 @@ var schemas = `
                                                 "type": "object"
                                             },
                                             "inspection": {
-                                                "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+                                                "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
                                                 "properties": {
-                                                    "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                    "inspection": {
+                                                        "description": "indicates that an inspection has occured for this assembly",
                                                         "properties": {
-                                                            "assetID": {
-                                                                "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                                                            "action": {
+                                                                "description": "inspection that has been performed",
+                                                                "enum": [
+                                                                    "ACHECK",
+                                                                    "BCHECK",
+                                                                    "HARDLANDING"
+                                                                ],
                                                                 "type": "string"
                                                             },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                "items": {
-                                                                    "properties": {},
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
+                                                            "aircraft": {
+                                                                "description": "Aircraft serial number",
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "maintenance": {
+                                                "description": "maintenance event",
+                                                "properties": {
+                                                    "maintenance": {
+                                                        "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                                                        "properties": {
+                                                            "action": {
+                                                                "enum": [
+                                                                    "commission",
+                                                                    "install",
+                                                                    "uninstall",
+                                                                    "startMaintenance",
+                                                                    "endMaintenance",
+                                                                    "scrap"
+                                                                ],
+                                                                "type": "string"
                                                             },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
+                                                            "aircraft": {
+                                                                "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                                                                "type": "string"
                                                             },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
+                                                            "assembly": {
+                                                                "description": "This assembly's serial number",
+                                                                "type": "string"
                                                             },
-                                                            "timestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                            "note": {
+                                                                "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
                                                                 "type": "string"
                                                             }
                                                         },
                                                         "required": [
-                                                            "assetID"
+                                                            "assembly",
+                                                            "action"
                                                         ],
-                                                        "type": "object"
-                                                    },
-                                                    "inspection": {
-                                                        "description": "indicates that an inspection has occured for this aircraft",
-                                                        "properties": {
-                                                            "aircraft": {
-                                                                "description": "Aircraft tail or serial number (tbd)",
-                                                                "type": "string"
-                                                            },
-                                                            "enum": [
-                                                                "select an inspection type",
-                                                                "ACHECK",
-                                                                "BCHECK"
-                                                            ],
-                                                            "type": {
-                                                                "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name",
-                                                                "type": "string"
-                                                            }
-                                                        },
                                                         "type": "object"
                                                     }
                                                 },
@@ -7188,8 +6371,12 @@ var schemas = `
                                         "description": "AssetID of operator that flies this airplane",
                                         "type": "string"
                                     },
+                                    "serialNumber": {
+                                        "description": "Aircraft serial number (manufacturer assigned)",
+                                        "type": "string"
+                                    },
                                     "tailNumber": {
-                                        "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                        "description": "Aircraft tail number (airline assigned)",
                                         "type": "string"
                                     },
                                     "variant": {
@@ -7216,10 +6403,6 @@ var schemas = `
                             "assembly": {
                                 "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                 "properties": {
-                                    "aircraft": {
-                                        "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                        "type": "string"
-                                    },
                                     "arlsZone": {
                                         "description": "tbd",
                                         "type": "string"
@@ -7305,11 +6488,11 @@ var schemas = `
                                 "properties": {
                                     "active": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -7318,11 +6501,11 @@ var schemas = `
                                     },
                                     "cleared": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -7331,11 +6514,11 @@ var schemas = `
                                     },
                                     "raised": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -7478,8 +6661,12 @@ var schemas = `
                                                                     "description": "AssetID of operator that flies this airplane",
                                                                     "type": "string"
                                                                 },
+                                                                "serialNumber": {
+                                                                    "description": "Aircraft serial number (manufacturer assigned)",
+                                                                    "type": "string"
+                                                                },
                                                                 "tailNumber": {
-                                                                    "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                                                    "description": "Aircraft tail number (airline assigned)",
                                                                     "type": "string"
                                                                 },
                                                                 "variant": {
@@ -7608,83 +6795,25 @@ var schemas = `
                                                     "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
                                                     "properties": {
                                                         "analyticAdjustment": {
-                                                            "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+                                                            "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
                                                             "properties": {
+                                                                "action": {
+                                                                    "enum": [
+                                                                        "adjustLifeLimit"
+                                                                    ],
+                                                                    "type": "string"
+                                                                },
+                                                                "amount": {
+                                                                    "type": "number"
+                                                                },
                                                                 "assembly": {
                                                                     "description": "Assembly serial number",
                                                                     "type": "string"
                                                                 },
-                                                                "increaselifelimit": {
-                                                                    "description": "increase of life limit",
-                                                                    "properties": {
-                                                                        "reason": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "reduction": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "reducelifelimit": {
-                                                                    "description": "reduction of life limit",
-                                                                    "properties": {
-                                                                        "reason": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "reduction": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                }
-                                                            },
-                                                            "type": "object"
-                                                        },
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                            "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                    "type": "string"
-                                                                },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                                "reason": {
                                                                     "type": "string"
                                                                 }
                                                             },
-                                                            "required": [
-                                                                "assetID"
-                                                            ],
                                                             "type": "object"
                                                         }
                                                     },
@@ -7696,10 +6825,6 @@ var schemas = `
                                                         "assembly": {
                                                             "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                                             "properties": {
-                                                                "aircraft": {
-                                                                    "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                                                    "type": "string"
-                                                                },
                                                                 "arlsZone": {
                                                                     "description": "tbd",
                                                                     "type": "string"
@@ -7779,52 +6904,6 @@ var schemas = `
                                                 "flight": {
                                                     "description": "flight event, assetID defines airplane against which the event occurred",
                                                     "properties": {
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                            "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                    "type": "string"
-                                                                },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "assetID"
-                                                            ],
-                                                            "type": "object"
-                                                        },
                                                         "flight": {
                                                             "description": "A takeoiff and a landing",
                                                             "properties": {
@@ -7847,6 +6926,10 @@ var schemas = `
                                                                 "gForce": {
                                                                     "description": "force incurred on landing",
                                                                     "type": "number"
+                                                                },
+                                                                "hardlanding": {
+                                                                    "description": "landing considered hard by pilot or analytics",
+                                                                    "type": "boolean"
                                                                 },
                                                                 "landingType": {
                                                                     "description": "code defining landing quality??",
@@ -7871,71 +6954,64 @@ var schemas = `
                                                     "type": "object"
                                                 },
                                                 "inspection": {
-                                                    "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+                                                    "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
                                                     "properties": {
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                        "inspection": {
+                                                            "description": "indicates that an inspection has occured for this assembly",
                                                             "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                                                                "action": {
+                                                                    "description": "inspection that has been performed",
+                                                                    "enum": [
+                                                                        "ACHECK",
+                                                                        "BCHECK",
+                                                                        "HARDLANDING"
+                                                                    ],
                                                                     "type": "string"
                                                                 },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
+                                                                "aircraft": {
+                                                                    "description": "Aircraft serial number",
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "maintenance": {
+                                                    "description": "maintenance event",
+                                                    "properties": {
+                                                        "maintenance": {
+                                                            "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                                                            "properties": {
+                                                                "action": {
+                                                                    "enum": [
+                                                                        "commission",
+                                                                        "install",
+                                                                        "uninstall",
+                                                                        "startMaintenance",
+                                                                        "endMaintenance",
+                                                                        "scrap"
+                                                                    ],
+                                                                    "type": "string"
                                                                 },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
+                                                                "aircraft": {
+                                                                    "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                                                                    "type": "string"
                                                                 },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
+                                                                "assembly": {
+                                                                    "description": "This assembly's serial number",
+                                                                    "type": "string"
                                                                 },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                                "note": {
+                                                                    "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
                                                                     "type": "string"
                                                                 }
                                                             },
                                                             "required": [
-                                                                "assetID"
+                                                                "assembly",
+                                                                "action"
                                                             ],
-                                                            "type": "object"
-                                                        },
-                                                        "inspection": {
-                                                            "description": "indicates that an inspection has occured for this aircraft",
-                                                            "properties": {
-                                                                "aircraft": {
-                                                                    "description": "Aircraft tail or serial number (tbd)",
-                                                                    "type": "string"
-                                                                },
-                                                                "enum": [
-                                                                    "select an inspection type",
-                                                                    "ACHECK",
-                                                                    "BCHECK"
-                                                                ],
-                                                                "type": {
-                                                                    "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name",
-                                                                    "type": "string"
-                                                                }
-                                                            },
                                                             "type": "object"
                                                         }
                                                     },
@@ -7984,8 +7060,12 @@ var schemas = `
                                             "description": "AssetID of operator that flies this airplane",
                                             "type": "string"
                                         },
+                                        "serialNumber": {
+                                            "description": "Aircraft serial number (manufacturer assigned)",
+                                            "type": "string"
+                                        },
                                         "tailNumber": {
-                                            "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                            "description": "Aircraft tail number (airline assigned)",
                                             "type": "string"
                                         },
                                         "variant": {
@@ -8012,10 +7092,6 @@ var schemas = `
                                 "assembly": {
                                     "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                     "properties": {
-                                        "aircraft": {
-                                            "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                            "type": "string"
-                                        },
                                         "arlsZone": {
                                             "description": "tbd",
                                             "type": "string"
@@ -8061,6 +7137,40 @@ var schemas = `
             },
             "type": "object"
         },
+        "readContractConfig": {
+            "description": "Returns the contract's dynamic configuration -- those thresholds and values that can be set by external applications.",
+            "properties": {
+                "args": {
+                    "description": "accepts no arguments",
+                    "items": {},
+                    "maxItems": 0,
+                    "minItems": 0,
+                    "type": "array"
+                },
+                "function": {
+                    "description": "readContractConfig function",
+                    "enum": [
+                        "readContractConfig"
+                    ],
+                    "type": "string"
+                },
+                "method": "query",
+                "result": {
+                    "properties": {
+                        "aCheckThreshold": {
+                            "description": "Cycles threshold for the aCheck inspection alert.",
+                            "type": "number"
+                        },
+                        "bCheckThreshold": {
+                            "description": "Cycles threshold for the bCheck inspection alert.",
+                            "type": "number"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "type": "object"
+        },
         "readRecentStates": {
             "description": "Returns the state of recently updated assets as an array of objects sorted with the most recently updated asset first. Each asset appears exactly once up to a maxmum of 20 in this version of the contract.",
             "properties": {
@@ -8089,11 +7199,11 @@ var schemas = `
                                 "properties": {
                                     "active": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -8102,11 +7212,11 @@ var schemas = `
                                     },
                                     "cleared": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -8115,11 +7225,11 @@ var schemas = `
                                     },
                                     "raised": {
                                         "items": {
-                                            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                             "enum": [
-                                                "NONE",
                                                 "ACHECK",
-                                                "BCHECK"
+                                                "BCHECK",
+                                                "HARDLANDING"
                                             ],
                                             "type": "string"
                                         },
@@ -8262,8 +7372,12 @@ var schemas = `
                                                                     "description": "AssetID of operator that flies this airplane",
                                                                     "type": "string"
                                                                 },
+                                                                "serialNumber": {
+                                                                    "description": "Aircraft serial number (manufacturer assigned)",
+                                                                    "type": "string"
+                                                                },
                                                                 "tailNumber": {
-                                                                    "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                                                    "description": "Aircraft tail number (airline assigned)",
                                                                     "type": "string"
                                                                 },
                                                                 "variant": {
@@ -8392,83 +7506,25 @@ var schemas = `
                                                     "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
                                                     "properties": {
                                                         "analyticAdjustment": {
-                                                            "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+                                                            "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
                                                             "properties": {
+                                                                "action": {
+                                                                    "enum": [
+                                                                        "adjustLifeLimit"
+                                                                    ],
+                                                                    "type": "string"
+                                                                },
+                                                                "amount": {
+                                                                    "type": "number"
+                                                                },
                                                                 "assembly": {
                                                                     "description": "Assembly serial number",
                                                                     "type": "string"
                                                                 },
-                                                                "increaselifelimit": {
-                                                                    "description": "increase of life limit",
-                                                                    "properties": {
-                                                                        "reason": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "reduction": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "reducelifelimit": {
-                                                                    "description": "reduction of life limit",
-                                                                    "properties": {
-                                                                        "reason": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "reduction": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                }
-                                                            },
-                                                            "type": "object"
-                                                        },
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                            "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                    "type": "string"
-                                                                },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                                "reason": {
                                                                     "type": "string"
                                                                 }
                                                             },
-                                                            "required": [
-                                                                "assetID"
-                                                            ],
                                                             "type": "object"
                                                         }
                                                     },
@@ -8480,10 +7536,6 @@ var schemas = `
                                                         "assembly": {
                                                             "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                                             "properties": {
-                                                                "aircraft": {
-                                                                    "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                                                    "type": "string"
-                                                                },
                                                                 "arlsZone": {
                                                                     "description": "tbd",
                                                                     "type": "string"
@@ -8563,52 +7615,6 @@ var schemas = `
                                                 "flight": {
                                                     "description": "flight event, assetID defines airplane against which the event occurred",
                                                     "properties": {
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                            "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                                    "type": "string"
-                                                                },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
-                                                                },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "assetID"
-                                                            ],
-                                                            "type": "object"
-                                                        },
                                                         "flight": {
                                                             "description": "A takeoiff and a landing",
                                                             "properties": {
@@ -8631,6 +7637,10 @@ var schemas = `
                                                                 "gForce": {
                                                                     "description": "force incurred on landing",
                                                                     "type": "number"
+                                                                },
+                                                                "hardlanding": {
+                                                                    "description": "landing considered hard by pilot or analytics",
+                                                                    "type": "boolean"
                                                                 },
                                                                 "landingType": {
                                                                     "description": "code defining landing quality??",
@@ -8655,71 +7665,64 @@ var schemas = `
                                                     "type": "object"
                                                 },
                                                 "inspection": {
-                                                    "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+                                                    "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
                                                     "properties": {
-                                                        "common": {
-                                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                        "inspection": {
+                                                            "description": "indicates that an inspection has occured for this assembly",
                                                             "properties": {
-                                                                "assetID": {
-                                                                    "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                                                                "action": {
+                                                                    "description": "inspection that has been performed",
+                                                                    "enum": [
+                                                                        "ACHECK",
+                                                                        "BCHECK",
+                                                                        "HARDLANDING"
+                                                                    ],
                                                                     "type": "string"
                                                                 },
-                                                                "extension": {
-                                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                                    "items": {
-                                                                        "properties": {},
-                                                                        "type": "object"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
+                                                                "aircraft": {
+                                                                    "description": "Aircraft serial number",
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "maintenance": {
+                                                    "description": "maintenance event",
+                                                    "properties": {
+                                                        "maintenance": {
+                                                            "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                                                            "properties": {
+                                                                "action": {
+                                                                    "enum": [
+                                                                        "commission",
+                                                                        "install",
+                                                                        "uninstall",
+                                                                        "startMaintenance",
+                                                                        "endMaintenance",
+                                                                        "scrap"
+                                                                    ],
+                                                                    "type": "string"
                                                                 },
-                                                                "location": {
-                                                                    "description": "A geographical coordinate",
-                                                                    "properties": {
-                                                                        "latitude": {
-                                                                            "type": "number"
-                                                                        },
-                                                                        "longitude": {
-                                                                            "type": "number"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
+                                                                "aircraft": {
+                                                                    "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                                                                    "type": "string"
                                                                 },
-                                                                "references": {
-                                                                    "description": "An array of external references relevant to this asset.",
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "minItems": 0,
-                                                                    "type": "array"
+                                                                "assembly": {
+                                                                    "description": "This assembly's serial number",
+                                                                    "type": "string"
                                                                 },
-                                                                "timestamp": {
-                                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                                "note": {
+                                                                    "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
                                                                     "type": "string"
                                                                 }
                                                             },
                                                             "required": [
-                                                                "assetID"
+                                                                "assembly",
+                                                                "action"
                                                             ],
-                                                            "type": "object"
-                                                        },
-                                                        "inspection": {
-                                                            "description": "indicates that an inspection has occured for this aircraft",
-                                                            "properties": {
-                                                                "aircraft": {
-                                                                    "description": "Aircraft tail or serial number (tbd)",
-                                                                    "type": "string"
-                                                                },
-                                                                "enum": [
-                                                                    "select an inspection type",
-                                                                    "ACHECK",
-                                                                    "BCHECK"
-                                                                ],
-                                                                "type": {
-                                                                    "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name",
-                                                                    "type": "string"
-                                                                }
-                                                            },
                                                             "type": "object"
                                                         }
                                                     },
@@ -8768,8 +7771,12 @@ var schemas = `
                                             "description": "AssetID of operator that flies this airplane",
                                             "type": "string"
                                         },
+                                        "serialNumber": {
+                                            "description": "Aircraft serial number (manufacturer assigned)",
+                                            "type": "string"
+                                        },
                                         "tailNumber": {
-                                            "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                            "description": "Aircraft tail number (airline assigned)",
                                             "type": "string"
                                         },
                                         "variant": {
@@ -8796,10 +7803,6 @@ var schemas = `
                                 "assembly": {
                                     "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                     "properties": {
-                                        "aircraft": {
-                                            "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                            "type": "string"
-                                        },
                                         "arlsZone": {
                                             "description": "tbd",
                                             "type": "string"
@@ -8944,8 +7947,12 @@ var schemas = `
                                         "description": "AssetID of operator that flies this airplane",
                                         "type": "string"
                                     },
+                                    "serialNumber": {
+                                        "description": "Aircraft serial number (manufacturer assigned)",
+                                        "type": "string"
+                                    },
                                     "tailNumber": {
-                                        "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                        "description": "Aircraft tail number (airline assigned)",
                                         "type": "string"
                                     },
                                     "variant": {
@@ -9116,10 +8123,6 @@ var schemas = `
                             "assembly": {
                                 "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                 "properties": {
-                                    "aircraft": {
-                                        "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                        "type": "string"
-                                    },
                                     "arlsZone": {
                                         "description": "tbd",
                                         "type": "string"
@@ -9210,6 +8213,38 @@ var schemas = `
                 "method": "invoke"
             },
             "type": "object"
+        },
+        "updateContractConfig": {
+            "description": "Update the dynamic configuration for the contract. These can include thresholds and other values.",
+            "properties": {
+                "args": {
+                    "maxItems": 1,
+                    "minItems": 1,
+                    "properties": {
+                        "properties": {
+                            "aCheckThreshold": {
+                                "description": "Cycles threshold for the aCheck inspection alert.",
+                                "type": "number"
+                            },
+                            "bCheckThreshold": {
+                                "description": "Cycles threshold for the bCheck inspection alert.",
+                                "type": "number"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "type": "object"
+                },
+                "function": {
+                    "description": "updateContractConfig function",
+                    "enum": [
+                        "updateContractConfig"
+                    ],
+                    "type": "string"
+                },
+                "method": "invoke"
+            },
+            "type": "object"
         }
     },
     "objectModelSchemas": {
@@ -9243,8 +8278,12 @@ var schemas = `
                             "description": "AssetID of operator that flies this airplane",
                             "type": "string"
                         },
+                        "serialNumber": {
+                            "description": "Aircraft serial number (manufacturer assigned)",
+                            "type": "string"
+                        },
                         "tailNumber": {
-                            "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                            "description": "Aircraft tail number (airline assigned)",
                             "type": "string"
                         },
                         "variant": {
@@ -9306,6 +8345,10 @@ var schemas = `
         "aircraftState": {
             "description": "An aircraft state",
             "properties": {
+                "adjustedCycles": {
+                    "description": "Cycles plus analytic adjustments for this aircraft.",
+                    "type": "integer"
+                },
                 "age": {
                     "description": "Aircraft age, computed as today's date minus DOB",
                     "type": "string"
@@ -9337,8 +8380,12 @@ var schemas = `
                             "description": "AssetID of operator that flies this airplane",
                             "type": "string"
                         },
+                        "serialNumber": {
+                            "description": "Aircraft serial number (manufacturer assigned)",
+                            "type": "string"
+                        },
                         "tailNumber": {
-                            "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                            "description": "Aircraft tail number (airline assigned)",
                             "type": "string"
                         },
                         "variant": {
@@ -9545,83 +8592,25 @@ var schemas = `
             "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
             "properties": {
                 "analyticAdjustment": {
-                    "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+                    "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
                     "properties": {
+                        "action": {
+                            "enum": [
+                                "adjustLifeLimit"
+                            ],
+                            "type": "string"
+                        },
+                        "amount": {
+                            "type": "number"
+                        },
                         "assembly": {
                             "description": "Assembly serial number",
                             "type": "string"
                         },
-                        "increaselifelimit": {
-                            "description": "increase of life limit",
-                            "properties": {
-                                "reason": {
-                                    "type": "string"
-                                },
-                                "reduction": {
-                                    "type": "number"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "reducelifelimit": {
-                            "description": "reduction of life limit",
-                            "properties": {
-                                "reason": {
-                                    "type": "string"
-                                },
-                                "reduction": {
-                                    "type": "number"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                },
-                "common": {
-                    "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                    "properties": {
-                        "assetID": {
-                            "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                            "type": "string"
-                        },
-                        "extension": {
-                            "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                            "items": {
-                                "properties": {},
-                                "type": "object"
-                            },
-                            "minItems": 0,
-                            "type": "array"
-                        },
-                        "location": {
-                            "description": "A geographical coordinate",
-                            "properties": {
-                                "latitude": {
-                                    "type": "number"
-                                },
-                                "longitude": {
-                                    "type": "number"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "references": {
-                            "description": "An array of external references relevant to this asset.",
-                            "items": {
-                                "type": "string"
-                            },
-                            "minItems": 0,
-                            "type": "array"
-                        },
-                        "timestamp": {
-                            "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                        "reason": {
                             "type": "string"
                         }
                     },
-                    "required": [
-                        "assetID"
-                    ],
                     "type": "object"
                 }
             },
@@ -9633,10 +8622,6 @@ var schemas = `
                 "assembly": {
                     "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                     "properties": {
-                        "aircraft": {
-                            "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                            "type": "string"
-                        },
                         "arlsZone": {
                             "description": "tbd",
                             "type": "string"
@@ -9717,16 +8702,24 @@ var schemas = `
             "description": "The set of writable properties that define an assembly's state.",
             "properties": {
                 "aCheckCounter": {
-                    "description": "The total cycles since last reset. Raise ACHECK alert at 10 cycles. Clear only with ACHECK inspection event, which resets counter to zero.",
+                    "description": "The total cycles since last reset. Used as a baseline against which to compare adjusted cycles based on analytic inputs.",
                     "type": "number"
+                },
+                "aCheckCounterAdjusted": {
+                    "description": "ACheckCounter plus analytic adjustments. Can be larger or smaller than aCheckCounter. Used for rule calculations.",
+                    "type": "number"
+                },
+                "adjustedCycles": {
+                    "description": "Cycles plus analytic adjustments for this assembly.",
+                    "type": "integer"
+                },
+                "aircraft": {
+                    "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
+                    "type": "string"
                 },
                 "assembly": {
                     "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                     "properties": {
-                        "aircraft": {
-                            "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                            "type": "string"
-                        },
                         "arlsZone": {
                             "description": "tbd",
                             "type": "string"
@@ -9755,7 +8748,11 @@ var schemas = `
                     "type": "object"
                 },
                 "bCheckCounter": {
-                    "description": "Count consecutive hard landings. Two consecutive hard landings raises BCHECK alert. Only a BCHECK inspection can clear the alert.",
+                    "description": "The total cycles since last reset. Used as a baseline against which to compare adjusted cycles based on analytic inputs.",
+                    "type": "number"
+                },
+                "bCheckCounterAdjusted": {
+                    "description": "BCheckCounter plus analytic adjustments. Can be larger or smaller than aCheckCounter. Used for rule calculations.",
                     "type": "number"
                 },
                 "common": {
@@ -9805,12 +8802,51 @@ var schemas = `
                     "type": "object"
                 },
                 "cycles": {
-                    "description": "Overall cycle count for this assembly.",
+                    "description": "Lifetime cycle count for this assembly.",
                     "type": "integer"
                 },
-                "lifeLimitAdjusted": {
-                    "description": "Overall analytic life limit adjustments for this assembly.",
-                    "type": "integer"
+                "maintenance": {
+                    "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                    "properties": {
+                        "action": {
+                            "enum": [
+                                "commission",
+                                "install",
+                                "uninstall",
+                                "startMaintenance",
+                                "endMaintenance",
+                                "scrap"
+                            ],
+                            "type": "string"
+                        },
+                        "aircraft": {
+                            "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                            "type": "string"
+                        },
+                        "assembly": {
+                            "description": "This assembly's serial number",
+                            "type": "string"
+                        },
+                        "note": {
+                            "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "assembly",
+                        "action"
+                    ],
+                    "type": "object"
+                },
+                "status": {
+                    "enum": [
+                        "new",
+                        "aircraft",
+                        "inventory",
+                        "maintenance",
+                        "scrapped"
+                    ],
+                    "type": "string"
                 }
             },
             "required": [
@@ -9827,6 +8863,19 @@ var schemas = `
                 "assembly"
             ],
             "type": "string"
+        },
+        "contractConfig": {
+            "properties": {
+                "aCheckThreshold": {
+                    "description": "Cycles threshold for the aCheck inspection alert.",
+                    "type": "number"
+                },
+                "bCheckThreshold": {
+                    "description": "Cycles threshold for the bCheck inspection alert.",
+                    "type": "number"
+                }
+            },
+            "type": "object"
         },
         "event": {
             "description": "A set of properties that constitute a message to the contract.",
@@ -9908,8 +8957,12 @@ var schemas = `
                                         "description": "AssetID of operator that flies this airplane",
                                         "type": "string"
                                     },
+                                    "serialNumber": {
+                                        "description": "Aircraft serial number (manufacturer assigned)",
+                                        "type": "string"
+                                    },
                                     "tailNumber": {
-                                        "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                        "description": "Aircraft tail number (airline assigned)",
                                         "type": "string"
                                     },
                                     "variant": {
@@ -10038,83 +9091,25 @@ var schemas = `
                         "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
                         "properties": {
                             "analyticAdjustment": {
-                                "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+                                "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
                                 "properties": {
+                                    "action": {
+                                        "enum": [
+                                            "adjustLifeLimit"
+                                        ],
+                                        "type": "string"
+                                    },
+                                    "amount": {
+                                        "type": "number"
+                                    },
                                     "assembly": {
                                         "description": "Assembly serial number",
                                         "type": "string"
                                     },
-                                    "increaselifelimit": {
-                                        "description": "increase of life limit",
-                                        "properties": {
-                                            "reason": {
-                                                "type": "string"
-                                            },
-                                            "reduction": {
-                                                "type": "number"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "reducelifelimit": {
-                                        "description": "reduction of life limit",
-                                        "properties": {
-                                            "reason": {
-                                                "type": "string"
-                                            },
-                                            "reduction": {
-                                                "type": "number"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object"
-                            },
-                            "common": {
-                                "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                "properties": {
-                                    "assetID": {
-                                        "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                        "type": "string"
-                                    },
-                                    "extension": {
-                                        "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                        "items": {
-                                            "properties": {},
-                                            "type": "object"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
-                                    },
-                                    "location": {
-                                        "description": "A geographical coordinate",
-                                        "properties": {
-                                            "latitude": {
-                                                "type": "number"
-                                            },
-                                            "longitude": {
-                                                "type": "number"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "references": {
-                                        "description": "An array of external references relevant to this asset.",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
-                                    },
-                                    "timestamp": {
-                                        "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                    "reason": {
                                         "type": "string"
                                     }
                                 },
-                                "required": [
-                                    "assetID"
-                                ],
                                 "type": "object"
                             }
                         },
@@ -10126,10 +9121,6 @@ var schemas = `
                             "assembly": {
                                 "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                 "properties": {
-                                    "aircraft": {
-                                        "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                        "type": "string"
-                                    },
                                     "arlsZone": {
                                         "description": "tbd",
                                         "type": "string"
@@ -10209,52 +9200,6 @@ var schemas = `
                     "flight": {
                         "description": "flight event, assetID defines airplane against which the event occurred",
                         "properties": {
-                            "common": {
-                                "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                "properties": {
-                                    "assetID": {
-                                        "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                        "type": "string"
-                                    },
-                                    "extension": {
-                                        "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                        "items": {
-                                            "properties": {},
-                                            "type": "object"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
-                                    },
-                                    "location": {
-                                        "description": "A geographical coordinate",
-                                        "properties": {
-                                            "latitude": {
-                                                "type": "number"
-                                            },
-                                            "longitude": {
-                                                "type": "number"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "references": {
-                                        "description": "An array of external references relevant to this asset.",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
-                                    },
-                                    "timestamp": {
-                                        "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                        "type": "string"
-                                    }
-                                },
-                                "required": [
-                                    "assetID"
-                                ],
-                                "type": "object"
-                            },
                             "flight": {
                                 "description": "A takeoiff and a landing",
                                 "properties": {
@@ -10277,6 +9222,10 @@ var schemas = `
                                     "gForce": {
                                         "description": "force incurred on landing",
                                         "type": "number"
+                                    },
+                                    "hardlanding": {
+                                        "description": "landing considered hard by pilot or analytics",
+                                        "type": "boolean"
                                     },
                                     "landingType": {
                                         "description": "code defining landing quality??",
@@ -10301,71 +9250,64 @@ var schemas = `
                         "type": "object"
                     },
                     "inspection": {
-                        "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+                        "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
                         "properties": {
-                            "common": {
-                                "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                            "inspection": {
+                                "description": "indicates that an inspection has occured for this assembly",
                                 "properties": {
-                                    "assetID": {
-                                        "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                                    "action": {
+                                        "description": "inspection that has been performed",
+                                        "enum": [
+                                            "ACHECK",
+                                            "BCHECK",
+                                            "HARDLANDING"
+                                        ],
                                         "type": "string"
                                     },
-                                    "extension": {
-                                        "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                        "items": {
-                                            "properties": {},
-                                            "type": "object"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
+                                    "aircraft": {
+                                        "description": "Aircraft serial number",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "maintenance": {
+                        "description": "maintenance event",
+                        "properties": {
+                            "maintenance": {
+                                "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                                "properties": {
+                                    "action": {
+                                        "enum": [
+                                            "commission",
+                                            "install",
+                                            "uninstall",
+                                            "startMaintenance",
+                                            "endMaintenance",
+                                            "scrap"
+                                        ],
+                                        "type": "string"
                                     },
-                                    "location": {
-                                        "description": "A geographical coordinate",
-                                        "properties": {
-                                            "latitude": {
-                                                "type": "number"
-                                            },
-                                            "longitude": {
-                                                "type": "number"
-                                            }
-                                        },
-                                        "type": "object"
+                                    "aircraft": {
+                                        "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                                        "type": "string"
                                     },
-                                    "references": {
-                                        "description": "An array of external references relevant to this asset.",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
+                                    "assembly": {
+                                        "description": "This assembly's serial number",
+                                        "type": "string"
                                     },
-                                    "timestamp": {
-                                        "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                    "note": {
+                                        "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
                                         "type": "string"
                                     }
                                 },
                                 "required": [
-                                    "assetID"
+                                    "assembly",
+                                    "action"
                                 ],
-                                "type": "object"
-                            },
-                            "inspection": {
-                                "description": "indicates that an inspection has occured for this aircraft",
-                                "properties": {
-                                    "aircraft": {
-                                        "description": "Aircraft tail or serial number (tbd)",
-                                        "type": "string"
-                                    },
-                                    "enum": [
-                                        "select an inspection type",
-                                        "ACHECK",
-                                        "BCHECK"
-                                    ],
-                                    "type": {
-                                        "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name",
-                                        "type": "string"
-                                    }
-                                },
                                 "type": "object"
                             }
                         },
@@ -10387,52 +9329,6 @@ var schemas = `
         "flightEvent": {
             "description": "flight event, assetID defines airplane against which the event occurred",
             "properties": {
-                "common": {
-                    "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                    "properties": {
-                        "assetID": {
-                            "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                            "type": "string"
-                        },
-                        "extension": {
-                            "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                            "items": {
-                                "properties": {},
-                                "type": "object"
-                            },
-                            "minItems": 0,
-                            "type": "array"
-                        },
-                        "location": {
-                            "description": "A geographical coordinate",
-                            "properties": {
-                                "latitude": {
-                                    "type": "number"
-                                },
-                                "longitude": {
-                                    "type": "number"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "references": {
-                            "description": "An array of external references relevant to this asset.",
-                            "items": {
-                                "type": "string"
-                            },
-                            "minItems": 0,
-                            "type": "array"
-                        },
-                        "timestamp": {
-                            "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "assetID"
-                    ],
-                    "type": "object"
-                },
                 "flight": {
                     "description": "A takeoiff and a landing",
                     "properties": {
@@ -10455,6 +9351,10 @@ var schemas = `
                         "gForce": {
                             "description": "force incurred on landing",
                             "type": "number"
+                        },
+                        "hardlanding": {
+                            "description": "landing considered hard by pilot or analytics",
+                            "type": "boolean"
                         },
                         "landingType": {
                             "description": "code defining landing quality??",
@@ -10497,71 +9397,64 @@ var schemas = `
             "type": "object"
         },
         "inspectionEvent": {
-            "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+            "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
             "properties": {
-                "common": {
-                    "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                "inspection": {
+                    "description": "indicates that an inspection has occured for this assembly",
                     "properties": {
-                        "assetID": {
-                            "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                        "action": {
+                            "description": "inspection that has been performed",
+                            "enum": [
+                                "ACHECK",
+                                "BCHECK",
+                                "HARDLANDING"
+                            ],
                             "type": "string"
                         },
-                        "extension": {
-                            "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                            "items": {
-                                "properties": {},
-                                "type": "object"
-                            },
-                            "minItems": 0,
-                            "type": "array"
+                        "aircraft": {
+                            "description": "Aircraft serial number",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "type": "object"
+        },
+        "maintenanceEvent": {
+            "description": "maintenance event",
+            "properties": {
+                "maintenance": {
+                    "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                    "properties": {
+                        "action": {
+                            "enum": [
+                                "commission",
+                                "install",
+                                "uninstall",
+                                "startMaintenance",
+                                "endMaintenance",
+                                "scrap"
+                            ],
+                            "type": "string"
                         },
-                        "location": {
-                            "description": "A geographical coordinate",
-                            "properties": {
-                                "latitude": {
-                                    "type": "number"
-                                },
-                                "longitude": {
-                                    "type": "number"
-                                }
-                            },
-                            "type": "object"
+                        "aircraft": {
+                            "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                            "type": "string"
                         },
-                        "references": {
-                            "description": "An array of external references relevant to this asset.",
-                            "items": {
-                                "type": "string"
-                            },
-                            "minItems": 0,
-                            "type": "array"
+                        "assembly": {
+                            "description": "This assembly's serial number",
+                            "type": "string"
                         },
-                        "timestamp": {
-                            "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                        "note": {
+                            "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
                             "type": "string"
                         }
                     },
                     "required": [
-                        "assetID"
+                        "assembly",
+                        "action"
                     ],
-                    "type": "object"
-                },
-                "inspection": {
-                    "description": "indicates that an inspection has occured for this aircraft",
-                    "properties": {
-                        "aircraft": {
-                            "description": "Aircraft tail or serial number (tbd)",
-                            "type": "string"
-                        },
-                        "enum": [
-                            "select an inspection type",
-                            "ACHECK",
-                            "BCHECK"
-                        ],
-                        "type": {
-                            "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name",
-                            "type": "string"
-                        }
-                    },
                     "type": "object"
                 }
             },
@@ -10575,11 +9468,11 @@ var schemas = `
                     "properties": {
                         "active": {
                             "items": {
-                                "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                 "enum": [
-                                    "NONE",
                                     "ACHECK",
-                                    "BCHECK"
+                                    "BCHECK",
+                                    "HARDLANDING"
                                 ],
                                 "type": "string"
                             },
@@ -10588,11 +9481,11 @@ var schemas = `
                         },
                         "cleared": {
                             "items": {
-                                "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                 "enum": [
-                                    "NONE",
                                     "ACHECK",
-                                    "BCHECK"
+                                    "BCHECK",
+                                    "HARDLANDING"
                                 ],
                                 "type": "string"
                             },
@@ -10601,11 +9494,11 @@ var schemas = `
                         },
                         "raised": {
                             "items": {
-                                "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance.",
+                                "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts.",
                                 "enum": [
-                                    "NONE",
                                     "ACHECK",
-                                    "BCHECK"
+                                    "BCHECK",
+                                    "HARDLANDING"
                                 ],
                                 "type": "string"
                             },
@@ -10748,8 +9641,12 @@ var schemas = `
                                                         "description": "AssetID of operator that flies this airplane",
                                                         "type": "string"
                                                     },
+                                                    "serialNumber": {
+                                                        "description": "Aircraft serial number (manufacturer assigned)",
+                                                        "type": "string"
+                                                    },
                                                     "tailNumber": {
-                                                        "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                                        "description": "Aircraft tail number (airline assigned)",
                                                         "type": "string"
                                                     },
                                                     "variant": {
@@ -10878,83 +9775,25 @@ var schemas = `
                                         "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
                                         "properties": {
                                             "analyticAdjustment": {
-                                                "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+                                                "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
                                                 "properties": {
+                                                    "action": {
+                                                        "enum": [
+                                                            "adjustLifeLimit"
+                                                        ],
+                                                        "type": "string"
+                                                    },
+                                                    "amount": {
+                                                        "type": "number"
+                                                    },
                                                     "assembly": {
                                                         "description": "Assembly serial number",
                                                         "type": "string"
                                                     },
-                                                    "increaselifelimit": {
-                                                        "description": "increase of life limit",
-                                                        "properties": {
-                                                            "reason": {
-                                                                "type": "string"
-                                                            },
-                                                            "reduction": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "reducelifelimit": {
-                                                        "description": "reduction of life limit",
-                                                        "properties": {
-                                                            "reason": {
-                                                                "type": "string"
-                                                            },
-                                                            "reduction": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            },
-                                            "common": {
-                                                "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                "properties": {
-                                                    "assetID": {
-                                                        "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                        "type": "string"
-                                                    },
-                                                    "extension": {
-                                                        "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                        "items": {
-                                                            "properties": {},
-                                                            "type": "object"
-                                                        },
-                                                        "minItems": 0,
-                                                        "type": "array"
-                                                    },
-                                                    "location": {
-                                                        "description": "A geographical coordinate",
-                                                        "properties": {
-                                                            "latitude": {
-                                                                "type": "number"
-                                                            },
-                                                            "longitude": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "references": {
-                                                        "description": "An array of external references relevant to this asset.",
-                                                        "items": {
-                                                            "type": "string"
-                                                        },
-                                                        "minItems": 0,
-                                                        "type": "array"
-                                                    },
-                                                    "timestamp": {
-                                                        "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                    "reason": {
                                                         "type": "string"
                                                     }
                                                 },
-                                                "required": [
-                                                    "assetID"
-                                                ],
                                                 "type": "object"
                                             }
                                         },
@@ -10966,10 +9805,6 @@ var schemas = `
                                             "assembly": {
                                                 "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                                                 "properties": {
-                                                    "aircraft": {
-                                                        "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                                        "type": "string"
-                                                    },
                                                     "arlsZone": {
                                                         "description": "tbd",
                                                         "type": "string"
@@ -11049,52 +9884,6 @@ var schemas = `
                                     "flight": {
                                         "description": "flight event, assetID defines airplane against which the event occurred",
                                         "properties": {
-                                            "common": {
-                                                "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
-                                                "properties": {
-                                                    "assetID": {
-                                                        "description": "The ID of a managed asset. The resource focal point for a smart contract.",
-                                                        "type": "string"
-                                                    },
-                                                    "extension": {
-                                                        "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                        "items": {
-                                                            "properties": {},
-                                                            "type": "object"
-                                                        },
-                                                        "minItems": 0,
-                                                        "type": "array"
-                                                    },
-                                                    "location": {
-                                                        "description": "A geographical coordinate",
-                                                        "properties": {
-                                                            "latitude": {
-                                                                "type": "number"
-                                                            },
-                                                            "longitude": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "references": {
-                                                        "description": "An array of external references relevant to this asset.",
-                                                        "items": {
-                                                            "type": "string"
-                                                        },
-                                                        "minItems": 0,
-                                                        "type": "array"
-                                                    },
-                                                    "timestamp": {
-                                                        "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "assetID"
-                                                ],
-                                                "type": "object"
-                                            },
                                             "flight": {
                                                 "description": "A takeoiff and a landing",
                                                 "properties": {
@@ -11117,6 +9906,10 @@ var schemas = `
                                                     "gForce": {
                                                         "description": "force incurred on landing",
                                                         "type": "number"
+                                                    },
+                                                    "hardlanding": {
+                                                        "description": "landing considered hard by pilot or analytics",
+                                                        "type": "boolean"
                                                     },
                                                     "landingType": {
                                                         "description": "code defining landing quality??",
@@ -11141,71 +9934,64 @@ var schemas = `
                                         "type": "object"
                                     },
                                     "inspection": {
-                                        "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+                                        "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
                                         "properties": {
-                                            "common": {
-                                                "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                            "inspection": {
+                                                "description": "indicates that an inspection has occured for this assembly",
                                                 "properties": {
-                                                    "assetID": {
-                                                        "description": "The ID of a managed asset. The resource focal point for a smart contract.",
+                                                    "action": {
+                                                        "description": "inspection that has been performed",
+                                                        "enum": [
+                                                            "ACHECK",
+                                                            "BCHECK",
+                                                            "HARDLANDING"
+                                                        ],
                                                         "type": "string"
                                                     },
-                                                    "extension": {
-                                                        "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                                        "items": {
-                                                            "properties": {},
-                                                            "type": "object"
-                                                        },
-                                                        "minItems": 0,
-                                                        "type": "array"
+                                                    "aircraft": {
+                                                        "description": "Aircraft serial number",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "maintenance": {
+                                        "description": "maintenance event",
+                                        "properties": {
+                                            "maintenance": {
+                                                "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+                                                "properties": {
+                                                    "action": {
+                                                        "enum": [
+                                                            "commission",
+                                                            "install",
+                                                            "uninstall",
+                                                            "startMaintenance",
+                                                            "endMaintenance",
+                                                            "scrap"
+                                                        ],
+                                                        "type": "string"
                                                     },
-                                                    "location": {
-                                                        "description": "A geographical coordinate",
-                                                        "properties": {
-                                                            "latitude": {
-                                                                "type": "number"
-                                                            },
-                                                            "longitude": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
+                                                    "aircraft": {
+                                                        "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled.",
+                                                        "type": "string"
                                                     },
-                                                    "references": {
-                                                        "description": "An array of external references relevant to this asset.",
-                                                        "items": {
-                                                            "type": "string"
-                                                        },
-                                                        "minItems": 0,
-                                                        "type": "array"
+                                                    "assembly": {
+                                                        "description": "This assembly's serial number",
+                                                        "type": "string"
                                                     },
-                                                    "timestamp": {
-                                                        "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                    "note": {
+                                                        "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event.",
                                                         "type": "string"
                                                     }
                                                 },
                                                 "required": [
-                                                    "assetID"
+                                                    "assembly",
+                                                    "action"
                                                 ],
-                                                "type": "object"
-                                            },
-                                            "inspection": {
-                                                "description": "indicates that an inspection has occured for this aircraft",
-                                                "properties": {
-                                                    "aircraft": {
-                                                        "description": "Aircraft tail or serial number (tbd)",
-                                                        "type": "string"
-                                                    },
-                                                    "enum": [
-                                                        "select an inspection type",
-                                                        "ACHECK",
-                                                        "BCHECK"
-                                                    ],
-                                                    "type": {
-                                                        "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name",
-                                                        "type": "string"
-                                                    }
-                                                },
                                                 "type": "object"
                                             }
                                         },
@@ -11254,8 +10040,12 @@ var schemas = `
                                 "description": "AssetID of operator that flies this airplane",
                                 "type": "string"
                             },
+                            "serialNumber": {
+                                "description": "Aircraft serial number (manufacturer assigned)",
+                                "type": "string"
+                            },
                             "tailNumber": {
-                                "description": "Designated asset ID. Aircraft tail number (airline assigned)",
+                                "description": "Aircraft tail number (airline assigned)",
                                 "type": "string"
                             },
                             "variant": {
@@ -11282,10 +10072,6 @@ var schemas = `
                     "assembly": {
                         "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
                         "properties": {
-                            "aircraft": {
-                                "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance.",
-                                "type": "string"
-                            },
                             "arlsZone": {
                                 "description": "tbd",
                                 "type": "string"
@@ -11323,6 +10109,49 @@ var schemas = `
                     "type": "string"
                 }
             },
+            "type": "object"
+        },
+        "stateFilter": {
+            "description": "A filter that can be used to restrict a read operation to a subset of objects that meet a criteria.",
+            "properties": {
+                "filter": {
+                    "properties": {
+                        "entries": {
+                            "description": "Array of qualified propery name and value pairs.",
+                            "items": {
+                                "properties": {
+                                    "qprop": {
+                                        "description": "A qualified property as dot separated levels terminated by a leaf node. An example would be 'common.assetID'.",
+                                        "type": "string"
+                                    },
+                                    "value": {
+                                        "description": "The value to be compared.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "type": "array"
+                        },
+                        "matchhow": {
+                            "enum": [
+                                "matchall",
+                                "matchany",
+                                "matchnone"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "entries",
+                        "matchhow"
+                    ],
+                    "type": "object"
+                }
+            },
+            "required": [
+                "filter"
+            ],
             "type": "object"
         }
     }

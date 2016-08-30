@@ -14,7 +14,6 @@ Contributors:
 Kim Letkeman - Initial Contribution
 */
 
-
 // ************************************
 // Rules for Contract
 // KL 16 Feb 2016 Initial rules package for contract v2.8
@@ -25,160 +24,207 @@ Kim Letkeman - Initial Contribution
 //                documenting the rules engine for 3.0.5
 // KL 28 Jun 2016 Remove OVERTEMP and add ACHECK and BCHECK rules for simple
 //                aviation contract v4.2sa
+// KL 29 Aug 2016 Add HARDLANDING rule for aviation v4.4
 // ************************************
 
 package main
 
 import (
-    // "errors"
+	//"errors"
+	"fmt"
+	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
-func (a *ArgsMap) executeRules(eventName string, alerts *AlertStatus) (bool, error) {
-    log.Debugf("Executing rules input: %+v", *alerts)
-    // transform external to internal for easy alert status processing
-    var internal = (*alerts).asAlertStatusInternal()
+func (state *ArgsMap) executeRules(stub *shim.ChaincodeStub, eventName string, alerts *AlertStatus, event ArgsMap) (bool, error) {
+	log.Debugf("Executing rules input: %+v", *alerts)
+	// transform external to internal for easy alert status processing
+	var internal = (*alerts).asAlertStatusInternal()
 
-    internal.clearRaisedAndClearedStatus()
+	internal.clearRaisedAndClearedStatus()
 
-    // ------ alert rules
-    // rule 1 -- inspections to clear alerts acheck, bcheck
-    err := internal.inspectionsRule(a)
-    if err != nil {return true, err}
-    // rule 2 -- cycle counts acheck
-    err = internal.cyclecountsRule(a)
-    if err != nil {return true, err}
-    // rule 3 -- hard landings bcheck
-    err = internal.hardlandingsRule(a)
-    if err != nil {return true, err}
+	dynamicConfig, err := getDynamicConfigFromLedger(stub)
+	if err != nil {
+		return true, err
+	}
 
-    // transform for external consumption
-    *alerts = internal.asAlertStatus()
-    log.Debugf("Executing rules output: %+v", *alerts)
+	// ------ validation and state machine rules
 
-    // set compliance true means out of compliance
-    compliant, err := internal.calculateContractCompliance(a) 
-    if err != nil {return true, err} 
-    // returns true if anything at all is active (i.e. NOT compliant)
-    return !compliant, nil
+	// ------ alert rules
+	// rule 1 -- inspections to clear alerts acheck, bcheck, hardlanding
+	err = state.inspectionsRule(dynamicConfig, &internal, event)
+	if err != nil {
+		return true, err
+	}
+	// rule 2 -- short cycle count acheck
+	err = state.acheckRule(dynamicConfig, &internal, event)
+	if err != nil {
+		return true, err
+	}
+	// rule 3 -- long cycle count bcheck
+	err = state.bcheckRule(dynamicConfig, &internal, event)
+	if err != nil {
+		return true, err
+	}
+	// rule 4 -- hard landings check
+	err = state.hardlandingRule(dynamicConfig, &internal, event)
+	if err != nil {
+		return true, err
+	}
+
+	// transform for external consumption
+	*alerts = internal.asAlertStatus()
+	log.Debugf("Executing rules output: %+v", *alerts)
+
+	// set compliance true means out of compliance
+	compliant, err := state.calculateContractCompliance(&internal, event)
+	if err != nil {
+		return true, err
+	}
+	// returns true if anything at all is active (i.e. NOT compliant)
+	// TODO improve on this
+	return !compliant, nil
 }
+
+//****************************************
+//**        VALIDATION RULES            **
+//****************************************
 
 //***********************************
 //**        ALERT RULES            **
 //***********************************
 
-// There are two inspection types handled by this rule: 
-// ACHECK -- clears the ACHECK (10 cycle counts) alert
-// BCHECK -- clears the BCHECK (2 consecutive hard landings)
-// NOTE: This rule is the only place in which an active ACHECK or BCHECK 
-//       alert can be cleared.
-func (alerts *AlertStatusInternal) inspectionsRule (a *ArgsMap) error {
-    const temperatureThreshold  float64 = 0 // (inclusive good value)
-
-    apbytes, found := getObject(*a, "aircraft")
-    if found {
-        ap, found := apbytes.(map[string]interface{})
-        if found {
-            // first we deal with inspections to clear existing alerts
-            insp, found := getObjectAsString(*a, "lastEvent.arg.inspection")
-            if found {
-                if insp == "ACHECK" {
-                    // 1) ACHECK was performed, reset the cycle counter
-                    ap["cyclecounter"] = 0
-                    alerts.clearAlert(AlertsACHECK)
-                } else if insp == "BCHECK" {
-                    // 2) BCHECK was performed, reset the hard landing bit
-                    ap["hardlanding"] = false
-                    alerts.clearAlert(AlertsBCHECK)
-                }
-            }
-        }
-    }
-    return nil
+// Inspection actions are processed here:
+// ACHECK -- clears the ACHECK (short cycle count) alert
+// BCHECK -- clears the BCHECK (long cycle count) alert, also clears ACHECK
+// HARDLANDING -- clears the hardlanding inspection alert
+func (state *ArgsMap) inspectionsRule(config DynamicContractConfig, alerts *AlertStatusInternal, event ArgsMap) error {
+	if _, found := getObject(event, "inspection"); !found {
+		// this is an inspections rule, and this is not an inspection event
+		return nil
+	}
+	if _, found := getObject(*state, "assembly"); !found {
+		// inspections are on assemblies only
+		return nil
+	}
+	insp, found := getObjectAsString(event, "inspection.action")
+	if found {
+		if insp == "ACHECK" {
+			// clears acheck and resets
+			_, ok := putObject(*state, "aCheckCounter", 0)
+			if !ok {
+				return fmt.Errorf("inspection rule: cannot put 0 to aCheckCounter for state %+v", state)
+			}
+			_, ok = putObject(*state, "aCheckCounterAdjusted", 0)
+			if !ok {
+				return fmt.Errorf("inspection rule: cannot put 0 to aCheckCounterAdjusted for state %+v", state)
+			}
+			alerts.clearAlert(AlertsACHECK)
+		} else if insp == "BCHECK" {
+			// clears acheck and bcheck and resets both
+			_, ok := putObject(*state, "bCheckCounter", 0)
+			if !ok {
+				return fmt.Errorf("inspection rule: cannot put 0 to bCheckCounter for state %+v", state)
+			}
+			_, ok = putObject(*state, "bCheckCounterAdjusted", 0)
+			if !ok {
+				return fmt.Errorf("inspection rule: cannot put 0 to bCheckCounterAdjusted for state %+v", state)
+			}
+			alerts.clearAlert(AlertsBCHECK)
+			_, ok = putObject(*state, "aCheckCounter", 0)
+			if !ok {
+				return fmt.Errorf("inspection rule: cannot put 0 to aCheckCounter for state %+v", state)
+			}
+			_, ok = putObject(*state, "aCheckCounterAdjusted", 0)
+			if !ok {
+				return fmt.Errorf("inspection rule: cannot put 0 to aCheckCounterAdjusted for state %+v", state)
+			}
+			alerts.clearAlert(AlertsACHECK)
+		} else if insp == "HARDLANDING" {
+			// clears hardlanding, nothing to reset
+			alerts.clearAlert(AlertsHARDLANDING)
+		}
+	}
+	return nil
 }
 
-// There is one alert handled by this rule: 
-// ACHECK -- if the state's cyclecounter has reached the threshold (10 cycle counts
-//           by default), the ACHECK alert is raised.
-// NOTE: This rule cannot clear an active ACHECK for any reason. Only an ACHECK
-//       inspection can do that.
-func (alerts *AlertStatusInternal) cyclecountsRule (a *ArgsMap) error {
-    const acheckThreshold  float64 = 5 // alert raised on 5th cycle for testing
+// ACHECK alert handled by this rule.
+func (state *ArgsMap) acheckRule(config DynamicContractConfig, alerts *AlertStatusInternal, event ArgsMap) error {
+	//log.Debugf("\n\n**** ACHECKRULE\n\nEVENT: %T || %+v\n\nSTATE: %T || %+v", event, event, state, state)
 
-    apbytes, found := getObject(*a, "aircraft")
-    if found {
-        ap, found := apbytes.(map[string]interface{})
-        if found {
-            tbytes, found := getObject(*a, "lastEvent.arg.flight")
-            if found {
-                _, found := tbytes.(map[string]interface{})
-                if found {
-                    // this is a flight event
-                    ccount, found := getObjectAsNumber(ap, "cyclecounter")
-                    if found {
-                        ccount++
-                    } else {
-                        ccount = 1
-                    }
-                    if ccount >= acheckThreshold {
-                        alerts.raiseAlert(AlertsACHECK)
-                    }
-                    // store it back
-                    ap["cyclecounter"] = ccount 
-                }
-            }
-        }
-    }
-    return nil
+	_, flightFound := getObject(event, "flight")
+	_, analyticAdjustmentFound := getObject(event, "analyticAdjustment")
+
+	if !flightFound && !analyticAdjustmentFound {
+		// neither flight nor analyticAdjustment event
+		return nil
+	}
+
+	if _, found := getObject(*state, "assembly"); !found {
+		// acheck on assemblies only
+		return nil
+	}
+
+	// use the adjusted counter for threshold check
+	accadjusted, accadjustedfound := getObjectAsNumber(*state, "aCheckCounterAdjusted")
+	if accadjustedfound && accadjusted >= config.ACheckThreshold {
+		alerts.raiseAlert(AlertsACHECK)
+	}
+
+	return nil
 }
 
-// There is one alert handled by this rule: 
-// BCHECK -- if the state's hardlanding when another hardlanding is received
-//           (two in a row), the BCHECK alert is raised.
-// NOTE: This rule cannot clear an active BCHECK for any reason. Only a BCHECK
-//       inspection can do that.
-func (alerts *AlertStatusInternal) hardlandingsRule (a *ArgsMap) error {
-    apbytes, found := getObject(*a, "aircraft")
-    if found {
-        ap, found := apbytes.(map[string]interface{})
-        if found {
-            fbytes, found := getObject(*a, "lastEvent.arg.flight")
-            if found {
-                f, found := fbytes.(map[string]interface{})
-                if found {
-                    // this is a flight event
-                    hlevent, found := getObjectAsBoolean(f, "hardlanding")
-                    if found {
-                        // hardlanding boolean present in incoming event
-                        if hlevent {
-                            // hard landing boolean is true
-                            hlstate, found := getObjectAsBoolean(ap, "hardlanding")
-                            if found && hlstate {
-                                // have a previous hard landing in the airplane state
-                                alerts.raiseAlert(AlertsBCHECK)
-                            }
-                        } 
-                    } else {
-                        // hard landing not present in event
-                        hlevent = false
-                    } 
-                    // propagate event value to state
-                    ap["hardlanding"] = hlevent
-                }
-            }
-        }
-    }
-    return nil
+// BCHECK alert handled by this rule.
+func (state *ArgsMap) bcheckRule(config DynamicContractConfig, alerts *AlertStatusInternal, event ArgsMap) error {
+
+	_, flightFound := getObject(event, "flight")
+	_, analyticAdjustmentFound := getObject(event, "analyticAdjustment")
+
+	if !flightFound && !analyticAdjustmentFound {
+		// neither flight nor analyticAdjustment event
+		return nil
+	}
+
+	if _, found := getObject(*state, "assembly"); !found {
+		// acheck on assemblies only
+		return nil
+	}
+
+	// use the adjusted counter for threshold check
+	bccadjusted, bccadjustedfound := getObjectAsNumber(*state, "bCheckCounterAdjusted")
+	if bccadjustedfound && bccadjusted >= config.BCheckThreshold {
+		alerts.raiseAlert(AlertsBCHECK)
+	}
+
+	return nil
+}
+
+// HARDLANDING alert handled by this rule:
+func (state *ArgsMap) hardlandingRule(config DynamicContractConfig, alerts *AlertStatusInternal, event ArgsMap) error {
+	// alert raised on 2nd consecutive hard landing for testing
+
+	if _, found := getObject(*state, "assembly"); !found {
+		// hard landing alerts on assemblies only
+		return nil
+	}
+
+	hlevent, hlfound := getObjectAsBoolean(event, "flight.hardlanding")
+	if hlfound && hlevent {
+		// it was definitely a hard landing
+		alerts.raiseAlert(AlertsHARDLANDING)
+	}
+
+	return nil
 }
 
 //***********************************
 //**         COMPLIANCE            **
 //***********************************
 
-func (alerts *AlertStatusInternal) calculateContractCompliance (a *ArgsMap) (bool, error) {
-    // a simplistic calculation for this particular contract, but has access
-    // to the entire state object and can thus have at it
-    // compliant is no alerts active
-    return alerts.NoAlertsActive(), nil
-    // NOTE: There could still a "cleared" alert, so don't go
-    //       deleting the alerts from the ledger just on this status.
+func (state *ArgsMap) calculateContractCompliance(alerts *AlertStatusInternal, event ArgsMap) (bool, error) {
+	// a simplistic calculation for this particular contract, but has access
+	// to the entire state object and can thus have at it
+	// compliant is no alerts active
+	return alerts.NoAlertsActive(), nil
+	// NOTE: There could still a "cleared" alert, so don't go
+	//       deleting the alerts from the ledger just on this status.
 }

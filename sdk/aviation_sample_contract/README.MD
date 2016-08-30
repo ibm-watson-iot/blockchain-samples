@@ -11,17 +11,29 @@ The aviation scenario is as follows:
     - Assembly -- landing gear, wing, etc. These are life limited parts.
 - The CRUD features for each asset are abstracted in the module [assetCommon.go](./assetCommon.go), which makes heavy use of abstracted services in [crudCommon.go](./crudCommon.go)  
 - each asset follows the *partial state as event* pattern, where the asset's writable properties make up its primary `event` to be passed to create and update
-- additional events exist to record, well, events in the environment
-    - flight events record a takeoff and landing sequence, which is known as a cycle
-    - inspection events record an inspection against an assembly
-    - analyticAdjustment events record calculated changes in life limits based on such analytics as weather patterns and runway conditions
-    - maintenance events record the mounting and unmounting of assemblies on the aircraft (with unmounted assemblies being attached to an inventory asset)
+- additional events exist for:
+    - flights that record a takeoff and landing sequence, which is known as a cycle
+    - inspections against an assembly
+    - analyticAdjustment events record calculated changes in wear and tear based on such analytics as weather patterns and runway conditions
+    - maintenance events record the mounting and unmounting of assemblies with a full state machine
 
 - rules exist to track cycles and hard landings
-    - ACHECK rule follows cycles against assemblies and when an assembly crosses the threshold, it raises the ACHECK inspection alert
-    - BCHECK rule follows consecutive hard landings and when an assembly crosses the threshold for consecutive hard landings, it raises the BCHECK alert
+    - ACHECK rule compares adjusted (by analytics) cycle counters to a dynamically configurable threshold, raising an alert as necessary, typically short time
+    - BCHECK rule compares adjusted (by analytics) cycle counters to a dynamically configurable threshold, raising an alert as necessary, typically long time
+    - HARDLANDING rule raises an alert when a hard landing is known to have occured
     
-- inspection events clear alerts via rules
+- inspection events clear these alerts, note that bcheck clears both acheck and bcheck alerts
 
-> Note that the usual common properties such as geolocation, extension, etc. are available in the `common` subsection of event and state.
+> Note that the usual common properties such as geolocation, extension, etc. are available in the `common` subsection of asset event and state.
 
+Physical changes from the Generic IoT Contract include:
+
+- Three assets tracked with full CRUD APIs: airline, aircraft, assembly
+- Four event types handled with event APIs: flight, maintenance, inspection, analyticAdjustment
+- 2-way inverted index maintains 1 to many relationship from aircraft to assemblies
+- filters allow sophisticated queries and offer lightweight relationships between asset classes
+    - a filter is a match type (all, any, none) and an array of k:v pairs with qualified property names and values
+- contractConfig module supports static and dynamic configuration of contract
+- new common layer for quick addition of a new asset class
+- new common layer to support crud operations
+- rules for acheck and bcheck (short and long term inspection cycles) and hard landing alerts 

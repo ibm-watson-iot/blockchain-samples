@@ -398,6 +398,29 @@
                         }
                     }
                 },
+                "eventMaintenance": {
+                    "type": "object",
+                    "description": "Post a maintenance event to the contract. One argument, a JSON encoded event. The 'assetID' property is the target for the event, which is an assembly in the case of the maintenance event.",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "eventMaintenance"
+                            ],
+                            "description": "eventMaintenance function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/maintenanceEvent"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        }
+                    }
+                },
                 "createAssetAirline": {
                     "type": "object",
                     "description": "Create an airline asset. One argument, a JSON encoded event. The 'assetID' property is required with zero or more writable properties. Establishes an initial asset state.",
@@ -829,10 +852,12 @@
                         },
                         "args": {
                             "type": "array",
-                            "items": {},
+                            "items": {
+                                "$ref": "#/definitions/stateFilter"
+                            },
                             "minItems": 0,
-                            "maxItems": 0,
-                            "description": "accepts no arguments"
+                            "maxItems": 1,
+                            "description": "accepts one optional argument, a filter"
                         },
                         "result": {
                             "$ref": "#/definitions/stateArray"
@@ -853,10 +878,12 @@
                         },
                         "args": {
                             "type": "array",
-                            "items": {},
+                            "items": {
+                                "$ref": "#/definitions/stateFilter"
+                            },
                             "minItems": 0,
-                            "maxItems": 0,
-                            "description": "accepts no arguments"
+                            "maxItems": 1,
+                            "description": "accepts one optional argument, a filter"
                         },
                         "result": {
                             "$ref": "#/definitions/stateArray"
@@ -877,10 +904,12 @@
                         },
                         "args": {
                             "type": "array",
-                            "items": {},
+                            "items": {
+                                "$ref": "#/definitions/stateFilter"
+                            },
                             "minItems": 0,
-                            "maxItems": 0,
-                            "description": "accepts no arguments"
+                            "maxItems": 1,
+                            "description": "accepts one optional argument, a filter"
                         },
                         "result": {
                             "$ref": "#/definitions/stateArray"
@@ -1063,6 +1092,52 @@
                         }
                     }
                 },
+                "readContractConfig": {
+                    "type": "object",
+                    "description": "Returns the contract's dynamic configuration -- those thresholds and values that can be set by external applications.",
+                    "properties": {
+                        "method": "query",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readContractConfig"
+                            ],
+                            "description": "readContractConfig function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        },
+                        "result": {
+                            "$ref": "#/definitions/contractConfig"
+                        }
+                    }
+                },
+                "updateContractConfig": {
+                    "type": "object",
+                    "description": "Update the dynamic configuration for the contract. These can include thresholds and other values.",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "updateContractConfig"
+                            ],
+                            "description": "updateContractConfig function"
+                        },
+                        "args": {
+                            "type": "object",
+                            "properties": {
+                                "$ref": "#/definitions/contractConfig"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1
+                        }
+                    }
+                },
                 "setLoggingLevel": {
                     "type": "object",
                     "description": "Sets the logging level in the contract.",
@@ -1195,11 +1270,11 @@
         "alertName": {
             "type": "string",
             "enum": [
-                "NONE",
                 "ACHECK",
-                "BCHECK"
+                "BCHECK",
+                "HARDLANDING"
             ],
-            "description": "Alerts are triggered or cleared by rules that are run against incoming events. This contract considers any active alert to created a state of non-compliance."
+            "description": "These alerts signal a required inspection. Only the inspection event with an action of the same name can clear these alewrts."
         },
         "alertStatus": {
             "type": "object",
@@ -1253,6 +1328,49 @@
             },
             "required": [
                 "assetID"
+            ]
+        },
+        "stateFilter": {
+            "type": "object",
+            "description": "A filter that can be used to restrict a read operation to a subset of objects that meet a criteria.",
+            "properties": {
+                "filter": {
+                    "type": "object",
+                    "properties": {
+                        "matchhow": {
+                            "type": "string",
+                            "enum": [
+                                "matchall",
+                                "matchany",
+                                "matchnone"
+                            ]
+                        },
+                        "entries": {
+                            "type":"array",
+                            "description": "Array of qualified propery name and value pairs.",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "qprop": {
+                                        "type": "string",
+                                        "description": "A qualified property as dot separated levels terminated by a leaf node. An example would be 'common.assetID'."
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "description": "The value to be compared."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": [
+                        "entries",
+                        "matchhow"
+                    ]
+                }
+            },
+            "required": [
+                "filter"
             ]
         },
         "assetIDObj": {
@@ -1372,9 +1490,13 @@
                     "type": "string",
                     "description": "AssetID of operator that flies this airplane"
                 },
+                "serialNumber": {
+                    "type": "string",
+                    "description": "Aircraft serial number (manufacturer assigned)"
+                },
                 "tailNumber": {
                     "type": "string",
-                    "description": "Designated asset ID. Aircraft tail number (airline assigned)"
+                    "description": "Aircraft tail number (airline assigned)"
                 },
                 "model": {
                     "type": "string",
@@ -1434,6 +1556,10 @@
                 "cycles": {
                     "type": "number",
                     "description": "Total number of cycles for this aircraft"
+                },
+                "adjustedCycles": {
+                    "type": "integer",
+                    "description": "Cycles plus analytic adjustments for this aircraft."
                 }
             }
         },
@@ -1441,10 +1567,6 @@
             "type": "object",
             "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
             "properties": {
-                "aircraft": {
-                    "type": "string",
-                    "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance."
-                },
                 "assemblyNumber": {
                     "type": "string",
                     "description": "Assembly type identifier"
@@ -1493,21 +1615,46 @@
                 "assembly": {
                     "$ref": "#/definitions/assembly"
                 },
+                "maintenance": {
+                    "$ref": "#/definitions/maintenance"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "new",
+                        "aircraft",
+                        "inventory",
+                        "maintenance",
+                        "scrapped"
+                    ]
+                },
+                "aircraft": {
+                    "type": "string",
+                    "description": "The assetID of the aircraft on which this assembly is mounted. Blank if removed for maintenance."
+                },
                 "cycles": {
                     "type": "integer",
-                    "description": "Overall cycle count for this assembly."
+                    "description": "Lifetime cycle count for this assembly."
                 },
-                "lifeLimitAdjusted": {
+                "adjustedCycles": {
                     "type": "integer",
-                    "description": "Overall analytic life limit adjustments for this assembly."
+                    "description": "Cycles plus analytic adjustments for this assembly."
                 },
                 "aCheckCounter": {
                     "type": "number",
-                    "description": "The total cycles since last reset. Raise ACHECK alert at 10 cycles. Clear only with ACHECK inspection event, which resets counter to zero."
+                    "description": "The total cycles since last reset. Used as a baseline against which to compare adjusted cycles based on analytic inputs."
+                },
+                "aCheckCounterAdjusted": {
+                    "type": "number",
+                    "description": "ACheckCounter plus analytic adjustments. Can be larger or smaller than aCheckCounter. Used for rule calculations."
                 },
                 "bCheckCounter": {
                     "type": "number",
-                    "description": "Count consecutive hard landings. Two consecutive hard landings raises BCHECK alert. Only a BCHECK inspection can clear the alert."
+                    "description": "The total cycles since last reset. Used as a baseline against which to compare adjusted cycles based on analytic inputs."
+                },
+                "bCheckCounterAdjusted": {
+                    "type": "number",
+                    "description": "BCheckCounter plus analytic adjustments. Can be larger or smaller than aCheckCounter. Used for rule calculations."
                 }
             },
             "required": [
@@ -1589,6 +1736,10 @@
                     "type": "string",
                     "description": "code defining landing quality??"
                 },
+                "hardlanding": {
+                    "type": "boolean",
+                    "description": "landing considered hard by pilot or analytics"
+                },
                 "gForce": {
                     "type": "number",
                     "description": "force incurred on landing"
@@ -1599,9 +1750,6 @@
             "type": "object",
             "description": "flight event, assetID defines airplane against which the event occurred",
             "properties": {
-                "common": {
-                    "$ref": "#/definitions/iotCommon"
-                },
                 "flight": {
                     "$ref": "#/definitions/flight"
                 }
@@ -1609,30 +1757,27 @@
         },
         "inspection": {
             "type": "object",
-            "description": "indicates that an inspection has occured for this aircraft",
+            "description": "indicates that an inspection has occured for this assembly",
             "properties": {
                 "aircraft": {
                     "type": "string",
-                    "description": "Aircraft tail or serial number (tbd)"
+                    "description": "Aircraft serial number"
                 },
-                "type": {
+                "action": {
                     "type": "string",
-                    "description": "ACHECK or BCHECK inspection has been performed and will clear the alert of the same name"
-                },
-                "enum": [
-                    "select an inspection type",
-                    "ACHECK",
-                    "BCHECK"
-                ]
+                    "description": "inspection that has been performed",
+                    "enum": [
+                        "ACHECK",
+                        "BCHECK",
+                        "HARDLANDING"
+                    ]
+                }
             }
         },
         "inspectionEvent": {
             "type": "object",
-            "description": "inspection event, assetid defines the airplane against which the inspection occurred",
+            "description": "An inspection has been performed against a specific assembly. Will clear one or more alerts and reset their counters.",
             "properties": {
-                "common": {
-                    "$ref": "#/definitions/iotCommon"
-                },
                 "inspection": {
                     "$ref": "#/definitions/inspection"
                 }
@@ -1640,39 +1785,70 @@
         },
         "analyticAdjustment": {
             "type": "object",
-            "description": "an adjustment to the assembly's life limit based on analytical analysis; can be positive or negative with the former indicating that the part is granted additional life and the latter indicating that the part has its lime limit reduced by rough runway landings etc",
+            "description": "An adjustment based on analytical analysis to the assembly's cycle counters, which translates to changes to life limit *used*. Positive number indicates that the assembly has used more of its life, negative number indicates that the assembly has been granted a bit more life based on conditions such as weather, landing gForces, runway roughness and so on.",
             "properties": {
                 "assembly": {
                     "type": "string",
                     "description": "Assembly serial number"
                 },
-                "reducelifelimit": {
-                    "type": "object",
-                    "description": "reduction of life limit",
-                    "properties": {
-                        "reduction": { "type": "number"},
-                        "reason": { "type": "string" }
-                    }
+                "action": {
+                    "type": "string",
+                    "enum": [
+                        "adjustLifeLimit"
+                    ]
                 },
-                "increaselifelimit": {
-                    "type": "object",
-                    "description": "increase of life limit",
-                    "properties": {
-                        "reduction": { "type": "number"},
-                        "reason": { "type": "string" }
-                    }
-                }
+                "amount": { "type": "number"},
+                "reason": { "type": "string" }
             }
         },
         "analyticAdjustmentEvent": {
             "type": "object",
             "description": "analytic adjustment event, assetid defines the assembly receiving the adjustment",
             "properties": {
-                "common": {
-                    "$ref": "#/definitions/iotCommon"
-                },
                 "analyticAdjustment": {
                     "$ref": "#/definitions/analyticAdjustment"
+                }
+            }
+        },
+        "maintenance": {
+            "type": "object",
+            "description": "Maintenance consists of installation of an assembly onto an aircraft or uninstallation of same. When an assembly is not installed on an aircraft, it is said to be in inventory or in maintenance. Thus, there is a status on assemblies showing that.",
+            "properties": {
+                "assembly": {
+                    "type": "string",
+                    "description": "This assembly's serial number"
+                },
+                "action": {
+                    "type": "string",
+                    "enum": [
+                        "commission",
+                        "install",
+                        "uninstall",
+                        "startMaintenance",
+                        "endMaintenance",
+                        "scrap"
+                    ]
+                },
+                "aircraft": { 
+                    "type": "string",
+                    "description": "The serial number of the aircraft to / from which the assembly has been installed / uninstalled."
+                },
+                "note": {
+                    "type": "string",
+                    "description": "Maintenance note for this action. Overwritten whenever a new note property is inserted into the maintenance sub-event."
+                }
+            },
+            "required": [
+                "assembly",
+                "action"
+            ]
+        },
+        "maintenanceEvent": {
+            "type": "object",
+            "description": "maintenance event",
+            "properties": {
+                "maintenance": {
+                    "$ref": "#/definitions/maintenance"
                 }
             }
         },
@@ -1736,7 +1912,8 @@
                     "assembly": { "$ref": "#/definitions/assemblyEvent" },
                     "flight": { "$ref": "#/definitions/flightEvent" },
                     "inspection": { "$ref": "#/definitions/inspectionEvent" },
-                    "analyticAdjustment": { "$ref": "#/definitions/analyticAdjustmentEvent" }
+                    "analyticAdjustment": { "$ref": "#/definitions/analyticAdjustmentEvent" },
+                    "maintenance": { "$ref": "#/definitions/maintenanceEvent" }
                 }
             }
         },
@@ -1806,6 +1983,19 @@
                 },
                 "nickname": {
                     "$ref": "#/definitions/nickname"
+                }
+            }
+        },
+        "contractConfig": {
+            "type": "object",
+            "properties": {
+                "aCheckThreshold": {
+                    "type": "number",
+                    "description": "Cycles threshold for the aCheck inspection alert."
+                },
+                "bCheckThreshold": {
+                    "type": "number",
+                    "description": "Cycles threshold for the bCheck inspection alert."
                 }
             }
         }

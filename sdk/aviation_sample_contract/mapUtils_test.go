@@ -14,7 +14,6 @@ Contributors:
 Kim Letkeman - Initial Contribution
 */
 
-
 // ************************************
 // KL 27 Mar 2016 add testing for mapUtils as strict RPC is coming in
 // ************************************
@@ -22,14 +21,15 @@ Kim Letkeman - Initial Contribution
 package main
 
 import (
-    "fmt"
-    "testing"
-    "strings"
 	"encoding/json"
-    "reflect"
+	"fmt"
+	"reflect"
+	"strings"
+	"testing"
+	"time"
 )
 
-var samplesStartLine int = 36
+var samplesStartLine = 36
 
 var testsamples = `
 {
@@ -74,7 +74,7 @@ var testparm1 = `
 {
     "assetID": "ASSET001",
     "carrier": "UPS",
-    "temperature": 2.0,
+    "temperature": 2.2,
     "integer": 2,
     "bool": true
 }`
@@ -82,161 +82,220 @@ var testparm1 = `
 func printUnmarshalError(js string, err interface{}) {
 	syntax, ok := err.(*json.SyntaxError)
 	if !ok {
-        fmt.Println("*********** ERR trying to get syntax error location **************\n", err)
+		fmt.Println("*********** ERR trying to get syntax error location **************\n", err)
 		return
 	}
-	
+
 	start, end := strings.LastIndex(js[:syntax.Offset], "\n")+1, len(js)
 	if idx := strings.Index(js[start:], "\n"); idx >= 0 {
 		end = start + idx
 	}
-	
-	line, pos := strings.Count(js[:start], "\n"), int(syntax.Offset) - start -1
+
+	line, pos := strings.Count(js[:start], "\n"), int(syntax.Offset)-start-1
 	// note, the offset here is the line number in this file
-    // of the test samples json string definition (it happens to work out)
-	fmt.Printf("Error in line %d: %s \n", line + samplesStartLine, err)
+	// of the test samples json string definition (it happens to work out)
+	fmt.Printf("Error in line %d: %s \n", line+samplesStartLine, err)
 	fmt.Printf("%s\n%s^\n\n", js[start:end], strings.Repeat(" ", pos))
 }
 
-func getTestObjects (t *testing.T) (map[string]interface{}) {
-    var o interface{}
-    err := json.Unmarshal([]byte(testsamples), &o)
-    if err != nil { 
-        printUnmarshalError(testsamples, err)
-        t.Fatalf("unmarshal test samples failed: %s", err)
-    } else {
-        omap, found := o.(map[string]interface{})
-        if found { 
-            return omap
-        }
-        t.Fatalf("test samples not map shape, is: %s", reflect.TypeOf(o))
-    }
-    return make(map[string]interface{})
+func getTestObjects(t *testing.T) map[string]interface{} {
+	var o interface{}
+	err := json.Unmarshal([]byte(testsamples), &o)
+	if err != nil {
+		printUnmarshalError(testsamples, err)
+		t.Fatalf("unmarshal test samples failed: %s", err)
+	} else {
+		omap, found := o.(map[string]interface{})
+		if found {
+			return omap
+		}
+		t.Fatalf("test samples not map shape, is: %s", reflect.TypeOf(o))
+	}
+	return make(map[string]interface{})
 }
 
-func getTestParms (t *testing.T) (interface{}) {
-    var o interface{}
-    err := json.Unmarshal([]byte(testparm1), &o)
-    if err != nil { 
-        printUnmarshalError(testsamples, err)
-        t.Fatalf("unmarshal test samples failed: %s", err)
-    }
-    return o
+func getTestParms(t *testing.T) interface{} {
+	var o interface{}
+	err := json.Unmarshal([]byte(testparm1), &o)
+	if err != nil {
+		printUnmarshalError(testsamples, err)
+		t.Fatalf("unmarshal test samples failed: %s", err)
+	}
+	return o
 }
 
 func TestContains(t *testing.T) {
-    t.Log("Enter TestContains")
-    o := getTestObjects(t)
-    ev1, found := getObject(o, "event1.extension.arr")
-    if !found {
-        t.Fatal("event1.extension.arr not found")
-    }
-    if !contains(ev1, "s2") {
-        t.Fatal("event1.extension.arr should contain s2")
-    }
-    if contains(ev1, "s6") {
-        t.Fatal("event1.extension.arr should not contain s6")
-    }
-    ev2, found := getObject(o, "event2.extension.arrint")
-    if !found {
-        t.Fatal("event2.extension.arrint not found")
-    }
-    // for the next 2, remember that JSON unmarshals numbers as float64
-    if !contains(ev2, float64(2)) {
-        t.Fatal("event2.extension.arr should contain 2")
-    }
-    if contains(ev2, float64(3)) {
-        t.Fatal("event2.extension.arr should not contain 3")
-    }
-    ev3, found := getObject(o, "event3.extension.arr")
-    if !found {
-        t.Fatal("event3.extension.arr not found")
-    }
-    if contains(ev3, "s2") {
-        t.Fatal("event2.extension.arr should not contain s2")
-    }
+	t.Log("Enter TestContains")
+	o := getTestObjects(t)
+	ev1, found := getObject(o, "event1.extension.arr")
+	if !found {
+		t.Fatal("event1.extension.arr not found")
+	}
+	if !contains(ev1, "s2") {
+		t.Fatal("event1.extension.arr should contain s2")
+	}
+	if contains(ev1, "s6") {
+		t.Fatal("event1.extension.arr should not contain s6")
+	}
+	ev2, found := getObject(o, "event2.extension.arrint")
+	if !found {
+		t.Fatal("event2.extension.arrint not found")
+	}
+	// for the next 2, remember that JSON unmarshals numbers as float64
+	if !contains(ev2, float64(2)) {
+		t.Fatal("event2.extension.arr should contain 2")
+	}
+	if contains(ev2, float64(3)) {
+		t.Fatal("event2.extension.arr should not contain 3")
+	}
+	ev3, found := getObject(o, "event3.extension.arr")
+	if !found {
+		t.Fatal("event3.extension.arr not found")
+	}
+	if contains(ev3, "s2") {
+		t.Fatal("event2.extension.arr should not contain s2")
+	}
 }
 
-func TestDeepMerge(t *testing.T)  {
-    t.Log("Enter TestDeepMerge")
-    o := getTestObjects(t)
-    ev1, found := getObject(o, "event1")
-    if !found {
-        t.Fatal("event1 not found")
-    }
-    ev2, found := getObject(o, "event2")
-    if !found {
-        t.Fatal("event2 not found")
-    }
-    ev3, found := getObject(o, "event3")
-    if !found {
-        t.Fatal("event3 not found")
-    }
-    state1 := ev1
-    //fmt.Printf("*** State1: %s\n", prettyPrint(state1))
-    _, found = getObject(state1, "location.latitude") 
-    if  found {
-        t.Fatal("state1.location should not contain latitude")
-    }
-    _, found = getObject(state1, "location.longitude")    
-    if found {
-        t.Fatal("state1.location should not contain longitude")
-    }
-    state2 := deepMerge(ev2, state1)
-    //fmt.Printf("*** State2: %s\n", prettyPrint(state2))
-    _, found = getObject(state1, "location.latitude") 
-    if !found {
-        t.Fatal("state2.location should contain latitude")
-    }
-    _, found = getObject(state1, "location.longitude")    
-    if found {
-        t.Fatal("state2.location should not contain longitude")
-    }
-    state3 := deepMerge(ev3, state2)
-    //fmt.Printf("*** State3: %s\n", prettyPrint(state3))
-    _, found = getObject(state3, "location.latitude") 
-    if !found {
-        t.Fatal("state2.location should contain latitude")
-    }
-    _, found = getObject(state3, "location.longitude")    
-    if !found {
-        t.Fatal("state3.location should contain longitude")
-    }
+func TestDeepMerge(t *testing.T) {
+	t.Log("Enter TestDeepMerge")
+	o := getTestObjects(t)
+	ev1, found := getObject(o, "event1")
+	if !found {
+		t.Fatal("event1 not found")
+	}
+	ev2, found := getObject(o, "event2")
+	if !found {
+		t.Fatal("event2 not found")
+	}
+	ev3, found := getObject(o, "event3")
+	if !found {
+		t.Fatal("event3 not found")
+	}
+	state1 := ev1
+	//fmt.Printf("*** State1: %s\n", prettyPrint(state1))
+	_, found = getObject(state1, "location.latitude")
+	if found {
+		t.Fatal("state1.location should not contain latitude")
+	}
+	_, found = getObject(state1, "location.longitude")
+	if found {
+		t.Fatal("state1.location should not contain longitude")
+	}
+	state2 := deepMerge(ev2, state1)
+	//fmt.Printf("*** State2: %s\n", prettyPrint(state2))
+	_, found = getObject(state1, "location.latitude")
+	if !found {
+		t.Fatal("state2.location should contain latitude")
+	}
+	_, found = getObject(state1, "location.longitude")
+	if found {
+		t.Fatal("state2.location should not contain longitude")
+	}
+	state3 := deepMerge(ev3, state2)
+	//fmt.Printf("*** State3: %s\n", prettyPrint(state3))
+	_, found = getObject(state3, "location.latitude")
+	if !found {
+		t.Fatal("state2.location should contain latitude")
+	}
+	_, found = getObject(state3, "location.longitude")
+	if !found {
+		t.Fatal("state3.location should contain longitude")
+	}
 }
 
-func TestParms(t *testing.T)  {
-    fmt.Println("Enter TestContains")
-    o := getTestParms(t)
-    aid1, found := getObject(o, "assetID")
-    if !found {
-        t.Fatal("assetID not found")
-    }
-    fmt.Println("AssetID: ", aid1, " TypeOF parms: ", reflect.TypeOf(o))
+func TestParms(t *testing.T) {
+	fmt.Println("Enter TestContains")
+	o := getTestParms(t)
+	aid1, found := getObject(o, "assetID")
+	if !found {
+		t.Fatal("assetID not found")
+	}
+	fmt.Println("AssetID: ", aid1, " TypeOF parms: ", reflect.TypeOf(o))
 }
 
-func TestArgsMap(t *testing.T)  {
-    fmt.Println("Enter TestArgsMap")
-    o := getTestParms(t)
-    var a ArgsMap = o.(map[string]interface{}) 
-    aid1, found := getObject(a, "assetID")
-    if !found {
-        t.Fatal("assetID not found")
-    }
-    fmt.Println("AssetID: ", aid1, " TypeOF parms: ", reflect.TypeOf(a))
+func TestArgsMap(t *testing.T) {
+	fmt.Println("Enter TestArgsMap")
+	o := getTestParms(t)
+	var a ArgsMap = o.(map[string]interface{})
+	aid1, found := getObject(a, "assetID")
+	if !found {
+		t.Fatal("assetID not found")
+	}
+	fmt.Println("AssetID: ", aid1, " TypeOF parms: ", reflect.TypeOf(a))
 }
 
-func TestGetByType(t *testing.T)  {
-    fmt.Println("Enter TestByType")
-    o := getTestParms(t)
-    s, found := getObjectAsString(a, "assetID")
-    if !found {
-        t.Fatal("assetID not a string")
-    }
-    fmt.Println("AssetID: ", s, " TypeOF s: ", reflect.TypeOf(s))
+func TestGetByType(t *testing.T) {
+	fmt.Println("Enter TestByType")
+	o := getTestParms(t)
+	s, found := getObjectAsString(o, "assetID")
+	if !found {
+		t.Fatal("assetID not a string")
+	}
+	fmt.Println("AssetID: ", s, " TypeOF s: ", reflect.TypeOf(s))
 
-    s, found := getObjectAsFloat64(a, "temperature")
-    if !found {
-        t.Fatal("temperature not a string")
-    }
-    fmt.Println("Temperature: ", s, " TypeOF s: ", reflect.TypeOf(s))
+	n, found := getObjectAsNumber(o, "temperature")
+	if !found {
+		t.Fatal("temperature not a number")
+	}
+	fmt.Println("Temperature: ", n, " TypeOF n: ", reflect.TypeOf(n))
+
+	i, found := getObjectAsInteger(o, "temperature")
+	if !found {
+		t.Fatal("temperature not a integer")
+	}
+	fmt.Println("Temperature: ", i, " TypeOF i: ", reflect.TypeOf(i))
+
+	i, found = getObjectAsInteger(o, "integer")
+	if !found {
+		t.Fatal("integer not an integer")
+	}
+	fmt.Println("Integer: ", i, " TypeOF i: ", reflect.TypeOf(i))
+}
+
+func TestPutObject(t *testing.T) {
+	fmt.Println("Enter TestPutObject")
+	o := getTestParms(t)
+
+	fmt.Printf("Object before: %+v\n\n", o)
+
+	o, ok := putObject(o, "time", time.Now())
+	if !ok {
+		t.Fatal("could not put time")
+	}
+
+	o, ok = putObject(o, "anInt", 1)
+	if !ok {
+		t.Fatal("could not put anInt")
+	}
+
+	o, ok = putObject(o, "aFloat", 1.567)
+	if !ok {
+		t.Fatal("could not put aFloat")
+	}
+
+	i, found := getObjectAsInteger(o, "anInt")
+	if !found {
+		t.Fatal("anInt not an integer")
+	}
+	fmt.Println("anInt: ", i, " TypeOF i: ", reflect.TypeOf(i))
+
+	n, found := getObjectAsNumber(o, "aFloat")
+	if !found {
+		t.Fatal("aFloat not a float")
+	}
+	fmt.Println("aFloat: ", n, " TypeOF n: ", reflect.TypeOf(n))
+
+	o, ok = putObject(o, "maintenance.status", "inventory")
+	if !ok {
+		t.Fatal("could not put maintenance.status")
+	}
+
+	o, ok = putObject(o, "a.b.c.d.lastmaplevel.status", "installed")
+	if !ok {
+		t.Fatal("could not put a.b.c.d.lastmaplevel.status")
+	}
+
+	fmt.Printf("Object after: %+v\n\n", o)
+
 }

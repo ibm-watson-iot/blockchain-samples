@@ -19,89 +19,67 @@ Kim Letkeman - Initial Contribution
 package main
 
 import (
+	"errors"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
 func (t *SimpleChaincode) createAssetAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return createAsset(stub, args, "assembly", "createAssetAssembly")
+	state, err := createAsset(stub, args, "assembly", "createAssetAssembly")
+	if err != nil {
+		return nil, err
+	}
+	// an opportunity to augment the state
+	state, ok := putObject(state, "status", "new")
+	if !ok {
+		err = errors.New("createAssetAssembly failed to put object status into state")
+		log.Error(err)
+		return nil, err
+	}
+	assetID, ok := getObjectAsString(state, "common.assetID")
+	if !ok {
+		err = errors.New("createAssetAssembly failed to get assetID state")
+		log.Error(err)
+		return nil, err
+	}
+	assetID, err = assetIDToInternal("assembly", assetID)
+	if err != nil {
+		return nil, err
+	}
+	err = putMarshalledState(stub, "createAssetAssembly", "assembly", assetID, state)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
 
 func (t *SimpleChaincode) updateAssetAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return updateAsset(stub, args, "assembly", "updateAssetAssembly")
+	_, err := updateAsset(stub, args, "assembly", "updateAssetAssembly")
+	// an opportunity to augment the state
+	return nil, err
 }
 
 func (t *SimpleChaincode) deleteAssetAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return deleteAsset(stub, args, "assembly", "deleteAssetAssembly")
+	return deleteAsset(stub, args, "assembly", "deleteAssetAssembly")
 }
 
 func (t *SimpleChaincode) deleteAllAssetsAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return deleteAllAssets(stub, args, "assembly", "deleteAllAssetsAssembly")
+	return deleteAllAssets(stub, args, "assembly", "deleteAllAssetsAssembly")
 }
 
 func (t *SimpleChaincode) deletePropertiesFromAssetAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return deletePropertiesFromAsset(stub, args, "assembly", "deletePropertiesFromAssetAssembly")
+	_, err := deletePropertiesFromAsset(stub, args, "assembly", "deletePropertiesFromAssetAssembly")
+	// an opportunity to augment the state
+	return nil, err
 }
 
 func (t *SimpleChaincode) readAssetAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return readAsset(stub, args, "assembly", "readAssetAssembly")
+	return readAsset(stub, args, "assembly", "readAssetAssembly")
 }
 
 func (t *SimpleChaincode) readAllAssetsAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return readAllAssets(stub, args, "assembly", "readAllAssetsAssembly")
+	return readAllAssets(stub, args, "assembly", "readAllAssetsAssembly")
 }
 
-func (t *SimpleChaincode) readAssetAssemblyHistory (stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return readAssetHistory(stub, args, "assembly", "readAssetAssemblyHistory")
-}
-
-
-
-
-func handleAssemblyEvent(stub *shim.ChaincodeStub, eventName string, assetID string, argsMap ArgsMap, ledgerMap ArgsMap) ArgsMap {
-    switch eventName {
-        case "flight": 
-            // running count of cycles in perpetuity
-            cycles, found := getObjectAsInteger(ledgerMap, "aircraft.cycles")
-            if found {
-                cycles++
-            } else {
-                cycles = 1
-            }
-            putObject(ledgerMap, "aircraft.cycles", cycles)
-            // counter of cycles between aCheck inspections
-            cyclecounter, found := getObjectAsInteger(ledgerMap, "aircraft.aCheckCounter")
-            if found {
-                cyclecounter++
-            } else {
-                cyclecounter = 1
-            }
-            putObject(ledgerMap, "aircraft.aCheckCounter", cyclecounter)
-            // counter of consecutive hard landings for bCheck inspections
-            gForce, found := getObjectAsNumber(argsMap, "flight.gForce")
-            var bcheckcounter int
-            if found {
-                // TODO perhaps we should store the gForce threshold in the aircraft state
-                if gForce > 2 { // temporary threshold for now 
-                    bcheckcounter, found = getObjectAsInteger(ledgerMap, "aircraft.bCheckCounter")
-                    if found {
-                        bcheckcounter++
-                    } else {
-                        bcheckcounter = 1
-                    }
-                } else {
-                    // reset on soft landing
-                    bcheckcounter = 0
-                }
-            } else {
-                // reset on no info
-                bcheckcounter = 0
-            }
-            putObject(ledgerMap, "aircraft.bCheckCounter", bcheckcounter)
-            return ledgerMap
-        case "inspection":
-            // nothing special to do, the rules engine will clear the alerts
-        case "analyticAdjustment":
-            
-    }
-    return nil
+func (t *SimpleChaincode) readAssetAssemblyHistory(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	return readAssetHistory(stub, args, "assembly", "readAssetAssemblyHistory")
 }

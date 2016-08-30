@@ -7,12 +7,14 @@
       "eventFlight",
       "eventInspection",
       "eventAnalyticAdjustment",
+      "eventMaintenance",
       "createAssetAirline",
       "createAssetAircraft",
       "createAssetAssembly",
       "updateAssetAirline",
       "updateAssetAircraft",
       "updateAssetAssembly",
+      "updateContractConfig",
       "deleteAssetAirline",
       "deleteAssetAircraft",
       "deleteAssetAssembly",
@@ -32,6 +34,7 @@
       "readAssetAircraftHistory",
       "readAssetAssemblyHistory",
       "readRecentStates",
+      "readContractConfig",
       "setLoggingLevel",
       "setCreateOnUpdate"
     ],
@@ -48,6 +51,9 @@
       "flightEvent",
       "inspectionEvent",
       "analyticAdjustmentEvent",
+      "maintenanceEvent",
+      "stateFilter",
+      "contractConfig",
       "event",
       "state"
     ]
@@ -62,6 +68,8 @@
       "flightEvent",
       "inspectionEvent",
       "analyticAdjustmentEvent",
+      "maintenanceEvent",
+      "stateFilter",
       "state"
     ]
   }

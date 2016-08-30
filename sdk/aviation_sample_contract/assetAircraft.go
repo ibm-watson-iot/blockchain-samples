@@ -19,94 +19,43 @@ Kim Letkeman - Initial Contribution
 package main
 
 import (
-	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
 func (t *SimpleChaincode) createAssetAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return createAsset(stub, args, "aircraft", "createAssetAircraft")
+	_, err := createAsset(stub, args, "aircraft", "createAssetAircraft")
+	// an opportunity to augment the state
+	return nil, err
 }
 
 func (t *SimpleChaincode) updateAssetAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return updateAsset(stub, args, "aircraft", "updateAssetAircraft")
+	_, err := updateAsset(stub, args, "aircraft", "updateAssetAircraft")
+	// an opportunity to augment the state
+	return nil, err
 }
 
 func (t *SimpleChaincode) deleteAssetAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return deleteAsset(stub, args, "aircraft", "deleteAssetAircraft")
+	return deleteAsset(stub, args, "aircraft", "deleteAssetAircraft")
 }
 
 func (t *SimpleChaincode) deleteAllAssetsAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return deleteAllAssets(stub, args, "aircraft", "deleteAllAssetsAircraft")
+	return deleteAllAssets(stub, args, "aircraft", "deleteAllAssetsAircraft")
 }
 
 func (t *SimpleChaincode) deletePropertiesFromAssetAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return deletePropertiesFromAsset(stub, args, "aircraft", "deletePropertiesFromAssetAircraft")
+	_, err := deletePropertiesFromAsset(stub, args, "aircraft", "deletePropertiesFromAssetAircraft")
+	// an opportunity to augment the state
+	return nil, err
 }
 
 func (t *SimpleChaincode) readAssetAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return readAsset(stub, args, "aircraft", "readAssetAircraft")
+	return readAsset(stub, args, "aircraft", "readAssetAircraft")
 }
 
 func (t *SimpleChaincode) readAllAssetsAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return readAllAssets(stub, args, "aircraft", "readAllAssetsAircraft")
+	return readAllAssets(stub, args, "aircraft", "readAllAssetsAircraft")
 }
 
-func (t *SimpleChaincode) readAssetAircraftHistory (stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    return readAssetHistory(stub, args, "aircraft", "readAssetAircraftHistory")
+func (t *SimpleChaincode) readAssetAircraftHistory(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	return readAssetHistory(stub, args, "aircraft", "readAssetAircraftHistory")
 }
-
-
-
-
-
-func handleAircraftEvent(stub *shim.ChaincodeStub, assetName string, assetID string, argsMap ArgsMap, ledgerMap ArgsMap) ArgsMap {
-    switch assetName {
-        case "flight": 
-            // running count of cycles in perpetuity
-            cycles, found := getObjectAsInteger(ledgerMap, "aircraft.cycles")
-            if found {
-                cycles++
-            } else {
-                cycles = 1
-            }
-            putObject(ledgerMap, "aircraft.cycles", cycles)
-            propagateEventToAssemblies(stub, assetName, assetID, argsMap, ledgerMap)
-            return ledgerMap
-        default:
-            // NOTE: If your schema and contractConfig are correctly set up, this
-            // CANNOT happen.
-            err := fmt.Errorf("handleAircraftEvent: received incorrect event %s for asset %s", assetName, assetID)
-            log.Error(err)
-            return nil
-    }
-}
-
-func propagateEventToAssemblies(stub *shim.ChaincodeStub, assetName string, assetID string, argsMap ArgsMap, ledgerMap ArgsMap) (error) {
-    var me = "propagateEventToAssemblies"
-    assemBytes, found := getObject(ledgerMap, "aircraft.assemblies")
-    if found {
-        assemblies, found := assemBytes.([]string)
-        if found {
-            for assem := range assemblies {
-                // each of these is an *internal* prefixed assetID because the assembly
-                // state has the original assetID and so we can use physical database
-                // keys for connection
-                // NOTE: This is the moral equivalent of "updateAsset"
-                assembly := assemblies[assem]
-                state, err := getUnmarshalledState(stub, me, assembly)
-                if err != nil { return err }  // already logged
-                state = handleAssemblyEvent(stub, assetName, assembly, argsMap, state)
-                state, err = addTXNTimestampToState(stub, me, state)
-                if err != nil { return err }  // already logged
-                state = addLastEventToState(stub, me, argsMap, state, "")
-                state, err = handleAlertsAndRules(stub, me, assetName, assembly, argsMap, state)
-                if err != nil { return err }  // already logged
-                err = putMarshalledState(stub, me, assetName, assembly, state)
-                if err != nil { return err }  // already logged
-            }
-        }
-    }
-    return nil
-}
-
-
