@@ -86,11 +86,13 @@ func getObject(objIn interface{}, qname string) (interface{}, bool) {
 				//fmt.Printf("** tmp->searchObj AS MAP is %+v\n", searchObj)
 				if !found {
 					searchObj, found = tmp.(ArgsMap)
-					//fmt.Printf("** tmp->searchObj AS ARGSMAP is %+v\n", searchObj)
+					if !found {
+						log.Debugf("getObject not map or ArgsMap shape: %s", v)
+						//fmt.Printf("** tmp->searchObj AS ARGSMAP is %+v\n", searchObj)
+					}
 				}
-			}
-			if !found {
-				log.Warningf("getObject cannot find level or is not map shape: %s", v)
+			} else {
+				log.Debugf("getObject cannot find level: %s in %s", v, qname)
 				return nil, false
 			}
 		} else {
@@ -100,7 +102,7 @@ func getObject(objIn interface{}, qname string) (interface{}, bool) {
 				// handle assetID as part of iot common and as parameter on its own
 				// so we get false warnings on read functions, but do enable it if
 				// having problems with deep nested structures
-				//log.Debugf("getObject cannot find final level: %s", v)
+				log.Debugf("getObject cannot find final level: %s in %s", v, qname)
 				return nil, false
 			}
 			//fmt.Printf("**** Found level [%d] %s\n", i, v)
@@ -173,7 +175,6 @@ func getObjectAsString(objIn interface{}, qname string) (string, bool) {
 		}
 		log.Warningf("getObjectAsString object is not a string: %s", qname)
 	}
-	log.Infof("getObjectAsString object %s is not found", qname)
 	return "", false
 }
 
@@ -186,7 +187,6 @@ func getObjectAsBoolean(objIn interface{}, qname string) (bool, bool) {
 		}
 		log.Warningf("getObjectAsBoolean object is not a boolean: %s", qname)
 	}
-	log.Infof("getObjectAsBoolean object %s is not found", qname)
 	return false, false
 }
 
@@ -199,7 +199,6 @@ func getObjectAsNumber(objIn interface{}, qname string) (float64, bool) {
 		}
 		log.Warningf("getObjectAsNumber object is not a number (float64): %s", qname)
 	}
-	log.Infof("getObjectAsNumber object %s is not found", qname)
 	return 0, false
 }
 
@@ -218,7 +217,6 @@ func getObjectAsInteger(objIn interface{}, qname string) (int, bool) {
 		}
 		log.Warningf("getObjectAsInteger object is not an integer: %s", qname)
 	}
-	log.Infof("getObjectAsInteger object %s is not found", qname)
 	return 0, false
 }
 

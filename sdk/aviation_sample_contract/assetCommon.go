@@ -39,8 +39,8 @@ func createAsset(stub *shim.ChaincodeStub, args []string, assetName string, call
 		return nil, err
 	}
 	// We have a valid assetID in internal format, so verify whether it already exists.
-	_, err = assetIsActive(stub, assetID)
-	if err != nil {
+	assetBytes, err := assetIsActive(stub, assetID)
+	if err != nil || len(assetBytes) > 0 {
 		err = fmt.Errorf("%s: asset %s already exists", caller, assetID)
 		log.Error(err)
 		return nil, err

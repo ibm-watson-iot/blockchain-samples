@@ -178,8 +178,8 @@ func getUnmarshalledState(stub *shim.ChaincodeStub, caller string, assetID strin
 	var ledgerBytes interface{}
 
 	assetBytes, err := assetIsActive(stub, assetID)
-	if err != nil {
-		err = fmt.Errorf("%s: asset %s does not exist: %s", caller, assetID, err.Error())
+	if err != nil || assetBytes == nil || len(assetBytes) == 0 {
+		err = fmt.Errorf("%s: asset %s does not exist: %s", caller, assetID, err)
 		log.Error(err)
 		return nil, err
 	}
