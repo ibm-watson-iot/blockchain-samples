@@ -26,7 +26,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-30T05:37:33.653436628Z"
+            "timestamp": "2016-08-30T15:54:36.205283745Z"
         }
     },
     "airlineEvent": {
@@ -46,7 +46,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-30T05:37:33.653373341Z"
+            "timestamp": "2016-08-30T15:54:36.205230315Z"
         }
     },
     "analyticAdjustmentEvent": {
@@ -77,12 +77,13 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-30T05:37:33.65345448Z"
+            "timestamp": "2016-08-30T15:54:36.205301374Z"
         }
     },
     "flightEvent": {
         "flight": {
             "aircraft": "Aircraft tail or serial number (tbd)",
+            "analyticHardlanding": true,
             "atd": "actual time departure",
             "flightnumber": "A flight number",
             "from": "3 letter code of originating airport",
@@ -143,7 +144,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-30T05:37:33.65352005Z"
+            "timestamp": "2016-08-30T15:54:36.205350787Z"
         },
         "lastEvent": {
             "arg": {
@@ -159,7 +160,7 @@ var samples = `
                     "references": [
                         "carpe noctem"
                     ],
-                    "timestamp": "2016-08-30T05:37:33.653492239Z"
+                    "timestamp": "2016-08-30T15:54:36.205342897Z"
                 },
                 "oneOf": {
                     "aircraft": {
@@ -442,6 +443,10 @@ var samples = `
                                         "description": "Aircraft tail or serial number (tbd)",
                                         "type": "string"
                                     },
+                                    "analyticHardlanding": {
+                                        "description": "landing considered hard by analytics",
+                                        "type": "boolean"
+                                    },
                                     "atd": {
                                         "description": "actual time departure",
                                         "type": "string"
@@ -459,7 +464,7 @@ var samples = `
                                         "type": "number"
                                     },
                                     "hardlanding": {
-                                        "description": "landing considered hard by pilot or analytics",
+                                        "description": "landing considered hard by pilot or aircraft sensor",
                                         "type": "boolean"
                                     },
                                     "landingType": {

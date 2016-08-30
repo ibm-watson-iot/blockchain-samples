@@ -653,6 +653,10 @@ var schemas = `
                                         "description": "Aircraft tail or serial number (tbd)",
                                         "type": "string"
                                     },
+                                    "analyticHardlanding": {
+                                        "description": "landing considered hard by analytics",
+                                        "type": "boolean"
+                                    },
                                     "atd": {
                                         "description": "actual time departure",
                                         "type": "string"
@@ -670,7 +674,7 @@ var schemas = `
                                         "type": "number"
                                     },
                                     "hardlanding": {
-                                        "description": "landing considered hard by pilot or analytics",
+                                        "description": "landing considered hard by pilot or aircraft sensor",
                                         "type": "boolean"
                                     },
                                     "landingType": {
@@ -1345,6 +1349,10 @@ var schemas = `
                                                                     "description": "Aircraft tail or serial number (tbd)",
                                                                     "type": "string"
                                                                 },
+                                                                "analyticHardlanding": {
+                                                                    "description": "landing considered hard by analytics",
+                                                                    "type": "boolean"
+                                                                },
                                                                 "atd": {
                                                                     "description": "actual time departure",
                                                                     "type": "string"
@@ -1362,7 +1370,7 @@ var schemas = `
                                                                     "type": "number"
                                                                 },
                                                                 "hardlanding": {
-                                                                    "description": "landing considered hard by pilot or analytics",
+                                                                    "description": "landing considered hard by pilot or aircraft sensor",
                                                                     "type": "boolean"
                                                                 },
                                                                 "landingType": {
@@ -2064,6 +2072,10 @@ var schemas = `
                                                                     "description": "Aircraft tail or serial number (tbd)",
                                                                     "type": "string"
                                                                 },
+                                                                "analyticHardlanding": {
+                                                                    "description": "landing considered hard by analytics",
+                                                                    "type": "boolean"
+                                                                },
                                                                 "atd": {
                                                                     "description": "actual time departure",
                                                                     "type": "string"
@@ -2081,7 +2093,7 @@ var schemas = `
                                                                     "type": "number"
                                                                 },
                                                                 "hardlanding": {
-                                                                    "description": "landing considered hard by pilot or analytics",
+                                                                    "description": "landing considered hard by pilot or aircraft sensor",
                                                                     "type": "boolean"
                                                                 },
                                                                 "landingType": {
@@ -2783,6 +2795,10 @@ var schemas = `
                                                                     "description": "Aircraft tail or serial number (tbd)",
                                                                     "type": "string"
                                                                 },
+                                                                "analyticHardlanding": {
+                                                                    "description": "landing considered hard by analytics",
+                                                                    "type": "boolean"
+                                                                },
                                                                 "atd": {
                                                                     "description": "actual time departure",
                                                                     "type": "string"
@@ -2800,7 +2816,7 @@ var schemas = `
                                                                     "type": "number"
                                                                 },
                                                                 "hardlanding": {
-                                                                    "description": "landing considered hard by pilot or analytics",
+                                                                    "description": "landing considered hard by pilot or aircraft sensor",
                                                                     "type": "boolean"
                                                                 },
                                                                 "landingType": {
@@ -3470,6 +3486,10 @@ var schemas = `
                                                                 "description": "Aircraft tail or serial number (tbd)",
                                                                 "type": "string"
                                                             },
+                                                            "analyticHardlanding": {
+                                                                "description": "landing considered hard by analytics",
+                                                                "type": "boolean"
+                                                            },
                                                             "atd": {
                                                                 "description": "actual time departure",
                                                                 "type": "string"
@@ -3487,7 +3507,7 @@ var schemas = `
                                                                 "type": "number"
                                                             },
                                                             "hardlanding": {
-                                                                "description": "landing considered hard by pilot or analytics",
+                                                                "description": "landing considered hard by pilot or aircraft sensor",
                                                                 "type": "boolean"
                                                             },
                                                             "landingType": {
@@ -4159,6 +4179,10 @@ var schemas = `
                                                                     "description": "Aircraft tail or serial number (tbd)",
                                                                     "type": "string"
                                                                 },
+                                                                "analyticHardlanding": {
+                                                                    "description": "landing considered hard by analytics",
+                                                                    "type": "boolean"
+                                                                },
                                                                 "atd": {
                                                                     "description": "actual time departure",
                                                                     "type": "string"
@@ -4176,7 +4200,7 @@ var schemas = `
                                                                     "type": "number"
                                                                 },
                                                                 "hardlanding": {
-                                                                    "description": "landing considered hard by pilot or analytics",
+                                                                    "description": "landing considered hard by pilot or aircraft sensor",
                                                                     "type": "boolean"
                                                                 },
                                                                 "landingType": {
@@ -4846,6 +4870,10 @@ var schemas = `
                                                                 "description": "Aircraft tail or serial number (tbd)",
                                                                 "type": "string"
                                                             },
+                                                            "analyticHardlanding": {
+                                                                "description": "landing considered hard by analytics",
+                                                                "type": "boolean"
+                                                            },
                                                             "atd": {
                                                                 "description": "actual time departure",
                                                                 "type": "string"
@@ -4863,7 +4891,7 @@ var schemas = `
                                                                 "type": "number"
                                                             },
                                                             "hardlanding": {
-                                                                "description": "landing considered hard by pilot or analytics",
+                                                                "description": "landing considered hard by pilot or aircraft sensor",
                                                                 "type": "boolean"
                                                             },
                                                             "landingType": {
@@ -5535,6 +5563,10 @@ var schemas = `
                                                                     "description": "Aircraft tail or serial number (tbd)",
                                                                     "type": "string"
                                                                 },
+                                                                "analyticHardlanding": {
+                                                                    "description": "landing considered hard by analytics",
+                                                                    "type": "boolean"
+                                                                },
                                                                 "atd": {
                                                                     "description": "actual time departure",
                                                                     "type": "string"
@@ -5552,7 +5584,7 @@ var schemas = `
                                                                     "type": "number"
                                                                 },
                                                                 "hardlanding": {
-                                                                    "description": "landing considered hard by pilot or analytics",
+                                                                    "description": "landing considered hard by pilot or aircraft sensor",
                                                                     "type": "boolean"
                                                                 },
                                                                 "landingType": {
@@ -6222,6 +6254,10 @@ var schemas = `
                                                                 "description": "Aircraft tail or serial number (tbd)",
                                                                 "type": "string"
                                                             },
+                                                            "analyticHardlanding": {
+                                                                "description": "landing considered hard by analytics",
+                                                                "type": "boolean"
+                                                            },
                                                             "atd": {
                                                                 "description": "actual time departure",
                                                                 "type": "string"
@@ -6239,7 +6275,7 @@ var schemas = `
                                                                 "type": "number"
                                                             },
                                                             "hardlanding": {
-                                                                "description": "landing considered hard by pilot or analytics",
+                                                                "description": "landing considered hard by pilot or aircraft sensor",
                                                                 "type": "boolean"
                                                             },
                                                             "landingType": {
@@ -6911,6 +6947,10 @@ var schemas = `
                                                                     "description": "Aircraft tail or serial number (tbd)",
                                                                     "type": "string"
                                                                 },
+                                                                "analyticHardlanding": {
+                                                                    "description": "landing considered hard by analytics",
+                                                                    "type": "boolean"
+                                                                },
                                                                 "atd": {
                                                                     "description": "actual time departure",
                                                                     "type": "string"
@@ -6928,7 +6968,7 @@ var schemas = `
                                                                     "type": "number"
                                                                 },
                                                                 "hardlanding": {
-                                                                    "description": "landing considered hard by pilot or analytics",
+                                                                    "description": "landing considered hard by pilot or aircraft sensor",
                                                                     "type": "boolean"
                                                                 },
                                                                 "landingType": {
@@ -7622,6 +7662,10 @@ var schemas = `
                                                                     "description": "Aircraft tail or serial number (tbd)",
                                                                     "type": "string"
                                                                 },
+                                                                "analyticHardlanding": {
+                                                                    "description": "landing considered hard by analytics",
+                                                                    "type": "boolean"
+                                                                },
                                                                 "atd": {
                                                                     "description": "actual time departure",
                                                                     "type": "string"
@@ -7639,7 +7683,7 @@ var schemas = `
                                                                     "type": "number"
                                                                 },
                                                                 "hardlanding": {
-                                                                    "description": "landing considered hard by pilot or analytics",
+                                                                    "description": "landing considered hard by pilot or aircraft sensor",
                                                                     "type": "boolean"
                                                                 },
                                                                 "landingType": {
@@ -9207,6 +9251,10 @@ var schemas = `
                                         "description": "Aircraft tail or serial number (tbd)",
                                         "type": "string"
                                     },
+                                    "analyticHardlanding": {
+                                        "description": "landing considered hard by analytics",
+                                        "type": "boolean"
+                                    },
                                     "atd": {
                                         "description": "actual time departure",
                                         "type": "string"
@@ -9224,7 +9272,7 @@ var schemas = `
                                         "type": "number"
                                     },
                                     "hardlanding": {
-                                        "description": "landing considered hard by pilot or analytics",
+                                        "description": "landing considered hard by pilot or aircraft sensor",
                                         "type": "boolean"
                                     },
                                     "landingType": {
@@ -9336,6 +9384,10 @@ var schemas = `
                             "description": "Aircraft tail or serial number (tbd)",
                             "type": "string"
                         },
+                        "analyticHardlanding": {
+                            "description": "landing considered hard by analytics",
+                            "type": "boolean"
+                        },
                         "atd": {
                             "description": "actual time departure",
                             "type": "string"
@@ -9353,7 +9405,7 @@ var schemas = `
                             "type": "number"
                         },
                         "hardlanding": {
-                            "description": "landing considered hard by pilot or analytics",
+                            "description": "landing considered hard by pilot or aircraft sensor",
                             "type": "boolean"
                         },
                         "landingType": {
@@ -9891,6 +9943,10 @@ var schemas = `
                                                         "description": "Aircraft tail or serial number (tbd)",
                                                         "type": "string"
                                                     },
+                                                    "analyticHardlanding": {
+                                                        "description": "landing considered hard by analytics",
+                                                        "type": "boolean"
+                                                    },
                                                     "atd": {
                                                         "description": "actual time departure",
                                                         "type": "string"
@@ -9908,7 +9964,7 @@ var schemas = `
                                                         "type": "number"
                                                     },
                                                     "hardlanding": {
-                                                        "description": "landing considered hard by pilot or analytics",
+                                                        "description": "landing considered hard by pilot or aircraft sensor",
                                                         "type": "boolean"
                                                     },
                                                     "landingType": {
