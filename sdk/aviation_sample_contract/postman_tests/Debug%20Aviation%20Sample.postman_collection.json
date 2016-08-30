@@ -683,7 +683,7 @@
 			"response": []
 		},
 		{
-			"name": "createAirline",
+			"name": "createAirline SWA",
 			"request": {
 				"url": "{{URL}}/chaincode",
 				"method": "POST",
@@ -702,6 +702,31 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"createAssetAirline\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"SWA\\\"},\\\"airline\\\":{\\\"name\\\":\\\"Southwest Airlines\\\", \\\"code\\\":\\\"SWA\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "createAirline AAL",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"createAssetAirline\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"AAL\\\"},\\\"airline\\\":{\\\"name\\\":\\\"American Airlines\\\", \\\"code\\\":\\\"AAL\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
 				},
 				"description": ""
 			},
@@ -1083,7 +1108,7 @@
 			"response": []
 		},
 		{
-			"name": "inspection ACHECK",
+			"name": "inspection BCHECK",
 			"request": {
 				"url": "{{URL}}/chaincode",
 				"method": "POST",
@@ -1108,7 +1133,7 @@
 			"response": []
 		},
 		{
-			"name": "inspection BCHECK",
+			"name": "inspection ACHECK",
 			"request": {
 				"url": "{{URL}}/chaincode",
 				"method": "POST",
