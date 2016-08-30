@@ -86,7 +86,7 @@ func injectAssemblies(stub *shim.ChaincodeStub, aircraft interface{}) (interface
 	for assemblyID := range assembliesmap {
 		assemblyID, err = assetIDToExternal(assemblyID)
 		if err != nil {
-			err = fmt.Errorf("injectAssemblies failed to convert assemblyID to external %s: %s", aircraftID, err)
+			err = fmt.Errorf("injectAssemblies failed to convert assemblyID to external %s: %s", assemblyID, err)
 			log.Error(err)
 			return nil, err
 		}
