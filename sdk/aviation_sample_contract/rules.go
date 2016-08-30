@@ -208,7 +208,8 @@ func (state *ArgsMap) hardlandingRule(config DynamicContractConfig, alerts *Aler
 	}
 
 	hlevent, hlfound := getObjectAsBoolean(event, "flight.hardlanding")
-	if hlfound && hlevent {
+	ahlevent, ahlfound := getObjectAsBoolean(event, "flight.analyticHardlanding")
+	if (hlfound && hlevent) || (ahlfound && ahlevent) {
 		// it was definitely a hard landing
 		alerts.raiseAlert(AlertsHARDLANDING)
 	}
