@@ -19,6 +19,9 @@ Kim Letkeman - Initial Contribution
 package main
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -48,12 +51,97 @@ func (t *SimpleChaincode) deletePropertiesFromAssetAircraft(stub *shim.Chaincode
 	return nil, err
 }
 
+func injectAssemblies(stub *shim.ChaincodeStub, aircraft interface{}) (interface{}, error) {
+	var err error
+	var assemblies []string
+	ac := asMap(aircraft)
+	if len(ac) == 0 {
+		err = fmt.Errorf("injectAssemblies failed to convert aircraft %+v to map: %s", aircraft, err)
+		log.Error(err)
+		return nil, err
+	}
+	aircraftID, ok := getObjectAsString(ac, "common.assetID")
+	if !ok {
+		err = fmt.Errorf("injectAssemblies failed to find assetID in aircraft %+v", aircraft)
+		log.Error(err)
+		return nil, err
+	}
+	aircraftID, err = assetIDToInternal("aircraft", aircraftID)
+	if err != nil {
+		err = errors.New("injectAssemblies failed to convert aircraftID to internal format: " + err.Error())
+		log.Error(err)
+		return nil, err
+	}
+	indexes, err := getAircraftAssemblyIndexesFromLedger(stub)
+	if err != nil {
+		err = errors.New("injectAssemblies failed to get indexes from ledger: " + err.Error())
+		log.Error(err)
+		return nil, err
+	}
+	assembliesmap, ok := indexes.getAircraftAssemblies(aircraftID)
+	if !ok {
+		// aircraft has no assemblies, this is ok, assign empty assemblies list
+		assembliesmap = make(map[string]struct{}, 0)
+	}
+	for assemblyID := range assembliesmap {
+		assemblyID, err = assetIDToExternal(assemblyID)
+		if err != nil {
+			err = fmt.Errorf("injectAssemblies failed to convert assemblyID to external %s: %s", aircraftID, err)
+			log.Error(err)
+			return nil, err
+		}
+		assemblies = append(assemblies, assemblyID)
+	}
+	acbytes, ok := putObject(ac, "assemblies", assemblies)
+	if !ok {
+		err = fmt.Errorf("injectAssemblies failed to put assemblies into aircraft %s: %s", aircraftID, err)
+		log.Error(err)
+		return nil, err
+	}
+	return acbytes, nil
+}
+
 func (t *SimpleChaincode) readAssetAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	return readAsset(stub, args, "aircraft", "readAssetAircraft")
+	var aircraft interface{}
+	aircraftstring, err := readAsset(stub, args, "aircraft", "readAssetAircraft")
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal([]byte(aircraftstring), &aircraft)
+	if err != nil {
+		return nil, err
+	}
+	aircraft, err = injectAssemblies(stub, aircraft)
+	if err != nil {
+		return nil, err
+	}
+	aircraftbytes, err := json.Marshal(aircraft)
+	if err != nil {
+		err = errors.New("readAssetAircraft failed to marshall aircraft: " + err.Error())
+		log.Error(err)
+		return nil, err
+	}
+	return aircraftbytes, nil
 }
 
 func (t *SimpleChaincode) readAllAssetsAircraft(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	return readAllAssets(stub, args, "aircraft", "readAllAssetsAircraft")
+	aircrafts, err := readAllAssetsUnmarshalled(stub, args, "aircraft", "readAllAssetsAircraft")
+	if err != nil {
+		return nil, err
+	}
+	for _, aircraft := range aircrafts {
+		aircraft, err = injectAssemblies(stub, aircraft)
+		if err != nil {
+			return nil, err
+		}
+	}
+	aircraftsbytes, err := json.Marshal(&aircrafts)
+	if err != nil {
+		err = errors.New("readAllAssetsAircraft failed to marshall aircraftsbytes: " + err.Error())
+		log.Error(err)
+		return nil, err
+	}
+	return aircraftsbytes, nil
 }
 
 func (t *SimpleChaincode) readAssetAircraftHistory(stub *shim.ChaincodeStub, args []string) ([]byte, error) {

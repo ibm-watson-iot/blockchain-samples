@@ -257,6 +257,20 @@ func readAsset(stub *shim.ChaincodeStub, args []string, assetName string, caller
 }
 
 func readAllAssets(stub *shim.ChaincodeStub, args []string, assetName string, caller string) ([]byte, error) {
+	results, err := readAllAssetsUnmarshalled(stub, args, assetName, caller)
+	if err != nil {
+		return nil, err
+	}
+	resultsBytes, err := json.Marshal(&results)
+	if err != nil {
+		err = fmt.Errorf("readAllAssets failed to marshal assets structure: %s", err)
+		log.Error(err)
+		return nil, err
+	}
+	return resultsBytes, nil
+}
+
+func readAllAssetsUnmarshalled(stub *shim.ChaincodeStub, args []string, assetName string, caller string) ([]interface{}, error) {
 	var assets ByAssetID
 	var err error
 	var state interface{}
@@ -264,7 +278,7 @@ func readAllAssets(stub *shim.ChaincodeStub, args []string, assetName string, ca
 
 	prefix, err := eventNameToAssetPrefix(assetName)
 	if err != nil {
-		err = fmt.Errorf("readAllAssets assetName %s has no prefix: %s", assetName, err.Error())
+		err = fmt.Errorf("readAllAssetsUnmarshalled assetName %s has no prefix: %s", assetName, err.Error())
 		log.Error(err)
 		return nil, err
 	}
@@ -274,7 +288,7 @@ func readAllAssets(stub *shim.ChaincodeStub, args []string, assetName string, ca
 
 	iter, err := stub.RangeQueryState(prefix, prefix+"}")
 	if err != nil {
-		err = fmt.Errorf("readAllAssets failed to get a range query iterator: %s", err)
+		err = fmt.Errorf("readAllAssetsUnmarshalled failed to get a range query iterator: %s", err)
 		log.Error(err)
 		return nil, err
 	}
@@ -282,13 +296,13 @@ func readAllAssets(stub *shim.ChaincodeStub, args []string, assetName string, ca
 	for iter.HasNext() {
 		assetID, assetBytes, err := iter.Next()
 		if err != nil {
-			err = fmt.Errorf("readAllAssets iter.Next() failed: %s", err)
+			err = fmt.Errorf("readAllAssetsUnmarshalled iter.Next() failed: %s", err)
 			log.Error(err)
 			return nil, err
 		}
 		err = json.Unmarshal(assetBytes, &state)
 		if err != nil {
-			err = fmt.Errorf("readAllAssets unmarshal failed: %s", err)
+			err = fmt.Errorf("readAllAssetsUnmarshalled unmarshal failed: %s", err)
 			log.Error(err)
 			return nil, err
 		}
@@ -301,7 +315,7 @@ func readAllAssets(stub *shim.ChaincodeStub, args []string, assetName string, ca
 
 	//log.Debugf("%s: Final assets list: %+v\n", caller, assets)
 	if len(assets) == 0 {
-		return []byte("[]"), nil
+		return make([]interface{}, 0), nil
 	}
 
 	sort.Sort(ByAssetID(assets))
@@ -310,13 +324,7 @@ func readAllAssets(stub *shim.ChaincodeStub, args []string, assetName string, ca
 	for _, a := range assets {
 		results = append(results, a.Asset)
 	}
-	resultsBytes, err := json.Marshal(&results)
-	if err != nil {
-		err = fmt.Errorf("readAllAssets failed to marshal sorted assets structure: %s", err)
-		log.Error(err)
-		return nil, err
-	}
-	return resultsBytes, nil
+	return results, nil
 }
 
 func readAssetHistory(stub *shim.ChaincodeStub, args []string, assetName string, caller string) ([]byte, error) {
