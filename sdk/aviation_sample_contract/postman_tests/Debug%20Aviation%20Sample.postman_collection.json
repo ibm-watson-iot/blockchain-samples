@@ -301,7 +301,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsAircraft\",\r\n            \"args\":[\"{\\\"matchhow\\\":\\\"matchall\\\", \\\"entries\\\":[{\\\"qprop\\\":\\\"aircraft.airline\\\",\\\"value\\\":\\\"SWA\\\"}]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsAircraft\",\r\n            \"args\":[\"{\\\"matchmode\\\":\\\"matchall\\\", \\\"entries\\\":[{\\\"qprop\\\":\\\"aircraft.airline\\\",\\\"value\\\":\\\"SWA\\\"}]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
 				},
 				"description": ""
 			},
@@ -326,7 +326,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsAircraft\",\r\n            \"args\":[\"{\\\"matchhow\\\":\\\"matchany\\\", \\\"entries\\\":[{\\\"qprop\\\":\\\"aircraft.airline\\\",\\\"value\\\":\\\"AAL\\\"}, {\\\"qprop\\\":\\\"aircraft.airline\\\",\\\"value\\\":\\\"AC\\\"}]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsAircraft\",\r\n            \"args\":[\"{\\\"matchmode\\\":\\\"matchany\\\", \\\"entries\\\":[{\\\"qprop\\\":\\\"aircraft.airline\\\",\\\"value\\\":\\\"AAL\\\"}, {\\\"qprop\\\":\\\"aircraft.airline\\\",\\\"value\\\":\\\"AC\\\"}]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
 				},
 				"description": ""
 			},
@@ -351,7 +351,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsAircraft\",\r\n            \"args\":[\"{\\\"matchhow\\\":\\\"matchnone\\\", \\\"entries\\\":[{\\\"qprop\\\":\\\"aircraft.airline\\\",\\\"value\\\":\\\"SWA\\\"}]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsAircraft\",\r\n            \"args\":[\"{\\\"matchmode\\\":\\\"matchnone\\\", \\\"entries\\\":[{\\\"qprop\\\":\\\"aircraft.airline\\\",\\\"value\\\":\\\"SWA\\\"}]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
 				},
 				"description": ""
 			},
@@ -601,7 +601,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"updateAssetAssembly\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"abc\\\"},\\\"assembly\\\":{\\\"lifelimitinitial\\\":110, \\\"aircraft\\\":\\\"5678\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"updateAssetAssembly\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"abc\\\"},\\\"assembly\\\":{\\\"lifelimitinitial\\\":110}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
 				},
 				"description": ""
 			},
@@ -952,6 +952,31 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventFlight\",\r\n            \"args\":[\"{\\\"flight\\\":{\\\"aircraft\\\":\\\"5678\\\",\\\"hardlanding\\\":true}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "flightEvent analytic hardlanding ",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventFlight\",\r\n            \"args\":[\"{\\\"flight\\\":{\\\"aircraft\\\":\\\"5678\\\",\\\"analyticHardlanding\\\":true}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
 				},
 				"description": ""
 			},

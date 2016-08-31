@@ -68,8 +68,8 @@ type QualifiedPropertyNameValue struct {
 
 // StateFilter is an array of QualifiedPropertyNameValue
 type StateFilter struct {
-	MatchHow string                       `json:"matchhow"`
-	Entries  []QualifiedPropertyNameValue `json:"entries"`
+	MatchMode string                       `json:"matchmode"`
+	Entries   []QualifiedPropertyNameValue `json:"entries"`
 }
 
 // Filters is the interface for our filter mechanism
@@ -80,7 +80,7 @@ type Filters interface {
 var emptyFilter = StateFilter{"matchall", make([]QualifiedPropertyNameValue, 0)}
 
 func filterObject(obj interface{}, filter StateFilter) bool {
-	switch filter.MatchHow {
+	switch filter.MatchMode {
 	case "matchall":
 		return matchAll(obj, filter)
 	case "matchany":

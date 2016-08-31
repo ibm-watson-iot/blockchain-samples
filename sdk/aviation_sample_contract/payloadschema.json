@@ -1092,6 +1092,31 @@
                         }
                     }
                 },
+                "readWorldState": {
+                    "type": "object",
+                    "description": "DEBUGGING ONLY. Returns the the contents of world state for the contract. Every key and value is represented and pretty printed into the resulting map of objects.",
+                    "properties": {
+                        "method": "query",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readWorldState"
+                            ],
+                            "description": "readWorldState function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        },
+                        "result": {
+                            "type": "object",
+                            "properties": {}
+                        }
+                    }
+                },
                 "readContractConfig": {
                     "type": "object",
                     "description": "Returns the contract's dynamic configuration -- those thresholds and values that can be set by external applications.",
@@ -1129,8 +1154,8 @@
                             "description": "updateContractConfig function"
                         },
                         "args": {
-                            "type": "object",
-                            "properties": {
+                            "type": "array",
+                            "items": {
                                 "$ref": "#/definitions/contractConfig"
                             },
                             "minItems": 1,
@@ -1332,46 +1357,35 @@
         },
         "stateFilter": {
             "type": "object",
-            "description": "A filter that can be used to restrict a read operation to a subset of objects that meet a criteria.",
+            "description": "A state filter consists of a match mode and an array of k:v pairs with the key being a qualified property name and the value being the value to match. Match modes are one of matchany, matchall and matchnone.",
             "properties": {
-                "filter": {
-                    "type": "object",
-                    "properties": {
-                        "matchhow": {
-                            "type": "string",
-                            "enum": [
-                                "matchall",
-                                "matchany",
-                                "matchnone"
-                            ]
-                        },
-                        "entries": {
-                            "type":"array",
-                            "description": "Array of qualified propery name and value pairs.",
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "qprop": {
-                                        "type": "string",
-                                        "description": "A qualified property as dot separated levels terminated by a leaf node. An example would be 'common.assetID'."
-                                    },
-                                    "value": {
-                                        "type": "string",
-                                        "description": "The value to be compared."
-                                    }
-                                }
+                "matchmode": {
+                    "type": "string",
+                    "description": "Match modes are any, all and none. For any, the entire list of properties must be present and the values match. For any, only one must be present with a matching value. For none, all must be absent or have a non-matching value.",
+                    "enum": [
+                        "matchall",
+                        "matchany",
+                        "matchnone"
+                    ]
+                },
+                "entries": {
+                    "type":"array",
+                    "description": "Array of qualified propery name and value pairs.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "qprop": {
+                                "type": "string",
+                                "description": "A qualified property as dot separated levels terminated by a leaf node. An example would be 'common.assetID'."
+                            },
+                            "value": {
+                                "type": "string",
+                                "description": "The value to be compared."
                             }
                         }
-                    },
-                    "required": [
-                        "entries",
-                        "matchhow"
-                    ]
+                    }
                 }
-            },
-            "required": [
-                "filter"
-            ]
+            }
         },
         "assetIDObj": {
             "type": "object",
@@ -1981,6 +1995,7 @@
         },
         "contractState": {
             "type": "object",
+            "description": "Contract state consisting of its version and nickname.",
             "properties": {
                 "version": {
                     "$ref": "#/definitions/version"
@@ -1992,6 +2007,7 @@
         },
         "contractConfig": {
             "type": "object",
+            "description": "Dynamic configuration for this contract, consisting of thresholds for alerts.",
             "properties": {
                 "aCheckThreshold": {
                     "type": "number",

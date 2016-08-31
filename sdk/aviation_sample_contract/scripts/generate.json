@@ -35,6 +35,8 @@
       "readAssetAssemblyHistory",
       "readRecentStates",
       "readContractConfig",
+      "readContractState",
+      "readWorldState",
       "setLoggingLevel",
       "setCreateOnUpdate"
     ],
@@ -53,9 +55,7 @@
       "analyticAdjustmentEvent",
       "maintenanceEvent",
       "stateFilter",
-      "contractConfig",
-      "event",
-      "state"
+      "contractConfig"
     ]
   },
   "samples": {

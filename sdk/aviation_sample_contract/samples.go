@@ -26,7 +26,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-30T15:54:36.205283745Z"
+            "timestamp": "2016-08-31T05:25:19.827748249Z"
         }
     },
     "airlineEvent": {
@@ -46,7 +46,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-30T15:54:36.205230315Z"
+            "timestamp": "2016-08-31T05:25:19.827682635Z"
         }
     },
     "analyticAdjustmentEvent": {
@@ -77,7 +77,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-30T15:54:36.205301374Z"
+            "timestamp": "2016-08-31T05:25:19.827770246Z"
         }
     },
     "flightEvent": {
@@ -144,7 +144,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-30T15:54:36.205350787Z"
+            "timestamp": "2016-08-31T05:25:19.827804483Z"
         },
         "lastEvent": {
             "arg": {
@@ -160,7 +160,7 @@ var samples = `
                     "references": [
                         "carpe noctem"
                     ],
-                    "timestamp": "2016-08-30T15:54:36.205342897Z"
+                    "timestamp": "2016-08-31T05:25:19.827778804Z"
                 },
                 "oneOf": {
                     "aircraft": {
@@ -650,14 +650,12 @@ var samples = `
         "txnuuid": "Transaction UUID matching that in the blockchain."
     },
     "stateFilter": {
-        "filter": {
-            "entries": [
-                {
-                    "qprop": "A qualified property as dot separated levels terminated by a leaf node. An example would be 'common.assetID'.",
-                    "value": "The value to be compared."
-                }
-            ],
-            "matchhow": "matchany"
-        }
+        "entries": [
+            {
+                "qprop": "A qualified property as dot separated levels terminated by a leaf node. An example would be 'common.assetID'.",
+                "value": "The value to be compared."
+            }
+        ],
+        "matchmode": "matchany"
     }
 }`

@@ -225,7 +225,7 @@ func putDynamicConfigToLedger(stub *shim.ChaincodeStub, config DynamicContractCo
 	return nil
 }
 
-func updateDynamicConfig(stub *shim.ChaincodeStub, args []string) error {
+func updateContractConfig(stub *shim.ChaincodeStub, args []string) error {
 	var config DynamicContractConfig
 	var err error
 	if len(args) != 1 {
@@ -258,7 +258,7 @@ func updateDynamicConfig(stub *shim.ChaincodeStub, args []string) error {
 	return nil
 }
 
-func readDynamicConfig(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func readContractConfig(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	configbytes, err := stub.GetState(CONFIGSTATEKEY)
 	if err != nil || len(configbytes) == 0 {
 		err := fmt.Errorf("readDynamicConfig cannot get dynamic config from the ledger: %s", err.Error())

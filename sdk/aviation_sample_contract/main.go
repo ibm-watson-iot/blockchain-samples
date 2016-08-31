@@ -235,8 +235,8 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 		return eventMaintenance(stub, args)
 
 		// contract dynamic config API
-	} else if function == "updateDynamicConfig" {
-		return nil, updateDynamicConfig(stub, args)
+	} else if function == "updateContractConfig" {
+		return nil, updateContractConfig(stub, args)
 
 		// contract state / behavior API
 	} else if function == "setLoggingLevel" {
@@ -276,8 +276,8 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		return t.readAssetAssemblyHistory(stub, args)
 
 		// contract dynamic config API
-	} else if function == "readDynamicConfig" {
-		return readDynamicConfig(stub, args)
+	} else if function == "readContractConfig" {
+		return readContractConfig(stub, args)
 
 		// contract state / behavior API
 	} else if function == "readRecentStates" {
