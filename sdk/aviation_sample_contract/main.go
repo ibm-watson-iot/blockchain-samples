@@ -245,8 +245,8 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 		return nil, t.setCreateOnUpdate(stub, args)
 
 		// debugging API
-	} else if function == "clearWorldState" {
-		return nil, t.clearWorldState(stub)
+	} else if function == "deleteWorldState" {
+		return nil, t.deleteWorldState(stub)
 	}
 	err := fmt.Errorf("Invoke received unknown invocation: %s", function)
 	log.Warning(err)

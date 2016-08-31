@@ -760,6 +760,27 @@
                         }
                     }
                 },
+                "deleteWorldState": {
+                    "type": "object",
+                    "description": "DEBUGGING ONLY. Clears the the contents of world state for the contract. Every key and value is removed.",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deleteWorldState"
+                            ],
+                            "description": "deleteWorldState function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0,
+                            "description": "accepts no arguments"
+                        }
+                    }
+                },
                 "readAssetAirline": {
                     "type": "object",
                     "description": "Returns the state of an airline asset. Argument is a JSON encoded string. The arg is an 'assetID' property.",
@@ -1581,9 +1602,9 @@
             "type": "object",
             "description": "The set of writable properties that define an assembly. Note that assetID is the assembly serial number",
             "properties": {
-                "assemblyNumber": {
+                "serialNumber": {
                     "type": "string",
-                    "description": "Assembly type identifier"
+                    "description": "Assembly identifier assigned by manufacturer"
                 },
                 "ataCode": {
                     "type": "string",
@@ -1603,7 +1624,8 @@
                 }
             },
             "required": [
-                "ATAcode",
+                "serialNumber",
+                "ataCode",
                 "name"
             ]
         },
@@ -1777,9 +1799,9 @@
             "type": "object",
             "description": "indicates that an inspection has occured for this assembly",
             "properties": {
-                "aircraft": {
+                "assembly": {
                     "type": "string",
-                    "description": "Aircraft serial number"
+                    "description": "assembly serial number"
                 },
                 "action": {
                     "type": "string",

@@ -414,8 +414,8 @@ func (t *SimpleChaincode) readWorldState(stub *shim.ChaincodeStub) ([]byte, erro
 	return resultsBytes, nil
 }
 
-// a generic implementation to clear everything out from the database for debugging purposes ...
-func (t *SimpleChaincode) clearWorldState(stub *shim.ChaincodeStub) error {
+// a generic implementation to clear everything out from the database for DEBUGGING purposes ...
+func (t *SimpleChaincode) deleteWorldState(stub *shim.ChaincodeStub) error {
 	iter, err := stub.RangeQueryState("", "")
 	if err != nil {
 		err = fmt.Errorf("clearWorldState failed to get a range query iterator: %s", err)

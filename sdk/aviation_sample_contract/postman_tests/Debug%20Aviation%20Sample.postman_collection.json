@@ -501,7 +501,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"createAssetAssembly\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"abc\\\"},\\\"assembly\\\":{\\\"lifelimitinitial\\\":100}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"createAssetAssembly\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"abc\\\"},\\\"assembly\\\":{\\\"lifelimitinitial\\\":100,\\\"serialNumber\\\":\\\"abc\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
 				},
 				"description": ""
 			},

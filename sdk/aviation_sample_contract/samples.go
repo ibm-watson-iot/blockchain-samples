@@ -26,7 +26,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-31T05:25:19.827748249Z"
+            "timestamp": "2016-08-31T15:46:14.683540927Z"
         }
     },
     "airlineEvent": {
@@ -46,7 +46,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-31T05:25:19.827682635Z"
+            "timestamp": "2016-08-31T15:46:14.68339248Z"
         }
     },
     "analyticAdjustmentEvent": {
@@ -60,10 +60,10 @@ var samples = `
     "assemblyEvent": {
         "assembly": {
             "arlsZone": "tbd",
-            "assemblyNumber": "Assembly type identifier",
             "ataCode": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
             "lifeLimitInitial": 789,
-            "name": "The assembly name."
+            "name": "The assembly name.",
+            "serialNumber": "Assembly identifier assigned by manufacturer"
         },
         "common": {
             "assetID": "The ID of a managed asset. The resource focal point for a smart contract.",
@@ -77,7 +77,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-31T05:25:19.827770246Z"
+            "timestamp": "2016-08-31T15:46:14.683549469Z"
         }
     },
     "flightEvent": {
@@ -102,7 +102,7 @@ var samples = `
     "inspectionEvent": {
         "inspection": {
             "action": "BCHECK",
-            "aircraft": "Aircraft serial number"
+            "assembly": "assembly serial number"
         }
     },
     "maintenanceEvent": {
@@ -144,7 +144,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-31T05:25:19.827804483Z"
+            "timestamp": "2016-08-31T15:46:14.683619289Z"
         },
         "lastEvent": {
             "arg": {
@@ -160,7 +160,7 @@ var samples = `
                     "references": [
                         "carpe noctem"
                     ],
-                    "timestamp": "2016-08-31T05:25:19.827778804Z"
+                    "timestamp": "2016-08-31T15:46:14.683610787Z"
                 },
                 "oneOf": {
                     "aircraft": {
@@ -361,10 +361,6 @@ var samples = `
                                         "description": "tbd",
                                         "type": "string"
                                     },
-                                    "assemblyNumber": {
-                                        "description": "Assembly type identifier",
-                                        "type": "string"
-                                    },
                                     "ataCode": {
                                         "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                         "type": "string"
@@ -376,10 +372,15 @@ var samples = `
                                     "name": {
                                         "description": "The assembly name.",
                                         "type": "string"
+                                    },
+                                    "serialNumber": {
+                                        "description": "Assembly identifier assigned by manufacturer",
+                                        "type": "string"
                                     }
                                 },
                                 "required": [
-                                    "ATAcode",
+                                    "serialNumber",
+                                    "ataCode",
                                     "name"
                                 ],
                                 "type": "object"
@@ -504,8 +505,8 @@ var samples = `
                                         ],
                                         "type": "string"
                                     },
-                                    "aircraft": {
-                                        "description": "Aircraft serial number",
+                                    "assembly": {
+                                        "description": "assembly serial number",
                                         "type": "string"
                                     }
                                 },
@@ -622,10 +623,6 @@ var samples = `
                         "description": "tbd",
                         "type": "string"
                     },
-                    "assemblyNumber": {
-                        "description": "Assembly type identifier",
-                        "type": "string"
-                    },
                     "ataCode": {
                         "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                         "type": "string"
@@ -637,10 +634,15 @@ var samples = `
                     "name": {
                         "description": "The assembly name.",
                         "type": "string"
+                    },
+                    "serialNumber": {
+                        "description": "Assembly identifier assigned by manufacturer",
+                        "type": "string"
                     }
                 },
                 "required": [
-                    "ATAcode",
+                    "serialNumber",
+                    "ataCode",
                     "name"
                 ],
                 "type": "object"

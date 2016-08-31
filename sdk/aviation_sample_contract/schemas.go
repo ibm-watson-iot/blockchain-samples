@@ -218,10 +218,6 @@ var schemas = `
                                         "description": "tbd",
                                         "type": "string"
                                     },
-                                    "assemblyNumber": {
-                                        "description": "Assembly type identifier",
-                                        "type": "string"
-                                    },
                                     "ataCode": {
                                         "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                         "type": "string"
@@ -233,10 +229,15 @@ var schemas = `
                                     "name": {
                                         "description": "The assembly name.",
                                         "type": "string"
+                                    },
+                                    "serialNumber": {
+                                        "description": "Assembly identifier assigned by manufacturer",
+                                        "type": "string"
                                     }
                                 },
                                 "required": [
-                                    "ATAcode",
+                                    "serialNumber",
+                                    "ataCode",
                                     "name"
                                 ],
                                 "type": "object"
@@ -590,6 +591,27 @@ var schemas = `
             },
             "type": "object"
         },
+        "deleteWorldState": {
+            "description": "DEBUGGING ONLY. Clears the the contents of world state for the contract. Every key and value is removed.",
+            "properties": {
+                "args": {
+                    "description": "accepts no arguments",
+                    "items": {},
+                    "maxItems": 0,
+                    "minItems": 0,
+                    "type": "array"
+                },
+                "function": {
+                    "description": "deleteWorldState function",
+                    "enum": [
+                        "deleteWorldState"
+                    ],
+                    "type": "string"
+                },
+                "method": "invoke"
+            },
+            "type": "object"
+        },
         "eventAnalyticAdjustment": {
             "description": "Post an analytic adjustment event to the contract. One argument, a JSON encoded event. The 'assetID' property is the target for the event, which is an assembly in the case of the analytic adjustment event.",
             "properties": {
@@ -734,8 +756,8 @@ var schemas = `
                                         ],
                                         "type": "string"
                                     },
-                                    "aircraft": {
-                                        "description": "Aircraft serial number",
+                                    "assembly": {
+                                        "description": "assembly serial number",
                                         "type": "string"
                                     }
                                 },
@@ -1256,10 +1278,6 @@ var schemas = `
                                                                     "description": "tbd",
                                                                     "type": "string"
                                                                 },
-                                                                "assemblyNumber": {
-                                                                    "description": "Assembly type identifier",
-                                                                    "type": "string"
-                                                                },
                                                                 "ataCode": {
                                                                     "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                                                     "type": "string"
@@ -1271,10 +1289,15 @@ var schemas = `
                                                                 "name": {
                                                                     "description": "The assembly name.",
                                                                     "type": "string"
+                                                                },
+                                                                "serialNumber": {
+                                                                    "description": "Assembly identifier assigned by manufacturer",
+                                                                    "type": "string"
                                                                 }
                                                             },
                                                             "required": [
-                                                                "ATAcode",
+                                                                "serialNumber",
+                                                                "ataCode",
                                                                 "name"
                                                             ],
                                                             "type": "object"
@@ -1399,8 +1422,8 @@ var schemas = `
                                                                     ],
                                                                     "type": "string"
                                                                 },
-                                                                "aircraft": {
-                                                                    "description": "Aircraft serial number",
+                                                                "assembly": {
+                                                                    "description": "assembly serial number",
                                                                     "type": "string"
                                                                 }
                                                             },
@@ -1527,10 +1550,6 @@ var schemas = `
                                             "description": "tbd",
                                             "type": "string"
                                         },
-                                        "assemblyNumber": {
-                                            "description": "Assembly type identifier",
-                                            "type": "string"
-                                        },
                                         "ataCode": {
                                             "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                             "type": "string"
@@ -1542,10 +1561,15 @@ var schemas = `
                                         "name": {
                                             "description": "The assembly name.",
                                             "type": "string"
+                                        },
+                                        "serialNumber": {
+                                            "description": "Assembly identifier assigned by manufacturer",
+                                            "type": "string"
                                         }
                                     },
                                     "required": [
-                                        "ATAcode",
+                                        "serialNumber",
+                                        "ataCode",
                                         "name"
                                     ],
                                     "type": "object"
@@ -1968,10 +1992,6 @@ var schemas = `
                                                                     "description": "tbd",
                                                                     "type": "string"
                                                                 },
-                                                                "assemblyNumber": {
-                                                                    "description": "Assembly type identifier",
-                                                                    "type": "string"
-                                                                },
                                                                 "ataCode": {
                                                                     "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                                                     "type": "string"
@@ -1983,10 +2003,15 @@ var schemas = `
                                                                 "name": {
                                                                     "description": "The assembly name.",
                                                                     "type": "string"
+                                                                },
+                                                                "serialNumber": {
+                                                                    "description": "Assembly identifier assigned by manufacturer",
+                                                                    "type": "string"
                                                                 }
                                                             },
                                                             "required": [
-                                                                "ATAcode",
+                                                                "serialNumber",
+                                                                "ataCode",
                                                                 "name"
                                                             ],
                                                             "type": "object"
@@ -2111,8 +2136,8 @@ var schemas = `
                                                                     ],
                                                                     "type": "string"
                                                                 },
-                                                                "aircraft": {
-                                                                    "description": "Aircraft serial number",
+                                                                "assembly": {
+                                                                    "description": "assembly serial number",
                                                                     "type": "string"
                                                                 }
                                                             },
@@ -2239,10 +2264,6 @@ var schemas = `
                                             "description": "tbd",
                                             "type": "string"
                                         },
-                                        "assemblyNumber": {
-                                            "description": "Assembly type identifier",
-                                            "type": "string"
-                                        },
                                         "ataCode": {
                                             "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                             "type": "string"
@@ -2254,10 +2275,15 @@ var schemas = `
                                         "name": {
                                             "description": "The assembly name.",
                                             "type": "string"
+                                        },
+                                        "serialNumber": {
+                                            "description": "Assembly identifier assigned by manufacturer",
+                                            "type": "string"
                                         }
                                     },
                                     "required": [
-                                        "ATAcode",
+                                        "serialNumber",
+                                        "ataCode",
                                         "name"
                                     ],
                                     "type": "object"
@@ -2680,10 +2706,6 @@ var schemas = `
                                                                     "description": "tbd",
                                                                     "type": "string"
                                                                 },
-                                                                "assemblyNumber": {
-                                                                    "description": "Assembly type identifier",
-                                                                    "type": "string"
-                                                                },
                                                                 "ataCode": {
                                                                     "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                                                     "type": "string"
@@ -2695,10 +2717,15 @@ var schemas = `
                                                                 "name": {
                                                                     "description": "The assembly name.",
                                                                     "type": "string"
+                                                                },
+                                                                "serialNumber": {
+                                                                    "description": "Assembly identifier assigned by manufacturer",
+                                                                    "type": "string"
                                                                 }
                                                             },
                                                             "required": [
-                                                                "ATAcode",
+                                                                "serialNumber",
+                                                                "ataCode",
                                                                 "name"
                                                             ],
                                                             "type": "object"
@@ -2823,8 +2850,8 @@ var schemas = `
                                                                     ],
                                                                     "type": "string"
                                                                 },
-                                                                "aircraft": {
-                                                                    "description": "Aircraft serial number",
+                                                                "assembly": {
+                                                                    "description": "assembly serial number",
                                                                     "type": "string"
                                                                 }
                                                             },
@@ -2951,10 +2978,6 @@ var schemas = `
                                             "description": "tbd",
                                             "type": "string"
                                         },
-                                        "assemblyNumber": {
-                                            "description": "Assembly type identifier",
-                                            "type": "string"
-                                        },
                                         "ataCode": {
                                             "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                             "type": "string"
@@ -2966,10 +2989,15 @@ var schemas = `
                                         "name": {
                                             "description": "The assembly name.",
                                             "type": "string"
+                                        },
+                                        "serialNumber": {
+                                            "description": "Assembly identifier assigned by manufacturer",
+                                            "type": "string"
                                         }
                                     },
                                     "required": [
-                                        "ATAcode",
+                                        "serialNumber",
+                                        "ataCode",
                                         "name"
                                     ],
                                     "type": "object"
@@ -3371,10 +3399,6 @@ var schemas = `
                                                                 "description": "tbd",
                                                                 "type": "string"
                                                             },
-                                                            "assemblyNumber": {
-                                                                "description": "Assembly type identifier",
-                                                                "type": "string"
-                                                            },
                                                             "ataCode": {
                                                                 "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                                                 "type": "string"
@@ -3386,10 +3410,15 @@ var schemas = `
                                                             "name": {
                                                                 "description": "The assembly name.",
                                                                 "type": "string"
+                                                            },
+                                                            "serialNumber": {
+                                                                "description": "Assembly identifier assigned by manufacturer",
+                                                                "type": "string"
                                                             }
                                                         },
                                                         "required": [
-                                                            "ATAcode",
+                                                            "serialNumber",
+                                                            "ataCode",
                                                             "name"
                                                         ],
                                                         "type": "object"
@@ -3514,8 +3543,8 @@ var schemas = `
                                                                 ],
                                                                 "type": "string"
                                                             },
-                                                            "aircraft": {
-                                                                "description": "Aircraft serial number",
+                                                            "assembly": {
+                                                                "description": "assembly serial number",
                                                                 "type": "string"
                                                             }
                                                         },
@@ -3642,10 +3671,6 @@ var schemas = `
                                         "description": "tbd",
                                         "type": "string"
                                     },
-                                    "assemblyNumber": {
-                                        "description": "Assembly type identifier",
-                                        "type": "string"
-                                    },
                                     "ataCode": {
                                         "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                         "type": "string"
@@ -3657,10 +3682,15 @@ var schemas = `
                                     "name": {
                                         "description": "The assembly name.",
                                         "type": "string"
+                                    },
+                                    "serialNumber": {
+                                        "description": "Assembly identifier assigned by manufacturer",
+                                        "type": "string"
                                     }
                                 },
                                 "required": [
-                                    "ATAcode",
+                                    "serialNumber",
+                                    "ataCode",
                                     "name"
                                 ],
                                 "type": "object"
@@ -4064,10 +4094,6 @@ var schemas = `
                                                                     "description": "tbd",
                                                                     "type": "string"
                                                                 },
-                                                                "assemblyNumber": {
-                                                                    "description": "Assembly type identifier",
-                                                                    "type": "string"
-                                                                },
                                                                 "ataCode": {
                                                                     "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                                                     "type": "string"
@@ -4079,10 +4105,15 @@ var schemas = `
                                                                 "name": {
                                                                     "description": "The assembly name.",
                                                                     "type": "string"
+                                                                },
+                                                                "serialNumber": {
+                                                                    "description": "Assembly identifier assigned by manufacturer",
+                                                                    "type": "string"
                                                                 }
                                                             },
                                                             "required": [
-                                                                "ATAcode",
+                                                                "serialNumber",
+                                                                "ataCode",
                                                                 "name"
                                                             ],
                                                             "type": "object"
@@ -4207,8 +4238,8 @@ var schemas = `
                                                                     ],
                                                                     "type": "string"
                                                                 },
-                                                                "aircraft": {
-                                                                    "description": "Aircraft serial number",
+                                                                "assembly": {
+                                                                    "description": "assembly serial number",
                                                                     "type": "string"
                                                                 }
                                                             },
@@ -4335,10 +4366,6 @@ var schemas = `
                                             "description": "tbd",
                                             "type": "string"
                                         },
-                                        "assemblyNumber": {
-                                            "description": "Assembly type identifier",
-                                            "type": "string"
-                                        },
                                         "ataCode": {
                                             "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                             "type": "string"
@@ -4350,10 +4377,15 @@ var schemas = `
                                         "name": {
                                             "description": "The assembly name.",
                                             "type": "string"
+                                        },
+                                        "serialNumber": {
+                                            "description": "Assembly identifier assigned by manufacturer",
+                                            "type": "string"
                                         }
                                     },
                                     "required": [
-                                        "ATAcode",
+                                        "serialNumber",
+                                        "ataCode",
                                         "name"
                                     ],
                                     "type": "object"
@@ -4755,10 +4787,6 @@ var schemas = `
                                                                 "description": "tbd",
                                                                 "type": "string"
                                                             },
-                                                            "assemblyNumber": {
-                                                                "description": "Assembly type identifier",
-                                                                "type": "string"
-                                                            },
                                                             "ataCode": {
                                                                 "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                                                 "type": "string"
@@ -4770,10 +4798,15 @@ var schemas = `
                                                             "name": {
                                                                 "description": "The assembly name.",
                                                                 "type": "string"
+                                                            },
+                                                            "serialNumber": {
+                                                                "description": "Assembly identifier assigned by manufacturer",
+                                                                "type": "string"
                                                             }
                                                         },
                                                         "required": [
-                                                            "ATAcode",
+                                                            "serialNumber",
+                                                            "ataCode",
                                                             "name"
                                                         ],
                                                         "type": "object"
@@ -4898,8 +4931,8 @@ var schemas = `
                                                                 ],
                                                                 "type": "string"
                                                             },
-                                                            "aircraft": {
-                                                                "description": "Aircraft serial number",
+                                                            "assembly": {
+                                                                "description": "assembly serial number",
                                                                 "type": "string"
                                                             }
                                                         },
@@ -5026,10 +5059,6 @@ var schemas = `
                                         "description": "tbd",
                                         "type": "string"
                                     },
-                                    "assemblyNumber": {
-                                        "description": "Assembly type identifier",
-                                        "type": "string"
-                                    },
                                     "ataCode": {
                                         "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                         "type": "string"
@@ -5041,10 +5070,15 @@ var schemas = `
                                     "name": {
                                         "description": "The assembly name.",
                                         "type": "string"
+                                    },
+                                    "serialNumber": {
+                                        "description": "Assembly identifier assigned by manufacturer",
+                                        "type": "string"
                                     }
                                 },
                                 "required": [
-                                    "ATAcode",
+                                    "serialNumber",
+                                    "ataCode",
                                     "name"
                                 ],
                                 "type": "object"
@@ -5448,10 +5482,6 @@ var schemas = `
                                                                     "description": "tbd",
                                                                     "type": "string"
                                                                 },
-                                                                "assemblyNumber": {
-                                                                    "description": "Assembly type identifier",
-                                                                    "type": "string"
-                                                                },
                                                                 "ataCode": {
                                                                     "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                                                     "type": "string"
@@ -5463,10 +5493,15 @@ var schemas = `
                                                                 "name": {
                                                                     "description": "The assembly name.",
                                                                     "type": "string"
+                                                                },
+                                                                "serialNumber": {
+                                                                    "description": "Assembly identifier assigned by manufacturer",
+                                                                    "type": "string"
                                                                 }
                                                             },
                                                             "required": [
-                                                                "ATAcode",
+                                                                "serialNumber",
+                                                                "ataCode",
                                                                 "name"
                                                             ],
                                                             "type": "object"
@@ -5591,8 +5626,8 @@ var schemas = `
                                                                     ],
                                                                     "type": "string"
                                                                 },
-                                                                "aircraft": {
-                                                                    "description": "Aircraft serial number",
+                                                                "assembly": {
+                                                                    "description": "assembly serial number",
                                                                     "type": "string"
                                                                 }
                                                             },
@@ -5719,10 +5754,6 @@ var schemas = `
                                             "description": "tbd",
                                             "type": "string"
                                         },
-                                        "assemblyNumber": {
-                                            "description": "Assembly type identifier",
-                                            "type": "string"
-                                        },
                                         "ataCode": {
                                             "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                             "type": "string"
@@ -5734,10 +5765,15 @@ var schemas = `
                                         "name": {
                                             "description": "The assembly name.",
                                             "type": "string"
+                                        },
+                                        "serialNumber": {
+                                            "description": "Assembly identifier assigned by manufacturer",
+                                            "type": "string"
                                         }
                                     },
                                     "required": [
-                                        "ATAcode",
+                                        "serialNumber",
+                                        "ataCode",
                                         "name"
                                     ],
                                     "type": "object"
@@ -6139,10 +6175,6 @@ var schemas = `
                                                                 "description": "tbd",
                                                                 "type": "string"
                                                             },
-                                                            "assemblyNumber": {
-                                                                "description": "Assembly type identifier",
-                                                                "type": "string"
-                                                            },
                                                             "ataCode": {
                                                                 "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                                                 "type": "string"
@@ -6154,10 +6186,15 @@ var schemas = `
                                                             "name": {
                                                                 "description": "The assembly name.",
                                                                 "type": "string"
+                                                            },
+                                                            "serialNumber": {
+                                                                "description": "Assembly identifier assigned by manufacturer",
+                                                                "type": "string"
                                                             }
                                                         },
                                                         "required": [
-                                                            "ATAcode",
+                                                            "serialNumber",
+                                                            "ataCode",
                                                             "name"
                                                         ],
                                                         "type": "object"
@@ -6282,8 +6319,8 @@ var schemas = `
                                                                 ],
                                                                 "type": "string"
                                                             },
-                                                            "aircraft": {
-                                                                "description": "Aircraft serial number",
+                                                            "assembly": {
+                                                                "description": "assembly serial number",
                                                                 "type": "string"
                                                             }
                                                         },
@@ -6410,10 +6447,6 @@ var schemas = `
                                         "description": "tbd",
                                         "type": "string"
                                     },
-                                    "assemblyNumber": {
-                                        "description": "Assembly type identifier",
-                                        "type": "string"
-                                    },
                                     "ataCode": {
                                         "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                         "type": "string"
@@ -6425,10 +6458,15 @@ var schemas = `
                                     "name": {
                                         "description": "The assembly name.",
                                         "type": "string"
+                                    },
+                                    "serialNumber": {
+                                        "description": "Assembly identifier assigned by manufacturer",
+                                        "type": "string"
                                     }
                                 },
                                 "required": [
-                                    "ATAcode",
+                                    "serialNumber",
+                                    "ataCode",
                                     "name"
                                 ],
                                 "type": "object"
@@ -6832,10 +6870,6 @@ var schemas = `
                                                                     "description": "tbd",
                                                                     "type": "string"
                                                                 },
-                                                                "assemblyNumber": {
-                                                                    "description": "Assembly type identifier",
-                                                                    "type": "string"
-                                                                },
                                                                 "ataCode": {
                                                                     "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                                                     "type": "string"
@@ -6847,10 +6881,15 @@ var schemas = `
                                                                 "name": {
                                                                     "description": "The assembly name.",
                                                                     "type": "string"
+                                                                },
+                                                                "serialNumber": {
+                                                                    "description": "Assembly identifier assigned by manufacturer",
+                                                                    "type": "string"
                                                                 }
                                                             },
                                                             "required": [
-                                                                "ATAcode",
+                                                                "serialNumber",
+                                                                "ataCode",
                                                                 "name"
                                                             ],
                                                             "type": "object"
@@ -6975,8 +7014,8 @@ var schemas = `
                                                                     ],
                                                                     "type": "string"
                                                                 },
-                                                                "aircraft": {
-                                                                    "description": "Aircraft serial number",
+                                                                "assembly": {
+                                                                    "description": "assembly serial number",
                                                                     "type": "string"
                                                                 }
                                                             },
@@ -7103,10 +7142,6 @@ var schemas = `
                                             "description": "tbd",
                                             "type": "string"
                                         },
-                                        "assemblyNumber": {
-                                            "description": "Assembly type identifier",
-                                            "type": "string"
-                                        },
                                         "ataCode": {
                                             "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                             "type": "string"
@@ -7118,10 +7153,15 @@ var schemas = `
                                         "name": {
                                             "description": "The assembly name.",
                                             "type": "string"
+                                        },
+                                        "serialNumber": {
+                                            "description": "Assembly identifier assigned by manufacturer",
+                                            "type": "string"
                                         }
                                     },
                                     "required": [
-                                        "ATAcode",
+                                        "serialNumber",
+                                        "ataCode",
                                         "name"
                                     ],
                                     "type": "object"
@@ -7140,6 +7180,56 @@ var schemas = `
                     },
                     "minItems": 0,
                     "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "readAssetSamples": {
+            "description": "Returns a string generated from the schema that contains sample Objects as specified in the file 'generate.json' in the /scripts folder.",
+            "properties": {
+                "args": {
+                    "description": "accepts no arguments",
+                    "items": {},
+                    "maxItems": 0,
+                    "minItems": 0,
+                    "type": "array"
+                },
+                "function": {
+                    "description": "readAssetSamples function",
+                    "enum": [
+                        "readAssetSamples"
+                    ],
+                    "type": "string"
+                },
+                "method": "query",
+                "result": {
+                    "description": "JSON encoded object containing selected sample data",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "readAssetSchemas": {
+            "description": "Returns a string generated from the schema that contains APIs and Objects as specified in the file 'generate.json' in the /scripts folder.",
+            "properties": {
+                "args": {
+                    "description": "accepts no arguments",
+                    "items": {},
+                    "maxItems": 0,
+                    "minItems": 0,
+                    "type": "array"
+                },
+                "function": {
+                    "description": "readAssetSchemas function",
+                    "enum": [
+                        "readAssetSchemas"
+                    ],
+                    "type": "string"
+                },
+                "method": "query",
+                "result": {
+                    "description": "JSON encoded object containing selected schemas",
+                    "type": "string"
                 }
             },
             "type": "object"
@@ -7584,10 +7674,6 @@ var schemas = `
                                                                     "description": "tbd",
                                                                     "type": "string"
                                                                 },
-                                                                "assemblyNumber": {
-                                                                    "description": "Assembly type identifier",
-                                                                    "type": "string"
-                                                                },
                                                                 "ataCode": {
                                                                     "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                                                     "type": "string"
@@ -7599,10 +7685,15 @@ var schemas = `
                                                                 "name": {
                                                                     "description": "The assembly name.",
                                                                     "type": "string"
+                                                                },
+                                                                "serialNumber": {
+                                                                    "description": "Assembly identifier assigned by manufacturer",
+                                                                    "type": "string"
                                                                 }
                                                             },
                                                             "required": [
-                                                                "ATAcode",
+                                                                "serialNumber",
+                                                                "ataCode",
                                                                 "name"
                                                             ],
                                                             "type": "object"
@@ -7727,8 +7818,8 @@ var schemas = `
                                                                     ],
                                                                     "type": "string"
                                                                 },
-                                                                "aircraft": {
-                                                                    "description": "Aircraft serial number",
+                                                                "assembly": {
+                                                                    "description": "assembly serial number",
                                                                     "type": "string"
                                                                 }
                                                             },
@@ -7855,10 +7946,6 @@ var schemas = `
                                             "description": "tbd",
                                             "type": "string"
                                         },
-                                        "assemblyNumber": {
-                                            "description": "Assembly type identifier",
-                                            "type": "string"
-                                        },
                                         "ataCode": {
                                             "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                             "type": "string"
@@ -7870,10 +7957,15 @@ var schemas = `
                                         "name": {
                                             "description": "The assembly name.",
                                             "type": "string"
+                                        },
+                                        "serialNumber": {
+                                            "description": "Assembly identifier assigned by manufacturer",
+                                            "type": "string"
                                         }
                                     },
                                     "required": [
-                                        "ATAcode",
+                                        "serialNumber",
+                                        "ataCode",
                                         "name"
                                     ],
                                     "type": "object"
@@ -8200,10 +8292,6 @@ var schemas = `
                                         "description": "tbd",
                                         "type": "string"
                                     },
-                                    "assemblyNumber": {
-                                        "description": "Assembly type identifier",
-                                        "type": "string"
-                                    },
                                     "ataCode": {
                                         "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                                         "type": "string"
@@ -8215,10 +8303,15 @@ var schemas = `
                                     "name": {
                                         "description": "The assembly name.",
                                         "type": "string"
+                                    },
+                                    "serialNumber": {
+                                        "description": "Assembly identifier assigned by manufacturer",
+                                        "type": "string"
                                     }
                                 },
                                 "required": [
-                                    "ATAcode",
+                                    "serialNumber",
+                                    "ataCode",
                                     "name"
                                 ],
                                 "type": "object"
@@ -8700,10 +8793,6 @@ var schemas = `
                             "description": "tbd",
                             "type": "string"
                         },
-                        "assemblyNumber": {
-                            "description": "Assembly type identifier",
-                            "type": "string"
-                        },
                         "ataCode": {
                             "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                             "type": "string"
@@ -8715,10 +8804,15 @@ var schemas = `
                         "name": {
                             "description": "The assembly name.",
                             "type": "string"
+                        },
+                        "serialNumber": {
+                            "description": "Assembly identifier assigned by manufacturer",
+                            "type": "string"
                         }
                     },
                     "required": [
-                        "ATAcode",
+                        "serialNumber",
+                        "ataCode",
                         "name"
                     ],
                     "type": "object"
@@ -8798,10 +8892,6 @@ var schemas = `
                             "description": "tbd",
                             "type": "string"
                         },
-                        "assemblyNumber": {
-                            "description": "Assembly type identifier",
-                            "type": "string"
-                        },
                         "ataCode": {
                             "description": "The ATA code defining the assembly type, e.g. 32=landing gear, 32-50=steering.",
                             "type": "string"
@@ -8813,10 +8903,15 @@ var schemas = `
                         "name": {
                             "description": "The assembly name.",
                             "type": "string"
+                        },
+                        "serialNumber": {
+                            "description": "Assembly identifier assigned by manufacturer",
+                            "type": "string"
                         }
                     },
                     "required": [
-                        "ATAcode",
+                        "serialNumber",
+                        "ataCode",
                         "name"
                     ],
                     "type": "object"
@@ -9050,8 +9145,8 @@ var schemas = `
                             ],
                             "type": "string"
                         },
-                        "aircraft": {
-                            "description": "Aircraft serial number",
+                        "assembly": {
+                            "description": "assembly serial number",
                             "type": "string"
                         }
                     },

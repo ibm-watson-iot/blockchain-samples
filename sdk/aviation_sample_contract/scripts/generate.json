@@ -24,6 +24,7 @@
       "deleteAllAssetsAirline",
       "deleteAllAssetsAircraft",
       "deleteAllAssetsAssembly",
+      "deleteWorldState",
       "readAssetAirline",
       "readAssetAircraft",
       "readAssetAssembly",
@@ -37,6 +38,8 @@
       "readContractConfig",
       "readContractState",
       "readWorldState",
+      "readAssetSchemas",
+      "readAssetSamples",
       "setLoggingLevel",
       "setCreateOnUpdate"
     ],
