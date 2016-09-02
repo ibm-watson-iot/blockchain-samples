@@ -1,12 +1,31 @@
-#Sample Trade Lane Contract Documentation
-##Start Here
+# Watson IoT Blockchain Sample Documentation
+
+## Introduction
+
+Watson IoT blockchain samples currently fall into three broad categories:
+
+- simple single-asset hello world sample
+- simple single-asset sample with numerous additional features
+- advanced multi-asset sample with events and additional features
+
+All of these use a schema to drive the related monitoring UI, which can be used to initiate any transaction or query that is exported for external use via the JSON configuration file.
+
+>This repository is evolving, and there will be changes in how we partition the samples. One useful change will the packaging of the additional features. At this time, the features are implemented in *sidecar* files in package main. This tends to clutter the folder in which the smart contract resides and so will be addressed in time.
+
+## Start Here
+
 Read the [Introduction to Hyperledger Smart Contracts for IoT, Best Practices and Patterns](HyperledgerContractsIntroBestPracticesPatterns.md) and its specified pre-reading __before__ reading the detailed contract documents. 
 
 Read the tutorial [Customizing the Sample Contract](CustomizingTheSampleContract.md) to get a feel for the simplicity and flexibility inherent in the *partial state as event* pattern that is used heavily in the trade lane sample contract.
 
 When you have completed the pre-reading, start with [`main.md`](main.md) for detailed documentation on the IoT Trade Lane sample contract's main body and processing. Then move on to the detailed module documents shown below in your order of interest.
 
-##Available
+## Topics
+
+* [`FAQ.md`](FAQ.md)
+  - answers *frequently asked questions*, or perhaps more accurately *fervently anticipated questions*
+* [`assetsAndEvents.md`](assetsAndEvents.md)
+  - discusses how assets and events are defined, modelled and used in these samples
 * [`alerts.md`](alerts.md)
   - discusses the alerts module [`alerts.go`](../alerts.go), which supports contract-specific alert conditions
 * [`generator.md`](generator.md)
@@ -22,7 +41,8 @@ When you have completed the pre-reading, start with [`main.md`](main.md) for det
 * [`schema.md`](schema.md)
   - discusses the [JSON SCHEMA v4](http://json-schema.org/documentation.html) compatible schema in the file [`payloadSchema.json`](../payloadSchema.json), which defines the API and data model for the contract
 
-##Under Construction
+## Under Construction
+
 * [`assetHistory.md`](contractState.md)
   - discusses the module [assethistory.go](`../assethistory.go`), which manages asset state history sorted by time with the most recent state first; each asset's history is stored in a separate bucket
 * [`contractState.md`](contractState.md)

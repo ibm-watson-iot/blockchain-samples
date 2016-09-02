@@ -1,6 +1,9 @@
 # Introduction to Hyperledger Smart Contracts for IoT<br/>Best Practices and Patterns
+
 This will introduce you to smart contracts for the Hyperledger Fabric and a few best practices in the form of patterns that the author has found to be useful in the context of the Internet of Things. 
+
 ## A Brief Introduction to Smart Contracts for Hyperledger
+
 The reader should have some background in 
 [Hyperledger fabric](https://github.com/hyperledger/fabric) concepts before reading this document and its siblings. Pre-reading suggestions include:
 
@@ -8,24 +11,28 @@ The reader should have some background in
 - a comprehensive explanation of Hyperledger concepts and implementation in the [Protocol Specification](https://github.com/hyperledger/fabric/blob/master/docs/protocol-spec.md). 
 - the [Effective Go](https://golang.org/doc/effective_go.html) online ebook
 
-###Smart Contract
+### Smart Contract
+
 The [IoT Trade Lane Sample for Hyperledger](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/trade_lane_contract_hyperledger) 
 smart contract is written in the `Go` language. It runs in a _**[Hyperledger](https://github.com/hyperledger "open source blockchain fabric incubating in the Linux Foundation")** blockchain fabric_ and is designed for integration with the _**[Watson IoT Platform](http://www.ibm.com/internet-of-things/) (IoTP)**_. 
 
 > From this point on, the *IoT Trade Lane Sample for Hyperledger* is implied as having implemented what is discussed herein. When referenced directly, it is simply called *trade lane*.
 
 Smart contracts implement business logic specifically oriented towards a blockchain's distributed, transparent ledger. Smart contracts service two classes of message:
+
 - transactions, which change ledger state, and
 - queries, which read ledger state
 
 Transactions can include, but are not limited to:
+
 - deploy a *contract instance* into the fabric
 - upgrade a *contract instance* in the fabric with a new version (future feature)
 - create an asset
 - modify an asset's state
 - delete an asset
 
-####Contract Instance
+#### Contract Instance
+
 The term *contract instance* defines one deployment of a specific body of contract code. For example, say that you have a contract code that you think of as version 1. You can deploy that contract several times for several purposes, assuming that it is designed for multiple deployments. A contract in its physical form is referred to as *chaincode*, and these two terms are often used interchangeably.
 
 A chaincode's ID as returned as the synchronous result of a deployment transaction defines the contract instance's target ID for messages. The UUID is calculated over the source code, the path from which it is deployed, the constructor function name and the initialization parameters. See [Protocol Specification - 3.1.2.1 Transaction Data Structure](https://github.com/hyperledger/fabric/blob/master/docs/protocol-spec.md#3121-transaction-data-structure)
@@ -36,14 +43,16 @@ Now say that you have added some features and want to deploy what you consider t
 
 > Note that contracts are difficult to upgrade at this time, and Hyperledger is evolving rapidly.
 
-####Behavior and State
+#### Behavior and State
+
 A contract's chaincode encapsulates behavior and state. Trade lane's behavior and state are not specific to any given scenario or domain, but the architecture and design flexibly support IoT device events such as those sent by the IoTP. Note that *behavior* is event-oriented and *state* is asset-oriented.
 
 Trade lane's event and state data model has a few customizations to simulate tracking of assets such as packages and containers as they move between locations in the hands of one or more carriers. 
 
 Extending trade lane to handle more complex scenarios or changing it for other domains is a straightforward exercise as will be discussed in [`CustomizingTheSampleContract.md`](./CustomizingTheSampleContract.md). 
 
-###Hyperledger Fabric
+### Hyperledger Fabric
+
 ![Diagram 1: Hyperledger Fabric](images/hyperledger_fabric.jpg)
 Diagram 1: Hyperledger Fabric
 
@@ -59,7 +68,8 @@ Applications can communicate with the fabric through an NVP or a VP.
 
 See [Protocol Specification - 2.2.2 Multiple Validating Peers](https://github.com/hyperledger/fabric/blob/master/docs/protocol-spec.md#222-multiple-validating-peers) for more information.
 
-###Hyperledger Contract Connection and Flow
+### Hyperledger Contract Connection and Flow
+
 A contract instance in the Hyperledger fabric communicates directly with its associated peer through a `shim`. A shim is similar to a *service provider interface* in other architectures, allowing many contracts with varied logic and purpose to communicate with a peer.
 
 ![Diagram 2: Peer to contract connection](images/peer_contract_connection.jpg)  
@@ -108,7 +118,8 @@ The process:
 
 >Note that transactions execute asynchronously, returning the transaction's UUID synchronously and a later event that documents the success or failure of the transaction. Transactions can see both committed and uncommitted state. Queries execute synchronously and can see only committed state. Thus, queries will not see the result of a transaction immediately after the UUID is received, or even for several seconds or longer. It is of **critical** importance to design applications with a tolerance for the inherent hysteresis.
 
-###Messaging Between Application and Contract
+### Messaging Between Application and Contract
+
 See [Protocol-Specification - 6.2.1.3 Chaincode API](https://github.com/hyperledger/fabric/blob/master/docs/protocol-spec.md#6213-chaincode-api)
 
 See the fabric's [RESTful API](https://github.com/hyperledger/fabric/blob/master/core/rest/rest_api.json) in the 
@@ -141,7 +152,8 @@ The rest of this document is concerned with the contract's API as implemented in
 
 ---
 
-##Contract API and Operation
+## Contract API and Operation
+
 User chaincode runs in a virtual environment such as a Docker container and communicates with its associated peer via the shim messaging protocol as shown in Diagram 2. The contract executable is built after extracting it from a github repository either locally as a github clone inside the peer build, or remotely at [github](http://github.com). 
 
 Trade lane's physical structure is flat, using one `main.go` Go file and several related Go files in the top level folder. Together these embody `package main`. The main file implements the shim interface, the API delegation logic, and the contract's state and business logic.
@@ -154,7 +166,8 @@ This file is in the `/docs` subfolder, along with other documents describing the
 //go:generate go run scripts/generate_go_schema.go
 ```
 
-###Contract Payload and Delegation
+### Contract Payload and Delegation
+
 The *JSON RPC* message envelope targets chaincode modes, which translates to the following functions and arguments in the shim's API:
 
 - `Init` : called for `deploy` mode, initializes the contract, may delegate by switching on `function` but trade lane does not
@@ -198,7 +211,8 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
 ```
 `Invoke` and `Query` functions delegate internally for all but the most trivial of APIs. In deploy mode, a simple contract may implement initialization code directly in the `Init` delegator function, while more complex contracts might add, say, an `upgrade` function.
 
-###Ledger State
+### Ledger State
+
 Transactions generally exist to change ledger state as the result of an incoming event. The state might pertain to the contract or all assets (e.g. recent state changes), or to an individual asset. Ledger state manipulation is performed with the stub API. 
 
 Ledger state is stored as key:value (K:V) pairs with string keys and []byte values. The byte stream is often a cast of a string value. Hyperledger examples show string names as keys and converted integers (using iToA) as values while this contract chooses to store state as a JSON encoded object. 
@@ -255,7 +269,8 @@ Code snippets for the ledger state APIs used in trade lane:
 ```
 - `stub.DelState` : removes the state value at a specified key, but does not remove transactions from the blockchain as those are indelible
 
-###State Keys
+### State Keys
+
 See [Protocol-Specification - 3.2 Ledger](https://github.com/hyperledger/fabric/blob/master/docs/protocol-spec.md#32-ledger)
 
 It is important to define key patterns that can be managed in a straightforward manner without performing indirect key lookups. It is more efficient and clear to use asset IDs directly where possible. This contract stores values as JSON encoded object strings. 
@@ -267,8 +282,10 @@ Trade lane uses the following keys and patterns to store state:
 - `ContractStateKey` : contract state including version, nickname, and array of managed assetIDs
 - `RecentStatesKey` : array of state changes in order by time, most recent first, assets appear only once and jump to the front when they get a new state change
 
-##Contract Patterns 
-###CRUD API Pattern
+## Contract Patterns
+
+### CRUD API Pattern
+
 The contract payload definition (i.e. Contract API) is generic, so there are no restrictions on the names that can be used for the functions and arguments. On the other hand, following naming patterns offers advantages where automation is concerned, as demonstrated by the `monitoring_ui` that configures itself based on the CRUD pattern that trade lane uses for API function names.
 
 The CRUD pattern is a familiar way to model database access and while it is not without its issues, it offers a clear and straighforward resource model for state manipulation and avoids API proliferation that is common as devices get smarter with larger subsets of state data sent in each device event.
@@ -295,33 +312,38 @@ CRUD standards for `CREATE`, `READ`, `UPDATE`, and `DELETE` operations. This con
 
 In addition to the generic UIs in this project, the consistency of this pattern is also leveraged in the mapping features in the IoT Platform. 
 
-###Partial State as Event Pattern
+### Partial State as Event Pattern
+
 The term state is generally used as a short form for *World State*, which is the total of all K:V pairs in the ledger. However, state is also used when referring to the current values of all of an asset's properties, which are stored in a single object called `state`. The writable properties are grouped into a subset object called `event`, which models the incoming events sent by devices and applications. 
 
 This contract is focused on assets and so are the `event` and `state` objects:
 - `event` : defines all of the writable properties in the state.
 - `state` : defines all asset properties, as in the `event` properties plus read-only properties such as `alerts` and `compliant`
 
-####Event
+#### Event
+
 Having previously established that the function names in this contract API rigidly follow the CRUD pattern, the *partial state as event* pattern defines how arguments are shaped when passed through the `args` string array. Trade lane uses only `Args[0]` and expects a valid JSON encoded `event`, as defined in the [contract payload schema](../payloadSchema.json). 
 
 This pattern's utility lies in using partial states as events rather than defining a large number of rigid event objects. With flexible property tags, JSON objects need not enforce completeness. It is perfectly valid to be missing all but the properties tagged as `required`. This contract's `event` object has only the `assetID` defined as required.
 
 An important advantage of this approach for IoT device event processing is that the contract need not be updated and redeployed (i.e. upgraded) when a new composite device appears in the system. Previously unseen combinations of writable properties are always valid. For example, a new device that can send a location, a temperature and a gForce in a single event does not affect the contract's processing at all. But were this a rigidly defined API, a new event API would be required and the contract would need to be upgraded across the entire fabric. 
 
-####State
+#### State
+
 Asset state builds up as events are received. For example, an event with only the `assetID` would create an empty state, effectively registering the asset on the blockchain. A second event could then arrive with a location, and a third with a temperature. As each event is processed, a new state is calculated as the union of current state and incoming event, and then written into the ledger. 
 
 Asset state is therefore the sum of all events with their calculations (e.g. alert status), encoded as a JSON string and stored into the ledger with the `assetID` as key. And just in case I have not repeated it often enough, incoming events are [deep merged](mapUtils.md) into asset state ad infinitem, each event creating a new asset state in the ledger. 
 
-####Ad Hoc Extension
+#### Ad Hoc Extension
+
 The partial state as event pattern helps with object model extension in a running contract. Because JSON is tagged and flexible, a property has been introduced into `event` and `state` that is meant to offer extra flexibility for applications to store data alongside the pre-defined properties. 
 
 This property is called `extension` and can be treated as a nested object to which application-managed state is added as necessary. This enables an application to add "sidecar" data to asset state without upgrading a contract. The deep merge algorithm handles extension data just as it handles schema defined properties. 
 
 Treat this feature with care though, as the contract knows nothing of this data and thus cannot apply rules to it. But it can save a lot of time and cost when related data can be tracked alongside and is thus available to all monitors and applications. 
 
-###Maps over Structs
+### Maps over Structs
+
 The partial state as event pattern requires the use of another pattern, that being the use of maps over structs for internal object management. 
 
 In Go, JSON will populate a struct from an incoming event using reflection. However, properties that are not present in the struct are lost, and all properties not present in the event are set to their zero value, which cannot be used to determine presence or absence of the property since `0` is a valid value with some fields such as temperature.

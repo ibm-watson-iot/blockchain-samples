@@ -1,8 +1,10 @@
-#The Schema Generator Script  
+# The Schema Generator Script
+
 [`scripts/generate_go_schema.go`](scripts/generate_go_schema.go "generate selected portions of the contract schema in go")  
 [`scripts/generate.json`](scripts/generate.json "configure the contract schema generator")
 
-#Introduction
+## Introduction
+
 This module contains a Go program that acts as a script, executed when the command `go generate` is run while in the main contract folder. The module resides in the scripts folder because it is also main program (as in `package main`) and so would conflict with the contract's main package were they colocated.
 
 The module performs three functions:
@@ -15,8 +17,10 @@ See [`schema.md`](schema.md "describes the payload schema and how it is used") f
 
 See [Understanding JSON Schema](http://spacetelescope.github.io/understanding-json-schema/UnderstandingJSONSchema.pdf "short reference document on JSON Schema 4") for a reasonably short, yet thorough reference on JSON Schema 4.
 
-#Mainline Processing
-##func main
+## Mainline Processing
+
+### func main
+
 The initial section concerns itself with loading its configuration from the json configuration file. 
 
 >*Note that this could have been a yaml file for better readability, but we were unable to find a yaml project that did not use unnecessarily restrictive licenses, and json is human-readable enough for our purposes.* 
@@ -30,35 +34,45 @@ Finally, a new version of the schema is generated from the unmarshaled schema by
 This new fully expanded schema is passed into the functions `generateGoSchemaFile` and `generateGoSampleFile` along with the config that was previously read and unmarshaled.
 
 ---
-#Schemas generation
-##func getObject
+
+## Schemas generation
+
+### func getObject
+
 Retrieves an object based on a path. Assumes that the paths are relative to `#/definitions/` and so that does not need to appear. References inside the schema will generally have the full path. Used by replace references to perform the recursive schema expansion.
 
-##func replaceReferences
+### func replaceReferences
+
 Crawls the entire schema, replacing any `$ref` by the referenced content. 
 
-##func referencesExist
+### func referencesExist
+
 Returns true if a reference exists anywhere in the passed in subschema. Deprecated and no longer used, but left in for potential future uses.
 
-##func generateGoSchemaFile
+### func generateGoSchemaFile
+
 Accepts as input the fully expanded schema and the configuration that specifies the APIs and Object Model Elements to include in the go file. 
 
 The `schemas.go` file begins with the package and a string definition:
 
 ``` go
+
 package main
 
 var schemas = `
 {
     "API": {
         "createAsset": {
+
 ```
+
 The file is automatically visible to the contract by its membership in the main package, and the string defined therein can be returned exactly as defined to an application calling the API `getAssetSchemas`. The returned string is a JSON object with two contained objects, `API` and `objectModelSchemas`. (And yes, the name should have had more of a parallel feel for API, something like ObjectModel.) 
 
 The API section contains the APIs named in 
 [`generate.json`](../scripts/generate.json "configuration for schemas and samples processing"), co-located in the scripts folder beside this file:
 
 ``` json
+
     "API": [
       "init",
       "createAsset",
@@ -73,7 +87,9 @@ The API section contains the APIs named in
       "setLoggingLevel",
       "setCreateOnUpdate"
     ],
+
 ```
+
 We generally include all CRUD APIs (create, read, update, delete) along with the init and the `set` APIs, which are used to control execution features of the contract such as logging and *update redirect to create on asset not found*.
 
 Including the entire API has some advantages when dynamic mapping and form generation are considered. Plugins exist that allow generic GUIs to be created with minimal effort. One such is used by the simple and generic UIs in this project.
@@ -85,8 +101,11 @@ Inputs and outputs are a part of the API definitions, so theoretically it is unn
 But there is value to seeing the contract data model as a separate concern and so the script generates `objectModelSchemas` from the config entry `goSchemaElements` (another name that needs cleaning up in the future).
 
 ---
-#Samples Generation
-##func sampleType
+
+## Samples Generation
+
+### func sampleType
+
 This is the primary function in the simple sample generator. It is passed a schema object (remember that all elements are defined by schema objects with properties like `type`, `default`, `description` and so on) and an elementName. It attempts to find a type field and prints an error if type is missing. Note that you must fix this error before continuing as all JSON Schema 4 objects must have a type.
 
 >*Why did the the initial error checking not spot this issue? The error checking performed in the mainline processing handled missing schema file and syntax errors only. Any valid JSON would pass that test. But only JSON Schema 4 compatible JSON will pass this test.*
@@ -110,32 +129,42 @@ If the type field is found, then a `switch` is performed on its value. Valid cas
 - `array` : gets a sample value from the function `arrayFromSchema`
 - `object` : a nested JSON object gets sample values recursively
 
-##func arrayFromSchema
+### func arrayFromSchema
+
 Returns an array `enum` if present, else returns an array with a sample of the element inside the `items` object.
 
-##generateGoSampleFile
+### generateGoSampleFile
+
 Accepts as input the fully expanded schema and the configuration that specifies the APIs and Object Model Elements to include in the go file. 
 
 The `samples.go` file begins with the package and a string definition:
+
 ``` go
+
 package main
 
 var samples = `
 {
     "contractState": {
         "activeAssets": [
+
 ```
+
 The returned string is a JSON object with samples for each of the specified objects:
 
 ``` json
+
     "goSampleElements": [
       "initEvent",
       "event",
       "state",
       "contractState"
     ]
+
 ```
+
 Samples can be useful to preload objects in a (for example) JavaScript client. Scenarios will exist where calling `getAssetSamples` for the preconfigured objects is preferred to calling `getAssetSchemas` and processing the raw JSON Schema.
 
-#Conclusion
+## Conclusion
+
 There are a few other bits of code in the script that are not in use currently. They exist for easy testing of the script (by uncommenting certain lines in main) and so are left for the convenience of contract developers.

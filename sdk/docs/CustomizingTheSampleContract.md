@@ -1,5 +1,7 @@
-#Customize the Trade Lane or other IoT Sample Contract for Hyperledger
-##Prerequisite
+# Customize the Trade Lane or other IoT Sample Contract for Hyperledger
+
+## Prerequisite
+
 Please read the document [Hyperledger Contracts Introduction to Best Practices and Patterns](./HyperledgerContractsIntroBestPracticesPatterns.md) before reading this document as it helps to have an understanding of the flow that is intended for the sample contract before adding new features.
 ## Introduction
 This generic IoT sample smart contract is intended as a template in the spirit of a well-featured *hello world*. It contains customizations that simulate a simple trade lane scenario: shipping a consignment in an identifiable container or package between locations. There can be many such simultaneous shipments.
@@ -10,7 +12,8 @@ This contract tracks some of the key parameters in a simple fulfillment scenario
 
 > See [UBL 2.1.10](http://docs.oasis-open.org/ubl/os-UBL-2.1/UBL-2.1.html#S-SHIPMENT-CONSIGNMENT) for a description of the many possible relationships between shipments and consignments.   
 
-###Basic Trade Lane Scenario
+### Basic Trade Lane Scenario
+
 For simplicity, the consignment, shipper, receiver, consignor and consignee are not identified. The asset that is the target of all update events is either a container or a package, and will be referred to going forward as *the container*. The container is identified by the generic term *asset*, and that is its JSON tag. This contract manages multiple containers at the same time as per the singleton contract instance and multiple managed asset patterns. 
 
 All create and update events come through the `createAsset` and `updateAsset` CRUD functions, and they target the container by ID, which is obviously mandatory. These events can contain any combination of the container's location, contents temperature, and the carrier bearing responsibility for the container. Events can contain a `timestamp` property if that is critical, but the contract will copy the blockchain's transaction timestamp into the state property `txntimestamp` regardless of the presence or absence of a device timestamp.
@@ -19,16 +22,18 @@ The event stream is fluid in that there is no formal state machine. There is no 
 
 The container is considered to be moving when location events are received. It is considered contain frozen goods when temperature events are received. This because the contract has an explicit rule that throws the `OVERTEMP` alert when the temperature exceeds 0 degrees Celsuis exclusive. Carrier events are sent when a new carrier assumes reponsibility, which implies that the container has been moved. The state machine is can be thought of as *implied* in this sample. 
 
-###Asset State Management
+### Asset State Management
+
 This sample makes use of the *partial state as event* pattern as introduced in the document [*introduction to hyperledger best practices and patterns*](./HyperledgerContractsIntroBestPracticesPatterns.md). Events arrive ad hoc with the asset state remembering each property as last set by an event. 
 
 In other words, an asset's state builds up as events are received. This pattern allows  creation or update events like `createAsset` or `updateAsset` to carry any combination of the writable properties of the state. 
 
-> Events received by the `updateAsset` function can automatically redirect to the `createAsset` function (which is the default behavior) if the asset is not found, mimicing a file system like behavior where you create on open or on first write (e.g. pipeline.) The reverse is obviously not true, however, in that creation is the first update and has much less to do. It therefore stands alone and enforces the non-existence of assets.
+Events received by the `updateAsset` function can automatically redirect to the `createAsset` function (which is the default behavior) if the asset is not found, mimicing a file system like behavior where you create on open or on first write (e.g. pipeline.) The reverse is obviously not true, however, in that creation is the first update and has much less to do. It therefore stands alone and enforces the non-existence of assets.
 
 This behavior can be changed (as in toggled off or on) with this message:
 
->``` json
+``` json
+
 {
     "jsonrpc": "2.0",
     "method": "invoke",
@@ -45,11 +50,13 @@ This behavior can be changed (as in toggled off or on) with this message:
     },
     "id":1234
 }
+
 ```
 
 In this pattern, asset state builds up as events arrive and so a carrier, a temperature and a geo location can arrive as discrete events and in any order. Or they can all arrive together in a single event. The final state will have all three properties as events are merged into state automatically. Note that the object that defines a create or update event is by definition a part of the object that defines asset state, and these objects can be arbitrarily deeply nested.
 
-###Rules and Alerts
+### Rules and Alerts
+
 Rules exist to calculate a result that might add or update a property in the state, or that might raise or clear an alert based on a threshold or some other relationship. Any rule that deals with an alerts is expected -- and indeed **must** -- either raise or clear the alert whenever it executes. There are no exceptions to this when deriving from one of the advanced IoT sample contracts.
 
 Alerts are represented as both a state and a threshold on or off. They appear in the state as an alert name string in one or more of three alert status arrays names `active`, `raised` or `cleared`. 
@@ -81,7 +88,8 @@ In a more elaborate contract, a consignment would be modelled explicitly as a me
 Or the consignment could have an explicit temperature threshold set from the application such that the rule is sensitive to the threshold's presence or absence and uses the threshold when present to calculate compliance for that consignment. 
 - Allowing the application to set the threshold makes sense in several ways: the user that is managing the loading has the best idea of what the consignment contains and can apply some level of external checking to ensure the most appropriate alert threshold; and the contract has no limitations as to types of goods or thresholds to be applied. The contract is entirely flexible. 
 
-##System Engineering Considerations
+## System Engineering Considerations
+
 A blockchain provides a distributed, resilient, indelible, auditable, transparent, and shared ledger that can build trust in trustless environments. An example is a system built for collaboration between competitors and regulatory agencies. Blockchains come with performance-related constraints owing to the inherent delays and state hysteresis in systems where transactions are committed to blocks and world state *only after they achieve consensus*. 
 
 There is an architectural balance to be struck in the system's data model. Data stored in world state is subject to consensus delays (that manifests as hysteresis between transaction execution and state availability to queries) while data stored in back-office servers is typically not. 
@@ -98,7 +106,8 @@ This sample contract therefore assumes a simplified scenario such that:
 - one or more monitor applications are polling asset world state and acting on changes
   - by polling world state, the inherent hysteresis is no longer a concern for most functions
 
-##A Simple Customization
+## A Simple Customization
+
 The simplest possible customizations involve changes mainly to the data model and related rules. This will be common when a system or application uses a blockchain to store a record of device events and asset states without performing complex business operations. 
 
 This sample contract is one such data-centric implementation in that the primary application-specific logic is the handling of alerts for temperatures exceeding a threshold. 
@@ -111,7 +120,8 @@ As discussed above, the temperature rule's behavior can be improved by the addit
 
 > Adding the threshold property as an event requires no specialized logic as the deep merge of event into state handles the new property. The combined asset state is presented to the rules engine before committing to the ledger so that the adjusted `OVERTEMP` rule can now see the temperature and the new threshold.
 
-###Schema Change
+### Schema Change
+
 Two changes are required in the [schema](../payloadSchema.json): 
  - add the `threshold` property to the event object
  - copy it to the state object
@@ -121,6 +131,7 @@ Two changes are required in the [schema](../payloadSchema.json):
 Before:
 
 ``` json
+
         "event": {
             "type": "object",
             "description": "A set of fields that constitute the writable fields in an asset's state. AssetID is mandatory along with at least one writable field. In this contract pattern, a partial state is used as an event.",
@@ -153,11 +164,13 @@ Before:
                 "assetID"
             ]
         },
+
 ```
 
 After:
 
 ``` json
+
         "event": {
             "type": "object",
             "description": "A set of fields that constitute the writable fields in an asset's state. AssetID is mandatory along with at least one writable field. In this contract pattern, a partial state is used as an event.",
@@ -194,6 +207,7 @@ After:
                 "assetID"
             ]
         },
+
 ```
 
 ### Rule Change
@@ -206,6 +220,7 @@ The `OVERTEMP` rule is defined in [rules.go](../rules.go).
 Before:
 
 ``` go
+
 func (alerts *AlertStatusInternal) overTempRule (a *ArgsMap) {
     const temperatureThreshold  float64 = 0 // (inclusive good value)
 
@@ -221,6 +236,7 @@ func (alerts *AlertStatusInternal) overTempRule (a *ArgsMap) {
     }
     alerts.clearAlert(AlertsOVERTEMP)
 }
+
 ```
 
 After:
@@ -228,6 +244,7 @@ After:
 This is a larger change and yet is extremely straighforward.
 
 ``` go
+
 func (alerts *AlertStatusInternal) overTempRule (a *ArgsMap) {
     var temperatureThreshold  float64 // (inclusive good value)
 
@@ -249,18 +266,23 @@ func (alerts *AlertStatusInternal) overTempRule (a *ArgsMap) {
     }
     alerts.clearAlert(AlertsOVERTEMP)
 }
+
 ```
 
 The style here is obvious and for most multi-property-dependent rules should be considered mandatory. To clarify the technique: only when every property has been found and correctly asserted to be of the right type should the calculation proceed, raising or clearing the alert as the rule demands. In **all** other cases, the code should fall through to clear the alert.
 
 >The assignments for tbytes and t use the Go ":=" operator, which creates a new variable without a previous declaration and with an inferred type. For clarity with the newly-dynamic threshold, I changed the declaration of the threshold from a constant to a variable, assigning it from the JSON property, if it exists. Since the variable is predeclared, the ":=" is changed to "=" in the assignment. The compiler actually found the error where I left in the ":=" originally because it is pretty subtle difference. This is a good use of the Go compiler since it is blazingly fast.
 
-###Generate and Build
+### Generate and Build
+
 Once the schema changes have been made, the `go generate` command **must** be executed at the root level of the contract. It relies on a comment at the top of the [main.go](../main.go) file:
 
 ``` go
+
 //go:generate go run scripts/generate_go_schema.go
+
 ```
+
 The named go script is executed in the scripts folder and that script generates the `schemas.go` and `samples.go` files that are used to define the key schema elements to be sent to any application when asked for. The Watson IoT Platform uses the `getAssetSchemas` call to return the contents of `schemas.go` and processes the API and Data Model elements returned for its device event to contract event mapping feature.
 
 > It is common practice to manually run go generate whenever the dependencies have been changed, as is true when the schema is changed for any reason. The generated go files are incorporated into the contract and must be committed to the repository just like any other code. This because the contract may be deployed directly out of the repository without the benefit of running `go generate` before the contract is built.
@@ -268,6 +290,7 @@ The named go script is executed in the scripts folder and that script generates 
 The execution of `go generate` looks like:
 
 ``` sh
+
 vagrant@hyperledger-devenv:v0.0.9-5cd67fd:/local-dev/github.ibm.com/blockchain-samples-wip/trade_lane_contract_hyperledger$ go generate
 JSON CONFIG FILEPATH:
    /local-dev/github.ibm.com/blockchain-samples-wip/trade_lane_contract_hyperledger/scripts/generate.json
@@ -277,19 +300,26 @@ Generate Go SCHEMA file schemas.go for:
 Generate Go SAMPLE file samples.go for:
    [initEvent event state contractState]
 vagrant@hyperledger-devenv:v0.0.9-5cd67fd:/local-dev/github.ibm.com/blockchain-samples-wip/trade_lane_contract_hyperledger$
+
 ```
+
 The output documents what the script was told to generate based on its [configuration file](../scripts/generate.json). The convention is to always generate the entire API so that applications can generate forms or messages to the contract.
 
 The data model can be very handy, since it isolates certain structures by name, rather than the API inputs, which imply an incoming event without specifying it as `event`.
 
 The build command looks like this:
+
 ``` sh
+
 vagrant@hyperledger-devenv:v0.0.9-5cd67fd:/local-dev/github.ibm.com/blockchain-samples-wip/trade_lane_contract_hyperledger$ go build
 vagrant@hyperledger-devenv:v0.0.9-5cd67fd:/local-dev/github.ibm.com/blockchain-samples-wip/trade_lane_contract_hyperledger$
+
 ```
+
 There is no output when it works.
 
-##Testing the New Contract
+## Testing the New Contract
+
 The author assumes that the reader has been through the [sandbox document](https://github.com/hyperledger/fabric/blob/master/docs/API/SandboxSetup.md) and has been able to build and run the peer and the contract in two separate terminal windows.
 
 > Tips:
@@ -300,7 +330,8 @@ The author assumes that the reader has been through the [sandbox document](https
 
 Once the new contract and the peer are running as per the sandbox instructions, it is time to test the contract's new feature. 
 
-###Deploy
+### Deploy
+
 Deploying the contract in debug mode involves naming it "mycc", as you have read in the instructions referenced above. The deploy message actually uses the name directly rather than the path, and the name substitutes for the deployed UUID when a normal fabric is involved.
 
 > The Hyperledger examples use "mycc" (my chaincode) as the contract's name (substitute for the UUID normally returned by the deploy command), and the author has never felt the need to change it. But you can in fact use any name in the launch command lines and the REST commands, so long as they match everywhere. Looking in the [postman_tests](../postman_tests) folder, you will find that the POSTMAN environment codifies the name so you can plug in your chosen name and run the REST commands without thinking about it again.
@@ -313,6 +344,7 @@ Deploying the contract in debug mode involves naming it "mycc", as you have read
 The REST command to deploy using POSTMAN is:
 
 ``` json
+
 {
     "jsonrpc": "2.0",
     "method": "deploy",
@@ -329,12 +361,15 @@ The REST command to deploy using POSTMAN is:
     },
     "id":1234
 }
+
 ```
+
 > It is convenient to leave the `secureContext` user type in whether running with security or not. For simplicity, this document does not discuss debugging with security on because only basic functions are being tested. 
 
 The response is OK in this case, since both are running and communicating:
 
 ``` json
+
 {
   "jsonrpc": "2.0",
   "result": {
@@ -343,18 +378,22 @@ The response is OK in this case, since both are running and communicating:
   },
   "id": 1234
 }
+
 ```
 
 The window in which the contract runs shows all of the logs on STDOUT, and they show that the contract executed with the nickname *THRESHOLD* and the contract version standing out as shown:
 
 ``` sh
+
 2016/05/16 06:50:24 [THRESHOLD-4.0] DEBU PUTContractState: []interface {}{main.ContractState{Version:"4.0", Nickname:"THRESHOLD", ActiveAssets:map[string]bool{}}}
 2016/05/16 06:50:24 [THRESHOLD-4.0] INFO Contract initialized
+
 ```
 
 To test the threshold, we will need an asset with a threshold in it. We will use `ASSET1` and `100` as the values. No other data will be sent in the initial event. 
 
 ``` json`
+
 {
     "jsonrpc": "2.0",
     "method": "invoke",
@@ -371,10 +410,13 @@ To test the threshold, we will need an asset with a threshold in it. We will use
     },
     "id":1234
 }
+
 ```
+
 The return message specifies the transaction ID in the `message` property and the `status` is `OK`.
 
 ``` json
+
 {
   "jsonrpc": "2.0",
   "result": {
@@ -383,11 +425,13 @@ The return message specifies the transaction ID in the `message` property and th
   },
   "id": 1234
 }
+
 ```
 
 To verify the asset exists, we can perform a `readAsset` on `asset1`:
 
 ``` json
+
 {
     "jsonrpc": "2.0",
     "method": "query",
@@ -404,6 +448,7 @@ To verify the asset exists, we can perform a `readAsset` on `asset1`:
     },
     "id":1234
 }
+
 ```
 
 > The `monitoring_ui` in the `blockchain_samples` project is also capable ot showing changes to asset values in near realtime. 
@@ -411,6 +456,7 @@ To verify the asset exists, we can perform a `readAsset` on `asset1`:
 Queries return the entire response immediately:
 
 ``` json
+
 {
   "jsonrpc": "2.0",
   "result": {
@@ -419,6 +465,7 @@ Queries return the entire response immediately:
   },
   "id": 1234
 }
+
 ```
 
 > The JSON RPC 2.0 envelope for contract payloads stringifies inputs and outputs, which shows up as escaped strings. This means that the examples from POSTMAN cannot display objects in *pretty* format. 
@@ -430,6 +477,7 @@ Now we will send a temperature of 99 and the contract will show as being in comp
 >From here on, `updateAsset` and `readAsset` calls are used but the response from the invoke and the command for the query are left out as unnecessary detail.
 
 ``` json
+
 {
     "jsonrpc": "2.0",
     "method": "invoke",
@@ -455,6 +503,7 @@ Now we will send a temperature of 99 and the contract will show as being in comp
   },
   "id": 1234
 }
+
 ```
 
 The temperature has now shown up and is below the threshold, so the contract remains in compliance.
@@ -462,6 +511,7 @@ The temperature has now shown up and is below the threshold, so the contract rem
 And finally, we send the event with temperature as 101 and the contract will go out of compliance. 
 
 ``` json
+
 {
     "jsonrpc": "2.0",
     "method": "invoke",
@@ -487,6 +537,7 @@ And finally, we send the event with temperature as 101 and the contract will go 
   },
   "id": 1234
 }
+
 ```
 
 The temperature now shows 101, which is above the threshold of 100. Thus, we now see the `OVERTEMP` alert as both raised and active. 
@@ -496,7 +547,8 @@ The `compliant` property is now missing, which means that the asset is no longer
 
 Applications that monitor specific assets will want to know when alerts happen. At this time, polling is necessary to see asset states. An event bus is under development for Hyperledger and the contract will be able to notify subscribed applications with an event saying that an alert is active.
 
-##Conclusion
+## Conclusion
+
 This was a basic introduction to customization. The desceptively simple changes in this article add a significant feature to the contract in that it can now deal with temperatures that are specific to an asset's cargo.
 
 The flexibility and simplicity of the *partial state as event* pattern makes data-driven contracts easy to construct and maintain and should be the default design until it fails to meet the goals of the contract.

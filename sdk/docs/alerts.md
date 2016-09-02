@@ -1,10 +1,13 @@
-# Alerts  
+# Alerts
+
 [`alerts.go`](../alerts.go "the contract alerts processing")
 
-##Definition and Extension
+## Definition and Extension
+
 The alerts module manages contract alert names and processing. Alerts are designated by short names such as `OVERTEMP` and are defined in a constant array as shown:
 
 ``` go
+
 // Alerts
 type Alerts int32
 
@@ -15,6 +18,7 @@ const (
     // AlertsSIZE is to be maintained always as 1 greater than the last alert, giving a size  
 	AlertsSIZE        Alerts = 1
 )
+
 ```
 
 It is common to assign the value `iota` so that enumerations are numbered automatically, but in this enumeration we use explicit numbering so that an alert can become deprecated but remain in the contract for historical purposes. 
@@ -23,9 +27,10 @@ Alerts_SIZE is the final entry and its index **does** change in order to provide
 
 EXAMPLE: You want to add UNDERTEMP and remove OVERTEMP (I know it makes no sense, but such is the nature of contrived examples), here are the wrong and then the right solutions:
 
-###WRONG
+### WRONG
 
 ``` go
+
 type Alerts int32
 
 const (
@@ -35,13 +40,15 @@ const (
     // AlertsSIZE is to be maintained always as 1 greater than the last alert, giving a size  
 	AlertsSIZE        Alerts = 1
 )
+
 ```
 
 Very bad, as the algorithm for calculating the alerts status and thresholds for raised and cleared uses these values explicitly as array indexes.
 
-###RIGHT
+### RIGHT
 
 ``` go
+
 type Alerts int32
 
 const (
@@ -52,10 +59,13 @@ const (
     // AlertsSIZE is to be maintained always as 1 greater than the last alert, giving a size  
 	AlertsSIZE                  Alerts = 2
 )
+
 ```
+
 These alerts are supported by protobuf-like functions to translate back and forth between names and values. Stringification is also supported.  
 
 ``` go
+
 var Alerts_name = map[int32]string{
 	0: "OVERTEMP",
 	1: "TBD",
@@ -68,22 +78,26 @@ var Alerts_value = map[string]int32{
 func (x Alerts) String() string {
 	return Alerts_name[int32(x)]
 }
+
 ```
 
 In a future version of this contract, these definitions may be generated from the schema, protobuf-style. Meanwhile, following this pattern makes adding new alerts a simple task.
 
-##Raising and Clearing Alerts
+## Raising and Clearing Alerts
+
 The rules engine runs the individual rules and each of those is responsible to **ALWAYS** raise or clear the associated alert(s). It is extremely important that the rules have no previous knowledge of alert status, as that is the job of this module. The job of the rules is to simply state whether conditions exist for an active alert (raise it) or not (clear it).
 
 The external view of alerts is defined in the schema and reflected in this module by the following declaration:
 
 ``` go
+
 type AlertNameArray []string
 type AlertStatus struct {
     Active  AlertNameArray  `json:"active"`
     Raised  AlertNameArray  `json:"raised"`
     Cleared AlertNameArray  `json:"cleared"`
 }
+
 ```
 
 Applications will see \["OVERTEMP"\] as the data in any of these if the alert is active, has been raised by this specific event, or has been cleared by this specific event. Simple monitoring UIs can display the alert values firectly from the JSON without translating it to some other string and application need not maintain a language-specific copy of the alerts constants or enum. 
@@ -91,12 +105,14 @@ Applications will see \["OVERTEMP"\] as the data in any of these if the alert is
 This format is not, however, a convenient structure to process for the raising and clearing of events. For that, the alerts are converted to an internal format with boolean arrays instead of name arrays:
 
 ``` go
+
 type AlertArrayInternal [Alerts_SIZE]bool
 type AlertStatusInternal struct {
     Active  AlertArrayInternal
     Raised  AlertArrayInternal
     Cleared AlertArrayInternal
 }
+
 ```
 
 When looking at a single asset state, which defines the asset's status at any given point in time, it is not clear just by looking at the active alert status when the alert was raised or cleared. I.e. is this state just a continuation of a problem that happened earlier, or is this state the moment when the alert was raised? Similarly, if the alert is not active in this state, when was the alert actually cleared?
@@ -118,7 +134,8 @@ An example: say that OVERTEMP occured at some point along a journey, and the fro
 
 Carrier 2 is responsible and may be allocated penalties.
 
-##Transition Processing
+## Transition Processing
+
 The functions for raising and clearing alerts receive the internal representation of the alert status and a single alert to be raised or cleared respectively. 
 
 The calculation is straightforward, testing teh current active status and setting the three status values to match the appropriate thresholds.

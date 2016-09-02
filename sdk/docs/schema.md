@@ -1,7 +1,9 @@
-#Schema  
+# Schema
+
 [`payloadSchema.json`](../payloadSchema.json "the contract schema for API and object model")
 
-##Introduction
+## Introduction
+
 As referenced in other documents in this folder, the REST messaging protocol for communicating with the block chain and with smart contracts is documented in a file called 
 [`rest_api.json`](https://github.com/hyperledger/fabric/blob/master/core/rest/rest_api.json "on hyperledger project in github.com"). This file documents all service end points to which a client application can GET, PUT and POST messages.
 
@@ -17,7 +19,8 @@ The contract API follows a CRUD-like pattern that, combined with other important
 
 >*Note that we maintain a semblance of Swagger compatibility in order that the [Swagger editor](http://editor.swagger.io/#/ "on the web") can be used to explore the schema, but Swagger supports only a small subset of JSON Schema 4 and so is not as useful as it could otherwise be when describing payloads. It is rigidly oriented towards resource-oriented RESTful APIs and the JSON-RPC flavour of the hyperledger chaincode (a.k.a. smart contract) API is not a perfect fit. Swagger's editor is not needed, though, for error checking of the schema. This is covered in the next section*
 
-##Schema Error Checking
+## Schema Error Checking
+
 Schema error checking is accomplished with a script implemented in Go. It checks the schema for errors when you run the `go generate` command in the main folder of any contract derived from this sample. This line near the top of the main contract is responsible for connecting the contract to the script and schema:
 
 `//go:generate go run scripts/generate_go_schema.go`
@@ -25,6 +28,7 @@ Schema error checking is accomplished with a script implemented in Go. It checks
 The script resides in the `/scripts` folder and assumes the presence of a schema in the main contract folder. It reads from that file and immediately unmarshals the JSON in order to check for errors. The output of a contrived error looks like:
 
 ``` text
+
 vagrant@hyperledger-devenv:v0.0.9-4ba4f96:/wip/trade_lane_contract$ go generate
 JSON CONFIG FILEPATH:
    /wip/trade_lane_contract/scripts/generate.json
@@ -33,9 +37,13 @@ JSON CONFIG FILEPATH:
 Error in line 49: invalid character 't' looking for beginning of object key string
 "definitions": { this is an error
                  ^
+
 ```
+
 Remove the offending text *this is an error* and rerun the `go generate` command to get this output instead:
+
 ``` bash
+
 vagrant@hyperledger-devenv:v0.0.9-4ba4f96:/wip/trade_lane_contract$ go generate
 JSON CONFIG FILEPATH:
    /wip/trade_lane_contract/scripts/generate.json
@@ -44,10 +52,13 @@ Generate Go SCHEMA file schemas.go for:
    [ChaincodeOpPayload ChaincodeOpSuccess ChaincodeOpFailure assetIDandCount assetIDKey initEvent event state]
 Generate Go SAMPLE file samples.go for:
    [ChaincodeOpPayload ChaincodeOpSuccess ChaincodeOpFailure initEvent event state contractState]
+
 ```
+
 The output specifies what the script generated based on the commands in the JSON configuration file.
 
-##Schema File Generation
+## Schema File Generation
+
 When the unmarshal test is successful, the script generates contract-consumable Go files named 
 [`schemas.go`](schemas.go "in the main contract folder") and
 [`samples.go`](samples.go "in the main contract folder"). These automatically become part of the contract build.
@@ -59,7 +70,7 @@ Clients can make these calls and use them as desired. Examples include displayin
 To see a generic GUI in action, explore the [generic UI](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/generic_ui "on github") and watch as the UI self-initializes from the schema. 
 
 The selection of APIs and objects that appear in the returned schemas or samples are configured in the script's companion [JSON configuration file](scripts/generate.json "in the scripts folder"). 
-When extending the sample contract for a specific domain, client applications can rely on these APIs being accurate if the schema file is maintained and a few conventions are followed. 
+When extending the sample contract for a specific domain, client applications can rely on these APIs being accurate if the schema file is maintained and a few conventions are followed.
 
 Summary of conventions that enable integration with the IoT Platform and generic tooling:
 + implement getAssetSchemas
@@ -67,10 +78,12 @@ Summary of conventions that enable integration with the IoT Platform and generic
 + ideally, use the prefixes create, read, update and delete for invokes and queries
 + retain the schema name `payloadSchema.json` and leave it in the main contract folder
 
-#Customizing the Schema
+## Customizing the Schema
+
 There is more to customizing the contract than meets the eye, so this information is gathered in the [tutorial on customizing the sample contract](docs/CustomizingTheSampleContract.md "explains how to extend the sample contract for your own domain").
 
-#Additional Information: Wiring the Contract into the Fabric
+## Additional Information: Wiring the Contract into the Fabric
+
 The API for a contract has been updated for the hyperledger project to a 
 [JSON RPC](http://json-rpc.org/ "http://json-rpc.org/") compatible REST messaging protocol. The endpoint for these messages is:
 
@@ -93,6 +106,7 @@ This outer JSON RPC payload also has `params`, which contain the inner contract 
 These functions are defined in the schema in the section called API. This looks like:
 
 ``` json
+
         "API": {
             "type": "object",
             "description": "The API for the tradelane sample contract consisting of the init function, the crud functions to change state, and a set of query functions for asset state, asset history, recent states, and so on.",
@@ -143,9 +157,10 @@ These functions are defined in the schema in the section called API. This looks 
                         }
                     }
                 },
+
 ```
 
-> __NEW__ The schema now documents the JSON RPC `method` -- which can be `deploy`, `invoke` or `query` -- so that a mapping or other dynamic user interface can determine which functions are intended as invokes and which are queries.
+__NEW__ The schema now documents the JSON RPC `method` property, which can be `deploy`, `invoke` or `query`, so that a mapping or other dynamic user interface can determine which functions are intended as invokes and which are queries.
 
 Contract API is represented as objects inside the API object with names to match the contract's functions. The schema shows the delegation to these functions as a tree from the main chaincode input through layers that are named for deploy, invoke, and query. The actual contract function schemas are shaped to match the expected payload with `function` and `args` being specified. With queries, results are also specified.
 
