@@ -5,8 +5,8 @@ This project contains sample blockchain smart contracts and generic user interfa
 These contracts are intended for exploration of the IBM Blockchain Bluemix environment and the Hyperledger fabric. They can be used to seed smart contract development with advanced features.
 
 > **Note:** The release strategies for Hyperledger and for this project are evolving, so contract development is currently separated into folders that remain compatible with specific generations of the Hyperledger project on Bluemix.
-
 ---
+
 ## Hyperledger Supported Components
 
 The Hyperledger Bluemix environment will evolve with the intent that releases will be tagged in the Hyperledger [fabric project](https://github.com/hyperledger/fabric) to indicate Bluemix compatibility levels. At the time of writing -- 16 June 2016 -- the Hyperledger fabric on Bluemix is compatible with the following folders in this project:
