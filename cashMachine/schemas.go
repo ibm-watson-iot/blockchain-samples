@@ -3,7 +3,7 @@ package main
 var schemas = `
 {
     "API": {
-        "createCashMachine": {
+        "createAsset": {
             "description": "Create an asset. One argument, a JSON encoded event. AssetID is required with zero or more writable properties. Establishes an initial asset state.",
             "properties": {
                 "args": {
@@ -38,16 +38,16 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "createCashMachine function",
+                    "description": "createAsset function",
                     "enum": [
-                        "createCashMachine"
+                        "createAsset"
                     ],
                     "type": "string"
                 }
             },
             "type": "object"
         },
-        "deleteCashMachine": {
+        "deleteAsset": {
             "description": "Delete an asset and its history. Argument is a JSON encoded string containing only an assetID.",
             "properties": {
                 "args": {
@@ -67,9 +67,9 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "deleteCashMachine function",
+                    "description": "deleteAsset function",
                     "enum": [
-                        "deleteCashMachine"
+                        "deleteAsset"
                     ],
                     "type": "string"
                 }
@@ -108,7 +108,7 @@ var schemas = `
             },
             "type": "object"
         },
-        "readCashMachine": {
+        "readAsset": {
             "description": "Returns the state an asset. Argument is a JSON encoded string. AssetID is the only accepted property.",
             "properties": {
                 "args": {
@@ -128,9 +128,9 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "readCashMachine function",
+                    "description": "readAsset function",
                     "enum": [
-                        "readCashMachine"
+                        "readAsset"
                     ],
                     "type": "string"
                 },
@@ -163,7 +163,7 @@ var schemas = `
             },
             "type": "object"
         },
-        "readCashMachineHistory": {
+        "readAssetHistory": {
             "description": "Requests a specified number of history states for an assets. Returns an array of states sorted with the most recent first. AssetID is required and count is optional. A missing count, a count of zero, or too large a count returns all existing history states.",
             "properties": {
                 "args": {
@@ -186,9 +186,9 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "readCashMachineHistory function",
+                    "description": "readAssetHistory function",
                     "enum": [
-                        "readCashMachineHistory"
+                        "readAssetHistory"
                     ],
                     "type": "string"
                 },
@@ -226,7 +226,7 @@ var schemas = `
             },
             "type": "object"
         },
-        "updateCashMachine": {
+        "updateAsset": {
             "description": "Update the state of an asset. The one argument is a JSON encoded event. AssetID is required along with one or more writable properties. Establishes the next asset state. ",
             "properties": {
                 "args": {
@@ -261,9 +261,9 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "updateCashMachine function",
+                    "description": "updateAsset function",
                     "enum": [
-                        "updateCashMachine"
+                        "updateAsset"
                     ],
                     "type": "string"
                 }

@@ -101,15 +101,15 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 // ************************************
 func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
     // Handle different functions
-    if function == "createCashMachine" {
+    if function == "createAsset" {
         // create assetID
-        return t.createCashMachine(stub, args)
-    } else if function == "updateCashMachine" {
+        return t.createAsset(stub, args)
+    } else if function == "updateAsset" {
         // create assetID
-        return t.updateCashMachine(stub, args)
-    } else if function == "deleteCashMachine" {
+        return t.updateAsset(stub, args)
+    } else if function == "deleteAsset" {
         // Deletes an asset by ID from the ledger
-        return t.deleteCashMachine(stub, args)
+        return t.deleteAsset(stub, args)
     }
     return nil, errors.New("Received unknown invocation: " + function)
 }
@@ -119,17 +119,17 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 // ************************************
 func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
     // Handle different functions
-    if function == "readCashMachine" {
+    if function == "readAsset" {
         // gets the state for an assetID as a JSON struct
-        return t.readCashMachine(stub, args)
-    } else if function =="readCashMachineHistory" {
-        return t.readCashMachineHistory(stub, args)
-    } else if function == "readCashMachineSamples" {
+        return t.readAsset(stub, args)
+    } else if function =="readAssetHistory" {
+        return t.readAssetHistory(stub, args)
+    } else if function == "readAssetSamples" {
 		// returns selected sample objects 
-		return t.readCashMachineSamples(stub, args)
-	} else if function == "readCashMachineSchemas" {
+		return t.readAssetSamples(stub, args)
+	} else if function == "readAssetSchemas" {
 		// returns selected sample objects 
-		return t.readCashMachineSchemas(stub, args)
+		return t.readAssetSchemas(stub, args)
 	}
     return nil, errors.New("Received unknown invocation: " + function)
 }
@@ -149,14 +149,14 @@ func main() {
 
 /******************** createCashMachine ********************/
 
-func (t *SimpleChaincode) createCashMachine(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
     _,erval:=t. createOrupdateCashMachine(stub, args)
     return nil, erval
 }
 
 //******************** updateCashMachine ********************/
 
-func (t *SimpleChaincode) updateCashMachine(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
      _,erval:=t. createOrupdateCashMachine(stub, args)
     return nil, erval
 }
@@ -164,7 +164,7 @@ func (t *SimpleChaincode) updateCashMachine(stub *shim.ChaincodeStub, args []str
 
 //******************** deleteCashMachine ********************/
 
-func (t *SimpleChaincode) deleteCashMachine(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) deleteAsset(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
     var assetID string // asset ID
     var err error
     var stateIn CashMachineState
@@ -194,7 +194,7 @@ func (t *SimpleChaincode) deleteCashMachine(stub *shim.ChaincodeStub, args []str
 
 //********************readCashMachine********************/
 
-func (t *SimpleChaincode) readCashMachine(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) readAsset(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
     var assetID string // asset ID
     var err error
     var state CashMachineState
@@ -221,7 +221,7 @@ func (t *SimpleChaincode) readCashMachine(stub *shim.ChaincodeStub, args []strin
 
 //*************readCashMachineObjectModel*****************/
 
-func (t *SimpleChaincode) readCashMachineHistory(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) readAssetHistory(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
     var cmHistKey string // asset ID history key
     var err error
     var state CashMachineState
@@ -248,13 +248,13 @@ func (t *SimpleChaincode) readCashMachineHistory(stub *shim.ChaincodeStub, args 
 
 //*************readCashMachineSamples*******************
 
-func (t *SimpleChaincode) readCashMachineSamples(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) readAssetSamples(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	return []byte(samples), nil
 }
 
 //*************readCashMachineSchemas*******************
 
-func (t *SimpleChaincode) readCashMachineSchemas(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) readAssetSchemas(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	return []byte(schemas), nil
 }
 
