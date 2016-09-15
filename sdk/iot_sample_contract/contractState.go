@@ -92,13 +92,15 @@ func PUTContractStateToLedger(stub *shim.ChaincodeStub, state ContractState) (er
         log.Critical(err)
         return err
     }
+
+	log.Debugf("PUTContractStateToLedger: putting to state ==>%s<==", string(contractStateJSON))
+
     err = stub.PutState(CONTRACTSTATEKEY, contractStateJSON)
     if err != nil {
         err = fmt.Errorf("Failed to PUTSTATE contract state: %s", err)
         log.Critical(err)
         return err
     } 
-    log.Debugf("PUTContractState: %#v", state)
     return nil 
 }
 

@@ -83,12 +83,14 @@ func PUTRecentStatesToLedger(stub *shim.ChaincodeStub, state RecentStates) (erro
         log.Criticalf("Failed to marshal recent states: %s", err)
         return err
     }
+
+	log.Debugf("PUTRecentStatesToLedger: putting to state ==>%s<==", string(recentStatesJSON))
+
     err = stub.PutState(RECENTSTATESKEY, recentStatesJSON)
     if err != nil {
         log.Criticalf("Failed to PUTSTATE recent states: %s", err)
         return err
     } 
-    log.Debugf("PUTRecentStates: %#v", state)
     return nil 
 }
 

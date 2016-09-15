@@ -343,7 +343,6 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
 	log.Debugf("CreateAsset: putting to state ==>%s<==", string(stateJSON))
 
 	// finally, put the new state
-	log.Infof("Putting new asset state %s to ledger", string(stateJSON))
 	err = stub.PutState(assetID, []byte(stateJSON))
 	if err != nil {
 		err = fmt.Errorf("createAsset AssetID %s PUTSTATE failed: %s", assetID, err)
@@ -844,6 +843,8 @@ OUTERDELETELOOP:
 		log.Error(err)
 		return nil, err
 	}
+
+	log.Debugf("DeletePropertiesFromAsset: putting to state ==>%s<==", string(stateJSON))
 
 	// finally, put the new state
 	err = stub.PutState(assetID, []byte(stateJSON))

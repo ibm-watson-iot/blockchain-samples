@@ -44,6 +44,8 @@ func createStateHistory(stub *shim.ChaincodeStub, assetID string, stateJSON stri
 		return err
 	}
 
+	log.Debugf("CreateStateHistory: putting to state ==>%s<==", string(assetState))
+
 	return stub.PutState(ledgerKey, []byte(assetState))
 
 }
@@ -74,6 +76,8 @@ func updateStateHistory(stub *shim.ChaincodeStub, assetID string, stateJSON stri
 	if err != nil {
 		return err
 	}
+
+	log.Debugf("UpdateStateHistory: putting to state ==>%s<==", string(assetState))
 
 	return stub.PutState(ledgerKey, []byte(assetState))
 
