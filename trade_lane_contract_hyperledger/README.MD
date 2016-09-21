@@ -1,3 +1,7 @@
+#OBSOLETE
+
+This contract has been retired and will be expunged soon. Please instead use the [generic iot sample contract](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/contracts/advanced/iot_sample_contract).
+
 #A Hyperledger sample contract with the Trade Lane schema
 
 > **This smart contract is described in a set of documents in the `/docs` folder. The [main Go file documentation](./docs/main.md) includes a tutorial on the Hyperledger fabric and smart contract development. See the [README](./docs/README.md) in the `/docs` folder.**
