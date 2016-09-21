@@ -1,45 +1,38 @@
 # Blockchain Samples
 
-This project contains sample blockchain smart contracts and generic user interfaces for the [Hyperledger](https://github.com/hyperledger) [fabric](https://github.com/hyperledger/fabric).
+This project contains sample blockchain smart contracts and generic user interfaces for the [Hyperledger](https://github.com/hyperledger) [fabric](https://github.com/hyperledger/fabric). 
 
-These contracts are intended for exploration of the IBM Blockchain Bluemix environment and the Hyperledger fabric. They can be used to seed smart contract development with advanced features.
+These contracts are intended to:
 
-> **Note:** The release strategies for Hyperledger and for this project are evolving, so contract development is currently separated into folders that remain compatible with specific generations of the Hyperledger project on Bluemix.
----
+- provide sample applications and smart contracts to demonstrate how a Hyperledger blockchain and the Watson IoT platform can work together in a solution
+- demonstrate advanced smart contract features that can be built on the Hyperledger fabric
+- seed new smart contract development with advanced IoT features and integration into the Watson IoT Platform
 
-## Hyperledger Supported Components
+Notes:
 
-The Hyperledger Bluemix environment will evolve with the intent that releases will be tagged in the Hyperledger [fabric project](https://github.com/hyperledger/fabric) to indicate Bluemix compatibility levels. At the time of writing -- 16 June 2016 -- the Hyperledger fabric on Bluemix is compatible with the following folders in this project:
-
-- [simple_contract_hyperledger](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/simple_contract_hyperledger)
-- [trade_lane_contract_hyperledger](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/trade_lane_contract_hyperledger)
-- [trade_lane_contract_hyperledger_e2e_tests](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/trade_lane_contract_hyperledger_e2e_tests)
-- [monitoring_ui](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/monitoring_ui)
-
-Release 1.3 of this project was meant to guarantee compatibility when developing against Bluemix Hyperledger in the May-June 2016 time frame:
-
-https://github.com/ibm-watson-iot/blockchain-samples/releases/tag/1.3
-
-However, the folder strategy was adopted after that and so the folders named above will remain compatible with Bluemix for the forseeable future. As the strategy evolves, this document will capture changes.
+- Development of the Hyperledger fabric and related projects has been moved to [Gerritt](https://gerrit.hyperledger.org/r/#/admin/projects/). However, the [original location](https://github.com/hyperledger/fabric/) remains as a convenient mirror. 
+- The Hyperledger Fabric also has a [web site for documentation](http://hyperledger-fabric.readthedocs.io/en/latest/), which is worth exploring, *especially for those who would like to contribute directly to the Hyperledger development effort.*
+- Hyperledger on Bluemix is updated periodically, and for compatibility reasons, the blockchain-sample project maintains multiple release levels to line up to bluemix versions. All contracts at head on the master branch are compatible with Hyperledger on Bluemix as of 20 September 2016.
 
 ---
-## Upcoming Hyperledger Supported Components
 
-The following contracts are compatible with the latest Hyperledger code base, expected on Bluemix in early summer:
+## Smart Contracts in this Repository
 
-- [`sdk`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/sdk)  
+  - [`simple_contract`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/contracts/basic/simple_contract)
 
-    - The sdk is under construction and its evolution is intended to include future packaging of boiler plate code for asset CRUD interfaces and related features such as asset state history, recent state activity, alerts and rules, and so on. This is intended to shrink the size of derived contracts while improving reliability and productivity.
-
-  - [`iot_sample_contract`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/sdk/iot_sample_contract)
+  - [`iot_sample_contract`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/contracts/advanced/iot_sample_contract)
     - Introduces saving of transaction timestamp and transaction uuid in asset state such that an audit can trace the state of an asset at any point in time to the specific block and transaction on the chain. Cleans up minor issues and bugs from the Trade Lane sample.
-  - [`aviation_sample_contract`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/sdk/aviation_sample_contract)
+  - [`aviation_sample_contract`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/contracts/industry/aviation_sample_contract)
     - Introduces complex object models with multiple asset classes managed by a single contract.
-  - [`docs`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/sdk/docs)
-    - A complete set of documentation that is derived from the document set in the Trade Lane sample but is intended to evolve over time to include new features and more articles.
 
-- [`cashMachine`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/cashMachine)
+- [`cashMachine`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/contracts/industry/cashMachine)
     - A sample contract that models an instant teller or other cash machine. Derived from the simple contract for hyperledger.
+
+- [`building`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/contracts/industry/building)
+    - A sample contract that models an instant teller or other cash machine. Derived from the simple contract for hyperledger.
+
+- [`docs`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/docs)
+    - Documentation 
 
     ---
     ## OpenBlockChain Supported Components
