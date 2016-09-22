@@ -42,12 +42,6 @@ Notes:
 
 ---
 
-## Documentation
-
-See the [`docs`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/docs) folder for articles on patterns and customization in these samples. Detailed documentation exists for mode major modules.
-
----
-
 ## Caveats
 
 These samples are developed with minimal resources and so the packaging of features has not yet begun. If you would like to collaborate on exploration of these concepts, please contract [Kim Letkeman](mailto:kletkema@ca.ibm.com).
