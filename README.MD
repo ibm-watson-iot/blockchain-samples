@@ -2,12 +2,18 @@
 
 This project contains samples of blockchain smart contracts and blockchain applications for the [Hyperledger](https://github.com/hyperledger) [fabric](https://github.com/hyperledger/fabric). 
 
-These are intended to:
+Purpose:
 
 - provide sample applications and smart contracts to demonstrate how a Hyperledger blockchain and the Watson IoT platform can work together in a solution
 - demonstrate advanced smart contract features that can be built on the Hyperledger fabric
 - demonstrate patterns that can make complex IoT contracts easier to develop and maintain
 - seed new smart contract development with advanced IoT features and integration into the Watson IoT Platform
+ 
+Documentation:
+
+- [Introduction to Best Practices and Patterns for IoT Contract Development on Hyperledger] (https://github.com/ibm-watson-iot/blockchain-samples/blob/master/docs/HyperledgerContractsIntroBestPracticesPatterns.md)
+- [Customizing or Extending these Sample Contracts](https://github.com/ibm-watson-iot/blockchain-samples/blob/master/docs/CustomizingTheSampleContract.md)
+- [Index to the Docs](https://github.com/ibm-watson-iot/blockchain-samples/blob/master/docs/README.md)
 
 Notes:
 
