@@ -6,7 +6,7 @@ vp0:
     - CORE_PEER_VALIDATOR_CONSENSUS_PLUGIN=pbft
     - CORE_PBFT_GENERAL_MODE=batch
     - CORE_VM_ENDPOINT=http://172.17.0.1:2375
-    - CORE_LOGGING_LEVEL=DEBUG
+    - CORE_LOGGING_LEVEL=INFO
   command: peer node start
 vp1:
   extends:
