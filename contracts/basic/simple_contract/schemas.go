@@ -51,7 +51,8 @@ var schemas = `
                         "createAsset"
                     ],
                     "type": "string"
-                }
+                },
+                "method": "invoke"
             },
             "type": "object"
         },
@@ -80,7 +81,8 @@ var schemas = `
                         "deleteAsset"
                     ],
                     "type": "string"
-                }
+                },
+                "method": "invoke"
             },
             "type": "object"
         },
@@ -117,7 +119,8 @@ var schemas = `
                         "init"
                     ],
                     "type": "string"
-                }
+                },
+                "method": "deploy"
             },
             "type": "object"
         },
@@ -147,6 +150,7 @@ var schemas = `
                     ],
                     "type": "string"
                 },
+                "method": "query",
                 "result": {
                     "description": "A set of fields that constitute the complete asset state.",
                     "properties": {
@@ -197,6 +201,7 @@ var schemas = `
                     ],
                     "type": "string"
                 },
+                "method": "query",
                 "result": {
                     "description": "JSON encoded object containing selected sample data",
                     "type": "string"
@@ -221,6 +226,7 @@ var schemas = `
                     ],
                     "type": "string"
                 },
+                "method": "query",
                 "result": {
                     "description": "JSON encoded object containing selected schemas",
                     "type": "string"
@@ -278,6 +284,7 @@ var schemas = `
                     "type": "string"
                 }
             },
+                "method": "invoke",
             "type": "object"
         }
     },
