@@ -282,9 +282,9 @@ var schemas = `
                         "updateAsset"
                     ],
                     "type": "string"
-                }
+                },
+                "method": "invoke"
             },
-                "method": "invoke",
             "type": "object"
         }
     },
