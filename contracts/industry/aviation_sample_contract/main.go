@@ -274,6 +274,8 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 		return t.readAssetAircraftHistory(stub, args)
 	} else if function == "readAssetAssemblyHistory" {
 		return t.readAssetAssemblyHistory(stub, args)
+	} else if function == "readAssetAircraftComplete" {
+		return t.readAssetAircraftComplete(stub, args)
 
 		// contract dynamic config API
 	} else if function == "readContractConfig" {

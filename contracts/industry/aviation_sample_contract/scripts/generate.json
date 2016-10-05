@@ -27,6 +27,7 @@
       "deleteWorldState",
       "readAssetAirline",
       "readAssetAircraft",
+      "readAssetAircraftComplete",
       "readAssetAssembly",
       "readAllAssetsAirline",
       "readAllAssetsAircraft",

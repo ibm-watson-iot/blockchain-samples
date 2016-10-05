@@ -359,7 +359,7 @@ func handleAlertsAndRules(stub *shim.ChaincodeStub, caller string, eventName str
 	if noncompliant {
 		log.Debugf("%s: event %s assetID %s is noncompliant", caller, eventName, assetID)
 		amstate["alerts"] = alerts
-		delete(amstate, "compliant")
+		amstate["compliant"] = false
 	} else {
 		if alerts.AllClear() {
 			// all false, no need to appear
@@ -370,6 +370,25 @@ func handleAlertsAndRules(stub *shim.ChaincodeStub, caller string, eventName str
 		amstate["compliant"] = true
 	}
 	return amstate, nil
+}
+
+// ********** property injection implementation
+func injectProps(state interface{}, qprops []QualifiedPropertyNameValue) (interface{}, error) {
+	am, ok := asMap(state)
+	if !ok {
+		err := fmt.Errorf("injectProps passed a non-map of type %T", state)
+		log.Error(err)
+		return state, err
+	}
+	for _, qp := range qprops {
+		am, ok := putObject(am, qp.QProp, qp.Value)
+		if !ok {
+			err := fmt.Errorf("injectProps->putObject failed to put %s:%s to state %#v", qp.QProp, qp.Value, am)
+			log.Error(err)
+			return am, err
+		}
+	}
+	return am, nil
 }
 
 // a generic implementation to read everything in the database for debugging purposes ...

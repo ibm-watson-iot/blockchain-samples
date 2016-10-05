@@ -47,12 +47,7 @@ type DynamicContractConfig struct {
 	BCheckThreshold float64 `json:"bCheckThreshold"`
 }
 
-// Initial values for the dynamic configuration of rules have default
-// values set purposely low for debugging purposes.
-const dynamicContractConfigDefaults string = `{
-	"aCheckThreshold": 2,
-	"bCheckThreshold": 4
-}`
+var defaultDynamicConfig = DynamicContractConfig{2, 4}
 
 // Translation table for event names and prefixes. Includes isAsset property for
 // convenience and performance.
@@ -163,7 +158,7 @@ func dynamicConfigInit(stub *shim.ChaincodeStub) error {
 		return nil
 	}
 
-	config, err := getDefaultDynamicConfig()
+	config := defaultDynamicConfig
 	if err != nil {
 		err = fmt.Errorf("configInit cannot get default config: %s", err.Error())
 		log.Error(err)
@@ -180,20 +175,9 @@ func dynamicConfigInit(stub *shim.ChaincodeStub) error {
 	return nil
 }
 
-func getDefaultDynamicConfig() (DynamicContractConfig, error) {
-	var config = DynamicContractConfig{}
-	err := json.Unmarshal([]byte(dynamicContractConfigDefaults), &config)
-	if err != nil {
-		err := fmt.Errorf("getDynamicConfigFromLedger cannot unmarshal dynamic config initialization JSON object: %s", err.Error())
-		log.Error(err)
-		return config, err
-	}
-	return config, nil
-}
-
 func getDynamicConfigFromLedger(stub *shim.ChaincodeStub) (DynamicContractConfig, error) {
 	// config must exist as it was created during Init
-	var config = DynamicContractConfig{}
+	config := defaultDynamicConfig
 	configbytes, err := stub.GetState(CONFIGSTATEKEY)
 	if err != nil || len(configbytes) == 0 {
 		err := fmt.Errorf("getDynamicConfigFromLedger cannot get dynamic config from the ledger: %s", err.Error())

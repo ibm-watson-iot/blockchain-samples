@@ -23,15 +23,11 @@ import (
 )
 
 func (t *SimpleChaincode) createAssetAirline(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	_, err := createAsset(stub, args, "airline", "createAssetAirline")
-	// an opportunity to augment the state
-	return nil, err
+	return createAsset(stub, args, "airline", "createAssetAirline", []QualifiedPropertyNameValue{})
 }
 
 func (t *SimpleChaincode) updateAssetAirline(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	_, err := updateAsset(stub, args, "airline", "updateAssetAirline")
-	// an opportunity to augment the state
-	return nil, err
+	return updateAsset(stub, args, "airline", "updateAssetAirline", []QualifiedPropertyNameValue{})
 }
 
 func (t *SimpleChaincode) deleteAssetAirline(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
@@ -43,9 +39,7 @@ func (t *SimpleChaincode) deleteAllAssetsAirline(stub *shim.ChaincodeStub, args 
 }
 
 func (t *SimpleChaincode) deletePropertiesFromAssetAirline(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	_, err := deletePropertiesFromAsset(stub, args, "airline", "deletePropertiesFromAssetAirline")
-	// an opportunity to augment the state
-	return nil, err
+	return deletePropertiesFromAsset(stub, args, "airline", "deletePropertiesFromAssetAirline", []QualifiedPropertyNameValue{})
 }
 
 func (t *SimpleChaincode) readAssetAirline(stub *shim.ChaincodeStub, args []string) ([]byte, error) {

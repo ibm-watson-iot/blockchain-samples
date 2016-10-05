@@ -833,6 +833,32 @@
                         }
                     }
                 },
+                "readAssetAircraftComplete": {
+                    "type": "object",
+                    "description": "Returns the state of an aircraft asset and all of its assemblies. Argument is a JSON encoded string. The arg is an 'assetID' property.",
+                    "properties": {
+                        "method": "query",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readAssetAircraftComplete"
+                            ],
+                            "description": "readAssetAircraftComplete function"
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/assetIDObj"
+                            },
+                            "minItems": 1,
+                            "maxItems": 1,
+                            "description": "args are JSON encoded strings"
+                        },
+                        "result": {
+                            "$ref": "#/definitions/state"
+                        }
+                    }
+                },
                 "readAssetAssembly": {
                     "type": "object",
                     "description": "Returns the state of an assembly asset. Argument is a JSON encoded string. The arg is an 'assetID' property.",

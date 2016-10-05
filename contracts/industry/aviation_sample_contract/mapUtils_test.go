@@ -76,7 +76,13 @@ var testparm1 = `
     "carrier": "UPS",
     "temperature": 2.2,
     "integer": 2,
-    "bool": true
+    "bool": true,
+	"sarr": ["a","b"],
+	"aa" : {
+		"bb" : {
+			"cc" : "d"
+		}
+	}
 }`
 
 func printUnmarshalError(js string, err interface{}) {
@@ -207,50 +213,54 @@ func TestDeepMerge(t *testing.T) {
 func TestParms(t *testing.T) {
 	fmt.Println("Enter TestContains")
 	o := getTestParms(t)
-	aid1, found := getObject(o, "assetID")
+	_, found := getObject(o, "assetID")
 	if !found {
 		t.Fatal("assetID not found")
 	}
-	fmt.Println("AssetID: ", aid1, " TypeOF parms: ", reflect.TypeOf(o))
 }
 
 func TestArgsMap(t *testing.T) {
 	fmt.Println("Enter TestArgsMap")
 	o := getTestParms(t)
 	var a ArgsMap = o.(map[string]interface{})
-	aid1, found := getObject(a, "assetID")
+	_, found := getObject(a, "assetID")
 	if !found {
 		t.Fatal("assetID not found")
 	}
-	fmt.Println("AssetID: ", aid1, " TypeOF parms: ", reflect.TypeOf(a))
 }
 
 func TestGetByType(t *testing.T) {
 	fmt.Println("Enter TestByType")
 	o := getTestParms(t)
-	s, found := getObjectAsString(o, "assetID")
+	_, found := getObjectAsString(o, "assetID")
 	if !found {
-		t.Fatal("assetID not a string")
+		t.Fatal("typeof assetID should be string")
 	}
-	fmt.Println("AssetID: ", s, " TypeOF s: ", reflect.TypeOf(s))
 
-	n, found := getObjectAsNumber(o, "temperature")
+	_, found = getObjectAsStringArray(o, "sarr")
 	if !found {
-		t.Fatal("temperature not a number")
+		t.Fatalf("typeof sarr should be []string")
 	}
-	fmt.Println("Temperature: ", n, " TypeOF n: ", reflect.TypeOf(n))
 
-	i, found := getObjectAsInteger(o, "temperature")
+	_, found = getObjectAsNumber(o, "temperature")
 	if !found {
-		t.Fatal("temperature not a integer")
+		t.Fatal("typeof temperature should be number")
 	}
-	fmt.Println("Temperature: ", i, " TypeOF i: ", reflect.TypeOf(i))
 
-	i, found = getObjectAsInteger(o, "integer")
+	_, found = getObjectAsInteger(o, "temperature")
 	if !found {
-		t.Fatal("integer not an integer")
+		t.Fatal("type of temperature should be integer")
 	}
-	fmt.Println("Integer: ", i, " TypeOF i: ", reflect.TypeOf(i))
+
+	_, found = getObjectAsInteger(o, "integer")
+	if !found {
+		t.Fatal("typeof integer should be integer")
+	}
+
+	_, found = getObjectAsMap(o, "aa")
+	if !found {
+		t.Fatal("typeof aa should be map")
+	}
 }
 
 func TestPutObject(t *testing.T) {
@@ -294,6 +304,147 @@ func TestPutObject(t *testing.T) {
 	o, ok = putObject(o, "a.b.c.d.lastmaplevel.status", "installed")
 	if !ok {
 		t.Fatal("could not put a.b.c.d.lastmaplevel.status")
+	}
+
+	fmt.Printf("Object after: %+v\n\n", o)
+
+}
+
+func TestRemoveObject(t *testing.T) {
+	fmt.Println("Enter TestRemoveObject")
+	o := getTestParms(t)
+
+	fmt.Printf("Object before: %+v\n\n", o)
+
+	o, ok := removeObject(o, "assetID")
+	if !ok {
+		t.Fatal("could not remove assetID")
+	}
+
+	o, ok = removeObject(o, "carrier")
+	if !ok {
+		t.Fatal("could not remove carrier")
+	}
+
+	o, ok = removeObject(o, "aa.bb.cc")
+	if !ok {
+		t.Fatal("could not remove aa.bb.cc")
+	}
+
+	fmt.Printf("Object after removal of aa.bb.cc: %+v\n\n", o)
+
+	o, ok = removeObject(o, "aa")
+	if !ok {
+		t.Fatal("could not remove aa")
+	}
+
+	fmt.Printf("Object after: %+v\n\n", o)
+}
+
+func TestAsStringArray(t *testing.T) {
+	fmt.Println("Enter TestAsStringArray")
+
+	s, ok := asStringArray([]string{"a"})
+	if !ok {
+		t.Fatal("could convert []string{'a'} to string array")
+	}
+	fmt.Printf("TestAsStringArray: conversion of []string{'a'} created %#v\n", s)
+
+	_, ok = asStringArray([]int{2, 3, 4})
+	if ok {
+		t.Fatal("converted []int{2, 3, 4} to string array, how?")
+	}
+
+	s, ok = asStringArray("astring")
+	if !ok {
+		t.Fatal("failed to convert 'astring' to string array")
+	}
+	fmt.Printf("TestAsStringArray: conversion of 'astring' created %#v\n", s)
+
+	s, ok = asStringArray(`["a", "b", "c"]`)
+	if !ok {
+		t.Fatal("failed to convert JSON a,b,c to string array")
+	}
+	fmt.Printf("TestAsStringArray: conversion of JSON array ['a', 'b', 'c'] created %#v\n", s)
+}
+
+func TestAddToStringArray(t *testing.T) {
+	fmt.Println("Enter TestAddToStringArray")
+	o := getTestParms(t)
+
+	fmt.Printf("Object before: %+v\n\n", o)
+
+	o, ok := addToStringArray(o, "sarr", []string{"d", "b", "c"})
+	if !ok {
+		t.Fatal("could not merge [d,b,c] into sarr")
+	}
+	fmt.Printf("Object d,b,c added: %+v\n\n", o)
+
+	o, ok = addToStringArray(o, "unknown", []string{"unk"})
+	if !ok {
+		t.Fatal("could not add new array unknown : [unk]")
+	}
+	r, ok := getObjectAsStringArray(o, "unknown")
+	if ok {
+		if r[0] != "unk" {
+			t.Fatal("o[unknown] != unk")
+		}
+	} else {
+		t.Fatal("o[unknown] is missing")
+	}
+	fmt.Printf("Object unkown added: %+v\n\n", o)
+
+	o, ok = addToStringArray(o, "sarr", "astring")
+	if !ok {
+		t.Fatal("could not merge 'astring' into sarr")
+	}
+	fmt.Printf("Object astring added: %+v\n\n", o)
+
+	fmt.Printf("Object after: %+v\n\n", o)
+
+	// next one destroys o
+	o, ok = addToStringArray("", "sarr", "astring")
+	if ok {
+		t.Fatal("passed in string instead of map, but it did not fail")
+	}
+
+	fmt.Printf("Object after destruction by not checking for nil: %+v\n\n", o)
+
+}
+
+func TestRemoveFromStringArray(t *testing.T) {
+	fmt.Println("Enter TestRemoveFromStringArray")
+	o := getTestParms(t)
+
+	fmt.Printf("Object before: %+v\n\n", o)
+
+	o, ok := removeFromStringArray(o, "sarr", []string{"d", "b", "c"})
+	if !ok {
+		t.Fatal("could not remove [d,b,c] from sarr")
+	}
+	if test, ok := getObjectAsStringArray(o, "sarr"); !ok {
+		t.Fatal("sarr is missing from test data")
+	} else {
+		if len(test) != 1 {
+			t.Fatal("sarr should just contain one entry")
+		}
+	}
+
+	o, ok = removeFromStringArray(o, "unknown", []string{"unk"})
+	if ok {
+		t.Fatal("successfully removed non-existent entry from unknown : [unk]")
+	}
+
+	o, ok = removeFromStringArray(o, "sarr", "a")
+	if !ok {
+		t.Fatal("could not remove 'a' from sarr")
+	}
+	if test, ok := getObjectAsStringArray(o, "sarr"); !ok {
+		t.Fatal("sarr is missing from test data")
+	} else {
+		if len(test) > 0 {
+			t.Fatal("sarr should be empty")
+		}
 	}
 
 	fmt.Printf("Object after: %+v\n\n", o)

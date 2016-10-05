@@ -28,7 +28,7 @@ import (
 	"strings"
 )
 
-func createAsset(stub *shim.ChaincodeStub, args []string, assetName string, caller string) (interface{}, error) {
+func createAsset(stub *shim.ChaincodeStub, args []string, assetName string, caller string, inject []QualifiedPropertyNameValue) ([]byte, error) {
 	var state interface{} = make(map[string]interface{})
 	argsMap, err := getUnmarshalledArgument(stub, caller, args)
 	if err != nil {
@@ -54,6 +54,10 @@ func createAsset(stub *shim.ChaincodeStub, args []string, assetName string, call
 	if state == nil {
 		return nil, errors.New("addLastEventToState failed")
 	}
+	state, err = injectProps(state, inject)
+	if err != nil {
+		return nil, err
+	}
 	state, err = handleAlertsAndRules(stub, caller, assetName, assetID, argsMap, state)
 	if err != nil {
 		return nil, err
@@ -62,10 +66,10 @@ func createAsset(stub *shim.ChaincodeStub, args []string, assetName string, call
 	if err != nil {
 		return nil, err
 	}
-	return state, nil
+	return nil, nil
 }
 
-func updateAsset(stub *shim.ChaincodeStub, args []string, assetName string, caller string) (interface{}, error) {
+func updateAsset(stub *shim.ChaincodeStub, args []string, assetName string, caller string, inject []QualifiedPropertyNameValue) ([]byte, error) {
 	argsMap, err := getUnmarshalledArgument(stub, caller, args)
 	if err != nil {
 		return nil, err
@@ -87,6 +91,10 @@ func updateAsset(stub *shim.ChaincodeStub, args []string, assetName string, call
 	if state == nil {
 		return nil, errors.New("addLastEventToState failed")
 	}
+	state, err = injectProps(state, inject)
+	if err != nil {
+		return nil, err
+	}
 	state, err = handleAlertsAndRules(stub, caller, assetName, assetID, argsMap, state)
 	if err != nil {
 		return nil, err
@@ -95,7 +103,7 @@ func updateAsset(stub *shim.ChaincodeStub, args []string, assetName string, call
 	if err != nil {
 		return nil, err
 	}
-	return state, nil
+	return nil, nil
 }
 
 func deleteAsset(stub *shim.ChaincodeStub, args []string, assetName string, caller string) ([]byte, error) {
@@ -144,7 +152,7 @@ func deleteAllAssets(stub *shim.ChaincodeStub, args []string, assetName string, 
 	return nil, nil
 }
 
-func deletePropertiesFromAsset(stub *shim.ChaincodeStub, args []string, assetName string, caller string) (interface{}, error) {
+func deletePropertiesFromAsset(stub *shim.ChaincodeStub, args []string, assetName string, caller string, inject []QualifiedPropertyNameValue) ([]byte, error) {
 	argsMap, err := getUnmarshalledArgument(stub, caller, args)
 	if err != nil {
 		return nil, err
@@ -229,6 +237,10 @@ OUTERDELETELOOP:
 	if state == nil {
 		return nil, errors.New("addLastEventToState failed")
 	}
+	state, err = injectProps(state, inject)
+	if err != nil {
+		return nil, err
+	}
 	state, err = handleAlertsAndRules(stub, caller, assetName, assetID, argsMap, state)
 	if err != nil {
 		return nil, err
@@ -237,7 +249,7 @@ OUTERDELETELOOP:
 	if err != nil {
 		return nil, err
 	}
-	return state, nil
+	return nil, nil
 }
 
 func readAsset(stub *shim.ChaincodeStub, args []string, assetName string, caller string) ([]byte, error) {
@@ -254,6 +266,21 @@ func readAsset(stub *shim.ChaincodeStub, args []string, assetName string, caller
 		return nil, err
 	}
 	return assetBytes, nil
+}
+
+func readAssetUnmarshalled(stub *shim.ChaincodeStub, assetID string, assetName string, caller string) (interface{}, error) {
+	assetBytes, err := assetIsActive(stub, assetID)
+	if err != nil || len(assetBytes) == 0 {
+		return nil, err
+	}
+	var state interface{}
+	err = json.Unmarshal(assetBytes, &state)
+	if err != nil {
+		err = fmt.Errorf("readAssetUnmarshalled unmarshal failed: %s", err)
+		log.Error(err)
+		return nil, err
+	}
+	return state, nil
 }
 
 func readAllAssets(stub *shim.ChaincodeStub, args []string, assetName string, caller string) ([]byte, error) {

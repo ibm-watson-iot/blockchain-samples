@@ -26,7 +26,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-31T15:46:14.683540927Z"
+            "timestamp": "2016-10-05T05:35:44.57831513Z"
         }
     },
     "airlineEvent": {
@@ -46,7 +46,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-31T15:46:14.68339248Z"
+            "timestamp": "2016-10-05T05:35:44.578237395Z"
         }
     },
     "analyticAdjustmentEvent": {
@@ -77,7 +77,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-31T15:46:14.683549469Z"
+            "timestamp": "2016-10-05T05:35:44.578334201Z"
         }
     },
     "flightEvent": {
@@ -144,7 +144,7 @@ var samples = `
             "references": [
                 "carpe noctem"
             ],
-            "timestamp": "2016-08-31T15:46:14.683619289Z"
+            "timestamp": "2016-10-05T05:35:44.57837156Z"
         },
         "lastEvent": {
             "arg": {
@@ -160,7 +160,7 @@ var samples = `
                     "references": [
                         "carpe noctem"
                     ],
-                    "timestamp": "2016-08-31T15:46:14.683610787Z"
+                    "timestamp": "2016-10-05T05:35:44.578383473Z"
                 },
                 "oneOf": {
                     "aircraft": {

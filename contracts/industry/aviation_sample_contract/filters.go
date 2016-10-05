@@ -95,8 +95,8 @@ func filterObject(obj interface{}, filter StateFilter) bool {
 }
 
 func matchAll(obj interface{}, filter StateFilter) bool {
-	am := asMap(obj)
-	if am == nil {
+	am, ok := asMap(obj)
+	if !ok {
 		err := fmt.Errorf("MATCHALL filter passed a non-map of type %T", obj)
 		log.Error(err)
 		// obj is corrupted
@@ -113,8 +113,8 @@ func matchAll(obj interface{}, filter StateFilter) bool {
 }
 
 func matchAny(obj interface{}, filter StateFilter) bool {
-	am := asMap(obj)
-	if am == nil {
+	am, ok := asMap(obj)
+	if !ok {
 		err := fmt.Errorf("MATCHANY filter passed a non-map of type %T", obj)
 		log.Error(err)
 		// obj is corrupted
@@ -131,8 +131,8 @@ func matchAny(obj interface{}, filter StateFilter) bool {
 }
 
 func matchNone(obj interface{}, filter StateFilter) bool {
-	am := asMap(obj)
-	if am == nil {
+	am, ok := asMap(obj)
+	if !ok {
 		err := fmt.Errorf("MatchNone filter passed a non-map of type %T", obj)
 		log.Error(err)
 		// obj is corrupted
@@ -170,6 +170,13 @@ func performOneMatch(obj map[string]interface{}, prop QualifiedPropertyNameValue
 				return o.(int) == i
 			}
 			err = fmt.Errorf("Cannot convert %s to int in filter when comparing to object %s %+v", prop.Value, prop.QProp, obj)
+			log.Error(err)
+			return false
+		case bool:
+			if b, err := strconv.ParseBool(prop.Value); err == nil {
+				return b == o.(bool)
+			}
+			err := fmt.Errorf("Cannot convert %s to bool in filter when comparing to object %s %+v", prop.Value, prop.QProp, obj)
 			log.Error(err)
 			return false
 		default:

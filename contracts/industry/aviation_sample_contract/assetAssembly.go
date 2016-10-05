@@ -26,38 +26,11 @@ import (
 )
 
 func (t *SimpleChaincode) createAssetAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	state, err := createAsset(stub, args, "assembly", "createAssetAssembly")
-	if err != nil {
-		return nil, err
-	}
-	// an opportunity to augment the state
-	state, ok := putObject(state, "status", "new")
-	if !ok {
-		err = errors.New("createAssetAssembly failed to put object status into state")
-		log.Error(err)
-		return nil, err
-	}
-	assetID, ok := getObjectAsString(state, "common.assetID")
-	if !ok {
-		err = errors.New("createAssetAssembly failed to get assetID state")
-		log.Error(err)
-		return nil, err
-	}
-	assetID, err = assetIDToInternal("assembly", assetID)
-	if err != nil {
-		return nil, err
-	}
-	err = putMarshalledState(stub, "createAssetAssembly", "assembly", assetID, state)
-	if err != nil {
-		return nil, err
-	}
-	return nil, nil
+	return createAsset(stub, args, "assembly", "createAssetAssembly", []QualifiedPropertyNameValue{{"status", "new"}})
 }
 
 func (t *SimpleChaincode) updateAssetAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	_, err := updateAsset(stub, args, "assembly", "updateAssetAssembly")
-	// an opportunity to augment the state
-	return nil, err
+	return updateAsset(stub, args, "assembly", "updateAssetAssembly", []QualifiedPropertyNameValue{})
 }
 
 func (t *SimpleChaincode) deleteAssetAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
@@ -69,15 +42,13 @@ func (t *SimpleChaincode) deleteAllAssetsAssembly(stub *shim.ChaincodeStub, args
 }
 
 func (t *SimpleChaincode) deletePropertiesFromAssetAssembly(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	_, err := deletePropertiesFromAsset(stub, args, "assembly", "deletePropertiesFromAssetAssembly")
-	// an opportunity to augment the state
-	return nil, err
+	return deletePropertiesFromAsset(stub, args, "assembly", "deletePropertiesFromAssetAssembly", []QualifiedPropertyNameValue{})
 }
 
 func injectAircraft(stub *shim.ChaincodeStub, assembly interface{}) (interface{}, error) {
 	var err error
-	assem := asMap(assembly)
-	if len(assem) == 0 {
+	assem, ok := asMap(assembly)
+	if !ok {
 		err = fmt.Errorf("injectAircraft failed to convert assembly %+v to map: %s", assembly, err)
 		log.Error(err)
 		return nil, err
