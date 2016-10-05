@@ -48,6 +48,9 @@ const BlockView = ({isExpanded, blockNumber, timestampString, onBlockClick, urlR
                  <li>
                    {window.atob(transaction.payload).split('\n')[FUNCTION_PAYLOAD_INDEX]}
                  </li>
+                 <li>
+				 result: {blockData.nonHashData.transactionResults[index].error ? blockData.nonHashData.transactionResults[index].error : "ok"}
+                 </li>
                </ul>
              </li>
              );
