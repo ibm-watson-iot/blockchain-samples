@@ -455,5 +455,13 @@ func (t *SimpleChaincode) deleteWorldState(stub *shim.ChaincodeStub) error {
 		}
 	}
 	log.Debug("\n\n********** WORLD STATE CLEARED *************\n\n")
+	time.Sleep(300)
+	// now obtain the current contract config and reinitialize the contract as if just deployed to save developer time
+	cstate, err := GETContractStateFromLedger(stub)
+	if err != nil {
+		log.Debug("\n\n********** WORLD STATE REINITIALIZATION FAILED *************\nPlease kill the chaincode, restart, and send Deploy to reinitialize.\n\n")
+	}
+	t.Init(stub, "init", []string{fmt.Sprintf("{\"version\":\"%s\",\"nickname\":\"%s\"}", cstate.Version, cstate.Nickname)})
+	log.Debug("\n\n********** WORLD STATE REINITIALIZED *************\n\n")
 	return nil
 }
