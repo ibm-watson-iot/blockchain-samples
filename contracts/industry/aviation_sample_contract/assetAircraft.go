@@ -92,7 +92,6 @@ func (t *SimpleChaincode) readAssetAircraftComplete(stub *shim.ChaincodeStub, ar
 		log.Error(err)
 		return nil, err
 	}
-	log.Debug("-------------------------\nreadAssetAircraftComplete\n" + string(aircraftsbytes))
 	return aircraftsbytes, nil
 }
 

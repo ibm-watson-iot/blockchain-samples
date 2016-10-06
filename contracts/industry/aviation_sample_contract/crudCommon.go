@@ -421,8 +421,6 @@ func (t *SimpleChaincode) readWorldState(stub *shim.ChaincodeStub) ([]byte, erro
 		results[assetID] = state
 	}
 
-	log.Debugf("\n\n********** BEGIN WORLD STATE *************\n\n%s\n\n*********** END WORLD STATE **************\n\n", prettyPrint(results))
-
 	resultsBytes, err := json.MarshalIndent(&results, "", "    ")
 	if err != nil {
 		err = fmt.Errorf("readWorldState failed to marshal results: %s", err)
