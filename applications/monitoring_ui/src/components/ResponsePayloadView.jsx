@@ -43,8 +43,9 @@ removeFn is responsible for removing the asset from the tracking list
 showRemoveFn is responsible for showing the remove asset button that calls removeFn
 hideRemoveFn is responsible for hiding the remove asset button that calls removeFn
 **/
+
 const ResponsePayloadView = ({rPayload, removeFn, displayFn, enableRemoveBtnFn, disableRemoveBtnFn, index, isRemoveBtnEnabled, togglePayloadPolling}) => (
-  <Card initiallyExpanded={false}>
+  <Card initiallyExpanded={true}>
     <CardHeader
       title={<ResponsePayloadHeaderView func={rPayload.fn} args={rPayload.args} removeFn={removeFn} isRemoveBtnEnabled={isRemoveBtnEnabled} index={index}/>}
       actAsExpander={false}
@@ -52,7 +53,7 @@ const ResponsePayloadView = ({rPayload, removeFn, displayFn, enableRemoveBtnFn, 
       onMouseEnter={() => {enableRemoveBtnFn(index)}}
       onMouseLeave={() => {disableRemoveBtnFn(index)}}
     />
-    <CardText expandable={true}>
+    <CardText expandable={true} >
       {/*displayObj is a function that describes how to display the data.*/}
       <Toggle
         onToggle={()=>{togglePayloadPolling(index)}}

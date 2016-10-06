@@ -34,55 +34,20 @@ The ResponsePayloadContainer is responsible for showing the
 **/
 class ResponsePayloadContainer extends React.Component{
 
-  displayPayload = (responsePayload) => {
-    //first check to see if the payload received is an object or an array
-    if(Array.isArray(responsePayload)){
-      //if it is an array, then we should loop through it
-
-    }
-  }
+  displayPayload = (responsePayload) => {}
 
   //objToJsx should be an empty array
   readObjProps = (obj, objToJsx, indents) => {
 
-    console.log(Object.prototype.toString.call(obj));
-
-    //If the object itself is a primitive and not an array, we just return that as a string.
-    //for example {"OK":100}
-    if(obj && Object.prototype.toString.call(obj) !== '[object Object]'){
-
-      //first check if it is an array
-      //let parsedObj = JSON.parse(obj);
-
-      if(Array.isArray(obj)){
-        //if it is an array, ignore it
-        //obj = parsedObj;
-      }else{
-        objToJsx.push(<p key={uuid.v4()}>{obj.toString()}</p>);
-        return objToJsx;
-      }
+    var divStyle = {
+      whiteSpace: "pre-wrap",
+      fontFamily: "Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace"
     }
 
-    for(var propertyName in obj){
-
-      if (obj.hasOwnProperty(propertyName)) {
-
-        if(Object.prototype.toString.call(obj[propertyName]) === '[object Object]'){
-          //print the correct number of indentations for parent level object
-          objToJsx.push(<p key={uuid.v4()} style={{textIndent: (indents * 20)}}> {propertyName + ": "} </p>);
-          //to prettify the output, we should indent the nested objects
-          indents ++;
-          this.readObjProps(obj[propertyName], objToJsx, indents)
-          //we finished going into the nested object, so remove one level of indents
-          indents --;
-        }else{
-          objToJsx.push(<p key={uuid.v4()} style={{textIndent: (indents * 20)}}> {propertyName + ": " + obj[propertyName]}</p>);
-        }
-      }
-    }
-
-    return objToJsx;
+    objToJsx.push(<p key={uuid.v4() } style={divStyle} > {JSON.stringify(obj, null, 3) }</p>)
+    return objToJsx
   }
+
 
   render(){
     return(
@@ -102,7 +67,7 @@ class ResponsePayloadContainer extends React.Component{
         }
       )}
       </Paper>
-    )
+    );
   }
 
 }
