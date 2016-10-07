@@ -16,9 +16,15 @@ Contributors:
 
 Alex Nguyen - Initial Contribution
 *****************************************************************************/
-import equal from 'deep-equal';
-import {openSnackbar, hideSnackbar, setSnackbarMsg} from '../actions/AppActions';
+
 import * as strings from '../resources/strings'
+
+import equal from 'deep-equal';
+import {
+  actions
+} from 'react-redux-form';
+
+import {openSnackbar, hideSnackbar, setSnackbarMsg} from '../actions/AppActions';
 
 export const SET_CC_SCHEMA = "SET_CC_SCHEMA"
 export const setCcSchema = (schema) => {
@@ -135,9 +141,7 @@ export const TAB_SET = "SET";
 export const INVOKE = "INVOKE";
 export const QUERY = "QUERY";
 
-import {
-  actions
-} from 'react-redux-form';
+
 
 //create an object that stores all functions. The possibleTabs is the UI representation
 //of all the tabs that are possible. This model is specifically for the form.
@@ -247,7 +251,7 @@ export function sendObcRequest(args, fn, requestType){
     .then(response => response.json())
     .then(json => {
 
-      if(json.error){
+      if(json.error && requestType !== "QUERY"){
         dispatch(setSnackbarMsg(json.error.data));
         dispatch(openSnackbar());
       }else{
@@ -267,12 +271,13 @@ export function sendObcRequest(args, fn, requestType){
               break;
             }
           }
-
-          //we found a match, which means we should be updating, not appending.
+	
+          let rslt = json.result ? JSON.parse(json.result.message) : json.error
           if(alreadyRequested){
-            dispatch(updateResponsePayload(indexOfMatch, JSON.parse(json.result.message)))
+			//we found a match, which means we should be updating, not appending.
+            dispatch(updateResponsePayload(indexOfMatch, rslt))
           }else{
-            dispatch(addResponsePayload(args, fn, QUERY, JSON.parse(json.result.message), false, false))
+            dispatch(addResponsePayload(args, fn, QUERY, rslt, false, false))
           }
         }
       }
