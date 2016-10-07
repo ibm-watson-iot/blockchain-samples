@@ -130,9 +130,13 @@ func assetIsActive(stub *shim.ChaincodeStub, assetID string) ([]byte, error) {
 	// context
 	stateBytes, err := stub.GetState(assetID)
 	if err != nil {
+		err = fmt.Errorf("assetIsActive failed for ID %s with error %s", assetID, err)
+		log.Debug(err)
 		return nil, err
 	}
 	if len(stateBytes) == 0 {
+		err = fmt.Errorf("assetIsActive failed for ID %s with length of state == 0", assetID)
+		log.Error(err)
 		return nil, err
 	}
 	return stateBytes, nil

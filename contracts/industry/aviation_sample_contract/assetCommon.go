@@ -40,7 +40,7 @@ func createAsset(stub *shim.ChaincodeStub, args []string, assetName string, call
 	}
 	// We have a valid assetID in internal format, so verify whether it already exists.
 	assetBytes, err := assetIsActive(stub, assetID)
-	if err != nil || len(assetBytes) > 0 {
+	if err == nil && len(assetBytes) > 0 {
 		err = fmt.Errorf("%s: asset %s already exists", caller, assetID)
 		log.Error(err)
 		return nil, err
@@ -263,6 +263,8 @@ func readAsset(stub *shim.ChaincodeStub, args []string, assetName string, caller
 	}
 	assetBytes, err := assetIsActive(stub, assetID)
 	if err != nil {
+		// something went wrong
+		err = fmt.Errorf("Asset %s with ID %s not found, err==%s", assetName, assetID, err.Error())
 		return nil, err
 	}
 	return assetBytes, nil
