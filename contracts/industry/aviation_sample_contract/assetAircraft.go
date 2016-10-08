@@ -86,7 +86,7 @@ func (t *SimpleChaincode) readAssetAircraftComplete(stub *shim.ChaincodeStub, ar
 		}
 		result.Assemblies = append(result.Assemblies, assembly)
 	}
-	aircraftsbytes, err := json.MarshalIndent(&result, "   ", "   ")
+	aircraftsbytes, err := json.Marshal(&result)
 	if err != nil {
 		err = errors.New("readAssetAircraftComplete failed to marshall aircraftsbytes: " + err.Error())
 		log.Error(err)
