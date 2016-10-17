@@ -16,3 +16,9 @@ launched. It will find the point of divergence quickly and will log results
 to the console. The chaincode ID and payload are Base64 decoded in the output.
 Output is sorted by peer, using the naming convention vpx, where x if the zero
 based position in your initial config array.
+
+> Note: Watch your node-red console for progress reports and the final result.
+The result can be hooked up to email etc in the usual node-red way, but I use
+the console as well for convenience and debugging. Note that it is not possible
+to debug with the usual debug panel in subflows, and most of this solution is
+implemented in subflows. Hence, the heavy use of the console log.
