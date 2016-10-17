@@ -1,5 +1,11 @@
 # A Simple Blockchain Hash Divergence Monitor
 
+## How To Add To Node-Red
+Copy the contents of the json file so that it resides
+in your clipboard. In node-red, create a new flow and
+then import from clipboard and drop the nodes into your
+flow. 
+
 ## How This Flow Works
 
 The four VPx nodes contain a URL property 
