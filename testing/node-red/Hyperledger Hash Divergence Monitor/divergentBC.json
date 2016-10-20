@@ -1,0 +1,1217 @@
+[
+    {
+        "id": "4caae3a5.513f3c",
+        "type": "tab",
+        "label": "DivergentBlockchain"
+    },
+    {
+        "id": "e1eee32b.00079",
+        "type": "tab",
+        "label": "WEB STATUS"
+    },
+    {
+        "id": "eca9c456.790098",
+        "type": "subflow",
+        "name": "getBlockFromPeers",
+        "info": "",
+        "in": [
+            {
+                "x": 56,
+                "y": 50,
+                "wires": [
+                    {
+                        "id": "9a3cbbad.6a59d8"
+                    },
+                    {
+                        "id": "c27c3b11.1ec388"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1156,
+                "y": 632,
+                "wires": [
+                    {
+                        "id": "4d3a638e.6812cc",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "fb06d512.188f28",
+        "type": "subflow",
+        "name": "BinarySearchForDivergentTXN",
+        "info": "",
+        "in": [
+            {
+                "x": 50,
+                "y": 30,
+                "wires": [
+                    {
+                        "id": "2852caf3.a87bf6"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1159,
+                "y": 461,
+                "wires": [
+                    {
+                        "id": "b9388f47.4b71c",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "901395cc.ec3328",
+        "type": "subflow",
+        "name": "getChainHeights",
+        "info": "",
+        "in": [
+            {
+                "x": 50,
+                "y": 113,
+                "wires": [
+                    {
+                        "id": "bfb85497.543c78"
+                    },
+                    {
+                        "id": "2eda4d3b.3c0752"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1060,
+                "y": 622,
+                "wires": [
+                    {
+                        "id": "38ce0cb5.0b53c4",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "eba605e9.fc65f8",
+        "type": "http request",
+        "z": "eca9c456.790098",
+        "name": "VP0",
+        "method": "GET",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 495,
+        "y": 234,
+        "wires": [
+            [
+                "7f840305.e761dc"
+            ]
+        ]
+    },
+    {
+        "id": "7f840305.e761dc",
+        "type": "json",
+        "z": "eca9c456.790098",
+        "name": "DECODE",
+        "x": 733,
+        "y": 330,
+        "wires": [
+            [
+                "de37ac0b.c983a"
+            ]
+        ]
+    },
+    {
+        "id": "75ef31d.bedb0d",
+        "type": "http request",
+        "z": "eca9c456.790098",
+        "name": "VP1",
+        "method": "GET",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 496,
+        "y": 291,
+        "wires": [
+            [
+                "f6a08521.906e08"
+            ]
+        ]
+    },
+    {
+        "id": "f6a08521.906e08",
+        "type": "json",
+        "z": "eca9c456.790098",
+        "name": "DECODE",
+        "x": 727,
+        "y": 398,
+        "wires": [
+            [
+                "de37ac0b.c983a"
+            ]
+        ]
+    },
+    {
+        "id": "34d27c84.76bdf4",
+        "type": "http request",
+        "z": "eca9c456.790098",
+        "name": "VP2",
+        "method": "GET",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 496,
+        "y": 350,
+        "wires": [
+            [
+                "8efdd8a2.a2c8e8"
+            ]
+        ]
+    },
+    {
+        "id": "5df97c32.a27344",
+        "type": "http request",
+        "z": "eca9c456.790098",
+        "name": "VP3",
+        "method": "GET",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 497,
+        "y": 407,
+        "wires": [
+            [
+                "fceb9496.5231e8"
+            ]
+        ]
+    },
+    {
+        "id": "8efdd8a2.a2c8e8",
+        "type": "json",
+        "z": "eca9c456.790098",
+        "name": "DECODE",
+        "x": 706,
+        "y": 450,
+        "wires": [
+            [
+                "de37ac0b.c983a"
+            ]
+        ]
+    },
+    {
+        "id": "fceb9496.5231e8",
+        "type": "json",
+        "z": "eca9c456.790098",
+        "name": "DECODE",
+        "x": 694,
+        "y": 511,
+        "wires": [
+            [
+                "de37ac0b.c983a"
+            ]
+        ]
+    },
+    {
+        "id": "41982ca.2e083d4",
+        "type": "function",
+        "z": "eca9c456.790098",
+        "name": "spread and add /blocks/xx",
+        "func": "peers = global.get(\"peers\")\nvar msgs = [];\nfor ( i=0; i<peers.length; i++ ) {\n    msgs.push( {\n        topic : \"peer\",\n        peername: \"vp\" + i,\n        url : peers[i] + \"/chain/blocks/\" + msg.payload.blocknumber\n    });\n}\nreturn msgs;",
+        "outputs": "4",
+        "noerr": 0,
+        "x": 523,
+        "y": 116,
+        "wires": [
+            [
+                "eba605e9.fc65f8"
+            ],
+            [
+                "75ef31d.bedb0d"
+            ],
+            [
+                "34d27c84.76bdf4"
+            ],
+            [
+                "5df97c32.a27344"
+            ]
+        ]
+    },
+    {
+        "id": "4d3a638e.6812cc",
+        "type": "function",
+        "z": "eca9c456.790098",
+        "name": "return saved responses",
+        "func": "responses = flow.get(\"responses\");\nflow.set(\"responses\" + msg.payload.blocknumber, responses);\n// console.log(\"RESPONSES FOR GET BLOCK\");\n// console.log(JSON.stringify(responses, null, 2));\nmsg.payload.responses = responses;\nmsg.payload.hashes = [];\nmsg.payload.previoushashes = [];\nfor ( i = 0; i < responses.length; ++i) {\n    msg.payload.hashes.push(responses[i].payload.stateHash);\n    msg.payload.previoushashes.push(responses[i].payload.previousBlockHash);\n}\nconsole.log(\"RETURNING HASHES FROM GET BLOCK\");\nconsole.log(msg.payload.hashes);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 659,
+        "y": 793,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c27c3b11.1ec388",
+        "type": "delay",
+        "z": "eca9c456.790098",
+        "name": "2s",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 232,
+        "y": 689,
+        "wires": [
+            [
+                "1e472059.f2e66"
+            ]
+        ]
+    },
+    {
+        "id": "9a3cbbad.6a59d8",
+        "type": "function",
+        "z": "eca9c456.790098",
+        "name": "initialize responses",
+        "func": "var s = \"GET BLOCK FROM PEERS: \" + msg.payload.blocknumber;\nconsole.log(s);\nflow.set(\"responses\", []);\nflow.set(\"retries\", 0);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 254,
+        "y": 111,
+        "wires": [
+            [
+                "41982ca.2e083d4"
+            ]
+        ]
+    },
+    {
+        "id": "de37ac0b.c983a",
+        "type": "function",
+        "z": "eca9c456.790098",
+        "name": "store response",
+        "func": "responses = flow.get(\"responses\");\nresponses.push(msg);\nflow.set(\"responses\", responses);\n// console.log(\"STORED RESPONSES\");\n// console.log(flow.get(\"responses\"));\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 931,
+        "y": 429,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1e472059.f2e66",
+        "type": "function",
+        "z": "eca9c456.790098",
+        "name": "GOT ALL RESPONSES?",
+        "func": "responses = flow.get(\"responses\");\nif ( responses.length === global.get(\"numpeers\") ) {\n    // good to go\n    console.log(\"BLOCK [\" + msg.payload.blocknumber + \"] RESPONSES, HAVE \" + responses.length + \"/\" + global.get(\"numpeers\"));\n    return [null, msg];\n}\n// not enough responses, wait some more\nretries = flow.get(\"retries\");\nif ( retries === 15 ) {\n    console.log(\"unable to get block \" + msg.payload.blocknumber + \" - too many retries\");\n    return [null, null];    \n}\nflow.set(\"retries\", retries + 1);\nconsole.log(\"BLOCK [\" + msg.payload.blocknumber + \"] RESPONSES, HAVE \" + responses.length + \"/\" + global.get(\"numpeers\"));\nreturn [msg, null];",
+        "outputs": "2",
+        "noerr": 0,
+        "x": 237,
+        "y": 787,
+        "wires": [
+            [
+                "c27c3b11.1ec388"
+            ],
+            [
+                "4d3a638e.6812cc"
+            ]
+        ]
+    },
+    {
+        "id": "2852caf3.a87bf6",
+        "type": "function",
+        "z": "fb06d512.188f28",
+        "name": "initialize search",
+        "func": "console.log(\"ENTER BINARY SEARCH\")\nflow.set(\"incomingmsg\", msg);\nflow.set(\"height\", msg.payload.heights[0])\nflow.set(\"responses\", []);\nmsg.payload.top = msg.payload.heights[0]-1;\nmsg.payload.bottom = 1;\nmsg.payload.blocknumber = Math.round((msg.payload.bottom + ((msg.payload.top - msg.payload.bottom) / 2)));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 198,
+        "y": 31,
+        "wires": [
+            [
+                "f5784dcc.a3cff"
+            ]
+        ]
+    },
+    {
+        "id": "cb39a092.2112e",
+        "type": "subflow:eca9c456.790098",
+        "z": "fb06d512.188f28",
+        "name": "",
+        "x": 497,
+        "y": 168,
+        "wires": [
+            [
+                "a799b74d.dc1408"
+            ]
+        ]
+    },
+    {
+        "id": "2f94ae57.ae9fe2",
+        "type": "function",
+        "z": "fb06d512.188f28",
+        "name": "COMPARE Hashes",
+        "func": "// console.log(\"COMPARE HASHES\");\n// console.log(JSON.stringify(msg, null, 2));\nvar incomingmsg = flow.get(\"incomingmsg\");\nvar hashsame = true;\nvar hash = null;\nfor ( i = 0; i < msg.payload.hashes.length; ++i) {\n    if (!hash) {\n        hash = msg.payload.hashes[i];\n    } else {\n        if ( msg.payload.hashes[i] !== hash) {\n            hashsame = false;\n            break;\n        }\n    }\n}\nincomingmsg.payload.hashsame = hashsame;\nreturn incomingmsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 692,
+        "y": 295,
+        "wires": [
+            [
+                "f18ea710.2c7e48"
+            ]
+        ]
+    },
+    {
+        "id": "f18ea710.2c7e48",
+        "type": "switch",
+        "z": "fb06d512.188f28",
+        "name": "HASHES SAME?",
+        "property": "payload.hashsame",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 920,
+        "y": 305,
+        "wires": [
+            [
+                "533878f5.a3e418"
+            ],
+            [
+                "e55ff6f6.4e4fc8"
+            ]
+        ]
+    },
+    {
+        "id": "533878f5.a3e418",
+        "type": "function",
+        "z": "fb06d512.188f28",
+        "name": "SAME",
+        "func": "console.log(\"SAME\");\nmsg.payload.bottom = msg.payload.blocknumber;\nmsg.payload.blocknumber = Math.round((msg.payload.bottom + ((msg.payload.top - msg.payload.bottom) / 2)));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 574,
+        "y": 38,
+        "wires": [
+            [
+                "f5784dcc.a3cff"
+            ]
+        ]
+    },
+    {
+        "id": "e55ff6f6.4e4fc8",
+        "type": "function",
+        "z": "fb06d512.188f28",
+        "name": "NOT SAME",
+        "func": "console.log(\"NOT SAME\");\nmsg.payload.top = msg.payload.blocknumber;\nmsg.payload.blocknumber = Math.round((msg.payload.bottom + ((msg.payload.top - msg.payload.bottom) / 2)));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 524,
+        "y": 447,
+        "wires": [
+            [
+                "f5784dcc.a3cff"
+            ]
+        ]
+    },
+    {
+        "id": "f5784dcc.a3cff",
+        "type": "function",
+        "z": "fb06d512.188f28",
+        "name": "DONE?",
+        "func": "if ( msg.payload.top === msg.payload.blocknumber ) {\n    // we're done ... top is the culprit\n    msg.payload.divergent = msg.payload.top;\n    console.log(\"DIVERGENT BLOCK: \" + msg.payload.divergent);\n    return [null, msg];\n}\nflow.set(\"incomingmsg\", msg);\nreturn [msg, null];",
+        "outputs": "2",
+        "noerr": 0,
+        "x": 276,
+        "y": 228,
+        "wires": [
+            [
+                "cb39a092.2112e"
+            ],
+            [
+                "b9388f47.4b71c"
+            ]
+        ]
+    },
+    {
+        "id": "a799b74d.dc1408",
+        "type": "function",
+        "z": "fb06d512.188f28",
+        "name": "SAVE RESPONSES",
+        "func": "flow.set(\"responses\" + msg.payload.blocknumber, msg);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 641,
+        "y": 230,
+        "wires": [
+            [
+                "2f94ae57.ae9fe2"
+            ]
+        ]
+    },
+    {
+        "id": "b9388f47.4b71c",
+        "type": "function",
+        "z": "fb06d512.188f28",
+        "name": "RETURN DIVERGENT RESPONSES",
+        "func": "responses = flow.get(\"responses\" + msg.payload.divergent);\nmsg.payload.divergent = msg.payload.divergent;\nmsg.payload.responses = responses;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 574,
+        "y": 588,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "194a50c.62727af",
+        "type": "http request",
+        "z": "901395cc.ec3328",
+        "name": "VP0",
+        "method": "GET",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 448,
+        "y": 236,
+        "wires": [
+            [
+                "440ccc4c.d5bee4"
+            ]
+        ]
+    },
+    {
+        "id": "440ccc4c.d5bee4",
+        "type": "json",
+        "z": "901395cc.ec3328",
+        "name": "DECODE",
+        "x": 686,
+        "y": 332,
+        "wires": [
+            [
+                "9f2b296d.835388"
+            ]
+        ]
+    },
+    {
+        "id": "50926011.99c2f",
+        "type": "http request",
+        "z": "901395cc.ec3328",
+        "name": "VP1",
+        "method": "GET",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 449,
+        "y": 293,
+        "wires": [
+            [
+                "f0bca7ed.72d468"
+            ]
+        ]
+    },
+    {
+        "id": "f0bca7ed.72d468",
+        "type": "json",
+        "z": "901395cc.ec3328",
+        "name": "DECODE",
+        "x": 680,
+        "y": 400,
+        "wires": [
+            [
+                "9f2b296d.835388"
+            ]
+        ]
+    },
+    {
+        "id": "61e58076.54dfe",
+        "type": "http request",
+        "z": "901395cc.ec3328",
+        "name": "VP2",
+        "method": "GET",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 449,
+        "y": 352,
+        "wires": [
+            [
+                "3740f09a.94b"
+            ]
+        ]
+    },
+    {
+        "id": "656e0e22.d3c3a",
+        "type": "http request",
+        "z": "901395cc.ec3328",
+        "name": "VP3",
+        "method": "GET",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 450,
+        "y": 409,
+        "wires": [
+            [
+                "e1f089df.b919c8"
+            ]
+        ]
+    },
+    {
+        "id": "3740f09a.94b",
+        "type": "json",
+        "z": "901395cc.ec3328",
+        "name": "DECODE",
+        "x": 659,
+        "y": 452,
+        "wires": [
+            [
+                "9f2b296d.835388"
+            ]
+        ]
+    },
+    {
+        "id": "e1f089df.b919c8",
+        "type": "json",
+        "z": "901395cc.ec3328",
+        "name": "DECODE",
+        "x": 647,
+        "y": 513,
+        "wires": [
+            [
+                "9f2b296d.835388"
+            ]
+        ]
+    },
+    {
+        "id": "da56d555.defac8",
+        "type": "function",
+        "z": "901395cc.ec3328",
+        "name": "spread and add /chain",
+        "func": "peers = global.get(\"peers\")\nvar msgs = [];\nfor ( i=0; i<peers.length; i++ ) {\n    msgs.push( {\n        topic : \"peer\",\n        peername: \"vp\" + i,\n        url : peers[i] + \"/chain\"\n    });\n}\n// console.log(\"SPREAD AND ADD /CHAIN\");\n// console.log(msgs);\nreturn msgs;",
+        "outputs": "4",
+        "noerr": 0,
+        "x": 461,
+        "y": 117,
+        "wires": [
+            [
+                "194a50c.62727af"
+            ],
+            [
+                "50926011.99c2f"
+            ],
+            [
+                "61e58076.54dfe"
+            ],
+            [
+                "656e0e22.d3c3a"
+            ]
+        ]
+    },
+    {
+        "id": "38ce0cb5.0b53c4",
+        "type": "function",
+        "z": "901395cc.ec3328",
+        "name": "return saved responses",
+        "func": "msg.payload.responses = flow.get(\"responses\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 630,
+        "y": 815,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bfb85497.543c78",
+        "type": "function",
+        "z": "901395cc.ec3328",
+        "name": "initialize responses",
+        "func": "console.log(\"GET CHAIN HEIGHTS\");\nflow.set(\"responses\", []);\nflow.set(\"retries\", 0);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 207,
+        "y": 113,
+        "wires": [
+            [
+                "da56d555.defac8"
+            ]
+        ]
+    },
+    {
+        "id": "9f2b296d.835388",
+        "type": "function",
+        "z": "901395cc.ec3328",
+        "name": "store response",
+        "func": "responses = flow.get(\"responses\");\nresponses.push(msg);\nflow.set(\"responses\", responses);\n// console.log(\"STORED RESPONSES\");\n// console.log(flow.get(\"responses\"));\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 884,
+        "y": 431,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2eda4d3b.3c0752",
+        "type": "delay",
+        "z": "901395cc.ec3328",
+        "name": "2s",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 225,
+        "y": 712,
+        "wires": [
+            [
+                "6c1535bf.c2713c"
+            ]
+        ]
+    },
+    {
+        "id": "6c1535bf.c2713c",
+        "type": "function",
+        "z": "901395cc.ec3328",
+        "name": "GOT ALL RESPONSES?",
+        "func": "responses = flow.get(\"responses\");\nif ( responses.length === global.get(\"numpeers\") ) {\n    // good to go\n    console.log(\"CHAIN HEIGHTS, HAVE \" + responses.length + \"/\" + global.get(\"numpeers\"));\n    return [null, msg];\n}\n// not enough responses, wait some more\nretries = flow.get(\"retries\");\nif ( retries >= 15 ) {\n    console.log(\"unable to get chain heights - too many retries\");\n    msg.payload.message = \"unable to get all chain heights, got \" + responses.length + \"/\" + global.get(\"numpeers\");\n    return [null, msg];    \n}\nflow.set(\"retries\", retries + 1);\nconsole.log(\"CHAIN HEIGHTS, HAVE \" + responses.length + \"/\" + global.get(\"numpeers\"));\nreturn [msg, null];",
+        "outputs": "2",
+        "noerr": 0,
+        "x": 230,
+        "y": 810,
+        "wires": [
+            [
+                "2eda4d3b.3c0752"
+            ],
+            [
+                "38ce0cb5.0b53c4"
+            ]
+        ]
+    },
+    {
+        "id": "522c126a.50b2ec",
+        "type": "inject",
+        "z": "4caae3a5.513f3c",
+        "name": "START",
+        "topic": "",
+        "payload": "{}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 95,
+        "y": 62,
+        "wires": [
+            [
+                "d1587140.816d2"
+            ]
+        ]
+    },
+    {
+        "id": "40157f4d.02186",
+        "type": "function",
+        "z": "4caae3a5.513f3c",
+        "name": "COMPARE Heights",
+        "func": "console.log(\"COMPARE HEIGHTS\");\n//console.log(JSON.stringify(msg, null, 2));\nvar responseslen = msg.payload.responses.length;\nif ( responseslen === 0 ) {\n    // nothing to process\n    console.log(\"COMPARE HEIGHTS RETURNING NULL\");\n    return null;\n}\nvar numpeers = global.get(\"numpeers\");\nvar msgout = JSON.parse(JSON.stringify(msg));\nmsgout.payload.heightspresent = \"all\";\nif ( responseslen < numpeers ) {\n    msgout.payload.heightsmatch = \"incomplete[\" + responseslen + \"/\" + numpeers + \"]\";\n}\nmsgout.payload.peernames = [];\nmsgout.payload.heights = [];\nmsgout.payload.hashes = [];\nmsgout.payload.previoushashes = [];\nvar heightsame = true;\nvar height = null;\nfor ( i = 0; i < responseslen; ++i) {\n    r = msg.payload.responses[i];\n    msgout.payload.peernames.push(msg.payload.responses[i].peername);\n    msgout.payload.heights.push(msg.payload.responses[i].payload.height);\n    msgout.payload.hashes.push(msg.payload.responses[i].payload.currentBlockHash);\n    msgout.payload.previoushashes.push(msg.payload.responses[i].payload.previousBlockHash);\n    if (!height) {\n        height = msg.payload.responses[i].payload.height;\n    } else {\n        if ( msg.payload.responses[i].payload.height != height) {\n            heightsame = false;\n        }\n    }\n}\nmsgout.payload.heightsame = heightsame;\nmsgout.payload.height = height;\nmsgout.payload.blocknumber = height-1;\nif ( heightsame ) {\n    console.log(\"HEIGHT: \" + height);\n} else {\n    console.log(\"HEIGHT: inconsistent\")\n}\nreturn msgout;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 345,
+        "y": 388,
+        "wires": [
+            [
+                "69305e6f.b517e"
+            ]
+        ]
+    },
+    {
+        "id": "fd759a6b.20f5d8",
+        "type": "comment",
+        "z": "4caae3a5.513f3c",
+        "name": "README",
+        "info": "# How This Flow Works\n\nIn the config node, enter as many peer urls as you would like tracked. The\nflow is set to run once, but you can set it to poll of course. Use periods \nof at least 1m, since this flow can timeout on each invocation of get block.\n\nThe flow sends the same command to all peers in parallel and checks every 2s\nto see if all responses have arrived. It loops until 30s has passed and then\nstops. If all peers respond, the flow continues.\n\nIf the chain heights are all the same, the hash comparison will proceed. Else \nit will print a message that it cannot proceed. Try again.\n\nIf the hash comparison shows divergence, the subflow for binary search is\nlaunched. It will find the point of divergence quickly and will log results \nto the console. The chaincode ID and payload are Base64 decoded in the output.\nOutput is sorted by peer, using the naming convention vpx, where x if the zero\nbased position in your initial config array.",
+        "x": 140,
+        "y": 493,
+        "wires": []
+    },
+    {
+        "id": "38c9d438.5cf8dc",
+        "type": "function",
+        "z": "4caae3a5.513f3c",
+        "name": "CONFIG EVENT TESTER",
+        "func": "var peers = [\n    \"https://<vp0 url>\",\n    \"<vp1 url>\",\n    \"<vp2 url>\",\n    \"<vp3 url>\"\n];\nglobal.set(\"peers\", peers)\nglobal.set(\"height\", 0)\nglobal.set(\"numpeers\", peers.length)\nreturn msg;",
+        "outputs": "1",
+        "noerr": 0,
+        "x": 364,
+        "y": 140,
+        "wires": [
+            [
+                "b7a8b4ba.55c5e8"
+            ]
+        ]
+    },
+    {
+        "id": "b7a8b4ba.55c5e8",
+        "type": "subflow:901395cc.ec3328",
+        "z": "4caae3a5.513f3c",
+        "name": "",
+        "x": 674,
+        "y": 114,
+        "wires": [
+            [
+                "a0f9ada.0d9ef5"
+            ]
+        ]
+    },
+    {
+        "id": "a0f9ada.0d9ef5",
+        "type": "delay",
+        "z": "4caae3a5.513f3c",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 320,
+        "y": 286,
+        "wires": [
+            [
+                "40157f4d.02186"
+            ]
+        ]
+    },
+    {
+        "id": "69305e6f.b517e",
+        "type": "switch",
+        "z": "4caae3a5.513f3c",
+        "name": "HEIGHTSAME?",
+        "property": "payload.heightsame",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 553,
+        "y": 361,
+        "wires": [
+            [
+                "739d7f05.8713e"
+            ],
+            [
+                "2f1a5645.1089aa"
+            ]
+        ]
+    },
+    {
+        "id": "739d7f05.8713e",
+        "type": "function",
+        "z": "4caae3a5.513f3c",
+        "name": "COMPARE Hashes",
+        "func": "// console.log(\"COMPARE HASHES\");\n// console.log(JSON.stringify(msg, null, 2));\nvar hashsame = true;\nvar hash = null;\nfor ( i = 0; i < msg.payload.hashes.length; ++i) {\n    if (!hash) {\n        hash = msg.payload.hashes[i];\n    } else {\n        if ( msg.payload.hashes[i] !== hash) {\n            hashsame = false;\n            break;\n        }\n    }\n}\nmsg.payload.hashsame = hashsame;\nmsg.payload.height = msg.payload.heights[0];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 861,
+        "y": 417,
+        "wires": [
+            [
+                "a6bd2699.5369a8"
+            ]
+        ]
+    },
+    {
+        "id": "2f1a5645.1089aa",
+        "type": "function",
+        "z": "4caae3a5.513f3c",
+        "name": "log inconsistent heights message",
+        "func": "console.log(\"inconsistent heights, hashes not compared\");\nmsg.payload.message = \"inconsistent heights, hashes not compared\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1014,
+        "y": 299,
+        "wires": [
+            [
+                "64cdd9b4.0c20d8"
+            ]
+        ]
+    },
+    {
+        "id": "a6bd2699.5369a8",
+        "type": "switch",
+        "z": "4caae3a5.513f3c",
+        "name": "HASHSAME?",
+        "property": "payload.hashsame",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 531,
+        "y": 581,
+        "wires": [
+            [
+                "af4664d6.227d48"
+            ],
+            [
+                "a669daa0.5e6498"
+            ]
+        ]
+    },
+    {
+        "id": "a669daa0.5e6498",
+        "type": "subflow:fb06d512.188f28",
+        "z": "4caae3a5.513f3c",
+        "name": "",
+        "x": 511,
+        "y": 721,
+        "wires": [
+            [
+                "bf342cd8.f4b85"
+            ]
+        ]
+    },
+    {
+        "id": "fa9b3c54.2fc16",
+        "type": "function",
+        "z": "4caae3a5.513f3c",
+        "name": "CONSOLE LOG RESULT OF SEARCH",
+        "func": "console.log(\"OUTPUT FROM BINARY SEARCH FLOW\");\nconsole.log(JSON.stringify(msg, null, 2));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 995,
+        "y": 876,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b3cad724.da7228",
+        "type": "comment",
+        "z": "4caae3a5.513f3c",
+        "name": "NO",
+        "info": "",
+        "x": 489,
+        "y": 655,
+        "wires": []
+    },
+    {
+        "id": "af4664d6.227d48",
+        "type": "function",
+        "z": "4caae3a5.513f3c",
+        "name": "log chain not divergent",
+        "func": "console.log(\"chain is not divergent\");\nmsg.payload.hashsame = true;\nmsg.payload.message = \"chain is not divergent\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 917,
+        "y": 572,
+        "wires": [
+            [
+                "64cdd9b4.0c20d8"
+            ]
+        ]
+    },
+    {
+        "id": "613b010f.dde6f",
+        "type": "comment",
+        "z": "4caae3a5.513f3c",
+        "name": "YES",
+        "info": "",
+        "x": 696,
+        "y": 570,
+        "wires": []
+    },
+    {
+        "id": "b37bd57c.e3f7c8",
+        "type": "comment",
+        "z": "4caae3a5.513f3c",
+        "name": "YES",
+        "info": "",
+        "x": 699,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "70263d08.647f44",
+        "type": "comment",
+        "z": "4caae3a5.513f3c",
+        "name": "NO",
+        "info": "",
+        "x": 791,
+        "y": 315,
+        "wires": []
+    },
+    {
+        "id": "bf342cd8.f4b85",
+        "type": "function",
+        "z": "4caae3a5.513f3c",
+        "name": "create final response",
+        "func": "console.log(\"FINAL RESPONSES FROM SEARCH\");\n\n// sort to get in order vp0,vp1,vp2,vp3...\nvar m = msg.payload.responses.payload;\nvar r = msg.payload.responses.payload.responses;\nvar p = msg.payload;\np.height= m.heights[0];\np.divergent = msg.payload.divergent;\np.message = \"chain is divergent starting at block \" + msg.payload.divergent;\np.peernames = [];\np.hashes = [];\np.previoushashes = [];\np.transactions = [];\np.urls = [];\nr.sort(function(a,b) {return (a.peername > b.peername) ? 1 : ((b.peername > a.peername) ? -1 : 0);} );\n// loop over peers\nfor ( var i = 0; i < r.length; ++i) {\n    p.peernames.push(r[i].peername);\n    p.hashes.push(r[i].payload.stateHash);\n    p.previoushashes.push(r[i].payload.previousBlockHash);\n    p.urls.push(r[i].url);\n    // loop over transactions\n    for ( var j = 0; j < r[i].payload.transactions.length; ++j) {\n        p.transactions.push({\n            txn: j,\n            peer: r[i].peername,\n            url: r[i].url,\n            chaincodeid: new Buffer(r[i].payload.transactions[j].chaincodeID, 'base64').toString(),\n            payload: new Buffer(r[i].payload.transactions[j].payload, 'base64').toString(),\n            uuid: r[i].payload.transactions[j].uuid,\n            timestamp: (new Date(r[i].payload.transactions[j].timestamp.seconds*1000)).toString(),\n            result: r[i].payload.nonHashData.transactionResults[j]\n        });\n    }\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 752,
+        "y": 788,
+        "wires": [
+            [
+                "fa9b3c54.2fc16",
+                "64cdd9b4.0c20d8"
+            ]
+        ]
+    },
+    {
+        "id": "d1587140.816d2",
+        "type": "function",
+        "z": "4caae3a5.513f3c",
+        "name": "CONFIG LOADTEST",
+        "func": "var peers = [\n    \"<vp0 url>\",\n    \"<vp1 url>\",\n    \"<vp2 url>\",\n    \"<vp3 url>\"\n];\nglobal.set(\"peers\", peers)\nglobal.set(\"height\", 0)\nglobal.set(\"numpeers\", peers.length)\nreturn msg;",
+        "outputs": "1",
+        "noerr": 0,
+        "x": 326,
+        "y": 92,
+        "wires": [
+            [
+                "b7a8b4ba.55c5e8"
+            ]
+        ]
+    },
+    {
+        "id": "64cdd9b4.0c20d8",
+        "type": "file",
+        "z": "4caae3a5.513f3c",
+        "name": "STATUS FILE",
+        "filename": "status/status.json",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "x": 1255,
+        "y": 619,
+        "wires": []
+    },
+    {
+        "id": "dbbd6e2.aeec49",
+        "type": "file in",
+        "z": "e1eee32b.00079",
+        "name": "GET STATUS",
+        "filename": "status/status.json",
+        "format": "utf8",
+        "x": 305,
+        "y": 258,
+        "wires": [
+            [
+                "217bf21d.5ebf9e"
+            ]
+        ]
+    },
+    {
+        "id": "aad7cb06.904ff8",
+        "type": "http in",
+        "z": "e1eee32b.00079",
+        "name": "/status HTTP server (port 1890)",
+        "url": "/status",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 214,
+        "y": 106,
+        "wires": [
+            [
+                "dbbd6e2.aeec49"
+            ]
+        ]
+    },
+    {
+        "id": "de160dd5.a48a1",
+        "type": "http response",
+        "z": "e1eee32b.00079",
+        "name": "STATUS OUT",
+        "x": 1009,
+        "y": 326,
+        "wires": []
+    },
+    {
+        "id": "651fcbfd.8ea564",
+        "type": "template",
+        "z": "e1eee32b.00079",
+        "name": "Display Result",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE HTML>\n<html>\n    <head>\n\t\t<meta charset=\"utf-8\">\n\t\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n\t\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\t\t<title>STATUS</title>\n\n        <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\">\n        <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js\"></script>\n        <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>\n\n        <style>\n        .table {\n            width: 100%;\n        }\n        \n        .td, .th {\n            text-align: left;\n            padding: 8px;\n        }\n        .container-full {\n          margin: 0 auto;\n          width: 100%;\n        }\n        .rowx :nth-child(odd){\n          background:#eee;\n        }\n        .rowx :nth-child(even){\n          background:#fff;\n        }\n        </style>\n    </head>\n    <body>\n\t\t<div class=\"container-fluid\">\n\t\t\t<div class=\"panel panel-default\" margin: 15px;>\n        \t    <div class=\"bg-primary\">\n        \t\t\t<div class=\"panel-heading container-full\">\n        \t\t\t    <div class=\"row\">\n        \t\t\t\t    <div class=\"col-lg-12\"><h1 style=\"text-align: center\">Hyperledger Hash Divergence Monitor</h1></div>\n        \t\t\t    </div>\n        \t\t\t    <div class=\"row\">\n        \t\t\t\t    <div class=\"col-lg-6\"><h3 style=\"text-align: center\">Chain Height: {{payload.height}}</h2></div>\n        \t\t\t\t    <div class=\"col-lg-6\"><h3 style=\"text-align: center\">Displayed Block: {{payload.blocknumber}}</h2></div>\n        \t\t\t    </div>\n        \t\t    </div>\n        \t    </div>\n\t\t\t\t<div class=\"panel-body bg-default\">\n                    <table class=\"table table-striped table-condensed\" id=\"results-table\" style=\"width: 100%\">\n                        <thead>\n        \t\t\t\t    <tr>\n        \t\t\t\t        <th style=\"width: 10%\">Peer</th>\n        \t\t\t\t        <th style=\"width: 45%\">Block Hash</th>\n        \t\t\t\t        <th style=\"width: 45%\">Previous Block Hash</th>\n        \t\t\t\t    </tr>\n                        </thead>\n    \t\t\t\t    <tbody>\n                            {{#payload.grouped}}\n                                <tr>\n                                    <td style=\"width: 25%\">{{peer}}</td>\n                                    <td style=\"width: 50%\">{{hash}}</td>\n                                    <td style=\"width: 50%\">{{prevhash}}</td>\n                                </tr>\n                            {{/payload.grouped}}\n    \t\t\t\t    </tbody>\n\t\t\t\t    </table>\n    \t\t\t</div>\n        \t    <div class=\"bg-primary\">\n    \t\t\t    <div class=\"panel-heading container-full\">\n    \t\t\t\t    <div class=\"row\">\n        \t\t\t\t    <div>\n            \t\t\t\t    <div><h2 style=\"text-align: center\">Status: {{payload.message}}</h2></div>\n        \t\t\t\t    </div>\n    \t\t\t\t    </div>\n\t\t\t        </div>\n\t\t        </div>\n\t\t        <div class=\"panel-footer panel-info bg-success\">\n    \t\t\t\t<div class=\"container-full\">\n                        {{#payload.transactions}}\n        \t\t\t\t    <div class=\"row\">\n            \t\t\t\t    <div class=\"col-lg-12\"><h3 class=\"text-left\">\n            \t\t\t\t        Peer: {{peer}}\n                \t\t\t\t    <div class=\"row\">\n                    \t\t\t\t    <div class=\"row\">\n                        \t\t\t\t    <div class=\"col-lg-4 col-xs-offset-1\"><h4 class=\"text-left\">Txn: {{txn}}</h4></div>\n                    \t\t\t\t    </div>\n                    \t\t\t\t    <div class=\"row\">\n                        \t\t\t\t    <div class=\"col-lg-8 col-xs-offset-1\"><h5 class=\"text-left\">UUID: {{uuid}}</h5></div>\n                    \t\t\t\t    </div>\n                    \t\t\t\t    <div class=\"row\">\n                        \t\t\t\t    <div class=\"col-lg-8 col-xs-offset-1\"><h5 class=\"text-left\">Url: {{url}}</h5></div>\n                    \t\t\t\t    </div>\n                    \t\t\t\t    <div class=\"row\">\n                        \t\t\t\t    <div class=\"col-lg-8 col-xs-offset-1\"><h5 class=\"text-left\">Contract: {{chaincodeid}}</h5></div>\n                    \t\t\t\t    </div>\n                    \t\t\t\t    <div class=\"row\">\n                        \t\t\t\t    <div class=\"col-lg-8 col-xs-offset-1\"><h5 class=\"text-left\">Payload: {{payload}}</h5></div>\n                    \t\t\t\t    </div>\n                    \t\t\t\t    <div class=\"row\">\n                        \t\t\t\t    <div class=\"col-lg-8 col-xs-offset-1\"><h5 class=\"text-left\">Result: {{status}}</h5></div>\n                    \t\t\t\t    </div>\n                \t\t\t\t    </div>\n            \t\t\t\t    </div>\n        \t\t\t\t    </div>\n                        {{/payload.transactions}}\n\t    \t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>  \t\n\t\t</div> \n    </body>\n</html>",
+        "x": 714,
+        "y": 411,
+        "wires": [
+            [
+                "de160dd5.a48a1",
+                "8da168c4.f988f8"
+            ]
+        ]
+    },
+    {
+        "id": "217bf21d.5ebf9e",
+        "type": "json",
+        "z": "e1eee32b.00079",
+        "name": "",
+        "x": 491,
+        "y": 324,
+        "wires": [
+            [
+                "1e657eeb.3ba341",
+                "33fd4898.c27b28"
+            ]
+        ]
+    },
+    {
+        "id": "a95b9595.c3fb98",
+        "type": "file",
+        "z": "e1eee32b.00079",
+        "name": "STATUS HTML FILE",
+        "filename": "status/status.html",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "x": 1030,
+        "y": 432,
+        "wires": []
+    },
+    {
+        "id": "1e657eeb.3ba341",
+        "type": "function",
+        "z": "e1eee32b.00079",
+        "name": "MORPH",
+        "func": "var grouped = [];\nvar pn = msg.payload.peernames;\nvar hh = msg.payload.hashes;\nvar ph = msg.payload.previoushashes;\nfor ( i=0; i < pn.length; ++i ) {\n    grouped.push({\n       peer: pn[i],\n       hash: hh[i],\n       prevhash: ph[i]\n    });\n}\nmsg.payload.grouped = grouped;\n\nif ( msg.payload.transactions ) {\n    var pt = msg.payload.transactions;\n    for ( i=0; i < pt.length; ++i ) {\n       pt[i].chaincodeid = pt[i].chaincodeid.trim().replace(/[^\\w\\s]/gi, '');\n       pt[i].payload = pt[i].payload.trim().replace(pt[i].chaincodeid, '');\n       pt[i].payload = pt[i].payload.trim().replace(/[^\\w\\s]/gi, ' ');\n       if ( pt[i].result.error ) {\n           pt[i].status = \"ERRORCODE \" + pt[i].result.errorCode + \" -- \" + pt[i].result.error;\n       } else {\n           pt[i].status = \"OK\";\n       }\n    }\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 462,
+        "y": 446,
+        "wires": [
+            [
+                "651fcbfd.8ea564"
+            ]
+        ]
+    },
+    {
+        "id": "8da168c4.f988f8",
+        "type": "rbe",
+        "z": "e1eee32b.00079",
+        "name": "WRITE CHANGED ONLY",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "x": 867,
+        "y": 523,
+        "wires": [
+            [
+                "a95b9595.c3fb98"
+            ]
+        ]
+    },
+    {
+        "id": "e8050c2.e5a3bf",
+        "type": "function",
+        "z": "4caae3a5.513f3c",
+        "name": "CONFIG BAD FABRIC",
+        "func": "var peers = [\n    \"<vp0 url>\",\n    \"<vp1 url>\",\n    \"<vp2 url>\",\n    \"<vp3 url>\"\n];\nglobal.set(\"peers\", peers)\nglobal.set(\"height\", 0)\nglobal.set(\"numpeers\", peers.length)\nreturn msg;",
+        "outputs": "1",
+        "noerr": 0,
+        "x": 356,
+        "y": 181,
+        "wires": [
+            [
+                "b7a8b4ba.55c5e8"
+            ]
+        ]
+    },
+    {
+        "id": "d5962f8b.eb5b5",
+        "type": "inject",
+        "z": "4caae3a5.513f3c",
+        "name": "START",
+        "topic": "",
+        "payload": "{}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 109,
+        "y": 139,
+        "wires": [
+            [
+                "38c9d438.5cf8dc"
+            ]
+        ]
+    },
+    {
+        "id": "3254964e.1cdbda",
+        "type": "inject",
+        "z": "4caae3a5.513f3c",
+        "name": "START",
+        "topic": "",
+        "payload": "{}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 113,
+        "y": 196,
+        "wires": [
+            [
+                "e8050c2.e5a3bf"
+            ]
+        ]
+    },
+    {
+        "id": "33fd4898.c27b28",
+        "type": "debug",
+        "z": "e1eee32b.00079",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 638,
+        "y": 302,
+        "wires": []
+    }
+]
