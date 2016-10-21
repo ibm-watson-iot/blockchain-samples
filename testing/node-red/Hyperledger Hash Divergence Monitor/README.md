@@ -16,7 +16,7 @@ Node-red uses a default `settings.js` file to configure the execution environmen
 
 ## Starting Node-Red to Use This Flow
 
-While in the folder where you have dropped the flow (which can be the folder in which you have forked this project from blockchain-samples), youcan issue a command like this (Windows example):
+While in the folder where you have dropped the flow (which can be the folder in which you have forked this project from blockchain-samples), you can issue a command similar to this Windows 10 example:
 
 `C:\Users\kim\DEV\divergentBC>node-red -s divergentBC.js --userDir c:\users\kim\DEV\`
 
@@ -57,6 +57,10 @@ And the format when a divergent fabric is displayed looks like this:
 ![Display of Non-Divergent Fabric](divergent_monitor_output_divergent.jpeg)
 
 Pointing a browser at `http://localhost:1890/status` will show the monitor. The tab in which the monitor displays can be set to refresh periodically for ongoing monitoring. The author does this using the chrome plugin [Auto Refresh](http://64px.com/auto-refresh/ifooldnmmcmlbdennkpdnlnbgbmfalko) to perform this task. While simplistic, it is very effective for such a simple flow.
+
+One last visualization -- multiple transactions. This happens to be a non-divergent fabric, but the results are similar for divergent fabrics as they use the same results creation node and display flow.
+
+![Display of Non-Divergent Fabric](divergent_monitor_output_multitxn.jpeg)
 
 ## Console Output
 

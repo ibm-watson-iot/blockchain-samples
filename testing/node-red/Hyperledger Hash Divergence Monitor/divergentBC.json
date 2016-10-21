@@ -766,7 +766,7 @@
         "type": "function",
         "z": "4caae3a5.513f3c",
         "name": "CONFIG EVENT TESTER",
-        "func": "var peers = [\n    \"https://<vp0 url>\",\n    \"<vp1 url>\",\n    \"<vp2 url>\",\n    \"<vp3 url>\"\n];\nglobal.set(\"peers\", peers)\nglobal.set(\"height\", 0)\nglobal.set(\"numpeers\", peers.length)\nreturn msg;",
+        "func": "var peers = [\n    \"https://6a32e2178ed4491eae2ad06645d9b915-vp0.us.blockchain.ibm.com:444\",\n    \"https://6a32e2178ed4491eae2ad06645d9b915-vp1.us.blockchain.ibm.com:444\",\n    \"https://6a32e2178ed4491eae2ad06645d9b915-vp2.us.blockchain.ibm.com:444\",\n    \"https://6a32e2178ed4491eae2ad06645d9b915-vp3.us.blockchain.ibm.com:444\"\n];\nglobal.set(\"peers\", peers)\nglobal.set(\"height\", 0)\nglobal.set(\"numpeers\", peers.length)\nreturn msg;",
         "outputs": "1",
         "noerr": 0,
         "x": 364,
@@ -905,8 +905,8 @@
         "type": "subflow:fb06d512.188f28",
         "z": "4caae3a5.513f3c",
         "name": "",
-        "x": 511,
-        "y": 721,
+        "x": 525,
+        "y": 733,
         "wires": [
             [
                 "bf342cd8.f4b85"
@@ -921,8 +921,8 @@
         "func": "console.log(\"OUTPUT FROM BINARY SEARCH FLOW\");\nconsole.log(JSON.stringify(msg, null, 2));\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 995,
-        "y": 876,
+        "x": 1215,
+        "y": 882,
         "wires": [
             []
         ]
@@ -942,14 +942,14 @@
         "type": "function",
         "z": "4caae3a5.513f3c",
         "name": "log chain not divergent",
-        "func": "console.log(\"chain is not divergent\");\nmsg.payload.hashsame = true;\nmsg.payload.message = \"chain is not divergent\";\nreturn msg;",
+        "func": "console.log(\"chain is not divergent\");\nmsg.payload.hashsame = true;\nmsg.payload.message = \"chain is not divergent\";\nmsg.payload.blocknumber = msg.payload.heights[0] - 1;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 917,
-        "y": 572,
+        "x": 921,
+        "y": 519,
         "wires": [
             [
-                "64cdd9b4.0c20d8"
+                "52d3519d.0a06b"
             ]
         ]
     },
@@ -959,8 +959,8 @@
         "z": "4caae3a5.513f3c",
         "name": "YES",
         "info": "",
-        "x": 696,
-        "y": 570,
+        "x": 688,
+        "y": 554,
         "wires": []
     },
     {
@@ -988,11 +988,11 @@
         "type": "function",
         "z": "4caae3a5.513f3c",
         "name": "create final response",
-        "func": "console.log(\"FINAL RESPONSES FROM SEARCH\");\n\n// sort to get in order vp0,vp1,vp2,vp3...\nvar m = msg.payload.responses.payload;\nvar r = msg.payload.responses.payload.responses;\nvar p = msg.payload;\np.height= m.heights[0];\np.divergent = msg.payload.divergent;\np.message = \"chain is divergent starting at block \" + msg.payload.divergent;\np.peernames = [];\np.hashes = [];\np.previoushashes = [];\np.transactions = [];\np.urls = [];\nr.sort(function(a,b) {return (a.peername > b.peername) ? 1 : ((b.peername > a.peername) ? -1 : 0);} );\n// loop over peers\nfor ( var i = 0; i < r.length; ++i) {\n    p.peernames.push(r[i].peername);\n    p.hashes.push(r[i].payload.stateHash);\n    p.previoushashes.push(r[i].payload.previousBlockHash);\n    p.urls.push(r[i].url);\n    // loop over transactions\n    for ( var j = 0; j < r[i].payload.transactions.length; ++j) {\n        p.transactions.push({\n            txn: j,\n            peer: r[i].peername,\n            url: r[i].url,\n            chaincodeid: new Buffer(r[i].payload.transactions[j].chaincodeID, 'base64').toString(),\n            payload: new Buffer(r[i].payload.transactions[j].payload, 'base64').toString(),\n            uuid: r[i].payload.transactions[j].uuid,\n            timestamp: (new Date(r[i].payload.transactions[j].timestamp.seconds*1000)).toString(),\n            result: r[i].payload.nonHashData.transactionResults[j]\n        });\n    }\n}\nreturn msg;",
+        "func": "console.log(\"FINAL RESPONSES FROM SEARCH\");\n\n// sort to get in order vp0,vp1,vp2,vp3...\nvar m = msg.payload.responses.payload;\nvar r = msg.payload.responses.payload.responses;\nvar p = msg.payload;\np.height= m.heights[0];\nif ( p.divergent ) {\n    p.message = \"chain is divergent starting at block \" + msg.payload.divergent;\n}\np.peernames = [];\np.hashes = [];\np.previoushashes = [];\np.transactions = [];\np.urls = [];\nr.sort(function(a,b) {return (a.peername > b.peername) ? 1 : ((b.peername > a.peername) ? -1 : 0);} );\n// loop over peers\nfor ( var i = 0; i < r.length; ++i) {\n    p.peernames.push(r[i].peername);\n    p.hashes.push(r[i].payload.stateHash);\n    p.previoushashes.push(r[i].payload.previousBlockHash);\n    p.urls.push(r[i].url);\n    // loop over transactions\n    for ( var j = 0; j < r[i].payload.transactions.length; ++j) {\n        p.transactions.push({\n            txn: j,\n            peer: r[i].peername,\n            url: r[i].url,\n            chaincodeid: new Buffer(r[i].payload.transactions[j].chaincodeID, 'base64').toString(),\n            payload: new Buffer(r[i].payload.transactions[j].payload, 'base64').toString(),\n            uuid: r[i].payload.transactions[j].uuid,\n            timestamp: (new Date(r[i].payload.transactions[j].timestamp.seconds*1000)).toString(),\n            result: r[i].payload.nonHashData.transactionResults[j]\n        });\n    }\n}\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 752,
-        "y": 788,
+        "x": 1059,
+        "y": 750,
         "wires": [
             [
                 "fa9b3c54.2fc16",
@@ -1005,7 +1005,7 @@
         "type": "function",
         "z": "4caae3a5.513f3c",
         "name": "CONFIG LOADTEST",
-        "func": "var peers = [\n    \"<vp0 url>\",\n    \"<vp1 url>\",\n    \"<vp2 url>\",\n    \"<vp3 url>\"\n];\nglobal.set(\"peers\", peers)\nglobal.set(\"height\", 0)\nglobal.set(\"numpeers\", peers.length)\nreturn msg;",
+        "func": "var peers = [\n    \"https://a68211461d7743e69874b0c189952999-vp0.us.blockchain.ibm.com:444\",\n    \"https://a68211461d7743e69874b0c189952999-vp1.us.blockchain.ibm.com:444\",\n    \"https://a68211461d7743e69874b0c189952999-vp2.us.blockchain.ibm.com:444\",\n    \"https://a68211461d7743e69874b0c189952999-vp3.us.blockchain.ibm.com:444\"\n];\nglobal.set(\"peers\", peers)\nglobal.set(\"height\", 0)\nglobal.set(\"numpeers\", peers.length)\nreturn msg;",
         "outputs": "1",
         "noerr": 0,
         "x": 326,
@@ -1025,8 +1025,8 @@
         "appendNewline": true,
         "createDir": true,
         "overwriteFile": "true",
-        "x": 1255,
-        "y": 619,
+        "x": 1308,
+        "y": 643,
         "wires": []
     },
     {
@@ -1153,7 +1153,7 @@
         "type": "function",
         "z": "4caae3a5.513f3c",
         "name": "CONFIG BAD FABRIC",
-        "func": "var peers = [\n    \"<vp0 url>\",\n    \"<vp1 url>\",\n    \"<vp2 url>\",\n    \"<vp3 url>\"\n];\nglobal.set(\"peers\", peers)\nglobal.set(\"height\", 0)\nglobal.set(\"numpeers\", peers.length)\nreturn msg;",
+        "func": "var peers = [\n    \"https://9c0c5c00-b013-4251-8d1a-1562b02491f9_vp0.us.blockchain.ibm.com\",\n    \"https://9c0c5c00-b013-4251-8d1a-1562b02491f9_vp1.us.blockchain.ibm.com\",\n    \"https://9c0c5c00-b013-4251-8d1a-1562b02491f9_vp2.us.blockchain.ibm.com\",\n    \"https://9c0c5c00-b013-4251-8d1a-1562b02491f9_vp3.us.blockchain.ibm.com\"\n];\nglobal.set(\"peers\", peers)\nglobal.set(\"height\", 0)\nglobal.set(\"numpeers\", peers.length)\nreturn msg;",
         "outputs": "1",
         "noerr": 0,
         "x": 356,
@@ -1213,5 +1213,34 @@
         "x": 638,
         "y": 302,
         "wires": []
+    },
+    {
+        "id": "52d3519d.0a06b",
+        "type": "subflow:eca9c456.790098",
+        "z": "4caae3a5.513f3c",
+        "name": "",
+        "x": 821,
+        "y": 633,
+        "wires": [
+            [
+                "3d526717.8c6a78"
+            ]
+        ]
+    },
+    {
+        "id": "3d526717.8c6a78",
+        "type": "function",
+        "z": "4caae3a5.513f3c",
+        "name": "save responses",
+        "func": "msgcopy = JSON.parse(JSON.stringify(msg));\nmsg.payload.responses = msgcopy;\nmsg.payload.responses.payload.responses - msgcopy;\nconsole.log(msg);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1047,
+        "y": 638,
+        "wires": [
+            [
+                "bf342cd8.f4b85"
+            ]
+        ]
     }
 ]
