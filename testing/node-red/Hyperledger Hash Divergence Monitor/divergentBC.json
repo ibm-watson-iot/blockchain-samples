@@ -740,7 +740,7 @@
         "type": "function",
         "z": "4caae3a5.513f3c",
         "name": "COMPARE Heights",
-        "func": "console.log(\"COMPARE HEIGHTS\");\n//console.log(JSON.stringify(msg, null, 2));\nvar responseslen = msg.payload.responses.length;\nif ( responseslen === 0 ) {\n    // nothing to process\n    console.log(\"COMPARE HEIGHTS RETURNING NULL\");\n    return null;\n}\nvar numpeers = global.get(\"numpeers\");\nvar msgout = JSON.parse(JSON.stringify(msg));\nmsgout.payload.heightspresent = \"all\";\nif ( responseslen < numpeers ) {\n    msgout.payload.heightsmatch = \"incomplete[\" + responseslen + \"/\" + numpeers + \"]\";\n}\nmsgout.payload.peernames = [];\nmsgout.payload.heights = [];\nmsgout.payload.hashes = [];\nmsgout.payload.previoushashes = [];\nvar heightsame = true;\nvar height = null;\nfor ( i = 0; i < responseslen; ++i) {\n    r = msg.payload.responses[i];\n    msgout.payload.peernames.push(msg.payload.responses[i].peername);\n    msgout.payload.heights.push(msg.payload.responses[i].payload.height);\n    msgout.payload.hashes.push(msg.payload.responses[i].payload.currentBlockHash);\n    msgout.payload.previoushashes.push(msg.payload.responses[i].payload.previousBlockHash);\n    if (!height) {\n        height = msg.payload.responses[i].payload.height;\n    } else {\n        if ( msg.payload.responses[i].payload.height != height) {\n            heightsame = false;\n        }\n    }\n}\nmsgout.payload.heightsame = heightsame;\nmsgout.payload.height = height;\nmsgout.payload.blocknumber = height-1;\nif ( heightsame ) {\n    console.log(\"HEIGHT: \" + height);\n} else {\n    console.log(\"HEIGHT: inconsistent\")\n}\nreturn msgout;",
+        "func": "console.log(\"COMPARE HEIGHTS\");\n//console.log(JSON.stringify(msg, null, 2));\nvar responseslen = msg.payload.responses.length;\nif ( responseslen === 0 ) {\n    // nothing to process\n    console.log(\"COMPARE HEIGHTS RETURNING NULL\");\n    return null;\n}\nvar numpeers = global.get(\"numpeers\");\nvar msgout = JSON.parse(JSON.stringify(msg));\nmsgout.payload.heightspresent = \"all\";\nif ( responseslen < numpeers ) {\n    msgout.payload.heightsmatch = \"incomplete[\" + responseslen + \"/\" + numpeers + \"]\";\n}\nmsgout.payload.peernames = [];\nmsgout.payload.heights = [];\nmsgout.payload.hashes = [];\nmsgout.payload.previoushashes = [];\nvar heightsame = true;\nvar height = null;\nvar maxheight = null;\nfor ( i = 0; i < responseslen; ++i) {\n    r = msg.payload.responses[i];\n    msgout.payload.peernames.push(msg.payload.responses[i].peername);\n    msgout.payload.heights.push(msg.payload.responses[i].payload.height);\n    msgout.payload.hashes.push(msg.payload.responses[i].payload.currentBlockHash);\n    msgout.payload.previoushashes.push(msg.payload.responses[i].payload.previousBlockHash);\n    if ( height ) {\n        if (msg.payload.responses[i].payload.height < height) {\n            height = msg.payload.responses[i].payload.height;\n            heightsame = false;\n        } else if (msg.payload.responses[i].payload.height > height) {\n            heightsame = false;\n        }\n    } else {\n        height = msg.payload.responses[i].payload.height;\n    }\n    if ( maxheight ) {\n        if (msg.payload.responses[i].payload.height > maxheight) {\n            maxheight = msg.payload.responses[i].payload.height;\n        }\n    } else {\n        maxheight = msg.payload.responses[i].payload.height;\n    }\n}\nmsgout.payload.heightsame = heightsame;\nmsgout.payload.notheightsame = !heightsame;\nmsgout.payload.height = height;\nmsgout.payload.maxheight = maxheight;\nmsgout.payload.blocknumber = height-1;\nif ( !heightsame ) {\n    console.log(\"HEIGHT: inconsistent \" + JSON.stringify(msgout.payload.heights));\n}\nconsole.log(\"HEIGHT: \" + height);\nconsole.log(\"MAXHEIGHT: \" + maxheight);\nreturn msgout;",
         "outputs": 1,
         "noerr": 0,
         "x": 345,
@@ -803,62 +803,18 @@
         ]
     },
     {
-        "id": "69305e6f.b517e",
-        "type": "switch",
-        "z": "4caae3a5.513f3c",
-        "name": "HEIGHTSAME?",
-        "property": "payload.heightsame",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "true"
-            },
-            {
-                "t": "false"
-            }
-        ],
-        "checkall": "true",
-        "outputs": 2,
-        "x": 553,
-        "y": 361,
-        "wires": [
-            [
-                "739d7f05.8713e"
-            ],
-            [
-                "2f1a5645.1089aa"
-            ]
-        ]
-    },
-    {
         "id": "739d7f05.8713e",
         "type": "function",
         "z": "4caae3a5.513f3c",
         "name": "COMPARE Hashes",
-        "func": "// console.log(\"COMPARE HASHES\");\n// console.log(JSON.stringify(msg, null, 2));\nvar hashsame = true;\nvar hash = null;\nfor ( i = 0; i < msg.payload.hashes.length; ++i) {\n    if (!hash) {\n        hash = msg.payload.hashes[i];\n    } else {\n        if ( msg.payload.hashes[i] !== hash) {\n            hashsame = false;\n            break;\n        }\n    }\n}\nmsg.payload.hashsame = hashsame;\nmsg.payload.height = msg.payload.heights[0];\nreturn msg;",
+        "func": "// console.log(\"COMPARE HASHES\");\n// console.log(JSON.stringify(msg, null, 2));\nvar hashsame = true;\nvar hash = null;\nfor ( i = 0; i < msg.payload.hashes.length; ++i) {\n    if (!hash) {\n        hash = msg.payload.hashes[i];\n    } else {\n        if ( msg.payload.hashes[i] !== hash) {\n            hashsame = false;\n            break;\n        }\n    }\n}\nmsg.payload.hashsame = hashsame;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
-        "x": 861,
-        "y": 417,
+        "x": 949,
+        "y": 412,
         "wires": [
             [
                 "a6bd2699.5369a8"
-            ]
-        ]
-    },
-    {
-        "id": "2f1a5645.1089aa",
-        "type": "function",
-        "z": "4caae3a5.513f3c",
-        "name": "log inconsistent heights message",
-        "func": "console.log(\"inconsistent heights, hashes not compared\");\nmsg.payload.message = \"inconsistent heights, hashes not compared\";\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "x": 1014,
-        "y": 299,
-        "wires": [
-            [
-                "64cdd9b4.0c20d8"
             ]
         ]
     },
@@ -908,7 +864,7 @@
         "type": "function",
         "z": "4caae3a5.513f3c",
         "name": "CONSOLE LOG RESULT OF SEARCH",
-        "func": "console.log(\"OUTPUT FROM BINARY SEARCH FLOW\");\nconsole.log(JSON.stringify(msg, null, 2));\nreturn msg;",
+        "func": "console.log(\"OUTPUT FROM BINARY SEARCH FLOW\");\nconsole.log(\"HEIGHTS: \" + JSON.stringify(msg.payload.heights));\nconsole.log(\"HASHES: \" + JSON.stringify(msg.payload.hashes));\nconsole.log(\"PREVHASHES: \" + JSON.stringify(msg.payload.previoushashes));\nconsole.log(\"HEIGHT: \" + JSON.stringify(msg.payload.height));\nconsole.log(\"BLOCK: \" + JSON.stringify(msg.payload.blocknumber));\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 1215,
@@ -932,7 +888,7 @@
         "type": "function",
         "z": "4caae3a5.513f3c",
         "name": "log chain not divergent",
-        "func": "console.log(\"chain is not divergent\");\nmsg.payload.hashsame = true;\nmsg.payload.message = \"chain is not divergent\";\nmsg.payload.blocknumber = msg.payload.heights[0] - 1;\nreturn msg;",
+        "func": "console.log(\"chain is not divergent\");\nmsg.payload.message = \"chain is not divergent\";\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 921,
@@ -951,26 +907,6 @@
         "info": "",
         "x": 688,
         "y": 554,
-        "wires": []
-    },
-    {
-        "id": "b37bd57c.e3f7c8",
-        "type": "comment",
-        "z": "4caae3a5.513f3c",
-        "name": "YES",
-        "info": "",
-        "x": 699,
-        "y": 400,
-        "wires": []
-    },
-    {
-        "id": "70263d08.647f44",
-        "type": "comment",
-        "z": "4caae3a5.513f3c",
-        "name": "NO",
-        "info": "",
-        "x": 791,
-        "y": 315,
         "wires": []
     },
     {
@@ -1068,7 +1004,7 @@
         "fieldType": "msg",
         "format": "handlebars",
         "syntax": "mustache",
-        "template": "<!DOCTYPE HTML>\n<html>\n    <head>\n\t\t<meta charset=\"utf-8\">\n\t\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n\t\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\t\t<title>STATUS</title>\n\n        <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\">\n        <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js\"></script>\n        <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>\n\n        <style>\n        .table {\n            width: 100%;\n        }\n        \n        .td, .th {\n            text-align: left;\n            padding: 8px;\n        }\n        .container-full {\n          margin: 0 auto;\n          width: 100%;\n        }\n        .level1 {\n          padding-left: 20px;\n        }\n        .level2 {\n          padding-left: 80px;\n        }\n        .level3 {\n          padding-left: 160px;\n        }\n        </style>\n    </head>\n    <body>\n\t\t<div class=\"container-fluid\">\n\t\t\t<div class=\"panel panel-primary\" margin: 15px;>\n    \t\t\t<div class=\"panel-heading container-full\">\n    \t\t\t    <div class=\"row\">\n    \t\t\t\t    <div class=\"col-lg-12\"><h1 class=\"text-center\">Hyperledger Hash Divergence Monitor</h1></div>\n    \t\t\t    </div>\n    \t\t\t    <div class=\"row\">\n    \t\t\t\t    <div class=\"col-lg-6\"><h3 class=\"text-center\">Chain Height: {{payload.height}}</h2></div>\n    \t\t\t\t    <div class=\"col-lg-6\"><h3 class=\"text-center\">Displayed Block: {{payload.blocknumber}}</h2></div>\n    \t\t\t    </div>\n    \t\t    </div>\n\t\t\t\t<div class=\"panel-body\">\n                    <table class=\"table table-striped table-condensed\" id=\"results-table\" style=\"width: 100%\">\n                        <thead>\n        \t\t\t\t    <tr>\n        \t\t\t\t        <th style=\"width: 10%\">Peer</th>\n        \t\t\t\t        <th style=\"width: 45%\">Block Hash</th>\n        \t\t\t\t        <th style=\"width: 45%\">Previous Block Hash</th>\n        \t\t\t\t    </tr>\n                        </thead>\n    \t\t\t\t    <tbody>\n                            {{#payload.grouped}}\n                                <tr>\n                                    <td style=\"width: 25%\">{{peer}}</td>\n                                    <td style=\"width: 50%\">{{hash}}</td>\n                                    <td style=\"width: 50%\">{{prevhash}}</td>\n                                </tr>\n                            {{/payload.grouped}}\n    \t\t\t\t    </tbody>\n\t\t\t\t    </table>\n    \t\t\t</div>\n\t\t\t    <div class=\"container-full\">\n                    {{#payload.isnotdivergent}}<div class=\"panel-heading bg-success\">{{/payload.isnotdivergent}}\n                    {{#payload.isdivergent}}<div class=\"panel-heading bg-danger\">{{/payload.isdivergent}}\n    \t\t\t\t    <div><h2 class=\"text-center\">Status: {{payload.message}}</h2></div>\n\t\t\t\t    </div>\n\t\t        </div>\n\t\t        <div class=\"panel-body\">\n                    {{#payload.transactions}}\n    \t\t\t\t    {{#noterrtxn}}<div class=\"row\">{{/noterrtxn}}\n    \t\t\t\t    {{#errtxn}}<div class=\"row bg-danger\">{{/errtxn}}\n        \t\t\t\t    <h3 class=\"text-left level1\">{{peer}}</h3>\n    \t\t\t        </div>\n    \t\t\t\t    {{#noterrtxn}}<div class=\"row\">{{/noterrtxn}}\n    \t\t\t\t    {{#errtxn}}<div class=\"row bg-danger\">{{/errtxn}}\n        \t\t\t\t    <div class=\"row\">\n            \t\t\t\t    <div class=\"level2\"><h4 class=\"text-left\">Txn: {{txn}}</h4></div>\n        \t\t\t\t    </div>\n        \t\t\t\t    <div class=\"row\">\n            \t\t\t\t    <div class=\"level3\"><h5 class=\"text-left\">UUID: {{uuid}}</h5></div>\n        \t\t\t\t    </div>\n        \t\t\t\t    <div class=\"row\">\n            \t\t\t\t    <div class=\"level3\"><h5 class=\"text-left\">Url: {{url}}</h5></div>\n        \t\t\t\t    </div>\n        \t\t\t\t    <div class=\"row\">\n            \t\t\t\t    <div class=\"level3\"><h5 class=\"text-left\">Contract: {{chaincodeid}}</h5></div>\n        \t\t\t\t    </div>\n        \t\t\t\t    <div class=\"row\">\n            \t\t\t\t    <div class=\"level3\"><h5 class=\"text-left\">Payload: {{payload}}</h5></div>\n        \t\t\t\t    </div>\n        \t\t\t\t    <div class=\"row\">\n            \t\t\t\t    <div class=\"level3\"><h5 class=\"text-left\">Result: {{status}}</h5></div>\n        \t\t\t\t    </div>\n    \t\t\t\t    </div>\n                    {{/payload.transactions}}\n   \t\t\t\t</div>\n\t\t\t</div>  \t\n\t\t</div> \n    </body>\n</html>",
+        "template": "<!DOCTYPE HTML>\n<html>\n    <head>\n\t\t<meta charset=\"utf-8\">\n\t\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n\t\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\t\t<title>STATUS</title>\n\n        <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\">\n        <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js\"></script>\n        <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>\n\n        <style>\n        .table {\n            width: 100%;\n        }\n        \n        .td, .th {\n            text-align: left;\n            padding: 8px;\n        }\n        .container-full {\n          margin: 0 auto;\n          width: 100%;\n        }\n        .level1 {\n          padding-left: 20px;\n        }\n        .level2 {\n          padding-left: 80px;\n        }\n        .level3 {\n          padding-left: 160px;\n        }\n        </style>\n    </head>\n    <body>\n\t\t<div class=\"container-fluid\">\n\t\t\t<div class=\"panel panel-primary\" margin: 15px;>\n    \t\t\t<div class=\"panel-heading container-full\">\n    \t\t\t    <div class=\"row\">\n    \t\t\t\t    <div class=\"col-lg-12\"><h1 class=\"text-center\">Hyperledger Hash Divergence Monitor</h1></div>\n    \t\t\t    </div>\n    \t\t\t    <div class=\"row\">\n    \t\t\t\t    <div class=\"col-lg-4\"><h3 class=\"text-center\">Chain Height: {{payload.maxheight}}</h2></div>\n    \t\t\t\t    <div class=\"col-lg-4\"><h3 class=\"text-center\">Common Height: {{payload.height}}</h2></div>\n    \t\t\t\t    <div class=\"col-lg-4\"><h3 class=\"text-center\">Block Shown: {{payload.blocknumber}}</h2></div>\n    \t\t\t    </div>\n    \t\t    </div>\n\t\t\t\t<div class=\"panel-body\">\n                    <table class=\"table table-striped table-condensed\" id=\"results-table\" style=\"width: 100%\">\n                        <thead>\n        \t\t\t\t    <tr>\n        \t\t\t\t        <th style=\"width: 10%\">Peer</th>\n        \t\t\t\t        <th style=\"width: 45%\">Block Hash</th>\n        \t\t\t\t        <th style=\"width: 45%\">Previous Block Hash</th>\n        \t\t\t\t    </tr>\n                        </thead>\n    \t\t\t\t    <tbody>\n                            {{#payload.grouped}}\n                                <tr>\n                                    <td style=\"width: 25%\">{{peer}}</td>\n                                    <td style=\"width: 50%\">{{hash}}</td>\n                                    <td style=\"width: 50%\">{{prevhash}}</td>\n                                </tr>\n                            {{/payload.grouped}}\n    \t\t\t\t    </tbody>\n\t\t\t\t    </table>\n    \t\t\t</div>\n\t\t\t    <div class=\"container-full\">\n                    {{#payload.isnotdivergent}}<div class=\"panel-heading bg-success\">{{/payload.isnotdivergent}}\n                    {{#payload.isdivergent}}<div class=\"panel-heading bg-danger\">{{/payload.isdivergent}}\n    \t\t\t\t    <div><h2 class=\"text-center\">{{payload.message}}</h2></div>\n                        {{#payload.notheightsame}}\n        \t\t\t\t    <div><h4 class=\"text-center text-muted\">{{payload.inconsistentheightmessage}}</h4></div>\n                        {{/payload.notheightsame}}\n\t\t\t\t    </div>\n\t\t        </div>\n\t\t        <div class=\"panel-body\">\n                    {{#payload.transactions}}\n    \t\t\t\t    {{#noterrtxn}}<div class=\"row\">{{/noterrtxn}}\n    \t\t\t\t    {{#errtxn}}<div class=\"row bg-danger\">{{/errtxn}}\n        \t\t\t\t    <h3 class=\"text-left level1\">{{peer}}</h3>\n    \t\t\t        </div>\n    \t\t\t\t    {{#noterrtxn}}<div class=\"row\">{{/noterrtxn}}\n    \t\t\t\t    {{#errtxn}}<div class=\"row bg-danger\">{{/errtxn}}\n        \t\t\t\t    <div class=\"row\">\n            \t\t\t\t    <div class=\"level2\"><h4 class=\"text-left\">Txn: {{txn}}</h4></div>\n        \t\t\t\t    </div>\n        \t\t\t\t    <div class=\"row\">\n            \t\t\t\t    <div class=\"level3\"><h5 class=\"text-left\">UUID: {{uuid}}</h5></div>\n        \t\t\t\t    </div>\n        \t\t\t\t    <div class=\"row\">\n            \t\t\t\t    <div class=\"level3\"><h5 class=\"text-left\">Url: {{url}}</h5></div>\n        \t\t\t\t    </div>\n        \t\t\t\t    <div class=\"row\">\n            \t\t\t\t    <div class=\"level3\"><h5 class=\"text-left\">Contract: {{chaincodeid}}</h5></div>\n        \t\t\t\t    </div>\n        \t\t\t\t    <div class=\"row\">\n            \t\t\t\t    <div class=\"level3\"><h5 class=\"text-left\">Payload: {{payload}}</h5></div>\n        \t\t\t\t    </div>\n        \t\t\t\t    <div class=\"row\">\n            \t\t\t\t    <div class=\"level3\"><h5 class=\"text-left\">Result: {{status}}</h5></div>\n        \t\t\t\t    </div>\n    \t\t\t\t    </div>\n                    {{/payload.transactions}}\n   \t\t\t\t</div>\n\t\t\t</div>  \t\n\t\t</div> \n    </body>\n</html>",
         "x": 714,
         "y": 411,
         "wires": [
@@ -1222,7 +1158,7 @@
         "type": "function",
         "z": "4caae3a5.513f3c",
         "name": "save responses",
-        "func": "msgcopy = JSON.parse(JSON.stringify(msg));\nmsg.payload.responses = msgcopy;\nmsg.payload.responses.payload.responses - msgcopy;\nconsole.log(msg);\nreturn msg;",
+        "func": "msgcopy = JSON.parse(JSON.stringify(msg));\nmsg.payload.responses = msgcopy;\n//msg.payload.responses.payload.responses - msgcopy;\nconsole.log(msg);\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "x": 1047,
@@ -1230,6 +1166,83 @@
         "wires": [
             [
                 "bf342cd8.f4b85"
+            ]
+        ]
+    },
+    {
+        "id": "69305e6f.b517e",
+        "type": "switch",
+        "z": "4caae3a5.513f3c",
+        "name": "HEIGHTSAME?",
+        "property": "payload.heightsame",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "outputs": 2,
+        "x": 553,
+        "y": 361,
+        "wires": [
+            [
+                "739d7f05.8713e"
+            ],
+            [
+                "2f1a5645.1089aa"
+            ]
+        ]
+    },
+    {
+        "id": "70263d08.647f44",
+        "type": "comment",
+        "z": "4caae3a5.513f3c",
+        "name": "NO",
+        "info": "",
+        "x": 762,
+        "y": 294,
+        "wires": []
+    },
+    {
+        "id": "b37bd57c.e3f7c8",
+        "type": "comment",
+        "z": "4caae3a5.513f3c",
+        "name": "YES",
+        "info": "",
+        "x": 750,
+        "y": 389,
+        "wires": []
+    },
+    {
+        "id": "2f1a5645.1089aa",
+        "type": "function",
+        "z": "4caae3a5.513f3c",
+        "name": "log inconsistent heights message",
+        "func": "var txt = \"inconsistent heights \" + JSON.stringify(msg.payload.heights);\nmsg.payload.inconsistentheightmessage = txt;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1044,
+        "y": 195,
+        "wires": [
+            [
+                "b8919053.324f5"
+            ]
+        ]
+    },
+    {
+        "id": "b8919053.324f5",
+        "type": "subflow:eca9c456.790098",
+        "z": "4caae3a5.513f3c",
+        "name": "",
+        "x": 1079,
+        "y": 288,
+        "wires": [
+            [
+                "739d7f05.8713e"
             ]
         ]
     }
