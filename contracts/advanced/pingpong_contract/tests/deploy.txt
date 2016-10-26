@@ -1,0 +1,80 @@
+/*******************************************************************************
+Copyright (c) 2016 IBM Corporation.
+
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and limitations under the License.
+
+
+Contributors:
+
+Keerthi Challabotla - Initial Contribution
+
+******************************************************************************/
+// KL: May 31 2016
+
+var q			= require('q');
+var chai 		= require('chai');
+var should 		= chai.should();
+var assert		= require('assert');
+var request		= require('request');
+
+var logger		= require('./logger').createLogger();
+var internal  	= require('./index');
+
+function testDeploy ( config, func, args ) {
+	it("Deploy contract version : " + config.contract_version, function(complete) {	
+		var deployBody = config.template;
+		deployBody.method = 'deploy';
+		if (config.debug_mode) {
+			deployBody.params.chaincodeID.name = 'mycc';
+			delete deployBody.params.chaincodeID['path']
+		} else {
+			deployBody.params.chaincodeID.path = '{{tbd}}';
+			delete deployBody.params.chaincodeID['name']
+		}
+		deployBody.params.ctorMsg.function = func;
+		if (args.length == 0) {
+			deployBody.params.ctorMsg.args = [];
+		} else {
+			deployBody.params.ctorMsg.args[0] = JSON.stringify(args);
+		}
+		
+		var options = { 
+			url : chaincodeURL,
+			headers : {'Content-Type':'application/json'},
+			body : JSON.stringify(deployBody)
+			};
+		
+		logger.info("Sending deploy ...");
+		var req = request.defaults(options);
+		//logger.info("Sending: " + JSON.stringify(deployBody));
+		return internal.doRequest(null, "POST", req)
+		.then(function (result) {
+			if (result.error) {
+				throw new Error("Failed to deploy demo contract: " + result.error);
+			}
+			result.response.statusCode.should.be.equal(200);
+			var res = JSON.parse(result.body).result;
+			//logger.info("Result: " + JSON.stringify(res));
+			res.should.have.property("status");
+			res["status"].should.equal("OK");
+			res.should.have.property("message");	
+			contractId = res.message;
+			complete();
+		})
+		.catch(function (error) {
+			//assert.fail(null, null, error);
+			complete(error);
+		})
+		.done()
+	});
+}
+
+exports.testDeploy = testDeploy;
