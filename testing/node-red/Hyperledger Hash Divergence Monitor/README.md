@@ -49,7 +49,7 @@ The injection and configuration nodes can be duplicated so that several fabrics 
 A second flow called "WEB STATUS" provides a simple visualization of the status output by retrieving and formatting the `status.json` file. In order to present the fairly complex dataset in HTML, the function node called `morph` recasts the data into a form that can be easily iterated using mustache format in the HTML template. Bootstrap is used to provide a reasonably modern output format.
 
 > The non-divergent example also shows how multiple transactions are rendered.
- 
+
 ![Display of Non-Divergent Fabric](divergent_monitor_output_notdivergent.jpeg)
 
 > The divergent display changes both the banner and the offending transaction background color to bootstrap's "danger" color.
@@ -57,6 +57,16 @@ A second flow called "WEB STATUS" provides a simple visualization of the status 
 ![Display of Non-Divergent Fabric](divergent_monitor_output_divergent.jpeg)
 
 Pointing a browser at `http://localhost:1890/status` will show the monitor. The tab in which the monitor displays can be set to refresh periodically for ongoing monitoring. The author does this using the chrome plugin [Auto Refresh](http://64px.com/auto-refresh/ifooldnmmcmlbdennkpdnlnbgbmfalko) to perform this task. While simplistic, it is very effective for such a simple flow.
+
+## Visualizing Busy Blockchains and Contracts
+
+When a peer is involved in heavy message traffic, its chain height can fall behind the rest of the peers. This led the flow to conclude that it could not measure divergence, so a mechanism to calculate the lowest and highest chain heights was added. The lowest chain height is passed on to the divergence calculation while the highest is used as the actual chain height of the fabric.
+
+In this way, the divergence calculation never falls far behind the maximum chain height.
+
+> The inconsistent heights example comes from a live system that is running long term tests.
+
+![Display of Fabric with Inconsistent Chain Heights](divergent_monitor_output_inconsistent.jpeg)
 
 ## Console Output
 
