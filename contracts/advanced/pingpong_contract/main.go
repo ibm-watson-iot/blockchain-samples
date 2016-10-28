@@ -147,12 +147,12 @@ func setInvokeErrorEvent(stub *shim.ChaincodeStub, err error) {
 	_ = stub.SetEvent(EVTINVOKEERR, []byte(fmt.Sprintf("INVOKE ERROR: %+v", err)))
 }
 
-func setPongEvent(stub *shim.ChaincodeStub, count int) {
-	_ = stub.SetEvent(EVTPONG, []byte(fmt.Sprintf("PONG: %d", count)))
+func setPingEvent(stub *shim.ChaincodeStub, count int) {
+	_ = stub.SetEvent(EVTPONG, []byte(fmt.Sprintf("PING: %d", count)))
 }
 
-func setErrorEvent(stub *shim.ChaincodeStub, count int) {
-	_ = stub.SetEvent(EVTERROR, []byte(fmt.Sprintf("ERROR: %d", count)))
+func setPongEvent(stub *shim.ChaincodeStub, count int) {
+	_ = stub.SetEvent(EVTPONG, []byte(fmt.Sprintf("PONG: %d", count)))
 }
 
 // Init is called in deploy mode when contract is initialized
@@ -195,6 +195,14 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 
 // Invoke is called in invoke mode to delegate state changing function messages
 func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	out, err := t.invokefunc(stub, function, args)
+	if err != nil {
+		setInvokeErrorEvent(stub, err)
+	}
+	return out, err
+}
+
+func (t *SimpleChaincode) invokefunc(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	if function == "createAsset" {
 		return t.createAsset(stub, args)
 	} else if function == "updateAsset" {
@@ -210,14 +218,21 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 	} else if function == "setCreateOnUpdate" {
 		return nil, t.setCreateOnUpdate(stub, args)
 	}
-	err := fmt.Errorf("Invoke received unknown invocation: %s", function)
-	log.Warning(err)
-	setInvokeErrorEvent(stub, err)
+	err := fmt.Errorf("Invoke received unknown function: %s", function)
+	log.Error(err)
 	return nil, err
 }
 
 // Query is called in query mode to delegate non-state-changing queries
 func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+	out, err := t.queryfunc(stub, function, args)
+	if err != nil {
+		setInvokeErrorEvent(stub, err)
+	}
+	return out, err
+}
+
+func (t *SimpleChaincode) queryfunc(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	if function == "readAsset" {
 		return t.readAsset(stub, args)
 	} else if function == "readAllAssets" {
@@ -233,8 +248,8 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 	} else if function == "readContractState" {
 		return t.readContractState(stub, args)
 	}
-	err := fmt.Errorf("Query received unknown query: %s", function)
-	log.Warning(err)
+	err := fmt.Errorf("Query received unknown function: %s", function)
+	log.Error(err)
 	return nil, err
 }
 
@@ -371,6 +386,23 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
 	// remove setter or command sub-events now that the incoming event is captured
 	//delete(stateOut, "setter1")
 	//delete(stateOut, "setter2")
+
+	if assetID == "PING" {
+		pingcount, ok := getObjectAsInteger(stateOut, "pingcount")
+		if ok {
+			setPingEvent(stub, pingcount)
+		} else {
+			setPingEvent(stub, -1)
+		}
+	}
+	if assetID == "PONG" {
+		pongcount, ok := getObjectAsInteger(stateOut, "pongcount")
+		if ok {
+			setPingEvent(stub, pongcount)
+		} else {
+			setPingEvent(stub, -1)
+		}
+	}
 
 	// marshal to JSON and write
 	stateJSON, err := json.Marshal(&stateOut)
@@ -583,6 +615,23 @@ func (t *SimpleChaincode) updateAsset(stub *shim.ChaincodeStub, args []string) (
 	// remove setter or command sub-events now that the incoming event is captured
 	//delete(stateOut, "setter1")
 	//delete(stateOut, "setter2")
+
+	if assetID == "PING" {
+		pingcount, ok := getObjectAsInteger(stateOut, "pingcount")
+		if ok {
+			setPingEvent(stub, pingcount)
+		} else {
+			setPingEvent(stub, -1)
+		}
+	}
+	if assetID == "PONG" {
+		pongcount, ok := getObjectAsInteger(stateOut, "pongcount")
+		if ok {
+			setPingEvent(stub, pongcount)
+		} else {
+			setPingEvent(stub, -1)
+		}
+	}
 
 	// Write the new state to the ledger
 	stateJSON, err := json.Marshal(ledgerMap)

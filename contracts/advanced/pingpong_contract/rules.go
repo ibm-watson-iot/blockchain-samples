@@ -42,8 +42,8 @@ func (a *ArgsMap) executeRules(alerts *AlertStatus) (bool, error) {
 	internal.clearRaisedAndClearedStatus()
 
 	// ------ validation rules
-	// rule 1 -- incoming assetID must be "PING" or "ERROR"
-	err := internal.isPingOrErrorRule(a)
+	// rule 1 -- incoming assetID must be "PING" or "PONG"
+	err := internal.isPingOrPongRule(a)
 	// return true if noncompliant
 	if err != nil {
 		return true, err
@@ -57,8 +57,7 @@ func (a *ArgsMap) executeRules(alerts *AlertStatus) (bool, error) {
 		return true, err
 	}
 	// rule 2 -- count the errors
-	// rule 1 -- count the pings
-	err = internal.countErrorsRule(a)
+	err = internal.countPongsRule(a)
 	if err != nil {
 		return true, err
 	}
@@ -80,11 +79,11 @@ func (a *ArgsMap) executeRules(alerts *AlertStatus) (bool, error) {
 //**     VALIDATION RULES          **
 //***********************************
 
-func (alerts *AlertStatusInternal) isPingOrErrorRule(a *ArgsMap) error {
+func (alerts *AlertStatusInternal) isPingOrPongRule(a *ArgsMap) error {
 	assetID, found := getObjectAsString(*a, "assetID")
 	if found {
-		if assetID != "PING" && assetID != "ERROR" {
-			err := errors.New("assetID illegal value, MUST be PING or ERROR")
+		if assetID != "PING" && assetID != "PONG" {
+			err := errors.New("assetID illegal value, MUST be PING or PONG")
 			return err
 		}
 	}
@@ -102,13 +101,13 @@ func (alerts *AlertStatusInternal) countPingsRule(a *ArgsMap) error {
 		if found {
 			_, ok := putObject(*a, "pingcount", pingcount+1)
 			if !ok {
-				err := errors.New("count not update ping count")
+				err := errors.New("could not update ping count")
 				return err
 			}
 		} else {
 			_, ok := putObject(*a, "pingcount", 1)
 			if !ok {
-				err := errors.New("count not update ping count")
+				err := errors.New("could not update ping count")
 				return err
 			}
 		}
@@ -116,26 +115,23 @@ func (alerts *AlertStatusInternal) countPingsRule(a *ArgsMap) error {
 	return nil
 }
 
-func (alerts *AlertStatusInternal) countErrorsRule(a *ArgsMap) error {
+func (alerts *AlertStatusInternal) countPongsRule(a *ArgsMap) error {
 	assetID, found := getObjectAsString(*a, "assetID")
-	if found && assetID == "ERROR" {
-		errorcount, found := getObjectAsInteger(*a, "errorcount")
+	if found && assetID == "PONG" {
+		pongcount, found := getObjectAsInteger(*a, "pongcount")
 		if found {
-			_, ok := putObject(*a, "errorcount", errorcount+1)
+			_, ok := putObject(*a, "pongcount", pongcount+1)
 			if !ok {
-				err := errors.New("count not update error count")
+				err := errors.New("could not update pong count")
 				return err
 			}
 		} else {
-			_, ok := putObject(*a, "errorcount", 1)
+			_, ok := putObject(*a, "pongcount", 1)
 			if !ok {
-				err := errors.New("count not update error count")
+				err := errors.New("could not update pong count")
 				return err
 			}
 		}
-		alerts.raiseAlert(AlertsERROR)
-	} else {
-		alerts.clearAlert(AlertsERROR)
 	}
 	return nil
 }
