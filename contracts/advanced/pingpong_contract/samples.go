@@ -16,7 +16,7 @@ var samples = `
             "latitude": 123.456,
             "longitude": 123.456
         },
-        "timestamp": "2016-10-25T15:09:03.78690912Z"
+        "timestamp": "2016-10-27T19:02:41.398756907Z"
     },
     "initEvent": {
         "nickname": "Ping Pong",
@@ -50,7 +50,7 @@ var samples = `
             "longitude": 123.456
         },
         "pingcount": 789,
-        "timestamp": "2016-10-25T15:09:03.787045505Z",
+        "timestamp": "2016-10-27T19:02:41.398802897Z",
         "txntimestamp": "Transaction timestamp matching that in the blockchain.",
         "txnuuid": "Transaction UUID matching that in the blockchain."
     }
