@@ -75,6 +75,8 @@ Howard McKinney- Initial Contribution
 //                      in the lastEvent. (2) Store TXNUUID and timestamp in state only. (3) Note position where setter
 //                      subevents are deleted from state, while leaving recorder subevents intact. (4) Make deepcopy of
 //                      args into stateOut in create to avoid infinite loop when args are attached into lastEvent.
+// v4.4 KL 31 October 2016 Removed the dependency on contract state having a huge array of asset IDs. This was causing
+//                         poor performance and instability on Bluemix with long term tests and many assets.
 
 package main
 
@@ -84,6 +86,7 @@ import (
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"reflect"
+	"sort"
 	"strings"
 	"time"
 )
@@ -347,14 +350,6 @@ func (t *SimpleChaincode) createAsset(stub *shim.ChaincodeStub, args []string) (
 	if err != nil {
 		err = fmt.Errorf("createAsset AssetID %s PUTSTATE failed: %s", assetID, err)
 		log.Error(err)
-		return nil, err
-	}
-
-	// add asset to contract state
-	err = addAssetToContractState(stub, assetID)
-	if err != nil {
-		err := fmt.Errorf("createAsset asset %s failed to write asset state: %s", assetID, err)
-		log.Critical(err)
 		return nil, err
 	}
 
@@ -626,14 +621,7 @@ func (t *SimpleChaincode) deleteAsset(stub *shim.ChaincodeStub, args []string) (
 		log.Errorf("deleteAsset assetID %s failed DELSTATE", assetID)
 		return nil, err
 	}
-	// remove asset from contract state
-	err = removeAssetFromContractState(stub, assetID)
-	if err != nil {
-		err := fmt.Errorf("deleteAsset asset %s failed to remove asset from contract state: %s", assetID, err)
-		log.Critical(err)
-		return nil, err
-	}
-	// save state history
+	// remove state history
 	err = deleteStateHistory(stub, assetID)
 	if err != nil {
 		err := fmt.Errorf("deleteAsset asset %s state history delete failed: %s", assetID, err)
@@ -875,51 +863,36 @@ OUTERDELETELOOP:
 // deleteAllAssets
 // ************************************
 func (t *SimpleChaincode) deleteAllAssets(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var assetID string
-	var err error
-
-	if len(args) > 0 {
-		err = errors.New("Too many arguments. Expecting none.")
-		log.Error(err)
-		return nil, err
-	}
-
-	aa, err := getActiveAssets(stub)
+	iter, err := stub.RangeQueryState("IOT", "IOT}")
 	if err != nil {
-		err = fmt.Errorf("deleteAllAssets failed to get the active assets: %s", err)
+		err = fmt.Errorf("deleteAllAssets failed to get a range query iterator: %s", err)
 		log.Error(err)
 		return nil, err
 	}
-	for i := range aa {
-		assetID = aa[i]
-
-		// Delete the key / asset from the ledger
-		err = stub.DelState(assetID)
+	defer iter.Close()
+	for iter.HasNext() {
+		assetID, _, err := iter.Next()
 		if err != nil {
-			err = fmt.Errorf("deleteAllAssets arg %d assetID %s failed DELSTATE", i, assetID)
+			err = fmt.Errorf("deleteAllAssets iter.Next() failed: %s", err)
 			log.Error(err)
 			return nil, err
 		}
-		// remove asset from contract state
-		err = removeAssetFromContractState(stub, assetID)
+		// Delete the key / asset from the ledger
+		err = stub.DelState(assetID)
 		if err != nil {
-			err = fmt.Errorf("deleteAllAssets asset %s failed to remove asset from contract state: %s", assetID, err)
+			log.Errorf("deleteAsset assetID %s failed DELSTATE", assetID)
+			return nil, err
+		}
+		if strings.HasSuffix(assetID, ".StateHistory") {
+			continue
+		}
+		// push the recent state
+		err = removeAssetFromRecentState(stub, assetID)
+		if err != nil {
+			err := fmt.Errorf("deleteAsset asset %s recent state removal failed: %s", assetID, err)
 			log.Critical(err)
 			return nil, err
 		}
-		// save state history
-		err = deleteStateHistory(stub, assetID)
-		if err != nil {
-			err := fmt.Errorf("deleteAllAssets asset %s state history delete failed: %s", assetID, err)
-			log.Critical(err)
-			return nil, err
-		}
-	}
-	err = clearRecentStates(stub)
-	if err != nil {
-		err = fmt.Errorf("deleteAllAssets clearRecentStates failed: %s", err)
-		log.Error(err)
-		return nil, err
 	}
 	return nil, nil
 }
@@ -989,51 +962,56 @@ func (t *SimpleChaincode) readAsset(stub *shim.ChaincodeStub, args []string) ([]
 // readAllAssets
 // ************************************
 func (t *SimpleChaincode) readAllAssets(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var assetID string
+	var assets ByAssetID
 	var err error
-	var results []interface{}
 	var state interface{}
 
-	if len(args) > 0 {
-		err = errors.New("readAllAssets expects no arguments")
-		log.Error(err)
-		return nil, err
-	}
-
-	aa, err := getActiveAssets(stub)
+	iter, err := stub.RangeQueryState("IOT", "IOT}")
 	if err != nil {
-		err = fmt.Errorf("readAllAssets failed to get the active assets: %s", err)
+		err = fmt.Errorf("readAllAssets failed to get a range query iterator: %s", err)
 		log.Error(err)
 		return nil, err
 	}
-	results = make([]interface{}, 0, len(aa))
-	for i := range aa {
-		assetID = aa[i]
-		// Get the state from the ledger
-		assetBytes, err := stub.GetState(assetID)
+	defer iter.Close()
+	for iter.HasNext() {
+		assetID, assetBytes, err := iter.Next()
 		if err != nil {
-			// best efforts, return what we can
-			log.Errorf("readAllAssets assetID %s failed GETSTATE", assetID)
-			continue
-		} else {
-			err = json.Unmarshal(assetBytes, &state)
-			if err != nil {
-				// best efforts, return what we can
-				log.Errorf("readAllAssets assetID %s failed to unmarshal", assetID)
-				continue
-			}
-			results = append(results, state)
+			err = fmt.Errorf("readAllAssets iter.Next() failed: %s", err)
+			log.Error(err)
+			return nil, err
 		}
+		if strings.HasSuffix(assetID, ".StateHistory") {
+			continue
+		}
+		// log.Debug("readAllAssets found assetID: " + assetID + "\n")
+		err = json.Unmarshal(assetBytes, &state)
+		if err != nil {
+			err = fmt.Errorf("readAllAssets unmarshal failed: %s", err)
+			log.Error(err)
+			return nil, err
+		}
+		assets = append(assets, AssetArr{AssetID: assetID, Asset: state})
 	}
 
-	resultsStr, err := json.Marshal(results)
+	//log.Debugf("%s: Final assets list: %+v\n", caller, assets)
+	if len(assets) == 0 {
+		return []byte("[]"), nil
+	}
+
+	sort.Sort(assets)
+
+	var results []interface{}
+	for _, a := range assets {
+		results = append(results, a.Asset)
+	}
+
+	resultsBytes, err := json.Marshal(&results)
 	if err != nil {
-		err = fmt.Errorf("readallAssets failed to marshal results: %s", err)
+		err = fmt.Errorf("readAllAssets failed to marshal assets structure: %s", err)
 		log.Error(err)
 		return nil, err
 	}
-
-	return []byte(resultsStr), nil
+	return resultsBytes, nil
 }
 
 // ************************************
@@ -1174,7 +1152,7 @@ func (t *SimpleChaincode) readAssetSchemas(stub *shim.ChaincodeStub, args []stri
 // readContractObjectModel
 // ************************************
 func (t *SimpleChaincode) readContractObjectModel(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var state = ContractState{MYVERSION, DEFAULTNICKNAME, make(map[string]bool)}
+	var state = ContractState{MYVERSION, DEFAULTNICKNAME}
 
 	stateJSON, err := json.Marshal(state)
 	if err != nil {
@@ -1282,3 +1260,18 @@ func canCreateOnUpdate(stub *shim.ChaincodeStub) bool {
 	}
 	return createOnUpdate.CreateOnUpdate
 }
+
+// new sorted list of assets taken from aviation contract
+
+// AssetArr provides a way to gather all assets and sort them
+type AssetArr struct {
+	AssetID string
+	Asset   interface{}
+}
+
+// ByAssetID is an array of tagged assets for sorting
+type ByAssetID []AssetArr
+
+func (a ByAssetID) Len() int           { return len(a) }
+func (a ByAssetID) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByAssetID) Less(i, j int) bool { return a[i].AssetID < a[j].AssetID }
