@@ -1,0 +1,1436 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Debug Aviation Sample",
+		"_postman_id": "b6ecb997-09bb-46c3-a143-66101e08eee6",
+		"description": "Example aviation commands.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Deploy",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"deploy\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\",\r\n            \"path\":\"{{path}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"init\",\r\n            \"args\":[\"{\\\"version\\\":\\\"4.4\\\",\\\"nickname\\\":\\\"AVIATION\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "setLoggingLevel=DEBUG",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"setLoggingLevel\",\r\n            \"args\":[\"{\\\"logLevel\\\":\\\"DEBUG\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "setCreateOnUpdate=false",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"setCreateOnUpdate\",\r\n            \"args\":[\"{\\\"createOnUpdate\\\":false}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readContractState",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readContractState\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAssetSamples",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAssetSamples\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAssetSchemas",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAssetSchemas\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readContractObjectModel",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readContractObjectModel\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readRecentStates",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readRecentStates\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "createAircraft",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"createAssetAircraft\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"5678\\\"},\\\"aircraft\\\":{\\\"airline\\\":\\\"SWA\\\",\\\"serialNumber\\\":\\\"5678\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAircraft",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAssetAircraft\",\r\n            \"args\":[\"{\\\"assetID\\\":\\\"5678\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAircraftComplete",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAssetAircraftComplete\",\r\n            \"args\":[\"{\\\"assetID\\\":\\\"5678\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAllAircraft",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsAircraft\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAllAircraftFiltered matchall",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsAircraft\",\r\n            \"args\":[\"{\\\"matchmode\\\":\\\"matchall\\\", \\\"entries\\\":[{\\\"qprop\\\":\\\"aircraft.airline\\\",\\\"value\\\":\\\"SWA\\\"}]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAllAircraftFiltered matchany",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsAircraft\",\r\n            \"args\":[\"{\\\"matchmode\\\":\\\"matchany\\\", \\\"entries\\\":[{\\\"qprop\\\":\\\"aircraft.airline\\\",\\\"value\\\":\\\"AAL\\\"}, {\\\"qprop\\\":\\\"aircraft.airline\\\",\\\"value\\\":\\\"AC\\\"}]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAllAircraftFiltered matchnone",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsAircraft\",\r\n            \"args\":[\"{\\\"matchmode\\\":\\\"matchnone\\\", \\\"entries\\\":[{\\\"qprop\\\":\\\"aircraft.airline\\\",\\\"value\\\":\\\"SWA\\\"}]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAssetHistoryAircraft",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAssetAircraftHistory\",\r\n            \"args\":[\"{\\\"count\\\":0, \\\"assetID\\\":\\\"5678\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "updateAircraft",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"updateAssetAircraft\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"5678\\\"},\\\"aircraft\\\":{\\\"airline\\\":\\\"SWA\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "deleteAircraft",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"deleteAssetAircraft\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"5678\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "deleteAllAircraft",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"deleteAllAssetsAircraft\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "deletePropertiesFromAircraft",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"deletePropertiesFromAssetAircraft\",\r\n            \"args\":[\"{\\\"assetID\\\":\\\"5678\\\", \\\"qualPropsToDelete\\\":[\\\"common.location\\\",\\\"aircraft.airline\\\"]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "createAssembly",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"createAssetAssembly\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"abc\\\"},\\\"assembly\\\":{\\\"lifelimitinitial\\\":100,\\\"serialNumber\\\":\\\"abc\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAssembly",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAssetAssembly\",\r\n            \"args\":[\"{\\\"assetID\\\":\\\"abc\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAllAssembly",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsAssembly\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAllAssembly filtered",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsAssembly\",\r\n            \"args\":[\"{\\\"matchmode\\\":\\\"matchall\\\", \\\"entries\\\":[{\\\"qprop\\\":\\\"compliant\\\",\\\"value\\\":\\\"false\\\"}]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAllAssembly filtered aircraft==5678",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsAssembly\",\r\n            \"args\":[\"{\\\"matchmode\\\":\\\"matchall\\\", \\\"entries\\\":[{\\\"qprop\\\":\\\"aircraft\\\",\\\"value\\\":\\\"5678\\\"}]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAssetHistoryAssembly",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAssetAssemblyHistory\",\r\n            \"args\":[\"{\\\"count\\\":0, \\\"assetID\\\":\\\"abc\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "updateAssetAssembly",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"updateAssetAssembly\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"abc\\\"},\\\"assembly\\\":{\\\"lifelimitinitial\\\":110}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "deleteAssembly",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"deleteAssetAssembly\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"abc\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "deleteAllAssembly",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"deleteAllAssetsAssembly\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "deletePropertiesFromAssembly",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"deletePropertiesFromAssetAssembly\",\r\n            \"args\":[\"{\\\"assetID\\\":\\\"abc\\\", \\\"qualPropsToDelete\\\":[\\\"common.location\\\",\\\"assembly.aircraft\\\"]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "createAirline SWA",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"createAssetAirline\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"SWA\\\"},\\\"airline\\\":{\\\"name\\\":\\\"Southwest Airlines\\\", \\\"code\\\":\\\"SWA\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "createAirline AAL",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"createAssetAirline\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"AAL\\\"},\\\"airline\\\":{\\\"name\\\":\\\"American Airlines\\\", \\\"code\\\":\\\"AAL\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAirline",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAssetAirline\",\r\n            \"args\":[\"{\\\"assetID\\\":\\\"SWA\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAllAirline",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsAirline\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAssetHistoryAirline",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAssetAirlineHistory\",\r\n            \"args\":[\"{\\\"count\\\":0, \\\"assetID\\\":\\\"SWA\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "updateAssetAirline",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"updateAssetAirline\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"SWA\\\"},\\\"airline\\\":{\\\"name\\\":\\\"Air Canada\\\", \\\"code\\\":\\\"AC\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "deleteAirline",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"deleteAssetAirline\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"SWA\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "deleteAllAirline",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"deleteAllAssetsAirline\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "deletePropertiesFromAirline",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"deletePropertiesFromAssetAirline\",\r\n            \"args\":[\"{\\\"assetID\\\":\\\"SWA\\\", \\\"qualPropsToDelete\\\":[\\\"common.location\\\",\\\"airline.code\\\"]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "flightEvent softlanding",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventFlight\",\r\n            \"args\":[\"{\\\"flight\\\":{\\\"aircraft\\\":\\\"5678\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "flightEvent hardlanding",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventFlight\",\r\n            \"args\":[\"{\\\"flight\\\":{\\\"aircraft\\\":\\\"5678\\\",\\\"hardlanding\\\":true}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "flightEvent analytic hardlanding ",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventFlight\",\r\n            \"args\":[\"{\\\"flight\\\":{\\\"aircraft\\\":\\\"5678\\\",\\\"analyticHardlanding\\\":true}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "maintEv commission",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventMaintenance\",\r\n            \"args\":[\"{\\\"maintenance\\\":{\\\"assembly\\\":\\\"abc\\\",\\\"action\\\":\\\"commission\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "maintEv install",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventMaintenance\",\r\n            \"args\":[\"{\\\"maintenance\\\":{\\\"aircraft\\\":\\\"5678\\\",\\\"assembly\\\":\\\"abc\\\",\\\"action\\\":\\\"install\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "maintEv unInstall",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventMaintenance\",\r\n            \"args\":[\"{\\\"maintenance\\\":{\\\"aircraft\\\":\\\"5678\\\",\\\"assembly\\\":\\\"abc\\\",\\\"action\\\":\\\"uninstall\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "maintEv startMaintenance",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventMaintenance\",\r\n            \"args\":[\"{\\\"common\\\":{\\\"assetID\\\":\\\"abc\\\"},\\\"maintenance\\\":{\\\"assembly\\\":\\\"abc\\\",\\\"action\\\":\\\"startMaintenance\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "maintEv endMaintenance",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventMaintenance\",\r\n            \"args\":[\"{\\\"maintenance\\\":{\\\"assembly\\\":\\\"abc\\\",\\\"action\\\":\\\"endMaintenance\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "maintEv scrap",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventMaintenance\",\r\n            \"args\":[\"{\\\"maintenance\\\":{\\\"assembly\\\":\\\"abc\\\",\\\"action\\\":\\\"scrap\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "inspection BCHECK",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventInspection\",\r\n            \"args\":[\"{\\\"inspection\\\":{\\\"assembly\\\":\\\"abc\\\",\\\"action\\\":\\\"BCHECK\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "inspection ACHECK",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventInspection\",\r\n            \"args\":[\"{\\\"inspection\\\":{\\\"assembly\\\":\\\"abc\\\",\\\"action\\\":\\\"ACHECK\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "inspection HARDLANDING",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventInspection\",\r\n            \"args\":[\"{\\\"inspection\\\":{\\\"assembly\\\":\\\"abc\\\",\\\"action\\\":\\\"HARDLANDING\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "analyticAdjustment +3",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventAnalyticAdjustment\",\r\n            \"args\":[\"{\\\"analyticAdjustment\\\":{\\\"assembly\\\":\\\"abc\\\",\\\"action\\\":\\\"adjustLifeLimit\\\",\\\"amount\\\":3}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "analyticAdjustment -.8",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"eventAnalyticAdjustment\",\r\n            \"args\":[\"{\\\"analyticAdjustment\\\":{\\\"assembly\\\":\\\"abc\\\",\\\"action\\\":\\\"adjustLifeLimit\\\",\\\"amount\\\":-0.8}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "updateDynamicConfig",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"updateDynamicConfig\",\r\n            \"args\":[\"{\\\"bCheckThreshold\\\":5}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readDynamicConfig",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readDynamicConfig\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readWorldState",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readWorldState\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "CLEARWorldState",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"deleteWorldState\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
