@@ -30,17 +30,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/op/go-logging"
 )
-
-// MYVERSION Update for every change, use VX.X.X (Major, Minor, Fix). Suggest that we update
-// Major for API break, Minor when adding a feature or behavior, Fix when fixing a bug.
-// If the init comes in with the wrong major version, then  we might consider exiting with
-// an error.
-const MYVERSION string = "4.4"
-
-// DEFAULTNICKNAME is used when a contract is initialized without giving it a nickname
-const DEFAULTNICKNAME string = "AVIATION_SAMPLE"
 
 // CONTRACTSTATEKEY is used to store contract state, including version, nickname and activeAssets
 const CONTRACTSTATEKEY string = "ContractStateKey"
@@ -53,11 +43,11 @@ type ContractState struct {
 }
 
 // Logger for the ctstate package
-var log = logging.MustGetLogger("stat")
+var log = shim.NewLogger("stat")
 
 // GETContractStateFromLedger retrieves state from ledger and returns to caller
 func GETContractStateFromLedger(stub *shim.ChaincodeStub) (ContractState, error) {
-	var state = ContractState{MYVERSION, DEFAULTNICKNAME}
+	var state = ContractState{}
 	var err error
 	contractStateBytes, err := stub.GetState(CONTRACTSTATEKEY)
 	// minimum string is {"version":""} and version cannot be empty
@@ -66,18 +56,14 @@ func GETContractStateFromLedger(stub *shim.ChaincodeStub) (ContractState, error)
 		err = json.Unmarshal(contractStateBytes, &state)
 		if err != nil {
 			err = fmt.Errorf("Unmarshal failed for contract state: %s", err)
-			log.Critical(err)
+			log.Criticalf(err.Error())
 			return ContractState{}, err
-		}
-		if MYVERSION != state.Version {
-			log.Noticef("Contract version has changed from %s to %s", state.Version, MYVERSION)
-			state.Version = MYVERSION
 		}
 	} else {
 		// empty state already initialized
 		log.Noticef("Initialized newly deployed contract state version %s", state.Version)
 	}
-	log.Debug("GETContractState successful")
+	log.Debugf("GETContractState successful")
 	return state, nil
 }
 
@@ -88,13 +74,13 @@ func PUTContractStateToLedger(stub *shim.ChaincodeStub, state ContractState) err
 	contractStateJSON, err = json.Marshal(state)
 	if err != nil {
 		err = fmt.Errorf("Failed to marshal contract state: %s", err)
-		log.Critical(err)
+		log.Criticalf(err.Error())
 		return err
 	}
 	err = stub.PutState(CONTRACTSTATEKEY, contractStateJSON)
 	if err != nil {
 		err = fmt.Errorf("Failed to PUTSTATE contract state: %s", err)
-		log.Critical(err)
+		log.Criticalf(err.Error())
 		return err
 	}
 	log.Debugf("PUTContractState: %#v", state)
@@ -104,23 +90,16 @@ func PUTContractStateToLedger(stub *shim.ChaincodeStub, state ContractState) err
 // InitializeContractState verifies the version passed by the deploy message, and
 // writes an initial contract state into world state.
 func InitializeContractState(stub *shim.ChaincodeStub, version string, nickname string) error {
-	var state ContractState
-	var err error
-	if version != MYVERSION {
-		err = fmt.Errorf("Contract version: %s does not match version argument: %s", MYVERSION, version)
-		log.Critical(err)
-		return err
-	}
-	state, err = GETContractStateFromLedger(stub)
+	state, err := GETContractStateFromLedger(stub)
 	if err != nil {
+		err = fmt.Errorf("Initialize contract state failed to get contract state from ledger: %s", err)
+		log.Errorf(err.Error())
 		return err
 	}
 	if version != state.Version {
-		log.Noticef("Contract version has changed from %s to %s", version, MYVERSION)
-		// keep going, this is an update of version -- later this will
-		// be handled by pulling state from the superseded contract version
+		log.Noticef("Contract version has changed from %s to %s", state.Version, version)
 	}
-	state.Version = MYVERSION
+	state.Version = version
 	state.Nickname = nickname
 	return PUTContractStateToLedger(stub, state)
 }

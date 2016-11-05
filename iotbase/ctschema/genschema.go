@@ -84,8 +84,13 @@ func getObject(schema map[string]interface{}, objName string) map[string]interfa
 	}
 	s := strings.Split(objName, "/")
 	// crawl the levels, skipping the # root
+	var props map[string]interface{}
+	var found bool
 	for i := 1; i < len(s); i++ {
-		props, found := (schema["properties"]).(map[string]interface{})
+		props, found = (schema["properties"]).(map[string]interface{})
+		if !found {
+			props, found = (schema["patternProperties"]).(map[string]interface{})
+		}
 		if found {
 			schema, found = (props[s[i]]).(map[string]interface{})
 		} else {
@@ -125,8 +130,9 @@ func replaceReferences(schema map[string]interface{}, obj interface{}) interface
 		}
 		return oArr
 	case isMap:
-		//fmt.Printf("MAP [%s:%+v]\n", k, v)
+		//fmt.Printf("Replace References for MAP [%+v]\n", oMap)
 		for k, v := range oMap {
+			//fmt.Printf("Replace References for MAP [%s:%+v]\n", k, v)
 			if k == "$ref" {
 				// it is a reference so replace it and recursively replace references
 				//fmt.Printf("** INFO ** Should be $ref [%s:%+v]\n", k, v)
@@ -274,13 +280,18 @@ func sampleType(obj interface{}, elementName string) interface{} {
 		return arrayFromSchema(items, elementName)
 	case "object":
 		{
-			props, found := o["properties"]
+			var props map[string]interface{}
+			var found bool
+			props, found = o["properties"].(map[string]interface{})
+			if !found {
+				props, found = (o["patternProperties"]).(map[string]interface{})
+			}
 			if !found {
 				fmt.Printf("** WARN ** %s is type object yet has no properties in SampleType\n", elementName)
 				return "INVALID OBJECT - MISSING PROPERTIES"
 			}
 			objOut := make(map[string]interface{})
-			for k, v := range props.(map[string]interface{}) {
+			for k, v := range props {
 				//fmt.Printf("Visiting key %s with value %s\n", k, v)
 				if v == nil {
 					fmt.Printf("** WARN ** Key %s has NIL value in SampleType\n", k)

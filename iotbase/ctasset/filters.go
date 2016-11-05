@@ -74,38 +74,27 @@ type StateFilter struct {
 	Entries   []QPropNV `json:"entries"`
 }
 
-// Filters is the interface for our filter mechanism
-type Filters interface {
-	filter() interface{}
-}
-
 var emptyFilter = StateFilter{"matchall", make([]QPropNV, 0)}
 
-func filterObject(obj interface{}, filter StateFilter) bool {
+// Filter returns true if the filter's conditions are all met
+func (a *Asset) Filter(filter StateFilter) bool {
 	switch filter.MatchMode {
 	case "matchall":
-		return matchAll(obj, filter)
+		return matchAll(a, filter)
 	case "matchany":
-		return matchAny(obj, filter)
+		return matchAny(a, filter)
 	case "matchnone":
-		return matchNone(obj, filter)
+		return matchNone(a, filter)
 	default:
 		err := fmt.Errorf("filterObject has unknown matchType in filter: %+v", filter)
-		log.Error(err)
+		log.Errorf(err.Error())
 		return false
 	}
 }
 
-func matchAll(obj interface{}, filter StateFilter) bool {
-	am, ok := st.AsMap(obj)
-	if !ok {
-		err := fmt.Errorf("MATCHALL filter passed a non-map of type %T", obj)
-		log.Error(err)
-		// obj is corrupted
-		return false
-	}
+func matchAll(a *Asset, filter StateFilter) bool {
 	for _, f := range filter.Entries {
-		if !performOneMatch(am, f) {
+		if !performOneMatch(*a.State, f) {
 			// must match all
 			return false
 		}
@@ -114,16 +103,9 @@ func matchAll(obj interface{}, filter StateFilter) bool {
 	return true
 }
 
-func matchAny(obj interface{}, filter StateFilter) bool {
-	am, ok := st.AsMap(obj)
-	if !ok {
-		err := fmt.Errorf("MATCHANY filter passed a non-map of type %T", obj)
-		log.Error(err)
-		// obj is corrupted
-		return false
-	}
+func matchAny(a *Asset, filter StateFilter) bool {
 	for _, f := range filter.Entries {
-		if performOneMatch(am, f) {
+		if performOneMatch(*a.State, f) {
 			// must match at least one
 			return true
 		}
@@ -132,16 +114,9 @@ func matchAny(obj interface{}, filter StateFilter) bool {
 	return false
 }
 
-func matchNone(obj interface{}, filter StateFilter) bool {
-	am, ok := st.AsMap(obj)
-	if !ok {
-		err := fmt.Errorf("MatchNone filter passed a non-map of type %T", obj)
-		log.Error(err)
-		// obj is corrupted
-		return false
-	}
+func matchNone(a *Asset, filter StateFilter) bool {
 	for _, f := range filter.Entries {
-		if performOneMatch(am, f) {
+		if performOneMatch(*a.State, f) {
 			// must not match any
 			return false
 		}
@@ -164,7 +139,7 @@ func performOneMatch(obj map[string]interface{}, prop QPropNV) bool {
 				return o.(float64) == f
 			}
 			err = fmt.Errorf("Cannot convert %s to float64 in filter when comparing to object %s %+v", prop.Value, prop.QProp, obj)
-			log.Error(err)
+			log.Errorf(err.Error())
 			return false
 		case int:
 			i, err := strconv.Atoi(prop.Value)
@@ -172,18 +147,18 @@ func performOneMatch(obj map[string]interface{}, prop QPropNV) bool {
 				return o.(int) == i
 			}
 			err = fmt.Errorf("Cannot convert %s to int in filter when comparing to object %s %+v", prop.Value, prop.QProp, obj)
-			log.Error(err)
+			log.Errorf(err.Error())
 			return false
 		case bool:
 			if b, err := strconv.ParseBool(prop.Value); err == nil {
 				return b == o.(bool)
 			}
 			err := fmt.Errorf("Cannot convert %s to bool in filter when comparing to object %s %+v", prop.Value, prop.QProp, obj)
-			log.Error(err)
+			log.Errorf(err.Error())
 			return false
 		default:
 			err := fmt.Errorf("Unexpected property to compare type: %T %s", prop.Value, t)
-			log.Error(err)
+			log.Errorf(err.Error())
 			return false
 		}
 	}
@@ -204,7 +179,7 @@ func getUnmarshalledStateFilter(stub *shim.ChaincodeStub, caller string, args []
 	err = json.Unmarshal(fBytes, &filter)
 	if err != nil {
 		err = fmt.Errorf("%s failed to unmarshal filter: %s error: %s", caller, args[0], err)
-		log.Error(err)
+		log.Errorf(err.Error())
 		return emptyFilter
 	}
 

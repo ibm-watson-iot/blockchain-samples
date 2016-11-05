@@ -89,6 +89,7 @@ Howard McKinney- Initial Contribution
 //		Significant refactoring of main.go for asset and event APIs
 //		Updates to mapUtils to improve reliability and add cleaner support for float, etc.
 // v5.0 KL November 2016 Adapt to new iotbase packages.
+//                       Complete redesign of asset handling.
 
 package main
 
@@ -97,8 +98,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/op/go-logging"
-	"strings"
+	as "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctasset"
+	cf "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctconfig"
 )
 
 //go:generate go run /local-dev/src/github.com/ibm-watson-iot/blockchain-samples/iotbase/ctschema/genschema.go
@@ -117,26 +118,11 @@ import (
 type SimpleChaincode struct {
 }
 
-// ASSETID is the JSON tag for the assetID
-const ASSETID string = "common.assetID"
-
-// EVENTNAME is the JSON tag for the the event type for any incoming CRUD event
-const EVENTNAME string = "common.eventName"
-
-// TIMESTAMP is the JSON tag for timestamps, devices must use this tag to be compatible!
-const TIMESTAMP string = "common.timestamp"
-
-// TXNTIMESTAMP is the JSON tag for transaction timestamps, which map directly onto the transaction in the blockchain
-const TXNTIMESTAMP string = "txntimestamp"
-
-// TXNUUID is the JSON tag for transaction UUIDs, which map directly onto the transaction in the blockchain
-const TXNUUID string = "txnuuid"
-
-// ArgsMap is a generic map[string]interface{} to be used as a receiver
-type ArgsMap map[string]interface{}
+// VERSION is the version of this contract
+const VERSION = "5.0"
 
 // Logger for the cthistory package
-var log = logging.MustGetLogger("main")
+var log = shim.NewLogger("main")
 
 // ************************************
 // start the message pumps
@@ -150,158 +136,76 @@ func main() {
 
 // Init is called in deploy mode when contract is initialized
 func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-	var stateArg ContractState
+	var stateArg cf.ContractState
 	var err error
 
-	log.Info("Entering INIT")
+	log.Infof("Entering INIT")
 
 	if len(args) != 1 {
 		err = errors.New("init expects one argument, a JSON string with  mandatory version and optional nickname")
-		log.Critical(err)
+		log.Criticalf(err.Error())
 		return nil, err
 	}
 
 	err = json.Unmarshal([]byte(args[0]), &stateArg)
 	if err != nil {
 		err = fmt.Errorf("Version argument unmarshal failed: %s", err)
-		log.Critical(err)
+		log.Criticalf(err.Error())
 		return nil, err
 	}
 
 	if stateArg.Nickname == "" {
-		stateArg.Nickname = DEFAULTNICKNAME
+		stateArg.Nickname = "IOTSAMPLE_CONTRACT"
 	}
 
-	(*log).setModule(stateArg.Nickname)
-
-	err = initializeContractState(stub, stateArg.Version, stateArg.Nickname)
+	err = cf.InitializeContractState(stub, VERSION, stateArg.Nickname, stateArg.Version)
 	if err != nil {
 		return nil, err
 	}
 
-	err = dynamicConfigInit(stub)
-	if err != nil {
-		return nil, err
-	}
-
-	err = initAircraftAssemblyIndexes(stub)
-	if err != nil {
-		return nil, err
-	}
-
-	log.Info("Contract initialized")
+	log.Infof("Contract initialized")
 	return nil, nil
 }
 
 // Invoke is called in invoke mode to delegate state changing function messages
 func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	// asset CRUD API
-	if function == "createAssetAirline" {
-		return t.createAssetAirline(stub, args)
-	} else if function == "createAssetAircraft" {
-		return t.createAssetAircraft(stub, args)
-	} else if function == "createAssetAssembly" {
-		return t.createAssetAssembly(stub, args)
-	} else if function == "updateAssetAirline" {
-		return t.updateAssetAirline(stub, args)
-	} else if function == "updateAssetAircraft" {
-		return t.updateAssetAircraft(stub, args)
-	} else if function == "updateAssetAssembly" {
-		return t.updateAssetAssembly(stub, args)
-	} else if function == "deleteAssetAirline" {
-		return t.deleteAssetAirline(stub, args)
-	} else if function == "deleteAssetAircraft" {
-		return t.deleteAssetAircraft(stub, args)
-	} else if function == "deleteAssetAssembly" {
-		return t.deleteAssetAssembly(stub, args)
-	} else if function == "deleteAllAssetsAirline" {
-		return t.deleteAllAssetsAirline(stub, args)
-	} else if function == "deleteAllAssetsAircraft" {
-		return t.deleteAllAssetsAircraft(stub, args)
-	} else if function == "deleteAllAssetsAssembly" {
-		return t.deleteAllAssetsAssembly(stub, args)
-	} else if function == "deletePropertiesFromAssetAirline" {
-		return t.deletePropertiesFromAssetAirline(stub, args)
-	} else if function == "deletePropertiesFromAssetAircraft" {
-		return t.deletePropertiesFromAssetAircraft(stub, args)
-	} else if function == "deletePropertiesFromAssetAssembly" {
-		return t.deletePropertiesFromAssetAssembly(stub, args)
-
-		// event API
-	} else if function == "eventFlight" {
-		return eventFlight(stub, args)
-	} else if function == "eventInspection" {
-		return eventInspection(stub, args)
-	} else if function == "eventAnalyticAdjustment" {
-		return eventAnalyticAdjustment(stub, args)
-	} else if function == "eventMaintenance" {
-		return eventMaintenance(stub, args)
-
-		// contract dynamic config API
-	} else if function == "updateContractConfig" {
-		return nil, updateContractConfig(stub, args)
-
-		// contract state / behavior API
-	} else if function == "setLoggingLevel" {
+	switch function {
+	case "createAssetContainer":
+		return t.createAssetContainer(stub, args)
+	case "updateAssetContainer":
+		return t.updateAssetContainer(stub, args)
+	case "setLoggingLevel":
 		return nil, t.setLoggingLevel(stub, args)
-	} else if function == "setCreateOnUpdate" {
+	case "setCreateOnUpdate":
 		return nil, t.setCreateOnUpdate(stub, args)
-
-		// debugging API
-	} else if function == "deleteWorldState" {
-		return nil, t.deleteWorldState(stub)
+	case "deleteWorldState":
+		return nil, as.DeleteWorldState(stub)
 	}
 	err := fmt.Errorf("Invoke received unknown invocation: %s", function)
-	log.Warning(err)
+	log.Warningf(err.Error())
 	return nil, err
 }
 
 // Query is called in query mode to delegate non-state-changing queries
 func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
 	// asset CRUD API
-	if function == "readAssetAirline" {
-		return t.readAssetAirline(stub, args)
-	} else if function == "readAssetAircraft" {
-		return t.readAssetAircraft(stub, args)
-	} else if function == "readAssetAssembly" {
-		return t.readAssetAssembly(stub, args)
-	} else if function == "readAllAssetsAirline" {
-		return t.readAllAssetsAirline(stub, args)
-	} else if function == "readAllAssetsAircraft" {
-		return t.readAllAssetsAircraft(stub, args)
-	} else if function == "readAllAssetsAssembly" {
-		return t.readAllAssetsAssembly(stub, args)
-	} else if function == "readAssetAirlineHistory" {
-		return t.readAssetAirlineHistory(stub, args)
-	} else if function == "readAssetAircraftHistory" {
-		return t.readAssetAircraftHistory(stub, args)
-	} else if function == "readAssetAssemblyHistory" {
-		return t.readAssetAssemblyHistory(stub, args)
-	} else if function == "readAssetAircraftComplete" {
-		return t.readAssetAircraftComplete(stub, args)
-
-		// contract dynamic config API
-	} else if function == "readContractConfig" {
-		return readContractConfig(stub, args)
-
-		// contract state / behavior API
-	} else if function == "readRecentStates" {
-		return readRecentStates(stub)
-	} else if function == "readAssetSamples" {
-		return t.readAssetSamples(stub, args)
-	} else if function == "readAssetSchemas" {
+	switch function {
+	case "readAssetContainer":
+		return t.readAssetContainer(stub, args)
+	case "readAllAssetsContainer":
+		return t.readAllAssetsContainer(stub, args)
+	case "readAssetSchemas":
 		return t.readAssetSchemas(stub, args)
-	} else if function == "readContractObjectModel" {
-		return t.readContractObjectModel(stub, args)
-	} else if function == "readContractState" {
+	case "readRecentStates":
+		return as.ReadRecentStates(stub)
+	case "readContractState":
 		return t.readContractState(stub, args)
-
-		// debugging API
-	} else if function == "readWorldState" {
-		return t.readWorldState(stub)
+	case "readWorldState":
+		return as.ReadWorldState(stub)
 	}
 	err := fmt.Errorf("Query received unknown invocation: %s", function)
-	log.Warning(err)
+	log.Warningf(err.Error())
 	return nil, err
 }
 
@@ -316,15 +220,15 @@ func (t *SimpleChaincode) readContractState(stub *shim.ChaincodeStub, args []str
 
 	if len(args) != 0 {
 		err = errors.New("Too many arguments. Expecting none.")
-		log.Error(err)
+		log.Errorf(err.Error())
 		return nil, err
 	}
 
 	// Get the state from the ledger
-	chaincodeBytes, err := stub.GetState(CONTRACTSTATEKEY)
+	chaincodeBytes, err := stub.GetState(cf.CONTRACTSTATEKEY)
 	if err != nil {
 		err = fmt.Errorf("readContractState failed GETSTATE: %s", err)
-		log.Error(err)
+		log.Errorf(err.Error())
 		return nil, err
 	}
 
@@ -352,21 +256,6 @@ func (t *SimpleChaincode) readAssetSchemas(stub *shim.ChaincodeStub, args []stri
 }
 
 // ************************************
-// readContractObjectModel
-// ************************************
-func (t *SimpleChaincode) readContractObjectModel(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var state = ContractState{MYVERSION, DEFAULTNICKNAME}
-
-	stateJSON, err := json.Marshal(state)
-	if err != nil {
-		err := fmt.Errorf("JSON Marshal failed for get contract object model empty state: %+v with error [%s]", state, err)
-		log.Error(err)
-		return nil, err
-	}
-	return stateJSON, nil
-}
-
-// ************************************
 // setLoggingLevel
 // ************************************
 func (t *SimpleChaincode) setLoggingLevel(stub *shim.ChaincodeStub, args []string) error {
@@ -377,24 +266,36 @@ func (t *SimpleChaincode) setLoggingLevel(stub *shim.ChaincodeStub, args []strin
 	var err error
 	if len(args) != 1 {
 		err = errors.New("Incorrect number of arguments. Expecting a JSON encoded LogLevel.")
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
 	err = json.Unmarshal([]byte(args[0]), &level)
 	if err != nil {
 		err = fmt.Errorf("setLoggingLevel failed to unmarshal arg: %s", err)
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
-	for i, lev := range logLevelNames {
-		if strings.ToUpper(level.Level) == lev {
-			(*log).SetLoggingLevel(LogLevel(i))
-			return nil
-		}
+
+	switch level.Level {
+	case "DEBUG":
+		log.SetLevel(shim.LogDebug)
+	case "INFO":
+		log.SetLevel(shim.LogInfo)
+	case "NOTICE":
+		log.SetLevel(shim.LogNotice)
+	case "WARNING":
+		log.SetLevel(shim.LogWarning)
+	case "ERROR":
+		log.SetLevel(shim.LogError)
+	case "CRITICAL":
+		log.SetLevel(shim.LogCritical)
+	default:
+		err = fmt.Errorf("setLoggingLevel failed with unknown arg: %s", level.Level)
+		log.Errorf(err.Error())
+		return err
 	}
-	err = fmt.Errorf("Unknown Logging level: %s", level.Level)
-	log.Error(err)
-	return err
+
+	return nil
 }
 
 // CreateOnUpdate is a shared parameter structure for the use of
@@ -411,19 +312,19 @@ func (t *SimpleChaincode) setCreateOnUpdate(stub *shim.ChaincodeStub, args []str
 	var err error
 	if len(args) != 1 {
 		err = errors.New("setCreateOnUpdate expects a single parameter")
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
 	err = json.Unmarshal([]byte(args[0]), &createOnUpdate)
 	if err != nil {
 		err = fmt.Errorf("setCreateOnUpdate failed to unmarshal arg: %s", err)
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
 	err = PUTcreateOnUpdate(stub, createOnUpdate)
 	if err != nil {
 		err = fmt.Errorf("setCreateOnUpdate failed to PUT setting: %s", err)
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
 	return nil
@@ -434,13 +335,13 @@ func PUTcreateOnUpdate(stub *shim.ChaincodeStub, createOnUpdate CreateOnUpdate) 
 	createOnUpdateBytes, err := json.Marshal(createOnUpdate)
 	if err != nil {
 		err = errors.New("PUTcreateOnUpdate failed to marshal")
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
 	err = stub.PutState("CreateOnUpdate", createOnUpdateBytes)
 	if err != nil {
 		err = fmt.Errorf("PUTSTATE createOnUpdate failed: %s", err)
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
 	return nil
@@ -452,13 +353,13 @@ func canCreateOnUpdate(stub *shim.ChaincodeStub) bool {
 	createOnUpdateBytes, err := stub.GetState("CreateOnUpdate")
 	if err != nil {
 		err = fmt.Errorf("GETSTATE for canCreateOnUpdate failed: %s", err)
-		log.Error(err)
+		log.Errorf(err.Error())
 		return true // true is the default
 	}
 	err = json.Unmarshal(createOnUpdateBytes, &createOnUpdate)
 	if err != nil {
 		err = fmt.Errorf("canCreateOnUpdate failed to marshal: %s", err)
-		log.Error(err)
+		log.Errorf(err.Error())
 		return true // true is the default
 	}
 	return createOnUpdate.CreateOnUpdate

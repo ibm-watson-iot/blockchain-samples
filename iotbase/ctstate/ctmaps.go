@@ -26,7 +26,7 @@ package ctstate
 import (
 	"encoding/json"
 	"fmt"
-	"reflect"
+	// "reflect"
 	"sort"
 	"strings"
 )
@@ -38,12 +38,7 @@ type ArgsMap map[string]interface{}
 // AsMap does its best to interpret or cast the incoming generic to map[string]interface{}
 func AsMap(obj interface{}) (toMap map[string]interface{}, ok bool) {
 	var err error
-	am, found := obj.(ArgsMap)
-	if found {
-		toMap = map[string]interface{}(am)
-		return toMap, true
-	}
-	toMap, found = obj.(map[string]interface{})
+	toMap, found := obj.(map[string]interface{})
 	if found {
 		return toMap, true
 	}
@@ -56,7 +51,7 @@ func AsMap(obj interface{}) (toMap map[string]interface{}, ok bool) {
 		}
 	}
 	err = fmt.Errorf("AsMap: incoming type is %T and is not understood", obj)
-	log.Error(err)
+	log.Errorf(err.Error())
 	return nil, false
 }
 
@@ -70,7 +65,7 @@ func AsStringArray(obj interface{}) (toSarr []string, ok bool) {
 			sel, ok := el.(string)
 			if !ok {
 				err = fmt.Errorf("AsStringArray: incoming element %d type is %T from array %#v and is not understood", i, el, obj)
-				log.Error(err)
+				log.Errorf(err.Error())
 				return nil, false
 			}
 			toSarr = append(toSarr, sel)
@@ -92,32 +87,23 @@ func AsStringArray(obj interface{}) (toSarr []string, ok bool) {
 			if err == nil {
 				return AsStringArray(interface{}(data))
 			}
-			log.Error(err)
+			log.Errorf(err.Error())
 			return nil, false
 		}
 		// 4. a non-JSON string, just return that as an array
 		return []string{as}, true
 	}
 	err = fmt.Errorf("AsStringArray: incoming type is %T and is not understood", obj)
-	log.Error(err)
+	log.Errorf(err.Error())
 	return nil, false
 }
 
 // GetObject finds an object by its qualified name, which looks like "location.latitude"
 // as one example. Returns as interface{} to maintain generic handling
-func GetObject(objIn interface{}, qname string) (interface{}, bool) {
+func GetObject(objIn map[string]interface{}, qname string) (interface{}, bool) {
 	// return a copy of the selected object
 	// handles full qualified name, starting at object's root
-	obj, found := objIn.(map[string]interface{})
-	if !found {
-		objam, found := objIn.(ArgsMap)
-		if !found {
-			log.Errorf("GetObject for %s passed a non-map / non-ArgsMap: type %T\n%#v", qname, objIn, objIn)
-			return nil, false
-		}
-		obj = map[string]interface{}(objam)
-	}
-	searchObj := map[string]interface{}(obj)
+	searchObj := objIn
 	s := strings.Split(qname, ".")
 	// crawl the levels
 	for i, v := range s {
@@ -132,12 +118,12 @@ func GetObject(objIn interface{}, qname string) (interface{}, bool) {
 				if !found {
 					searchObj, found = tmp.(ArgsMap)
 					if !found {
-						log.Debugf("GetObject not map or ArgsMap shape: %s", v)
+						// log.Debugf("GetObject not map or ArgsMap shape: %s", v)
 						//fmt.Printf("** tmp->searchObj AS ARGSMAP is %+v\n", searchObj)
 					}
 				}
 			} else {
-				log.Debugf("GetObject cannot find level: %s in %s", v, qname)
+				// log.Debugf("GetObject cannot find level: %s in %s", v, qname)
 				return nil, false
 			}
 		} else {
@@ -147,7 +133,7 @@ func GetObject(objIn interface{}, qname string) (interface{}, bool) {
 				// handle assetID as part of iot common and as parameter on its own
 				// so we get false warnings on read functions, but do enable it if
 				// having problems with deep nested structures
-				log.Debugf("GetObject cannot find final level: %s in %s", v, qname)
+				// log.Debugf("GetObject cannot find final level: %s in %s", v, qname)
 				return nil, false
 			}
 			//fmt.Printf("**** Found level [%d] %s\n", i, v)
@@ -159,7 +145,7 @@ func GetObject(objIn interface{}, qname string) (interface{}, bool) {
 
 // PutObject inserts an object by its qualified name, which looks like "location.latitude"
 // as one example. Creates missing levels.
-func PutObject(objIn interface{}, qname string, value interface{}) (interface{}, bool) {
+func PutObject(objIn map[string]interface{}, qname string, value interface{}) (map[string]interface{}, bool) {
 	// overwrite the value of the selected object, create if necessary
 	// handles full qualified name, starting at object's root
 	searchObj, ok := AsMap(objIn)
@@ -201,18 +187,14 @@ func PutObject(objIn interface{}, qname string, value interface{}) (interface{},
 			return objIn, true
 		}
 	}
-	log.Error("PutObject: unknown error -- fell out of loop without returning")
+	log.Errorf("PutObject: unknown error -- fell out of loop without returning")
 	return objIn, false
 }
 
 // RemoveObject removes an object by its qualified name, which looks like
 // "location.latitude" as one example.
-func RemoveObject(objIn interface{}, qname string) (interface{}, bool) {
-	searchObj, ok := AsMap(objIn)
-	if !ok {
-		log.Errorf("GetObject passed a non-map: %#v", objIn)
-		return objIn, false
-	}
+func RemoveObject(objIn map[string]interface{}, qname string) (map[string]interface{}, bool) {
+	searchObj := objIn
 	s := strings.Split(qname, ".")
 	for i, v := range s {
 		if i+1 < len(s) {
@@ -231,7 +213,7 @@ func RemoveObject(objIn interface{}, qname string) (interface{}, bool) {
 
 // AddToStringArray merges a specified object (usually in asset state) by qualified name with an incoming
 // string or string array. Keeps only unique members (as in a set.)
-func AddToStringArray(objIn interface{}, qname string, value interface{}) (interface{}, bool) {
+func AddToStringArray(objIn map[string]interface{}, qname string, value interface{}) (map[string]interface{}, bool) {
 	_, ok := AsMap(objIn)
 	if !ok {
 		log.Errorf("addToStringArray: incoming object not a map type %T[%#v]", objIn, objIn)
@@ -240,10 +222,10 @@ func AddToStringArray(objIn interface{}, qname string, value interface{}) (inter
 	arr, found := GetObject(objIn, qname)
 	if !found {
 		// array object does not exist yet, for convenience we create it
-		log.Debugf("addToStringArray: redirecting to PutObject of %s : %#v", qname, value)
+		// log.Debugf("addToStringArray: redirecting to PutObject of %s : %#v", qname, value)
 		return PutObject(objIn, qname, value)
 	}
-	log.Debugf("addToStringArray: adding %#v to %s : %#v\n", value, qname, arr)
+	// log.Debugf("addToStringArray: adding %#v to %s : %#v\n", value, qname, arr)
 	// we have an array to modify
 	sarr, ok := AsStringArray(arr)
 	if !ok {
@@ -263,24 +245,19 @@ func AddToStringArray(objIn interface{}, qname string, value interface{}) (inter
 		}
 	}
 	sort.Strings(sarr)
-	log.Debugf("addToStringArray: calling PutObject with result %#v\n", sarr)
+	// log.Debugf("addToStringArray: calling PutObject with result %#v\n", sarr)
 	return PutObject(objIn, qname, sarr)
 }
 
 // RemoveFromStringArray removes from a named object in asset state or other map, an incoming
 // string or string array. Assumes unique members (as in a set.)
-func RemoveFromStringArray(objIn interface{}, qname string, value interface{}) (interface{}, bool) {
-	_, ok := AsMap(objIn)
-	if !ok {
-		log.Errorf("removeFromStringArray: incoming object not a map type %T[%#v]", objIn, objIn)
-		return objIn, false
-	}
+func RemoveFromStringArray(objIn map[string]interface{}, qname string, value interface{}) (map[string]interface{}, bool) {
 	arr, found := GetObject(objIn, qname)
 	if !found {
-		log.Debugf("addToStringArray: array %s not found", qname)
+		// log.Debugf("addToStringArray: array %s not found", qname)
 		return objIn, false
 	}
-	log.Debugf("removeFromStringArray: removing %#v from %s : %#v\n", value, qname, arr)
+	// log.Debugf("removeFromStringArray: removing %#v from %s : %#v\n", value, qname, arr)
 	sarr, ok := AsStringArray(arr)
 	if !ok {
 		log.Errorf("removeFromStringArray: incoming object is not a string array %s : %T[%#v]", qname, arr, arr)
@@ -293,19 +270,19 @@ func RemoveFromStringArray(objIn interface{}, qname string, value interface{}) (
 	}
 	r := sarr[:0]
 	for _, v := range sarr {
-		fmt.Printf("r: %#v v: %#v sval: %#v\n", r, v, sval)
+		// fmt.Printf("r: %#v v: %#v sval: %#v\n", r, v, sval)
 		if !Contains(sval, v) {
 			r = append(r, v)
 		}
 	}
 	sort.Strings(r)
-	log.Debugf("addToStringArray: calling PutObject with result %#v\n", r)
+	// log.Debugf("addToStringArray: calling PutObject with result %#v\n", r)
 	return PutObject(objIn, qname, r)
 }
 
 // GetObjectAsMap retrieves an object by qualified name and then runs AsMap on it to
 // interpret or cast it to map[string]interface{}
-func GetObjectAsMap(objIn interface{}, qname string) (map[string]interface{}, bool) {
+func GetObjectAsMap(objIn map[string]interface{}, qname string) (map[string]interface{}, bool) {
 	amap, found := GetObject(objIn, qname)
 	if found {
 		t, found := AsMap(amap)
@@ -318,7 +295,7 @@ func GetObjectAsMap(objIn interface{}, qname string) (map[string]interface{}, bo
 }
 
 // GetObjectAsString retrieves an object by qualified name and interprets or casts it to string
-func GetObjectAsString(objIn interface{}, qname string) (string, bool) {
+func GetObjectAsString(objIn map[string]interface{}, qname string) (string, bool) {
 	tbytes, found := GetObject(objIn, qname)
 	if found {
 		t, found := tbytes.(string)
@@ -331,7 +308,7 @@ func GetObjectAsString(objIn interface{}, qname string) (string, bool) {
 }
 
 // GetObjectAsStringArray retrieves an object by qualified name and interprets or casts it to []string
-func GetObjectAsStringArray(objIn interface{}, qname string) ([]string, bool) {
+func GetObjectAsStringArray(objIn map[string]interface{}, qname string) ([]string, bool) {
 	tbytes, found := GetObject(objIn, qname)
 	if found {
 		return AsStringArray(tbytes)
@@ -340,7 +317,7 @@ func GetObjectAsStringArray(objIn interface{}, qname string) ([]string, bool) {
 }
 
 // GetObjectAsBoolean retrieves an object by qualified name and interprets or casts it to bool
-func GetObjectAsBoolean(objIn interface{}, qname string) (bool, bool) {
+func GetObjectAsBoolean(objIn map[string]interface{}, qname string) (bool, bool) {
 	tbytes, found := GetObject(objIn, qname)
 	if found {
 		t, found := tbytes.(bool)
@@ -353,7 +330,7 @@ func GetObjectAsBoolean(objIn interface{}, qname string) (bool, bool) {
 }
 
 // GetObjectAsNumber retrieves an object by qualified name and interprets or casts it to float64
-func GetObjectAsNumber(objIn interface{}, qname string) (float64, bool) {
+func GetObjectAsNumber(objIn map[string]interface{}, qname string) (float64, bool) {
 	tbytes, found := GetObject(objIn, qname)
 	if found {
 		t, found := tbytes.(float64)
@@ -367,7 +344,7 @@ func GetObjectAsNumber(objIn interface{}, qname string) (float64, bool) {
 
 // GetObjectAsInteger retrieves an object by qualified name and interprets or casts it to integer
 // NOTE: will truncate in incoming JSON Number (float64)
-func GetObjectAsInteger(objIn interface{}, qname string) (int, bool) {
+func GetObjectAsInteger(objIn map[string]interface{}, qname string) (int, bool) {
 	tbytes, found := GetObject(objIn, qname)
 	if found {
 		// try as int first
@@ -445,56 +422,44 @@ func Contains(arr interface{}, val interface{}) bool {
 	return false
 }
 
-// DeepMerge all levels of a src map into a dst map and return dst
-func DeepMerge(srcIn interface{}, dstIn interface{}) interface{} {
-	src, found := srcIn.(map[string]interface{})
-	if !found {
-		src, found = srcIn.(ArgsMap)
-		if !found {
-			log.Criticalf("Deep Merge passed source map of type: %s", reflect.TypeOf(srcIn))
-			return nil
-		}
-	}
-	dst, found := dstIn.(map[string]interface{})
-	if !found {
-		dst, found = dstIn.(ArgsMap)
-		if !found {
-			log.Criticalf("Deep Merge passed dest map of type: %s", reflect.TypeOf(dstIn))
-			return nil
-		}
-	}
-	for k, v := range src {
+// DeepMergeMap all levels of a src map into a dst map and return dst
+func DeepMergeMap(srcIn map[string]interface{}, dstIn map[string]interface{}) map[string]interface{} {
+	for k, v := range srcIn {
 		switch v.(type) {
 		case map[string]interface{}:
-			// don't try hoisting dstKey calculation
-			dstv, found := GetObject(dst, k)
+			dstv, found := GetObject(dstIn, k)
 			if found {
 				// recursive DeepMerge into existing key
-				dst[k] = DeepMerge(v, dstv)
+				dstIn[k] = DeepMergeMap(v.(map[string]interface{}), dstv.(map[string]interface{}))
 			} else {
 				// copy src to dst at same key
-				dst[k] = v
+				dstIn[k] = v
 			}
 		case []interface{}:
-			dstv, found := GetObject(dst, k)
+			dstv, found := GetObject(dstIn, k)
 			if found {
-				dstm, ok := AddToStringArray(dstv, k, v)
-				if ok {
-					dst[k] = dstm
+				if _, isString := dstv.([]string); isString {
+					dstm, ok := AddToStringArray(dstv.(map[string]interface{}), k, v)
+					if ok {
+						dstIn[k] = dstm
+					} else {
+						// failed, must copy
+						dstIn[k] = v
+					}
 				} else {
-					// failed, must replace
-					dst[k] = v
+					// not strings, copy for now
+					dstIn[k] = v
 				}
 			} else {
 				// copy
-				dst[k] = v
+				dstIn[k] = v
 			}
 		default:
 			// copy discrete type
-			dst[k] = v
+			dstIn[k] = v
 		}
 	}
-	return dst
+	return dstIn
 }
 
 // PrettyPrint returns a string that is a nicely indented representation

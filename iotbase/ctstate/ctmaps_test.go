@@ -89,7 +89,7 @@ var testparm1 = `
 func printUnmarshalError(js string, err interface{}) {
 	syntax, ok := err.(*json.SyntaxError)
 	if !ok {
-		fmt.Println("*********** ERR trying to get syntax error location **************\n", err)
+		// fmt.Println("*********** ERR trying to get syntax error location **************\n", err)
 		return
 	}
 
@@ -168,6 +168,7 @@ func TestDeepMerge(t *testing.T) {
 	t.Log("Enter TestDeepMerge")
 	o := getTestObjects(t)
 	ev1, found := GetObject(o, "event1")
+	// fmt.Printf("*** Event1: %s\n", PrettyPrint(ev1))
 	if !found {
 		t.Fatal("event1 not found")
 	}
@@ -175,12 +176,14 @@ func TestDeepMerge(t *testing.T) {
 	if !found {
 		t.Fatal("event2 not found")
 	}
+	// fmt.Printf("*** Event2: %s\n", PrettyPrint(ev2))
 	ev3, found := GetObject(o, "event3")
 	if !found {
 		t.Fatal("event3 not found")
 	}
+	// fmt.Printf("*** Event3: %s\n", PrettyPrint(ev3))
 	state1 := ev1
-	//fmt.Printf("*** State1: %s\n", prettyPrint(state1))
+	// fmt.Printf("*** State1: %s\n", PrettyPrint(state1))
 	_, found = GetObject(state1, "location.latitude")
 	if found {
 		t.Fatal("state1.location should not contain latitude")
@@ -189,8 +192,8 @@ func TestDeepMerge(t *testing.T) {
 	if found {
 		t.Fatal("state1.location should not contain longitude")
 	}
-	state2 := DeepMerge(ev2, state1)
-	//fmt.Printf("*** State2: %s\n", prettyPrint(state2))
+	state2 := DeepMergeMap(ev2.(map[string]interface{}), state1.(map[string]interface{}))
+	// fmt.Printf("*** State2 = ev2 + state1: %s\n", PrettyPrint(state2))
 	_, found = GetObject(state1, "location.latitude")
 	if !found {
 		t.Fatal("state2.location should contain latitude")
@@ -199,8 +202,8 @@ func TestDeepMerge(t *testing.T) {
 	if found {
 		t.Fatal("state2.location should not contain longitude")
 	}
-	state3 := DeepMerge(ev3, state2)
-	//fmt.Printf("*** State3: %s\n", prettyPrint(state3))
+	state3 := DeepMergeMap(ev3.(map[string]interface{}), state2)
+	// fmt.Printf("*** State3 = ev3 + state2: %s\n", PrettyPrint(state3))
 	_, found = GetObject(state3, "location.latitude")
 	if !found {
 		t.Fatal("state2.location should contain latitude")
@@ -212,7 +215,7 @@ func TestDeepMerge(t *testing.T) {
 }
 
 func TestParms(t *testing.T) {
-	fmt.Println("Enter TestContains")
+	// fmt.Println("Enter TestContains")
 	o := getTestParms(t)
 	_, found := GetObject(o, "assetID")
 	if !found {
@@ -221,7 +224,7 @@ func TestParms(t *testing.T) {
 }
 
 func TestArgsMap(t *testing.T) {
-	fmt.Println("Enter TestArgsMap")
+	// fmt.Println("Enter TestArgsMap")
 	o := getTestParms(t)
 	var a ArgsMap = o.(map[string]interface{})
 	_, found := GetObject(a, "assetID")
@@ -231,7 +234,7 @@ func TestArgsMap(t *testing.T) {
 }
 
 func TestGetByType(t *testing.T) {
-	fmt.Println("Enter TestByType")
+	// fmt.Println("Enter TestByType")
 	o := getTestParms(t)
 	_, found := GetObjectAsString(o, "assetID")
 	if !found {
@@ -265,10 +268,10 @@ func TestGetByType(t *testing.T) {
 }
 
 func TestPutObject(t *testing.T) {
-	fmt.Println("Enter TestPutObject")
+	// fmt.Println("Enter TestPutObject")
 	o := getTestParms(t)
 
-	fmt.Printf("Object before: %+v\n\n", o)
+	// fmt.Printf("Object before: %+v\n\n", o)
 
 	o, ok := PutObject(o, "time", time.Now())
 	if !ok {
@@ -285,17 +288,17 @@ func TestPutObject(t *testing.T) {
 		t.Fatal("could not put aFloat")
 	}
 
-	i, found := GetObjectAsInteger(o, "anInt")
+	_, found := GetObjectAsInteger(o, "anInt")
 	if !found {
 		t.Fatal("anInt not an integer")
 	}
-	fmt.Println("anInt: ", i, " TypeOF i: ", reflect.TypeOf(i))
+	// fmt.Println("anInt: ", i, " TypeOF i: ", reflect.TypeOf(i))
 
-	n, found := GetObjectAsNumber(o, "aFloat")
+	_, found = GetObjectAsNumber(o, "aFloat")
 	if !found {
 		t.Fatal("aFloat not a float")
 	}
-	fmt.Println("aFloat: ", n, " TypeOF n: ", reflect.TypeOf(n))
+	// fmt.Println("aFloat: ", n, " TypeOF n: ", reflect.TypeOf(n))
 
 	o, ok = PutObject(o, "maintenance.status", "inventory")
 	if !ok {
@@ -307,15 +310,15 @@ func TestPutObject(t *testing.T) {
 		t.Fatal("could not put a.b.c.d.lastmaplevel.status")
 	}
 
-	fmt.Printf("Object after: %+v\n\n", o)
+	// fmt.Printf("Object after: %+v\n\n", o)
 
 }
 
 func TestRemoveObject(t *testing.T) {
-	fmt.Println("Enter TestRemoveObject")
+	// fmt.Println("Enter TestRemoveObject")
 	o := getTestParms(t)
 
-	fmt.Printf("Object before: %+v\n\n", o)
+	// fmt.Printf("Object before: %+v\n\n", o)
 
 	o, ok := RemoveObject(o, "assetID")
 	if !ok {
@@ -332,54 +335,54 @@ func TestRemoveObject(t *testing.T) {
 		t.Fatal("could not remove aa.bb.cc")
 	}
 
-	fmt.Printf("Object after removal of aa.bb.cc: %+v\n\n", o)
+	// fmt.Printf("Object after removal of aa.bb.cc: %+v\n\n", o)
 
 	o, ok = RemoveObject(o, "aa")
 	if !ok {
 		t.Fatal("could not remove aa")
 	}
 
-	fmt.Printf("Object after: %+v\n\n", o)
+	// fmt.Printf("Object after: %+v\n\n", o)
 }
 
 func TestAsStringArray(t *testing.T) {
-	fmt.Println("Enter TestAsStringArray")
+	// fmt.Println("Enter TestAsStringArray")
 
-	s, ok := AsStringArray([]string{"a"})
+	_, ok := AsStringArray([]string{"a"})
 	if !ok {
 		t.Fatal("could convert []string{'a'} to string array")
 	}
-	fmt.Printf("TestAsStringArray: conversion of []string{'a'} created %#v\n", s)
+	// fmt.Printf("TestAsStringArray: conversion of []string{'a'} created %#v\n", s)
 
 	_, ok = AsStringArray([]int{2, 3, 4})
 	if ok {
 		t.Fatal("converted []int{2, 3, 4} to string array, how?")
 	}
 
-	s, ok = AsStringArray("astring")
+	_, ok = AsStringArray("astring")
 	if !ok {
 		t.Fatal("failed to convert 'astring' to string array")
 	}
-	fmt.Printf("TestAsStringArray: conversion of 'astring' created %#v\n", s)
+	// fmt.Printf("TestAsStringArray: conversion of 'astring' created %#v\n", s)
 
-	s, ok = AsStringArray(`["a", "b", "c"]`)
+	_, ok = AsStringArray(`["a", "b", "c"]`)
 	if !ok {
 		t.Fatal("failed to convert JSON a,b,c to string array")
 	}
-	fmt.Printf("TestAsStringArray: conversion of JSON array ['a', 'b', 'c'] created %#v\n", s)
+	// fmt.Printf("TestAsStringArray: conversion of JSON array ['a', 'b', 'c'] created %#v\n", s)
 }
 
 func TestAddToStringArray(t *testing.T) {
-	fmt.Println("Enter TestAddToStringArray")
+	// fmt.Println("Enter TestAddToStringArray")
 	o := getTestParms(t)
 
-	fmt.Printf("Object before: %+v\n\n", o)
+	// fmt.Printf("Object before: %+v\n\n", o)
 
 	o, ok := AddToStringArray(o, "sarr", []string{"d", "b", "c"})
 	if !ok {
 		t.Fatal("could not merge [d,b,c] into sarr")
 	}
-	fmt.Printf("Object d,b,c added: %+v\n\n", o)
+	// fmt.Printf("Object d,b,c added: %+v\n\n", o)
 
 	o, ok = AddToStringArray(o, "unknown", []string{"unk"})
 	if !ok {
@@ -393,15 +396,15 @@ func TestAddToStringArray(t *testing.T) {
 	} else {
 		t.Fatal("o[unknown] is missing")
 	}
-	fmt.Printf("Object unkown added: %+v\n\n", o)
+	// fmt.Printf("Object unkown added: %+v\n\n", o)
 
 	o, ok = AddToStringArray(o, "sarr", "astring")
 	if !ok {
 		t.Fatal("could not merge 'astring' into sarr")
 	}
-	fmt.Printf("Object astring added: %+v\n\n", o)
+	// fmt.Printf("Object astring added: %+v\n\n", o)
 
-	fmt.Printf("Object after: %+v\n\n", o)
+	// fmt.Printf("Object after: %+v\n\n", o)
 
 	// next one destroys o
 	o, ok = AddToStringArray("", "sarr", "astring")
@@ -409,15 +412,15 @@ func TestAddToStringArray(t *testing.T) {
 		t.Fatal("passed in string instead of map, but it did not fail")
 	}
 
-	fmt.Printf("Object after destruction by not checking for nil: %+v\n\n", o)
+	// fmt.Printf("Object after destruction by not checking for nil: %+v\n\n", o)
 
 }
 
 func TestRemoveFromStringArray(t *testing.T) {
-	fmt.Println("Enter TestRemoveFromStringArray")
+	// fmt.Println("Enter TestRemoveFromStringArray")
 	o := getTestParms(t)
 
-	fmt.Printf("Object before: %+v\n\n", o)
+	// fmt.Printf("Object before: %+v\n\n", o)
 
 	o, ok := RemoveFromStringArray(o, "sarr", []string{"d", "b", "c"})
 	if !ok {
@@ -448,6 +451,6 @@ func TestRemoveFromStringArray(t *testing.T) {
 		}
 	}
 
-	fmt.Printf("Object after: %+v\n\n", o)
+	// fmt.Printf("Object after: %+v\n\n", o)
 
 }

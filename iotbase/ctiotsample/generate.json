@@ -4,33 +4,36 @@
     "goSchemaFilename": "schemas.go",
     "API": [
       "init",
-      "createAsset",
-      "updateAsset",
-      "deleteAsset",
-      "deletePropertiesFromAsset",
-      "deleteAllAssets",
-      "readAsset",
-      "readAllAssets",
-      "readAssetHistory",
+      "createAssetContainer",
+      "updateAssetContainer",
+      "deleteAssetContainer",
+      "deletePropertiesFromAssetContainer",
+      "deleteAllAssetsContainer",
+      "readAssetContainer",
+      "readAllAssetsContainer",
+      "readAssetHistoryContainer",
       "readRecentStates",
       "setLoggingLevel",
       "setCreateOnUpdate"
     ],
     "goSchemaElements": [
-      "assetIDandCount",
-      "assetIDKey",
-      "initEvent",
-      "event",
-      "state"
+      "container",
+      "invokeevent",
+      "ioteventcommon",
+      "containerstate",
+      "containerstateexternal",
+      "containerstatearray"
     ]
   },
   "samples": {
     "goSampleFilename": "samples.go",
     "goSampleElements": [
-      "initEvent",
-      "event",
-      "state",
-      "contractState"
+      "container",
+      "invokeevent",
+      "ioteventcommon",
+      "containerstate",
+      "containerstateexternal",
+      "containerstatearray"
     ]
   }
 }

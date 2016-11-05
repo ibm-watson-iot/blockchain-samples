@@ -34,7 +34,6 @@ import (
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	st "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctstate"
-	"github.com/op/go-logging"
 )
 
 // CONFIGSTATEKEY is used to store the dynamic contract config structure.
@@ -51,7 +50,7 @@ type DynamicContractConfig struct {
 }
 
 // Logger for the ctconfig package
-var log = logging.MustGetLogger("conf")
+var log = shim.NewLogger("conf")
 
 var defaultDynamicConfig = DynamicContractConfig{2, 4}
 
@@ -172,14 +171,14 @@ func DynamicConfigInit(stub *shim.ChaincodeStub) error {
 	config := defaultDynamicConfig
 	if err != nil {
 		err = fmt.Errorf("configInit cannot get default config: %s", err.Error())
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
 
 	err = putDynamicConfigToLedger(stub, config)
 	if err != nil {
 		err = fmt.Errorf("configInit cannot put config: %s", err.Error())
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
 
@@ -193,13 +192,13 @@ func GetDynamicConfigFromLedger(stub *shim.ChaincodeStub) (DynamicContractConfig
 	configbytes, err := stub.GetState(CONFIGSTATEKEY)
 	if err != nil || len(configbytes) == 0 {
 		err := fmt.Errorf("getDynamicConfigFromLedger cannot get dynamic config from the ledger: %s", err.Error())
-		log.Error(err)
+		log.Errorf(err.Error())
 		return config, err
 	}
 	err = json.Unmarshal(configbytes, &config)
 	if err != nil {
 		err := fmt.Errorf("getDynamicConfigFromLedger cannot unmarshal dynamic config: %s", err.Error())
-		log.Error(err)
+		log.Errorf(err.Error())
 		return config, err
 	}
 	return config, nil
@@ -209,13 +208,13 @@ func putDynamicConfigToLedger(stub *shim.ChaincodeStub, config DynamicContractCo
 	configBytes, err := json.Marshal(&config)
 	if err != nil {
 		err := fmt.Errorf("putDynamicConfigToLedger cannot marshall the dynamic config: %s", err.Error())
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
 	err = stub.PutState(CONFIGSTATEKEY, configBytes)
 	if err != nil {
 		err := fmt.Errorf("putDynamicConfigToLedger cannot put the dynamic config to the ledger: %s", err.Error())
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
 	return nil
@@ -227,28 +226,28 @@ func UpdateContractConfig(stub *shim.ChaincodeStub, args []string) error {
 	var err error
 	if len(args) != 1 {
 		err = errors.New("updateDynamicConfig: Incorrect number of arguments. Expecting a JSON encoded dynamic config")
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
 
 	config, err = GetDynamicConfigFromLedger(stub)
 	if err != nil {
 		err = fmt.Errorf("updateDynamicConfig: failed to get dynamic config from ledger: %s", err)
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
 
 	err = json.Unmarshal([]byte(args[0]), &config)
 	if err != nil {
 		err = fmt.Errorf("updateDynamicConfig failed to unmarshal arg: %s", err)
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
 
 	err = putDynamicConfigToLedger(stub, config)
 	if err != nil {
 		err = fmt.Errorf("updateDynamicConfig failed to put config ro ledger: %s", err)
-		log.Error(err)
+		log.Errorf(err.Error())
 		return err
 	}
 
@@ -260,7 +259,7 @@ func ReadContractConfig(stub *shim.ChaincodeStub) ([]byte, error) {
 	configbytes, err := stub.GetState(CONFIGSTATEKEY)
 	if err != nil || len(configbytes) == 0 {
 		err := fmt.Errorf("readDynamicConfig cannot get dynamic config from the ledger: %s", err.Error())
-		log.Error(err)
+		log.Errorf(err.Error())
 		return nil, err
 	}
 	return configbytes, nil
@@ -310,7 +309,7 @@ func EventNameToAssetName(eventName string) (string, error) {
 		return p, nil
 	}
 	err := errors.New("eventNameToAssetName: mapping event name to asset name failed for eventName = " + eventName)
-	log.Error(err)
+	log.Errorf(err.Error())
 	return "", err
 }
 
@@ -321,7 +320,7 @@ func EventNameToEventPrefix(eventName string) (string, error) {
 		return p, nil
 	}
 	err := errors.New("eventNameToEventPrefix: mapping event name to event prefix failed for eventName = " + eventName)
-	log.Error(err)
+	log.Errorf(err.Error())
 	return "", err
 }
 
@@ -332,7 +331,7 @@ func EventNameToAssetPrefix(eventName string) (string, error) {
 		return p, nil
 	}
 	err := errors.New("eventNameToAssetPrefix: mapping event name to asset prefix failed for eventName = " + eventName)
-	log.Error(err)
+	log.Errorf(err.Error())
 	return "", err
 }
 
@@ -343,7 +342,7 @@ func EventPrefixToEventName(eventPrefix string) (string, error) {
 		return n, nil
 	}
 	err := errors.New("eventPrefixToEventName: mapping event prefix to event name failed for eventPrefix = " + eventPrefix)
-	log.Error(err)
+	log.Errorf(err.Error())
 	return "", err
 }
 
@@ -354,7 +353,7 @@ func AssetIDToInternal(eventName string, assetID string) (string, error) {
 		return p + assetID, nil
 	}
 	err := errors.New("assetIDToInternal: mapping asset name to prefix failed for eventName = " + eventName + " and assetID = " + assetID)
-	log.Error(err)
+	log.Errorf(err.Error())
 	return "", err
 }
 
@@ -366,7 +365,7 @@ func AssetIDToExternal(assetID string) (string, error) {
 		return assetID[2:], nil
 	}
 	err := errors.New("assetIDToEnternal: asset prefix not present in prefixToName: " + assetID)
-	log.Error(err)
+	log.Errorf(err.Error())
 	return "", err
 }
 
@@ -429,10 +428,10 @@ func verifySchema() error {
 				}
 			}
 		} else {
-			log.Critical("eventNameConfig map is not map of interface{}")
+			log.Criticalf("eventNameConfig map is not map of interface{}")
 		}
 	} else {
-		log.Critical("eventNameConfig map is corrupted")
+		log.Criticalf("eventNameConfig map is corrupted")
 	}
 	return nil
 }
