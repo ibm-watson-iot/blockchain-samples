@@ -79,15 +79,15 @@ Howard McKinney- Initial Contribution
 // v4.4 KL August 2016  Create assetCommon.go for easy addition of new assets.
 //      Create crudCommon.go for common functions in service of assets and events.
 //      Create contractConfig.go to encompass static and dynamic contract configuration.
-//		Create aircraftAssemblyConnect.go as a two-way inverted index of the 1:* relation.
-//		Create asset sidecar go files for airline, aircraft and assembly.
-//		Create event sidecar go files for flight, maintenance, inspection and analyticAdjustment.
-//		Update payloadSchema.json with asset and event definitions
-//		Create filters.go to enable complex filtering of queries, which helps with simple
-//			relationships like airline to airplane, which are not worth the time to
-//			implement a separate inverted index as was done for aircraft to assemblies.
-//		Significant refactoring of main.go for asset and event APIs
-//		Updates to mapUtils to improve reliability and add cleaner support for float, etc.
+//        Create aircraftAssemblyConnect.go as a two-way inverted index of the 1:* relation.
+//        Create asset sidecar go files for airline, aircraft and assembly.
+//        Create event sidecar go files for flight, maintenance, inspection and analyticAdjustment.
+//        Update payloadSchema.json with asset and event definitions
+//        Create filters.go to enable complex filtering of queries, which helps with simple
+//            relationships like airline to airplane, which are not worth the time to
+//            implement a separate inverted index as was done for aircraft to assemblies.
+//        Significant refactoring of main.go for asset and event APIs
+//        Updates to mapUtils to improve reliability and add cleaner support for float, etc.
 // v5.0 KL November 2016 Adapt to new iotbase packages.
 //                       Complete redesign of asset handling.
 
@@ -97,6 +97,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	as "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctasset"
 	cf "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctconfig"
@@ -135,7 +136,7 @@ func main() {
 }
 
 // Init is called in deploy mode when contract is initialized
-func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	var stateArg cf.ContractState
 	var err error
 
@@ -168,13 +169,15 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 }
 
 // Invoke is called in invoke mode to delegate state changing function messages
-func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	// asset CRUD API
 	switch function {
 	case "createAssetContainer":
 		return t.createAssetContainer(stub, args)
 	case "updateAssetContainer":
 		return t.updateAssetContainer(stub, args)
+	case "deletePropertiesFromAssetContainer":
+		return t.deletePropertiesFromAssetContainer(stub, args)
 	case "setLoggingLevel":
 		return nil, t.setLoggingLevel(stub, args)
 	case "setCreateOnUpdate":
@@ -188,7 +191,7 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 }
 
 // Query is called in query mode to delegate non-state-changing queries
-func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	// asset CRUD API
 	switch function {
 	case "readAssetContainer":
@@ -215,7 +218,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 //***************************************************
 //***************************************************
 
-func (t *SimpleChaincode) readContractState(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) readContractState(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
 
 	if len(args) != 0 {
@@ -244,21 +247,21 @@ func (t *SimpleChaincode) readContractState(stub *shim.ChaincodeStub, args []str
 // ************************************
 // readAssetSamples
 // ************************************
-func (t *SimpleChaincode) readAssetSamples(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) readAssetSamples(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return []byte(samples), nil
 }
 
 // ************************************
 // readAssetSchemas
 // ************************************
-func (t *SimpleChaincode) readAssetSchemas(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) readAssetSchemas(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return []byte(schemas), nil
 }
 
 // ************************************
 // setLoggingLevel
 // ************************************
-func (t *SimpleChaincode) setLoggingLevel(stub *shim.ChaincodeStub, args []string) error {
+func (t *SimpleChaincode) setLoggingLevel(stub shim.ChaincodeStubInterface, args []string) error {
 	type LogLevelArg struct {
 		Level string `json:"logLevel"`
 	}
@@ -307,7 +310,7 @@ type CreateOnUpdate struct {
 // ************************************
 // setCreateOnUpdate
 // ************************************
-func (t *SimpleChaincode) setCreateOnUpdate(stub *shim.ChaincodeStub, args []string) error {
+func (t *SimpleChaincode) setCreateOnUpdate(stub shim.ChaincodeStubInterface, args []string) error {
 	var createOnUpdate CreateOnUpdate
 	var err error
 	if len(args) != 1 {
@@ -331,7 +334,7 @@ func (t *SimpleChaincode) setCreateOnUpdate(stub *shim.ChaincodeStub, args []str
 }
 
 // PUTcreateOnUpdate marshals the new setting and writes it to the ledger
-func PUTcreateOnUpdate(stub *shim.ChaincodeStub, createOnUpdate CreateOnUpdate) (err error) {
+func PUTcreateOnUpdate(stub shim.ChaincodeStubInterface, createOnUpdate CreateOnUpdate) (err error) {
 	createOnUpdateBytes, err := json.Marshal(createOnUpdate)
 	if err != nil {
 		err = errors.New("PUTcreateOnUpdate failed to marshal")
@@ -348,7 +351,7 @@ func PUTcreateOnUpdate(stub *shim.ChaincodeStub, createOnUpdate CreateOnUpdate) 
 }
 
 // canCreateOnUpdate retrieves the setting from the ledger and returns it to the calling function
-func canCreateOnUpdate(stub *shim.ChaincodeStub) bool {
+func canCreateOnUpdate(stub shim.ChaincodeStubInterface) bool {
 	var createOnUpdate CreateOnUpdate
 	createOnUpdateBytes, err := stub.GetState("CreateOnUpdate")
 	if err != nil {

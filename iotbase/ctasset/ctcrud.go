@@ -23,10 +23,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	h "github.com/ibm-watson-iot/blockchain-samples/iotbase/cthistory"
 	st "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctstate"
-	"time"
 )
 
 // **************************************************
@@ -37,7 +38,7 @@ import (
 // definition says it is. This function creates the world state representation by
 // prepending the Prefix to it.
 func (a *Asset) getAssetKey() (string, error) {
-	assetID, found := st.GetObjectAsString(*a.EventIn, a.Class.AssetIDPath)
+	assetID, found := st.GetObjectAsString(a.EventIn, a.Class.AssetIDPath)
 	if !found {
 		err := fmt.Errorf("getAssetID: %s not found", a.Class.AssetIDPath)
 		log.Errorf(err.Error())
@@ -55,7 +56,7 @@ func (a *Asset) getAssetKey() (string, error) {
 }
 
 // The assetId is in the database and has > 0 bytes of info
-func (c AssetClass) getAssetFromWorldState(stub *shim.ChaincodeStub, assetKey string) (stateout []byte, exists bool, err error) {
+func (c AssetClass) getAssetFromWorldState(stub shim.ChaincodeStubInterface, assetKey string) (stateout []byte, exists bool, err error) {
 	stateout, err = stub.GetState(assetKey)
 	if err != nil {
 		err := fmt.Errorf("getAssetFromWorldState: GetState of %s returned error %s", assetKey, err)
@@ -80,7 +81,7 @@ func (c AssetClass) getAssetFromWorldState(stub *shim.ChaincodeStub, assetKey st
 // Decodes args[0], which must be a map containing a JSON object representing
 // a partial state containing one or more direct readings for specific state
 // properties (e.g. gForce, temperature, location, etc.)
-func (a *Asset) unmarshallEventIn(stub *shim.ChaincodeStub, args []string) error {
+func (a *Asset) unmarshallEventIn(stub shim.ChaincodeStubInterface, args []string) error {
 	var event interface{}
 	var err error
 
@@ -116,35 +117,35 @@ func (a *Asset) unmarshallEventIn(stub *shim.ChaincodeStub, args []string) error
 }
 
 // // Returns the world state represented by prefix + assetID unmarshalled.
-// func (c AssetClass) getUnmarshalledState(stub *shim.ChaincodeStub, assetID string) (*Asset, error) {
-// 	var stateBytes []byte
-// 	var err error
+// func (c AssetClass) getUnmarshalledState(stub shim.ChaincodeStubInterface, assetID string) (*Asset, error) {
+//     var stateBytes []byte
+//     var err error
 
-// 	stateBytes, exists, err := c.getAssetFromWorldState(stub, assetID)
-// 	if err != nil {
-// 		err := fmt.Errorf("getUnmarshalledState for class %s asset %s read from world state returned error %s", c.Name, assetID, err)
-// 		log.Errorf(err.Error())
-// 		return nil, err
-// 	}
-// 	if !exists {
-// 		err := fmt.Errorf("getUnmarshalledState for class %s asset %s asset does not exist", c.Name, assetID)
-// 		log.Errorf(err.Error())
-// 		return nil, err
-// 	}
+//     stateBytes, exists, err := c.getAssetFromWorldState(stub, assetID)
+//     if err != nil {
+//         err := fmt.Errorf("getUnmarshalledState for class %s asset %s read from world state returned error %s", c.Name, assetID, err)
+//         log.Errorf(err.Error())
+//         return nil, err
+//     }
+//     if !exists {
+//         err := fmt.Errorf("getUnmarshalledState for class %s asset %s asset does not exist", c.Name, assetID)
+//         log.Errorf(err.Error())
+//         return nil, err
+//     }
 
-// 	var a Asset
-// 	// unmarshal the existing state from the ledger to theinterface
-// 	err = json.Unmarshal(stateBytes, &a)
-// 	if err != nil {
-// 		log.Errorf("%s: assetID %s unmarshal failed: %s", c.Name, assetID, err)
-// 		return nil, err
-// 	}
+//     var a Asset
+//     // unmarshal the existing state from the ledger to theinterface
+//     err = json.Unmarshal(stateBytes, &a)
+//     if err != nil {
+//         log.Errorf("%s: assetID %s unmarshal failed: %s", c.Name, assetID, err)
+//         return nil, err
+//     }
 
-// 	return &a, nil
+//     return &a, nil
 // }
 
 // Pushes state to the ledger using assetID, which is expected to be prefixed.
-func (a *Asset) putMarshalledState(stub *shim.ChaincodeStub) error {
+func (a *Asset) putMarshalledState(stub shim.ChaincodeStubInterface) error {
 	// Write the new state to the ledger
 	stateJSON, err := json.Marshal(a)
 	if err != nil {
@@ -170,15 +171,15 @@ func (a *Asset) putMarshalledState(stub *shim.ChaincodeStub) error {
 	// // add history state
 	// err = h.UpdateStateHistory(stub, assetID, string(stateJSON))
 	// if err != nil {
-	// 	err = fmt.Errorf("%s: event %s assetID %s push history failed: %s", caller, eventName, assetID, err)
-	// 	log.Errorf(err.Error())
-	// 	return err
+	//     err = fmt.Errorf("%s: event %s assetID %s push history failed: %s", caller, eventName, assetID, err)
+	//     log.Errorf(err.Error())
+	//     return err
 	// }
 	return nil
 }
 
 // Pushes state to the ledger using assetID, which is expected to be prefixed.
-func removeOneAssetFromWorldState(stub *shim.ChaincodeStub, caller string, assetName string, assetID string) error {
+func removeOneAssetFromWorldState(stub shim.ChaincodeStubInterface, caller string, assetName string, assetID string) error {
 	err := stub.DelState(assetID)
 	if err != nil {
 		err = fmt.Errorf("%s: %s assetID %s deletion failed", caller, assetName, assetID)
@@ -201,9 +202,9 @@ func removeOneAssetFromWorldState(stub *shim.ChaincodeStub, caller string, asset
 }
 
 // Adds the current transaction timestamp into world state, replacing it if it was already there.
-func (a *Asset) addTXNTimestampToState(stub *shim.ChaincodeStub) error {
+func (a *Asset) addTXNTimestampToState(stub shim.ChaincodeStubInterface) error {
 	// add transaction uuid and timestamp
-	a.TXNID = stub.UUID
+	a.TXNID = stub.GetTxID()
 	txnunixtime, err := stub.GetTxTimestamp()
 	if err != nil {
 		err = fmt.Errorf("error getting transaction timestamp, err is %s", err)
@@ -216,54 +217,52 @@ func (a *Asset) addTXNTimestampToState(stub *shim.ChaincodeStub) error {
 }
 
 // Executes the rules engine and returns the updated state.
-func (a *Asset) handleAlertsAndRules(stub *shim.ChaincodeStub) error {
+func (a *Asset) handleAlertsAndRules(stub shim.ChaincodeStubInterface) error {
 	// al := alerts.NewAlertStatus()
 	// al, found := st.GetObject(amstate, "alerts") // is there an existing alert state?
 	// if found {
-	// 	log.Debugf("updateAsset Found existing alerts state: %s", al)
-	// 	alerts = a.AlertStatusFromMap(al.(map[string]interface{}), alerts)
+	//     log.Debugf("updateAsset Found existing alerts state: %s", al)
+	//     alerts = a.AlertStatusFromMap(al.(map[string]interface{}), alerts)
 	// }
 	// // important: rules need access to the entire calculated state
 	// amstate, alertactive, err := a.ExecuteRules(stub, eventName, &alerts, amstate, amargsMap)
 	// if err != nil {
-	// 	err = fmt.Errorf("%s: event %s has rules engine failure: %s", caller, eventName, err)
-	// 	log.Errorf(err.Error())
-	// 	return nil, err
+	//     err = fmt.Errorf("%s: event %s has rules engine failure: %s", caller, eventName, err)
+	//     log.Errorf(err.Error())
+	//     return nil, err
 	// }
 	// if alertactive {
-	// 	log.Debugf("%s: event %s assetID %s is noncompliant", caller, eventName, assetID)
-	// 	amstate["alerts"] = alerts
-	// 	amstate["compliant"] = false
+	//     log.Debugf("%s: event %s assetID %s is noncompliant", caller, eventName, assetID)
+	//     amstate["alerts"] = alerts
+	//     amstate["compliant"] = false
 	// } else {
-	// 	if alerts.AllClear() {
-	// 		// all false, no need to appear
-	// 		delete(amstate, "alerts")
-	// 	} else {
-	// 		amstate["alerts"] = alerts
-	// 	}
-	// 	amstate["compliant"] = true
+	//     if alerts.AllClear() {
+	//         // all false, no need to appear
+	//         delete(amstate, "alerts")
+	//     } else {
+	//         amstate["alerts"] = alerts
+	//     }
+	//     amstate["compliant"] = true
 	// }
 	return nil
 }
 
 // ********** property injection implementation
 func (a *Asset) injectProps(qprops []QPropNV) error {
-	state := a.State
 	var ok bool
 	for _, qp := range qprops {
-		*state, ok = st.PutObject(*state, qp.QProp, qp.Value)
+		ok = st.PutObject(a.State, qp.QProp, qp.Value)
 		if !ok {
 			err := fmt.Errorf("injectProps->putObject failed to put %s:%s to state %#v", qp.QProp, qp.Value, a)
 			log.Errorf(err.Error())
 			return err
 		}
 	}
-	a.State = state
 	return nil
 }
 
 // ReadWorldState read everything in the database for debugging purposes ...
-func ReadWorldState(stub *shim.ChaincodeStub) ([]byte, error) {
+func ReadWorldState(stub shim.ChaincodeStubInterface) ([]byte, error) {
 	var err error
 	var results map[string]interface{}
 	var state interface{}
@@ -305,7 +304,7 @@ func ReadWorldState(stub *shim.ChaincodeStub) ([]byte, error) {
 }
 
 // DeleteWorldState clear everything out from the database for DEBUGGING purposes ...
-func DeleteWorldState(stub *shim.ChaincodeStub) error {
+func DeleteWorldState(stub shim.ChaincodeStubInterface) error {
 	// obtain the current contract config and reinitialize the contract later as if just
 	// deployed (saves developer time)
 	cstate, _ := st.GETContractStateFromLedger(stub)

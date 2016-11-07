@@ -26,7 +26,11 @@ import (
 )
 
 // ContainerClass acts as the class of all containers
-var ContainerClass = as.AssetClass{"container", "CON", "container.barcode"}
+var ContainerClass = as.AssetClass{
+	Name:        "container",
+	Prefix:      "CON",
+	AssetIDPath: "container.barcode",
+}
 
 func newContainer() as.Asset {
 	return as.Asset{
@@ -42,34 +46,26 @@ func newContainer() as.Asset {
 	}
 }
 
-func (t *SimpleChaincode) createAssetContainer(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) createAssetContainer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return ContainerClass.CreateAsset(stub, args, "createAssetContainer", []as.QPropNV{})
 }
 
-func (t *SimpleChaincode) updateAssetContainer(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) updateAssetContainer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return ContainerClass.UpdateAsset(stub, args, "updateAssetContainer", []as.QPropNV{})
 }
 
-// func (t *SimpleChaincode) deleteAssetContainer(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-// 	return ContainerClass.DeleteAsset(stub, args)
-// }
+func (t *SimpleChaincode) deletePropertiesFromAssetContainer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	return ContainerClass.DeletePropertiesFromAsset(stub, args, "deletePropertiesFromAssetContainer", []as.QPropNV{})
+}
 
-// func (t *SimpleChaincode) deleteAllAssetsContainer(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-// 	return as.DeleteAllAssets(stub)
-// }
-
-// func (t *SimpleChaincode) deletePropertiesFromAssetContainer(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-// 	return ContainerClass.DeletePropertiesFromAsset(stub, args, []as.QPropNV{})
-// }
-
-func (t *SimpleChaincode) readAssetContainer(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) readAssetContainer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return ContainerClass.ReadAsset(stub, args)
 }
 
-func (t *SimpleChaincode) readAllAssetsContainer(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) readAllAssetsContainer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return ContainerClass.ReadAllAssets(stub, args)
 }
 
-// func (t *SimpleChaincode) readAssetIOTHistory(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+// func (t *SimpleChaincode) readAssetIOTHistory(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 // 	return as.ReadAssetHistory(stub, args, "iot", "readAssetIOTHistory")
 // }

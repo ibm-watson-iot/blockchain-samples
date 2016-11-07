@@ -121,20 +121,21 @@ func getTestObjects(t *testing.T) map[string]interface{} {
 	return make(map[string]interface{})
 }
 
-func getTestParms(t *testing.T) interface{} {
+func getTestParms(t *testing.T) map[string]interface{} {
 	var o interface{}
 	err := json.Unmarshal([]byte(testparm1), &o)
 	if err != nil {
 		printUnmarshalError(testsamples, err)
 		t.Fatalf("unmarshal test samples failed: %s", err)
 	}
-	return o
+	omap, _ := AsMap(o)
+	return omap
 }
 
 func TestContains(t *testing.T) {
 	t.Log("Enter TestContains")
 	o := getTestObjects(t)
-	ev1, found := GetObject(o, "event1.extension.arr")
+	ev1, found := GetObject(&o, "event1.extension.arr")
 	if !found {
 		t.Fatal("event1.extension.arr not found")
 	}
@@ -144,7 +145,7 @@ func TestContains(t *testing.T) {
 	if Contains(ev1, "s6") {
 		t.Fatal("event1.extension.arr should not contain s6")
 	}
-	ev2, found := GetObject(o, "event2.extension.arrint")
+	ev2, found := GetObject(&o, "event2.extension.arrint")
 	if !found {
 		t.Fatal("event2.extension.arrint not found")
 	}
@@ -155,7 +156,7 @@ func TestContains(t *testing.T) {
 	if Contains(ev2, float64(3)) {
 		t.Fatal("event2.extension.arr should not contain 3")
 	}
-	ev3, found := GetObject(o, "event3.extension.arr")
+	ev3, found := GetObject(&o, "event3.extension.arr")
 	if !found {
 		t.Fatal("event3.extension.arr not found")
 	}
@@ -167,48 +168,47 @@ func TestContains(t *testing.T) {
 func TestDeepMerge(t *testing.T) {
 	t.Log("Enter TestDeepMerge")
 	o := getTestObjects(t)
-	ev1, found := GetObject(o, "event1")
+	ev1, found := GetObjectAsMap(&o, "event1")
 	// fmt.Printf("*** Event1: %s\n", PrettyPrint(ev1))
 	if !found {
 		t.Fatal("event1 not found")
 	}
-	ev2, found := GetObject(o, "event2")
+	ev2, found := GetObjectAsMap(&o, "event2")
 	if !found {
 		t.Fatal("event2 not found")
 	}
 	// fmt.Printf("*** Event2: %s\n", PrettyPrint(ev2))
-	ev3, found := GetObject(o, "event3")
+	ev3, found := GetObjectAsMap(&o, "event3")
 	if !found {
 		t.Fatal("event3 not found")
 	}
 	// fmt.Printf("*** Event3: %s\n", PrettyPrint(ev3))
-	state1 := ev1
-	// fmt.Printf("*** State1: %s\n", PrettyPrint(state1))
-	_, found = GetObject(state1, "location.latitude")
+	_, found = GetObject(&ev1, "location.latitude")
 	if found {
 		t.Fatal("state1.location should not contain latitude")
 	}
-	_, found = GetObject(state1, "location.longitude")
+	_, found = GetObject(&ev1, "location.longitude")
 	if found {
 		t.Fatal("state1.location should not contain longitude")
 	}
-	state2 := DeepMergeMap(ev2.(map[string]interface{}), state1.(map[string]interface{}))
-	// fmt.Printf("*** State2 = ev2 + state1: %s\n", PrettyPrint(state2))
-	_, found = GetObject(state1, "location.latitude")
+	state2 := DeepMergeMap(ev2, ev1)
+	//fmt.Printf("*** State2 = ev2 + ev1: %s\n", PrettyPrint(state2))
+	_, found = GetObject(&state2, "location.latitude")
 	if !found {
 		t.Fatal("state2.location should contain latitude")
 	}
-	_, found = GetObject(state1, "location.longitude")
+	_, found = GetObject(&state2, "location.longitude")
 	if found {
 		t.Fatal("state2.location should not contain longitude")
 	}
-	state3 := DeepMergeMap(ev3.(map[string]interface{}), state2)
-	// fmt.Printf("*** State3 = ev3 + state2: %s\n", PrettyPrint(state3))
-	_, found = GetObject(state3, "location.latitude")
+	//fmt.Printf("*** ev3: %s\n", PrettyPrint(ev3))
+	state3 := DeepMergeMap(ev3, state2)
+	fmt.Printf("*** State3 = ev3 + state2: %s\n", PrettyPrint(state3))
+	_, found = GetObject(&state3, "location.latitude")
 	if !found {
-		t.Fatal("state2.location should contain latitude")
+		t.Fatal("state3.location should contain latitude")
 	}
-	_, found = GetObject(state3, "location.longitude")
+	_, found = GetObject(&state3, "location.longitude")
 	if !found {
 		t.Fatal("state3.location should contain longitude")
 	}
@@ -217,17 +217,7 @@ func TestDeepMerge(t *testing.T) {
 func TestParms(t *testing.T) {
 	// fmt.Println("Enter TestContains")
 	o := getTestParms(t)
-	_, found := GetObject(o, "assetID")
-	if !found {
-		t.Fatal("assetID not found")
-	}
-}
-
-func TestArgsMap(t *testing.T) {
-	// fmt.Println("Enter TestArgsMap")
-	o := getTestParms(t)
-	var a ArgsMap = o.(map[string]interface{})
-	_, found := GetObject(a, "assetID")
+	_, found := GetObject(&o, "assetID")
 	if !found {
 		t.Fatal("assetID not found")
 	}
@@ -236,32 +226,32 @@ func TestArgsMap(t *testing.T) {
 func TestGetByType(t *testing.T) {
 	// fmt.Println("Enter TestByType")
 	o := getTestParms(t)
-	_, found := GetObjectAsString(o, "assetID")
+	_, found := GetObjectAsString(&o, "assetID")
 	if !found {
 		t.Fatal("typeof assetID should be string")
 	}
 
-	_, found = GetObjectAsStringArray(o, "sarr")
+	_, found = GetObjectAsStringArray(&o, "sarr")
 	if !found {
 		t.Fatalf("typeof sarr should be []string")
 	}
 
-	_, found = GetObjectAsNumber(o, "temperature")
+	_, found = GetObjectAsNumber(&o, "temperature")
 	if !found {
 		t.Fatal("typeof temperature should be number")
 	}
 
-	_, found = GetObjectAsInteger(o, "temperature")
+	_, found = GetObjectAsInteger(&o, "temperature")
 	if !found {
 		t.Fatal("type of temperature should be integer")
 	}
 
-	_, found = GetObjectAsInteger(o, "integer")
+	_, found = GetObjectAsInteger(&o, "integer")
 	if !found {
 		t.Fatal("typeof integer should be integer")
 	}
 
-	_, found = GetObjectAsMap(o, "aa")
+	_, found = GetObjectAsMap(&o, "aa")
 	if !found {
 		t.Fatal("typeof aa should be map")
 	}
@@ -273,41 +263,50 @@ func TestPutObject(t *testing.T) {
 
 	// fmt.Printf("Object before: %+v\n\n", o)
 
-	o, ok := PutObject(o, "time", time.Now())
+	ok := PutObject(&o, "time", time.Now())
 	if !ok {
 		t.Fatal("could not put time")
 	}
+	tm, ok := GetObject(&o, "time")
+	if !ok {
+		t.Fatal("put time failed")
+	}
+	fmt.Printf("Time after retrieved: %+v\n\n", tm)
 
-	o, ok = PutObject(o, "anInt", 1)
+	ok = PutObject(&o, "anInt", 1)
 	if !ok {
 		t.Fatal("could not put anInt")
 	}
+	_, ok = GetObject(&o, "anInt")
+	if !ok {
+		t.Fatal("put anInt failed")
+	}
 
-	o, ok = PutObject(o, "aFloat", 1.567)
+	ok = PutObject(&o, "aFloat", 1.567)
 	if !ok {
 		t.Fatal("could not put aFloat")
 	}
-
-	_, found := GetObjectAsInteger(o, "anInt")
-	if !found {
-		t.Fatal("anInt not an integer")
+	_, ok = GetObject(&o, "aFloat")
+	if !ok {
+		t.Fatal("put aFloat failed")
 	}
-	// fmt.Println("anInt: ", i, " TypeOF i: ", reflect.TypeOf(i))
 
-	_, found = GetObjectAsNumber(o, "aFloat")
-	if !found {
-		t.Fatal("aFloat not a float")
-	}
-	// fmt.Println("aFloat: ", n, " TypeOF n: ", reflect.TypeOf(n))
-
-	o, ok = PutObject(o, "maintenance.status", "inventory")
+	ok = PutObject(&o, "maintenance.status", "inventory")
 	if !ok {
 		t.Fatal("could not put maintenance.status")
 	}
+	_, ok = GetObjectAsString(&o, "maintenance.status")
+	if !ok {
+		t.Fatal("put maintenance.status failed")
+	}
 
-	o, ok = PutObject(o, "a.b.c.d.lastmaplevel.status", "installed")
+	ok = PutObject(&o, "a.b.c.d.lastmaplevel.status", "installed")
 	if !ok {
 		t.Fatal("could not put a.b.c.d.lastmaplevel.status")
+	}
+	_, ok = GetObject(&o, "anInt")
+	if !ok {
+		t.Fatal("put a.b.c.d.lastmaplevel.status failed")
 	}
 
 	// fmt.Printf("Object after: %+v\n\n", o)
@@ -318,31 +317,31 @@ func TestRemoveObject(t *testing.T) {
 	// fmt.Println("Enter TestRemoveObject")
 	o := getTestParms(t)
 
-	// fmt.Printf("Object before: %+v\n\n", o)
+	fmt.Printf("Object before: %+v\n\n", o)
 
-	o, ok := RemoveObject(o, "assetID")
+	ok := RemoveObject(&o, "assetID")
 	if !ok {
 		t.Fatal("could not remove assetID")
 	}
 
-	o, ok = RemoveObject(o, "carrier")
+	ok = RemoveObject(&o, "carrier")
 	if !ok {
 		t.Fatal("could not remove carrier")
 	}
 
-	o, ok = RemoveObject(o, "aa.bb.cc")
+	ok = RemoveObject(&o, "aa.bb.cc")
 	if !ok {
 		t.Fatal("could not remove aa.bb.cc")
 	}
 
 	// fmt.Printf("Object after removal of aa.bb.cc: %+v\n\n", o)
 
-	o, ok = RemoveObject(o, "aa")
+	ok = RemoveObject(&o, "aa")
 	if !ok {
 		t.Fatal("could not remove aa")
 	}
 
-	// fmt.Printf("Object after: %+v\n\n", o)
+	fmt.Printf("Object after: %+v\n\n", o)
 }
 
 func TestAsStringArray(t *testing.T) {
@@ -350,7 +349,7 @@ func TestAsStringArray(t *testing.T) {
 
 	_, ok := AsStringArray([]string{"a"})
 	if !ok {
-		t.Fatal("could convert []string{'a'} to string array")
+		t.Fatal("could not convert []string{'a'} to string array")
 	}
 	// fmt.Printf("TestAsStringArray: conversion of []string{'a'} created %#v\n", s)
 
@@ -378,39 +377,26 @@ func TestAddToStringArray(t *testing.T) {
 
 	// fmt.Printf("Object before: %+v\n\n", o)
 
-	o, ok := AddToStringArray(o, "sarr", []string{"d", "b", "c"})
+	sarr, ok := GetObjectAsStringArray(&o, "sarr")
 	if !ok {
-		t.Fatal("could not merge [d,b,c] into sarr")
+		t.Fatal("could not get sarr as string array")
+	}
+	AddToStringArray([]string{"d", "b", "c"}, &sarr)
+	// fmt.Printf("Addtostringarray TEST for equality: %+v === %+v\n\n", sarr, []string{"a", "b", "c", "d"})
+	if !reflect.DeepEqual(sarr, []string{"a", "b", "c", "d"}) {
+		t.Fatal("merge of [d,b,c] into [a,b] failed")
 	}
 	// fmt.Printf("Object d,b,c added: %+v\n\n", o)
 
-	o, ok = AddToStringArray(o, "unknown", []string{"unk"})
+	sarr, ok = GetObjectAsStringArray(&o, "sarr")
 	if !ok {
-		t.Fatal("could not add new array unknown : [unk]")
+		t.Fatal("could not get sarr as string array")
 	}
-	r, ok := GetObjectAsStringArray(o, "unknown")
-	if ok {
-		if r[0] != "unk" {
-			t.Fatal("o[unknown] != unk")
-		}
-	} else {
-		t.Fatal("o[unknown] is missing")
-	}
-	// fmt.Printf("Object unkown added: %+v\n\n", o)
-
-	o, ok = AddToStringArray(o, "sarr", "astring")
+	AddToStringArray([]string{"astring"}, &sarr)
 	if !ok {
 		t.Fatal("could not merge 'astring' into sarr")
 	}
-	// fmt.Printf("Object astring added: %+v\n\n", o)
-
 	// fmt.Printf("Object after: %+v\n\n", o)
-
-	// next one destroys o
-	o, ok = AddToStringArray("", "sarr", "astring")
-	if ok {
-		t.Fatal("passed in string instead of map, but it did not fail")
-	}
 
 	// fmt.Printf("Object after destruction by not checking for nil: %+v\n\n", o)
 
@@ -419,36 +405,26 @@ func TestAddToStringArray(t *testing.T) {
 func TestRemoveFromStringArray(t *testing.T) {
 	// fmt.Println("Enter TestRemoveFromStringArray")
 	o := getTestParms(t)
-
-	// fmt.Printf("Object before: %+v\n\n", o)
-
-	o, ok := RemoveFromStringArray(o, "sarr", []string{"d", "b", "c"})
+	arr, ok := o["sarr"]
 	if !ok {
+		t.Fatal("sarr missing from test parms")
+	}
+	sarr, ok := AsStringArray(arr)
+	if !ok {
+		t.Fatal("sarr not an array of strings")
+	}
+
+	fmt.Printf("TestRemoveFromStringArray before: %+v\n\n", sarr)
+
+	RemoveFromStringArray([]string{"d", "b", "c"}, &sarr)
+	fmt.Printf("Addtostringarray TEST for equality: %+v === %+v\n\n", sarr, []string{"a"})
+	if !reflect.DeepEqual(sarr, []string{"a"}) {
 		t.Fatal("could not remove [d,b,c] from sarr")
 	}
-	if test, ok := GetObjectAsStringArray(o, "sarr"); !ok {
-		t.Fatal("sarr is missing from test data")
-	} else {
-		if len(test) != 1 {
-			t.Fatal("sarr should just contain one entry")
-		}
-	}
 
-	o, ok = RemoveFromStringArray(o, "unknown", []string{"unk"})
-	if ok {
-		t.Fatal("successfully removed non-existent entry from unknown : [unk]")
-	}
-
-	o, ok = RemoveFromStringArray(o, "sarr", "a")
-	if !ok {
+	RemoveFromStringArray([]string{"a"}, &sarr)
+	if len(sarr) > 0 {
 		t.Fatal("could not remove 'a' from sarr")
-	}
-	if test, ok := GetObjectAsStringArray(o, "sarr"); !ok {
-		t.Fatal("sarr is missing from test data")
-	} else {
-		if len(test) > 0 {
-			t.Fatal("sarr should be empty")
-		}
 	}
 
 	// fmt.Printf("Object after: %+v\n\n", o)

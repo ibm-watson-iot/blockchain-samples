@@ -27,9 +27,9 @@ Kim Letkeman - Initial Contribution
 package ctstate
 
 import (
-	"encoding/json"
-	"fmt"
-	"github.com/hyperledger/fabric/core/chaincode/shim"
+    "encoding/json"
+    "fmt"
+    "github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
 // CONTRACTSTATEKEY is used to store contract state, including version, nickname and activeAssets
@@ -38,79 +38,79 @@ const CONTRACTSTATEKEY string = "ContractStateKey"
 // ContractState struct defines contract state. Unlike the main contract maps, structs work fine
 // for this fixed structure.
 type ContractState struct {
-	Version  string `json:"version"`
-	Nickname string `json:"nickname"`
+    Version  string `json:"version"`
+    Nickname string `json:"nickname"`
 }
 
 // Logger for the ctstate package
 var log = shim.NewLogger("stat")
 
 // GETContractStateFromLedger retrieves state from ledger and returns to caller
-func GETContractStateFromLedger(stub *shim.ChaincodeStub) (ContractState, error) {
-	var state = ContractState{}
-	var err error
-	contractStateBytes, err := stub.GetState(CONTRACTSTATEKEY)
-	// minimum string is {"version":""} and version cannot be empty
-	if err == nil && len(contractStateBytes) > 14 {
-		// apparently, this blockchain instance is being reloaded, has the version changed?
-		err = json.Unmarshal(contractStateBytes, &state)
-		if err != nil {
-			err = fmt.Errorf("Unmarshal failed for contract state: %s", err)
-			log.Criticalf(err.Error())
-			return ContractState{}, err
-		}
-	} else {
-		// empty state already initialized
-		log.Noticef("Initialized newly deployed contract state version %s", state.Version)
-	}
-	log.Debugf("GETContractState successful")
-	return state, nil
+func GETContractStateFromLedger(stub shim.ChaincodeStubInterface) (ContractState, error) {
+    var state = ContractState{}
+    var err error
+    contractStateBytes, err := stub.GetState(CONTRACTSTATEKEY)
+    // minimum string is {"version":""} and version cannot be empty
+    if err == nil && len(contractStateBytes) > 14 {
+        // apparently, this blockchain instance is being reloaded, has the version changed?
+        err = json.Unmarshal(contractStateBytes, &state)
+        if err != nil {
+            err = fmt.Errorf("Unmarshal failed for contract state: %s", err)
+            log.Criticalf(err.Error())
+            return ContractState{}, err
+        }
+    } else {
+        // empty state already initialized
+        log.Noticef("Initialized newly deployed contract state version %s", state.Version)
+    }
+    log.Debugf("GETContractState successful")
+    return state, nil
 }
 
 // PUTContractStateToLedger writes a contract state into the ledger
-func PUTContractStateToLedger(stub *shim.ChaincodeStub, state ContractState) error {
-	var contractStateJSON []byte
-	var err error
-	contractStateJSON, err = json.Marshal(state)
-	if err != nil {
-		err = fmt.Errorf("Failed to marshal contract state: %s", err)
-		log.Criticalf(err.Error())
-		return err
-	}
-	err = stub.PutState(CONTRACTSTATEKEY, contractStateJSON)
-	if err != nil {
-		err = fmt.Errorf("Failed to PUTSTATE contract state: %s", err)
-		log.Criticalf(err.Error())
-		return err
-	}
-	log.Debugf("PUTContractState: %#v", state)
-	return nil
+func PUTContractStateToLedger(stub shim.ChaincodeStubInterface, state ContractState) error {
+    var contractStateJSON []byte
+    var err error
+    contractStateJSON, err = json.Marshal(state)
+    if err != nil {
+        err = fmt.Errorf("Failed to marshal contract state: %s", err)
+        log.Criticalf(err.Error())
+        return err
+    }
+    err = stub.PutState(CONTRACTSTATEKEY, contractStateJSON)
+    if err != nil {
+        err = fmt.Errorf("Failed to PUTSTATE contract state: %s", err)
+        log.Criticalf(err.Error())
+        return err
+    }
+    log.Debugf("PUTContractState: %#v", state)
+    return nil
 }
 
 // InitializeContractState verifies the version passed by the deploy message, and
 // writes an initial contract state into world state.
-func InitializeContractState(stub *shim.ChaincodeStub, version string, nickname string) error {
-	state, err := GETContractStateFromLedger(stub)
-	if err != nil {
-		err = fmt.Errorf("Initialize contract state failed to get contract state from ledger: %s", err)
-		log.Errorf(err.Error())
-		return err
-	}
-	if version != state.Version {
-		log.Noticef("Contract version has changed from %s to %s", state.Version, version)
-	}
-	state.Version = version
-	state.Nickname = nickname
-	return PUTContractStateToLedger(stub, state)
+func InitializeContractState(stub shim.ChaincodeStubInterface, version string, nickname string) error {
+    state, err := GETContractStateFromLedger(stub)
+    if err != nil {
+        err = fmt.Errorf("Initialize contract state failed to get contract state from ledger: %s", err)
+        log.Errorf(err.Error())
+        return err
+    }
+    if version != state.Version {
+        log.Noticef("Contract version has changed from %s to %s", state.Version, version)
+    }
+    state.Version = version
+    state.Nickname = nickname
+    return PUTContractStateToLedger(stub, state)
 }
 
 // GetLedgerContractVersion returns the deployed contract version
-func GetLedgerContractVersion(stub *shim.ChaincodeStub) (string, error) {
-	var state ContractState
-	var err error
-	state, err = GETContractStateFromLedger(stub)
-	if err != nil {
-		return "", err
-	}
-	return state.Version, nil
+func GetLedgerContractVersion(stub shim.ChaincodeStubInterface) (string, error) {
+    var state ContractState
+    var err error
+    state, err = GETContractStateFromLedger(stub)
+    if err != nil {
+        return "", err
+    }
+    return state.Version, nil
 }

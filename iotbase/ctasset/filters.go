@@ -22,9 +22,10 @@ package ctasset
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
+
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	st "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctstate"
-	"strconv"
 )
 
 // MatchType denotes how a filter should operate.
@@ -79,11 +80,11 @@ var emptyFilter = StateFilter{"matchall", make([]QPropNV, 0)}
 // Filter returns true if the filter's conditions are all met
 func (a *Asset) Filter(filter StateFilter) bool {
 	switch filter.MatchMode {
-	case "matchall":
+	case "ALL":
 		return matchAll(a, filter)
-	case "matchany":
+	case "ANY":
 		return matchAny(a, filter)
-	case "matchnone":
+	case "NONE":
 		return matchNone(a, filter)
 	default:
 		err := fmt.Errorf("filterObject has unknown matchType in filter: %+v", filter)
@@ -94,7 +95,7 @@ func (a *Asset) Filter(filter StateFilter) bool {
 
 func matchAll(a *Asset, filter StateFilter) bool {
 	for _, f := range filter.Entries {
-		if !performOneMatch(*a.State, f) {
+		if !performOneMatch(a.State, f) {
 			// must match all
 			return false
 		}
@@ -105,7 +106,7 @@ func matchAll(a *Asset, filter StateFilter) bool {
 
 func matchAny(a *Asset, filter StateFilter) bool {
 	for _, f := range filter.Entries {
-		if performOneMatch(*a.State, f) {
+		if performOneMatch(a.State, f) {
 			// must match at least one
 			return true
 		}
@@ -116,7 +117,7 @@ func matchAny(a *Asset, filter StateFilter) bool {
 
 func matchNone(a *Asset, filter StateFilter) bool {
 	for _, f := range filter.Entries {
-		if performOneMatch(*a.State, f) {
+		if performOneMatch(a.State, f) {
 			// must not match any
 			return false
 		}
@@ -125,7 +126,7 @@ func matchNone(a *Asset, filter StateFilter) bool {
 	return true
 }
 
-func performOneMatch(obj map[string]interface{}, prop QPropNV) bool {
+func performOneMatch(obj *map[string]interface{}, prop QPropNV) bool {
 	o, found := st.GetObject(obj, prop.QProp)
 	if found {
 		switch t := o.(type) {
@@ -166,7 +167,7 @@ func performOneMatch(obj map[string]interface{}, prop QPropNV) bool {
 }
 
 // Returns a map containing the JSON object represented by args[0]
-func getUnmarshalledStateFilter(stub *shim.ChaincodeStub, caller string, args []string) StateFilter {
+func getUnmarshalledStateFilter(stub shim.ChaincodeStubInterface, caller string, args []string) StateFilter {
 	var filter StateFilter
 	var err error
 

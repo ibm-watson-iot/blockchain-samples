@@ -25,15 +25,15 @@ package cthistory
 
 import (
 	"encoding/json"
+
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/op/go-logging"
 )
 
 // Changing to prepend history key so that an asset's history is separated from it's
 // current state.
 
 // Logger for the cthistory package
-var log = logging.MustGetLogger("hist")
+var log = shim.NewLogger("hist")
 
 // STATEHISTORYKEY is used to separate history from current asset state and is prepended
 // to the assetID
@@ -45,7 +45,7 @@ type AssetStateHistory struct {
 }
 
 // CreateStateHistory creates a new history entry in the ledger for an asset.
-func CreateStateHistory(stub *shim.ChaincodeStub, assetID string, stateJSON string) error {
+func CreateStateHistory(stub shim.ChaincodeStubInterface, assetID string, stateJSON string) error {
 
 	var ledgerKey = STATEHISTORYKEY + assetID
 	var assetStateHistory = AssetStateHistory{make([]string, 1)}
@@ -63,7 +63,7 @@ func CreateStateHistory(stub *shim.ChaincodeStub, assetID string, stateJSON stri
 // UpdateStateHistory adds a new state history for an asset. States are stored in the ledger
 // in descending order by timestamp. AssetID is expected to by the *internal*
 // assetID with a unique asset class prefix.
-func UpdateStateHistory(stub *shim.ChaincodeStub, assetID string, stateJSON string) error {
+func UpdateStateHistory(stub shim.ChaincodeStubInterface, assetID string, stateJSON string) error {
 
 	var ledgerKey = STATEHISTORYKEY + assetID
 	var historyBytes []byte
@@ -96,13 +96,13 @@ func UpdateStateHistory(stub *shim.ChaincodeStub, assetID string, stateJSON stri
 }
 
 // DeleteStateHistory deletes all history for an asset from the ledger.
-func DeleteStateHistory(stub *shim.ChaincodeStub, assetID string) error {
+func DeleteStateHistory(stub shim.ChaincodeStubInterface, assetID string) error {
 	var ledgerKey = STATEHISTORYKEY + assetID
 	return stub.DelState(ledgerKey)
 }
 
 // ReadStateHistory gets the state history for an asset.
-func ReadStateHistory(stub *shim.ChaincodeStub, assetID string) (AssetStateHistory, error) {
+func ReadStateHistory(stub shim.ChaincodeStubInterface, assetID string) (AssetStateHistory, error) {
 
 	var ledgerKey = STATEHISTORYKEY + assetID
 	var assetStateHistory AssetStateHistory

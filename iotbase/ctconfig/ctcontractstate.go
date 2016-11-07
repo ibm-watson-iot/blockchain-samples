@@ -28,6 +28,7 @@ package ctconfig
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -44,8 +45,10 @@ type ContractState struct {
 	Nickname string `json:"nickname"`
 }
 
+var log = shim.NewLogger("conf")
+
 // GETContractStateFromLedger retrieves state from ledger and returns to caller
-func GETContractStateFromLedger(stub *shim.ChaincodeStub) (ContractState, error) {
+func GETContractStateFromLedger(stub shim.ChaincodeStubInterface) (ContractState, error) {
 	var state = ContractState{"NOTSET", "NOTSET"}
 	var err error
 	contractStateBytes, err := stub.GetState(CONTRACTSTATEKEY)
@@ -67,7 +70,7 @@ func GETContractStateFromLedger(stub *shim.ChaincodeStub) (ContractState, error)
 }
 
 // PUTContractStateToLedger writes a contract state into the ledger
-func PUTContractStateToLedger(stub *shim.ChaincodeStub, state ContractState) error {
+func PUTContractStateToLedger(stub shim.ChaincodeStubInterface, state ContractState) error {
 	var contractStateJSON []byte
 	var err error
 	contractStateJSON, err = json.Marshal(state)
@@ -87,7 +90,7 @@ func PUTContractStateToLedger(stub *shim.ChaincodeStub, state ContractState) err
 }
 
 // InitializeContractState sets version and nickname back to defaults
-func InitializeContractState(stub *shim.ChaincodeStub, contractversion string, nicknamearg string, versionarg string) error {
+func InitializeContractState(stub shim.ChaincodeStubInterface, contractversion string, nicknamearg string, versionarg string) error {
 	var state ContractState
 	var err error
 	if versionarg != contractversion {
@@ -109,7 +112,7 @@ func InitializeContractState(stub *shim.ChaincodeStub, contractversion string, n
 	return PUTContractStateToLedger(stub, state)
 }
 
-func getLedgerContractVersion(stub *shim.ChaincodeStub) (string, error) {
+func getLedgerContractVersion(stub shim.ChaincodeStubInterface) (string, error) {
 	var state ContractState
 	var err error
 	state, err = GETContractStateFromLedger(stub)

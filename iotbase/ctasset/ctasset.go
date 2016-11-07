@@ -24,12 +24,14 @@ import (
 	"encoding/json"
 	// "errors"
 	"fmt"
-	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"time"
+
+	"github.com/hyperledger/fabric/core/chaincode/shim"
 	// cf "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctconfig"
 	// h "github.com/ibm-watson-iot/blockchain-samples/iotbase/cthistory"
-	st "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctstate"
 	"sort"
+
+	st "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctstate"
 )
 
 // InvokeEvent carries the event that is to be set upon exit from the chaincode
@@ -90,7 +92,7 @@ func (aa AssetArray) String() string {
 var log = shim.NewLogger("asst")
 
 // CreateAsset inializes a new asset and stores it in world state
-func (c *AssetClass) CreateAsset(stub *shim.ChaincodeStub, args []string, caller string, inject []QPropNV) ([]byte, error) {
+func (c *AssetClass) CreateAsset(stub shim.ChaincodeStubInterface, args []string, caller string, inject []QPropNV) ([]byte, error) {
 
 	var a = c.NewAsset()
 
@@ -151,7 +153,7 @@ func (c *AssetClass) CreateAsset(stub *shim.ChaincodeStub, args []string, caller
 }
 
 // UpdateAsset updates an asset and stores it in world state
-func (c *AssetClass) UpdateAsset(stub *shim.ChaincodeStub, args []string, caller string, inject []QPropNV) ([]byte, error) {
+func (c *AssetClass) UpdateAsset(stub shim.ChaincodeStubInterface, args []string, caller string, inject []QPropNV) ([]byte, error) {
 
 	var arg = c.NewAsset()
 	var a = c.NewAsset()
@@ -214,7 +216,7 @@ func (c *AssetClass) UpdateAsset(stub *shim.ChaincodeStub, args []string, caller
 		}
 	}
 	if err := a.handleAlertsAndRules(stub); err != nil {
-		err = fmt.Errorf("CreateAsset for class %s failed in rules engine for %s, err is %s", c.Name, a.AssetKey, err)
+		err = fmt.Errorf("UpdateAsset for class %s failed in rules engine for %s, err is %s", c.Name, a.AssetKey, err)
 		log.Errorf(err.Error())
 		return nil, err
 	}
@@ -229,118 +231,139 @@ func (c *AssetClass) UpdateAsset(stub *shim.ChaincodeStub, args []string, caller
 }
 
 // // DeleteAsset deletes an asset from world state
-// func DeleteAsset(stub *shim.ChaincodeStub, args []string, assetName string, caller string) ([]byte, error) {
-// 	argsMap, err := getUnmarshalledArgument(stub, caller, args)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	assetID, err := validateAssetID(caller, assetName, argsMap)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	err = removeOneAssetFromWorldState(stub, caller, assetName, assetID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return nil, nil
+// func DeleteAsset(stub shim.ChaincodeStubInterface, args []string, assetName string, caller string) ([]byte, error) {
+//     argsMap, err := getUnmarshalledArgument(stub, caller, args)
+//     if err != nil {
+//         return nil, err
+//     }
+//     assetID, err := validateAssetID(caller, assetName, argsMap)
+//     if err != nil {
+//         return nil, err
+//     }
+//     err = removeOneAssetFromWorldState(stub, caller, assetName, assetID)
+//     if err != nil {
+//         return nil, err
+//     }
+//     return nil, nil
 // }
 
 // // DeleteAllAssets reletes all asstes of a specific asset class from world state
-// func DeleteAllAssets(stub *shim.ChaincodeStub, args []string, assetName string, caller string) ([]byte, error) {
-// 	var err error
-// 	prefix, err := cf.EventNameToAssetPrefix(assetName)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	iter, err := stub.RangeQueryState(prefix, prefix+"}")
-// 	if err != nil {
-// 		err = fmt.Errorf("deleteAllAssets failed to get a range query iterator: %s", err)
-// 		log.Errorf(err.Error())
-// 		return nil, err
-// 	}
-// 	defer iter.Close()
-// 	for iter.HasNext() {
-// 		assetID, _, err := iter.Next()
-// 		if err != nil {
-// 			err = fmt.Errorf("deleteAllAssets iter.Next() failed: %s", err)
-// 			log.Errorf(err.Error())
-// 			return nil, err
-// 		}
-// 		err = removeOneAssetFromWorldState(stub, caller, assetName, assetID)
-// 		if err != nil {
-// 			err = fmt.Errorf("deleteAllAssets%s failed to remove an asset: %s", assetName, err)
-// 			log.Errorf(err.Error())
-// 			// continue best efforts?
-// 		}
-// 	}
-// 	return nil, nil
+// func DeleteAllAssets(stub shim.ChaincodeStubInterface, args []string, assetName string, caller string) ([]byte, error) {
+//     var err error
+//     prefix, err := cf.EventNameToAssetPrefix(assetName)
+//     if err != nil {
+//         return nil, err
+//     }
+//     iter, err := stub.RangeQueryState(prefix, prefix+"}")
+//     if err != nil {
+//         err = fmt.Errorf("deleteAllAssets failed to get a range query iterator: %s", err)
+//         log.Errorf(err.Error())
+//         return nil, err
+//     }
+//     defer iter.Close()
+//     for iter.HasNext() {
+//         assetID, _, err := iter.Next()
+//         if err != nil {
+//             err = fmt.Errorf("deleteAllAssets iter.Next() failed: %s", err)
+//             log.Errorf(err.Error())
+//             return nil, err
+//         }
+//         err = removeOneAssetFromWorldState(stub, caller, assetName, assetID)
+//         if err != nil {
+//             err = fmt.Errorf("deleteAllAssets%s failed to remove an asset: %s", assetName, err)
+//             log.Errorf(err.Error())
+//             // continue best efforts?
+//         }
+//     }
+//     return nil, nil
 // }
 
-// // DeletePropertiesFromAsset removes specific properties from an asset in world state
-// func DeletePropertiesFromAsset(stub *shim.ChaincodeStub, args []string, assetName string, caller string, inject []QPropNV) ([]byte, error) {
-// 	argsMap, err := getUnmarshalledArgument(stub, caller, args)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	assetID, err := validateAssetID(caller, assetName, argsMap)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+// DeletePropertiesFromAsset removes specific properties from an asset in world state
+func (c *AssetClass) DeletePropertiesFromAsset(stub shim.ChaincodeStubInterface, args []string, caller string, inject []QPropNV) ([]byte, error) {
 
-// 	var qprops []interface{}
-// 	qpropsBytes, found := st.GetObject(argsMap, "qualPropsToDelete")
-// 	if found {
-// 		qprops, found = qpropsBytes.([]interface{})
-// 		if !found || len(qprops) < 1 {
-// 			err = fmt.Errorf("deletePropertiesFromAsset asset %s qualPropsToDelete is type %T", assetID, qpropsBytes)
-// 			log.Errorf(err.Error())
-// 			return nil, err
-// 		}
-// 	} else {
-// 		err = fmt.Errorf("deletePropertiesFromAsset asset %s has no qualPropsToDelete argument", assetID)
-// 		log.Errorf(err.Error())
-// 		return nil, err
-// 	}
+	var arg = c.NewAsset()
+	var a = c.NewAsset()
 
-// 	state, err := getUnmarshalledState(stub, caller, assetID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	if err := arg.unmarshallEventIn(stub, args); err != nil {
+		err = fmt.Errorf("DeletePropertiesFromAsset for class %s could not unmarshall, err is %s", c.Name, err)
+		log.Errorf(err.Error())
+		return nil, err
+	}
+	assetKey, err := arg.getAssetKey()
+	if err != nil {
+		err = fmt.Errorf("DeletePropertiesFromAsset for class %s could not find id at %s, err is %s", c.Name, c.AssetIDPath, err)
+		log.Errorf(err.Error())
+		return nil, err
+	}
+	assetBytes, exists, err := c.getAssetFromWorldState(stub, assetKey)
+	if err != nil {
+		err := fmt.Errorf("DeletePropertiesFromAsset for class %s asset %s read from world state returned error %s", c.Name, a.AssetKey, err)
+		log.Errorf(err.Error())
+		return nil, err
+	}
+	if !exists {
+		err := fmt.Errorf("DeletePropertiesFromAsset for class %s asset %s asset does not exist", c.Name, a.AssetKey)
+		log.Errorf(err.Error())
+		return nil, err
+	}
+	err = json.Unmarshal(assetBytes, &a)
+	if err != nil {
+		err := fmt.Errorf("DeletePropertiesFromAsset for class %s asset %s Unmarshal failed with err %s", c.Name, a.AssetKey, err)
+		log.Errorf(err.Error())
+		return nil, err
+	}
+	// save the incoming EventIn
+	a.EventIn = arg.EventIn
+	a.FunctionIn = arg.FunctionIn
+	log.Debugf("DeletePropertiesFromAsset asset struct after saving EventIn= %+v", a)
 
-// 	log.Debugf("deleteProps: %s state follows *************\n\n%s", assetName, state)
+	var qprops []string
+	qprops, found := st.GetObjectAsStringArray(arg.EventIn, "qprops")
+	if !found {
+		err = fmt.Errorf("deletePropertiesFromAsset asset %s has no qprops argument or qprops not a string array", assetKey)
+		log.Errorf(err.Error())
+		return nil, err
+	}
 
-// 	// now remove properties from state, they are qualified by level
-// 	for p := range qprops {
-// 		prop := qprops[p].(string)
-// 		log.Debugf("deletePropertiesFromAsset deleting property %s from asset %s", prop, assetID)
-// 		state, _ = st.RemoveObject(state, prop)
-// 	}
+	// remove qualified properties from state
+	for _, p := range qprops {
+		_ = st.RemoveObject(a.State, p)
+	}
 
-// 	state, err = addTXNTimestampToState(stub, caller, state)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	state = addLastEventToState(stub, caller, argsMap, state, "")
-// 	if state == nil {
-// 		return nil, errors.New("addLastEventToState failed")
-// 	}
-// 	state, err = injectProps(state, inject)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	state, err = handleAlertsAndRules(stub, caller, assetName, assetID, argsMap, state)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	err = putMarshalledState(stub, caller, assetName, assetID, state)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return nil, nil
-// }
+	if err := a.addTXNTimestampToState(stub); err != nil {
+		err = fmt.Errorf("deletePropertiesFromAsset for class %s failed to add txn timestamp for %s, err is %s", c.Name, a.AssetKey, err)
+		log.Errorf(err.Error())
+		return nil, err
+	}
+
+	// save original asset function
+	a.FunctionIn = caller
+
+	if len(inject) > 0 {
+		err := a.injectProps(inject)
+		if err != nil {
+			err = fmt.Errorf("deletePropertiesFromAsset for class %s failed to inject properties %+v for %s, err is %s", c.Name, inject, a.AssetKey, err)
+			log.Errorf(err.Error())
+			return nil, err
+		}
+	}
+	if err := a.handleAlertsAndRules(stub); err != nil {
+		err = fmt.Errorf("CreateAsset for class %s failed in rules engine for %s, err is %s", c.Name, a.AssetKey, err)
+		log.Errorf(err.Error())
+		return nil, err
+	}
+	if err := a.putMarshalledState(stub); err != nil {
+		err = fmt.Errorf("CreateAsset for class %s failed to to marshall for %s, err is %s", c.Name, a.AssetKey, err)
+		log.Errorf(err.Error())
+		return nil, err
+	}
+
+	// log.Debugf("UpdateAsset asset struct final= %+v", a)
+	return nil, nil
+}
 
 // ReadAsset returns an asset from world state, intended to be returned directly to a client
-func (c *AssetClass) ReadAsset(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (c *AssetClass) ReadAsset(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	assetBytes, exists, err := c.getAssetFromWorldState(stub, c.Prefix+args[0])
 	if err != nil {
@@ -357,23 +380,23 @@ func (c *AssetClass) ReadAsset(stub *shim.ChaincodeStub, args []string) ([]byte,
 }
 
 // // ReadAssetUnmarshalled returns the asset from world state as an object, intended for internal use
-// func ReadAssetUnmarshalled(stub *shim.ChaincodeStub, assetID string, assetName string, caller string) (interface{}, error) {
-// 	assetBytes, err := assetIsActive(stub, assetID)
-// 	if err != nil || len(assetBytes) == 0 {
-// 		return nil, err
-// 	}
-// 	var state interface{}
-// 	err = json.Unmarshal(assetBytes, &state)
-// 	if err != nil {
-// 		err = fmt.Errorf("readAssetUnmarshalled unmarshal failed: %s", err)
-// 		log.Errorf(err.Error())
-// 		return nil, err
-// 	}
-// 	return state, nil
+// func ReadAssetUnmarshalled(stub shim.ChaincodeStubInterface, assetID string, assetName string, caller string) (interface{}, error) {
+//     assetBytes, err := assetIsActive(stub, assetID)
+//     if err != nil || len(assetBytes) == 0 {
+//         return nil, err
+//     }
+//     var state interface{}
+//     err = json.Unmarshal(assetBytes, &state)
+//     if err != nil {
+//         err = fmt.Errorf("readAssetUnmarshalled unmarshal failed: %s", err)
+//         log.Errorf(err.Error())
+//         return nil, err
+//     }
+//     return state, nil
 // }
 
 // ReadAllAssets returns all assets of a specific class from world state as an array
-func (c AssetClass) ReadAllAssets(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (c AssetClass) ReadAllAssets(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	results, err := c.ReadAllAssetsUnmarshalled(stub, args)
 	if err != nil {
 		return nil, err
@@ -388,7 +411,7 @@ func (c AssetClass) ReadAllAssets(stub *shim.ChaincodeStub, args []string) ([]by
 }
 
 // ReadAllAssetsUnmarshalled returns all assets of a specific class from world state as an object, intended for internal use
-func (c AssetClass) ReadAllAssetsUnmarshalled(stub *shim.ChaincodeStub, args []string) (AssetArray, error) {
+func (c AssetClass) ReadAllAssetsUnmarshalled(stub shim.ChaincodeStubInterface, args []string) (AssetArray, error) {
 	var assets AssetArray
 	var err error
 	var filter StateFilter
@@ -436,45 +459,45 @@ func (c AssetClass) ReadAllAssetsUnmarshalled(stub *shim.ChaincodeStub, args []s
 }
 
 // // ReadAssetHistory returns an asset's history from world state as an array
-// func ReadAssetHistory(stub *shim.ChaincodeStub, args []string, assetName string, caller string) ([]byte, error) {
-// 	argsMap, err := getUnmarshalledArgument(stub, caller, args)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	assetID, err := validateAssetID(caller, assetName, argsMap)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	stateHistory, err := h.ReadStateHistory(stub, assetID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	// is count present?
-// 	var olen int
-// 	countBytes, found := st.GetObject(argsMap, "count")
-// 	if found {
-// 		olen = int(countBytes.(float64))
-// 	}
-// 	if olen <= 0 || olen > len(stateHistory.AssetHistory) {
-// 		olen = len(stateHistory.AssetHistory)
-// 	}
-// 	var hStatesOut = make([]interface{}, 0, olen)
-// 	for i := 0; i < olen; i++ {
-// 		var obj interface{}
-// 		err = json.Unmarshal([]byte(stateHistory.AssetHistory[i]), &obj)
-// 		if err != nil {
-// 			log.Errorf("readAssetHistory JSON unmarshal of entry %d failed [%#v]", i, stateHistory.AssetHistory[i])
-// 			return nil, err
-// 		}
-// 		hStatesOut = append(hStatesOut, obj)
-// 	}
-// 	assetBytes, err := json.Marshal(hStatesOut)
-// 	if err != nil {
-// 		log.Errorf("readAssetHistory failed to marshal results: %s", err)
-// 		return nil, err
-// 	}
+// func ReadAssetHistory(stub shim.ChaincodeStubInterface, args []string, assetName string, caller string) ([]byte, error) {
+//     argsMap, err := getUnmarshalledArgument(stub, caller, args)
+//     if err != nil {
+//         return nil, err
+//     }
+//     assetID, err := validateAssetID(caller, assetName, argsMap)
+//     if err != nil {
+//         return nil, err
+//     }
+//     stateHistory, err := h.ReadStateHistory(stub, assetID)
+//     if err != nil {
+//         return nil, err
+//     }
+//     // is count present?
+//     var olen int
+//     countBytes, found := st.GetObject(argsMap, "count")
+//     if found {
+//         olen = int(countBytes.(float64))
+//     }
+//     if olen <= 0 || olen > len(stateHistory.AssetHistory) {
+//         olen = len(stateHistory.AssetHistory)
+//     }
+//     var hStatesOut = make([]interface{}, 0, olen)
+//     for i := 0; i < olen; i++ {
+//         var obj interface{}
+//         err = json.Unmarshal([]byte(stateHistory.AssetHistory[i]), &obj)
+//         if err != nil {
+//             log.Errorf("readAssetHistory JSON unmarshal of entry %d failed [%#v]", i, stateHistory.AssetHistory[i])
+//             return nil, err
+//         }
+//         hStatesOut = append(hStatesOut, obj)
+//     }
+//     assetBytes, err := json.Marshal(hStatesOut)
+//     if err != nil {
+//         log.Errorf("readAssetHistory failed to marshal results: %s", err)
+//         return nil, err
+//     }
 
-// 	return []byte(assetBytes), nil
+//     return []byte(assetBytes), nil
 // }
 
 //********** sort interface for AssetArray

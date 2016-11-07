@@ -31,10 +31,6 @@ import (
 	"strings"
 )
 
-// ArgsMap is an alias for maps acting as json objects, needed because
-// map[string]interface{} cannot be a receiver
-type ArgsMap map[string]interface{}
-
 // AsMap does its best to interpret or cast the incoming generic to map[string]interface{}
 func AsMap(obj interface{}) (toMap map[string]interface{}, ok bool) {
 	var err error
@@ -88,22 +84,26 @@ func AsStringArray(obj interface{}) (toSarr []string, ok bool) {
 				return AsStringArray(interface{}(data))
 			}
 			log.Errorf(err.Error())
-			return nil, false
+			return make([]string, 0), false
 		}
 		// 4. a non-JSON string, just return that as an array
 		return []string{as}, true
 	}
 	err = fmt.Errorf("AsStringArray: incoming type is %T and is not understood", obj)
 	log.Errorf(err.Error())
-	return nil, false
+	return make([]string, 0), false
 }
 
 // GetObject finds an object by its qualified name, which looks like "location.latitude"
 // as one example. Returns as interface{} to maintain generic handling
-func GetObject(objIn map[string]interface{}, qname string) (interface{}, bool) {
+func GetObject(objIn *map[string]interface{}, qname string) (interface{}, bool) {
 	// return a copy of the selected object
 	// handles full qualified name, starting at object's root
-	searchObj := objIn
+	if objIn == nil {
+		log.Errorf("GetObject passed NIL object, looking for '%s'", qname)
+		return nil, false
+	}
+	searchObj := *objIn
 	s := strings.Split(qname, ".")
 	// crawl the levels
 	for i, v := range s {
@@ -114,13 +114,9 @@ func GetObject(objIn map[string]interface{}, qname string) (interface{}, bool) {
 			//fmt.Printf("** tmp is %+v\n", tmp)
 			if found {
 				searchObj, found = tmp.(map[string]interface{})
-				//fmt.Printf("** tmp->searchObj AS MAP is %+v\n", searchObj)
 				if !found {
-					searchObj, found = tmp.(ArgsMap)
-					if !found {
-						// log.Debugf("GetObject not map or ArgsMap shape: %s", v)
-						//fmt.Printf("** tmp->searchObj AS ARGSMAP is %+v\n", searchObj)
-					}
+					log.Errorf("PutObject: unknown object shape for a non-leaf level: %+v", tmp)
+					return objIn, false
 				}
 			} else {
 				// log.Debugf("GetObject cannot find level: %s in %s", v, qname)
@@ -145,14 +141,10 @@ func GetObject(objIn map[string]interface{}, qname string) (interface{}, bool) {
 
 // PutObject inserts an object by its qualified name, which looks like "location.latitude"
 // as one example. Creates missing levels.
-func PutObject(objIn map[string]interface{}, qname string, value interface{}) (map[string]interface{}, bool) {
+func PutObject(objIn *map[string]interface{}, qname string, value interface{}) bool {
 	// overwrite the value of the selected object, create if necessary
 	// handles full qualified name, starting at object's root
-	searchObj, ok := AsMap(objIn)
-	if !ok {
-		log.Errorf("GetObject passed a non-map / non-ArgsMap: %#v", objIn)
-		return objIn, false
-	}
+	searchObj := *objIn
 	s := strings.Split(qname, ".")
 	// crawl the levels
 	for i, v := range s {
@@ -165,13 +157,8 @@ func PutObject(objIn map[string]interface{}, qname string, value interface{}) (m
 				searchObj, found = tmp.(map[string]interface{})
 				//fmt.Printf("** tmp->searchObj AS MAP is %+v\n", searchObj)
 				if !found {
-					searchObj, found = tmp.(ArgsMap)
-					//fmt.Printf("** tmp->searchObj AS ARGSMAP is %+v\n", searchObj)
-					if !found {
-						// unknown object shape for a non-leaf level
-						log.Errorf("PutObject: unknown object shape for a non-leaf level: %+v", tmp)
-						return objIn, false
-					}
+					log.Errorf("PutObject: unknown object shape for a non-leaf level: %+v", tmp)
+					return false
 				}
 			} else {
 				//fmt.Printf("** PutObject level not found in obj %+v, creating %s\n", searchObj, v)
@@ -184,23 +171,23 @@ func PutObject(objIn map[string]interface{}, qname string, value interface{}) (m
 			// leaf node, assign the value and return
 			searchObj[v] = value
 			//fmt.Printf("**** Found level [%d] %s\n", i, v)
-			return objIn, true
+			return true
 		}
 	}
 	log.Errorf("PutObject: unknown error -- fell out of loop without returning")
-	return objIn, false
+	return false
 }
 
 // RemoveObject removes an object by its qualified name, which looks like
 // "location.latitude" as one example.
-func RemoveObject(objIn map[string]interface{}, qname string) (map[string]interface{}, bool) {
-	searchObj := objIn
+func RemoveObject(objIn *map[string]interface{}, qname string) bool {
+	searchObj := *objIn
 	s := strings.Split(qname, ".")
 	for i, v := range s {
 		if i+1 < len(s) {
-			tmp, found := AsMap(searchObj[v])
+			tmp, found := searchObj[v].(map[string]interface{})
 			if !found {
-				return objIn, false
+				return false
 			}
 			searchObj = tmp
 			continue
@@ -208,81 +195,54 @@ func RemoveObject(objIn map[string]interface{}, qname string) (map[string]interf
 		delete(searchObj, v)
 		break
 	}
-	return objIn, true
+	return true
 }
 
 // AddToStringArray merges a specified object (usually in asset state) by qualified name with an incoming
 // string or string array. Keeps only unique members (as in a set.)
-func AddToStringArray(objIn map[string]interface{}, qname string, value interface{}) (map[string]interface{}, bool) {
-	_, ok := AsMap(objIn)
-	if !ok {
-		log.Errorf("addToStringArray: incoming object not a map type %T[%#v]", objIn, objIn)
-		return objIn, false
+func AddToStringArray(from []string, to *[]string) {
+	log.Debugf("addToStringArray: adding %#v to %#v\n", from, to)
+	var set = make(map[string]struct{}, 0)
+	for _, v := range *to {
+		set[v] = struct{}{}
 	}
-	arr, found := GetObject(objIn, qname)
-	if !found {
-		// array object does not exist yet, for convenience we create it
-		// log.Debugf("addToStringArray: redirecting to PutObject of %s : %#v", qname, value)
-		return PutObject(objIn, qname, value)
+	for _, v := range from {
+		set[v] = struct{}{}
 	}
-	// log.Debugf("addToStringArray: adding %#v to %s : %#v\n", value, qname, arr)
-	// we have an array to modify
-	sarr, ok := AsStringArray(arr)
-	if !ok {
-		log.Errorf("addToStringArray: incoming object is not a string array %s : %T[%#v]", qname, arr, arr)
-		return objIn, false
+	var union = make([]string, 0, len(set))
+	for k := range set {
+		union = append(union, k)
 	}
-	sval, ok := AsStringArray(value)
-	if !ok {
-		log.Errorf("addToStringArray: incoming value is not a string or string array %s : %T[%#v]", qname, value, value)
-		return objIn, false
-	}
-	for _, v := range sval {
-		if Contains(sarr, v) {
-			continue
-		} else {
-			sarr = append(sarr, v)
-		}
-	}
-	sort.Strings(sarr)
-	// log.Debugf("addToStringArray: calling PutObject with result %#v\n", sarr)
-	return PutObject(objIn, qname, sarr)
+	sort.Strings(union)
+	*to = union
+	log.Debugf("addToStringArray: result %#v\n", to)
+	return
 }
 
 // RemoveFromStringArray removes from a named object in asset state or other map, an incoming
 // string or string array. Assumes unique members (as in a set.)
-func RemoveFromStringArray(objIn map[string]interface{}, qname string, value interface{}) (map[string]interface{}, bool) {
-	arr, found := GetObject(objIn, qname)
-	if !found {
-		// log.Debugf("addToStringArray: array %s not found", qname)
-		return objIn, false
+func RemoveFromStringArray(remove []string, from *[]string) {
+	log.Debugf("RemoveFromStringArray: remove %#v from %#v\n", remove, from)
+	var set = make(map[string]struct{}, 0)
+	for _, v := range *from {
+		set[v] = struct{}{}
 	}
-	// log.Debugf("removeFromStringArray: removing %#v from %s : %#v\n", value, qname, arr)
-	sarr, ok := AsStringArray(arr)
-	if !ok {
-		log.Errorf("removeFromStringArray: incoming object is not a string array %s : %T[%#v]", qname, arr, arr)
-		return objIn, false
+	for _, v := range remove {
+		delete(set, v)
 	}
-	sval, ok := AsStringArray(value)
-	if !ok {
-		log.Errorf("removeFromStringArray: incoming value is not a string or string array %s : %T[%#v]", qname, value, value)
-		return objIn, false
+	var union = make([]string, 0, len(set))
+	for k := range set {
+		union = append(union, k)
 	}
-	r := sarr[:0]
-	for _, v := range sarr {
-		// fmt.Printf("r: %#v v: %#v sval: %#v\n", r, v, sval)
-		if !Contains(sval, v) {
-			r = append(r, v)
-		}
-	}
-	sort.Strings(r)
-	// log.Debugf("addToStringArray: calling PutObject with result %#v\n", r)
-	return PutObject(objIn, qname, r)
+	sort.Strings(union)
+	*from = union
+	log.Debugf("RemoveFromStringArray: result %#v\n", from)
+	return
 }
 
 // GetObjectAsMap retrieves an object by qualified name and then runs AsMap on it to
 // interpret or cast it to map[string]interface{}
-func GetObjectAsMap(objIn map[string]interface{}, qname string) (map[string]interface{}, bool) {
+func GetObjectAsMap(objIn *map[string]interface{}, qname string) (map[string]interface{}, bool) {
 	amap, found := GetObject(objIn, qname)
 	if found {
 		t, found := AsMap(amap)
@@ -295,7 +255,7 @@ func GetObjectAsMap(objIn map[string]interface{}, qname string) (map[string]inte
 }
 
 // GetObjectAsString retrieves an object by qualified name and interprets or casts it to string
-func GetObjectAsString(objIn map[string]interface{}, qname string) (string, bool) {
+func GetObjectAsString(objIn *map[string]interface{}, qname string) (string, bool) {
 	tbytes, found := GetObject(objIn, qname)
 	if found {
 		t, found := tbytes.(string)
@@ -308,16 +268,16 @@ func GetObjectAsString(objIn map[string]interface{}, qname string) (string, bool
 }
 
 // GetObjectAsStringArray retrieves an object by qualified name and interprets or casts it to []string
-func GetObjectAsStringArray(objIn map[string]interface{}, qname string) ([]string, bool) {
+func GetObjectAsStringArray(objIn *map[string]interface{}, qname string) ([]string, bool) {
 	tbytes, found := GetObject(objIn, qname)
 	if found {
 		return AsStringArray(tbytes)
 	}
-	return []string{}, false
+	return make([]string, 0), false
 }
 
 // GetObjectAsBoolean retrieves an object by qualified name and interprets or casts it to bool
-func GetObjectAsBoolean(objIn map[string]interface{}, qname string) (bool, bool) {
+func GetObjectAsBoolean(objIn *map[string]interface{}, qname string) (bool, bool) {
 	tbytes, found := GetObject(objIn, qname)
 	if found {
 		t, found := tbytes.(bool)
@@ -330,7 +290,7 @@ func GetObjectAsBoolean(objIn map[string]interface{}, qname string) (bool, bool)
 }
 
 // GetObjectAsNumber retrieves an object by qualified name and interprets or casts it to float64
-func GetObjectAsNumber(objIn map[string]interface{}, qname string) (float64, bool) {
+func GetObjectAsNumber(objIn *map[string]interface{}, qname string) (float64, bool) {
 	tbytes, found := GetObject(objIn, qname)
 	if found {
 		t, found := tbytes.(float64)
@@ -344,7 +304,7 @@ func GetObjectAsNumber(objIn map[string]interface{}, qname string) (float64, boo
 
 // GetObjectAsInteger retrieves an object by qualified name and interprets or casts it to integer
 // NOTE: will truncate in incoming JSON Number (float64)
-func GetObjectAsInteger(objIn map[string]interface{}, qname string) (int, bool) {
+func GetObjectAsInteger(objIn *map[string]interface{}, qname string) (int, bool) {
 	tbytes, found := GetObject(objIn, qname)
 	if found {
 		// try as int first
@@ -427,7 +387,7 @@ func DeepMergeMap(srcIn map[string]interface{}, dstIn map[string]interface{}) ma
 	for k, v := range srcIn {
 		switch v.(type) {
 		case map[string]interface{}:
-			dstv, found := GetObject(dstIn, k)
+			dstv, found := GetObject(&dstIn, k)
 			if found {
 				// recursive DeepMerge into existing key
 				dstIn[k] = DeepMergeMap(v.(map[string]interface{}), dstv.(map[string]interface{}))
@@ -436,23 +396,14 @@ func DeepMergeMap(srcIn map[string]interface{}, dstIn map[string]interface{}) ma
 				dstIn[k] = v
 			}
 		case []interface{}:
-			dstv, found := GetObject(dstIn, k)
+			// stringarray
+			dstv, found := GetObjectAsStringArray(&dstIn, k)
 			if found {
-				if _, isString := dstv.([]string); isString {
-					dstm, ok := AddToStringArray(dstv.(map[string]interface{}), k, v)
-					if ok {
-						dstIn[k] = dstm
-					} else {
-						// failed, must copy
-						dstIn[k] = v
-					}
-				} else {
-					// not strings, copy for now
-					dstIn[k] = v
+				varr, ok := AsStringArray(v)
+				if ok {
+					AddToStringArray(varr, &dstv)
+					dstIn[k] = dstv
 				}
-			} else {
-				// copy
-				dstIn[k] = v
 			}
 		default:
 			// copy discrete type

@@ -49,7 +49,7 @@ type RecentStates AssetArray
 const MaxRecentStates int = 20
 
 // GETRecentStatesFromLedger returns the unmarshaled recent states
-func GETRecentStatesFromLedger(stub *shim.ChaincodeStub) (RecentStates, error) {
+func GETRecentStatesFromLedger(stub shim.ChaincodeStubInterface) (RecentStates, error) {
 	var state = make(RecentStates, 0, MaxRecentStates)
 	var err error
 	recentStatesBytes, err := stub.GetState(RECENTSTATESKEY)
@@ -73,7 +73,7 @@ func GETRecentStatesFromLedger(stub *shim.ChaincodeStub) (RecentStates, error) {
 }
 
 // PUTRecentStatesToLedger marshals and writes the recent states
-func PUTRecentStatesToLedger(stub *shim.ChaincodeStub, state RecentStates) error {
+func PUTRecentStatesToLedger(stub shim.ChaincodeStubInterface, state RecentStates) error {
 	var recentStatesJSON []byte
 	var err error
 	recentStatesJSON, err = json.Marshal(state)
@@ -90,7 +90,7 @@ func PUTRecentStatesToLedger(stub *shim.ChaincodeStub, state RecentStates) error
 }
 
 // ClearRecentStates resets recent states to an empty array
-func ClearRecentStates(stub *shim.ChaincodeStub) error {
+func ClearRecentStates(stub shim.ChaincodeStubInterface) error {
 	var rstates RecentStates
 	rstates = make(RecentStates, 0, MaxRecentStates)
 	return PUTRecentStatesToLedger(stub, rstates)
@@ -98,7 +98,7 @@ func ClearRecentStates(stub *shim.ChaincodeStub) error {
 
 // PushRecentState pushes the state to the first entry, or moves it to
 // the first entry if this asset already shows up
-func (a *Asset) PushRecentState(stub *shim.ChaincodeStub) error {
+func (a *Asset) PushRecentState(stub shim.ChaincodeStubInterface) error {
 	var err error
 
 	rstate, err := GETRecentStatesFromLedger(stub)
@@ -129,7 +129,7 @@ func (a *Asset) PushRecentState(stub *shim.ChaincodeStub) error {
 }
 
 // RemoveAssetFromRecentStates is called when an asset is deleted
-func RemoveAssetFromRecentStates(stub *shim.ChaincodeStub, assetID string) error {
+func RemoveAssetFromRecentStates(stub shim.ChaincodeStubInterface, assetID string) error {
 	var rstate RecentStates
 	var err error
 
@@ -169,7 +169,7 @@ func findAssetInRecent(assetID string, rstate RecentStates) (int, error) {
 }
 
 // ReadRecentStates returns the marshaled recent states from the ledger
-func ReadRecentStates(stub *shim.ChaincodeStub) ([]byte, error) {
+func ReadRecentStates(stub shim.ChaincodeStubInterface) ([]byte, error) {
 	r, err := GETRecentStatesFromLedger(stub)
 	if err != nil {
 		return nil, err
