@@ -1,0 +1,152 @@
+/* style.css
+ * This file provides css styles.
+ */
+
+body,html {
+	background-color: #3b4b54; width : 100%;
+	height: 100%;
+	margin: 0 auto;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+	color: #ffffff;
+}
+
+a {
+	text-decoration: none;
+	color: #00aed1;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+#freeref {
+  margin-right: 200px;
+}
+
+#freebtn {
+  float: left;
+  width: 100%;
+}
+
+#refbtn {
+  float: right;
+  width: 350px;
+  margin-right: -350px;
+}
+#frcleared {
+  clear: both;
+}
+
+#timepay {
+  margin-right: 200px;
+}
+
+#meterid{
+	text-shadow:none;
+}
+
+#rateinfo {
+  float: left;
+  width: 100%;
+}
+#paylink {
+  float: right;
+  width: 350px;
+  margin-right: -350px;
+}
+#cleared {
+  clear: both;
+}
+
+.newappIcon {
+	padding-top: 40%;
+	display: block;
+	margin: 0 auto;
+	padding-bottom: 40em;
+	max-width:200px;
+}
+
+h1 {
+	font-weight: bold;
+	font-size: 2em;
+}
+
+.leftHalf {
+	float: left;
+	background-color: #26343f;
+	width: 25%;
+	height: 100%;
+}
+
+.rightHalf {
+	float: right;
+	width: 55%;
+	background-color: #313f4a;
+	height: 100%;
+	overflow:auto;
+}
+
+.blue {
+	color: #00aed1;
+}
+
+
+/*
+Header
+*/
+#header {
+	display: block;
+}
+
+#titleHeaderStatic {
+	background-color: #222;
+	color: white;
+	display: table;
+	height: 2.81em;
+	line-height: 2.81em;
+	width: 100%;
+	display: none;
+	color: #ffffff;
+}
+
+#pageTitleStatic {
+	display: table-cell;
+	font-size: 1.125em;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	vertical-align: middle;
+	text-transform: uppercase;
+}
+
+#titleHeader, .titleHeader, .dialogBox .dialogBoxHeader {
+	background-color: #1d252e;
+	color: white;
+	display: table;
+	height: 2.75em;
+	line-height: 2.75em;
+	width: 100%;
+	display: table;
+	text-transform: none;
+}
+
+.icons{
+	background-image:url("/sprite.svg");
+	background-position: 0 0;
+	background-size: 3000% auto;
+	background-repeat: no-repeat;
+	display: inline-block;
+	width: 2.875em;
+	height: 1.875em;
+	vertical-align: middle;
+}
+
+.icons.refresh{
+	background-position-x: 62.345%;
+	background-position-y: -10px;
+}
+
+.icons.check{
+	background-position-x: 58.345%;
+	background-position-y: -10px;
+}

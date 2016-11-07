@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <title>Smart Parking Meter</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="code.js"></script>
+  </head>
+
+  <body>
+
+  <div class = "container">
+
+    <div data-role="page" id="pageone">
+        <div id="header" class="header">
+            <div id="titleHeaderStatic">
+                <div id="pageTitleStatic">Saved payment methods</div>
+            </div>
+            <div id="titleHeader">
+                <div id="pageTitle" data-role="title" align="center"><div id="meterid">ARM - IBM Parking Meter</div></div>
+            </div>
+        </div>
+
+
+      <!--Parking meter title-->
+      <!--<div id="meterid"  data-role="title" align="center"> <h1>ARM - IBM Parking Meter</h1></div>-->
+
+      <!--Parking meter data-->
+      <div data-role="main" class="ui-content" >
+
+
+
+          <!--Row with free/paid toggle and refresh button -->
+          <div align="center" id="freeref"> 
+          <div id="freebtn" align="left"> <div class="icons check">&nbsp;</div></div>
+          <div id="refbtn"><div class="icons refresh">&nbsp;</div></div>
+            <div id="frcleared"></div>
+          </div>
+          <!--Up arrow to increment counter -->
+          <div class="play" align="center">
+              <button id="add" align="center" style="background:transparent; border:none"><img src="images/arrow_up4.png" /></button>
+          </div>
+          <!--Center timer -->
+          <div align="center"> <label id="timer"><font size="40px"> 00:00</font></label></div> 
+          <!--Down arrow to decrement counter -->
+          <div class="play" align="center">
+            <button id="subtract" align="center" type="button" border=0 " style="background:transparent; border:none"><img src="images/arrow_down4.png" /></button>
+          </div>
+          <!--Amount to be charged -->
+          <div align="center" id="amount">  <font color=" #339966"><b>$0.25 / 10 sec </b></font></div>
+          <!--Row with time and IBM payment button -->
+          <div align="center" id="timepay"> 
+          <div id="rateinfo" align="left"> <font size="2"> $0.25 / 10 sec </font></div>
+          <div id="paylink">  <font color="#186889"> <a href="http://www.example.com/"><img src="images/ccardlock2.png"/></a> </font></div>
+            <div id="cleared"></div>
+          </div>
+          <!--Form submission button -->
+          <div align="center" > <button id="submit" align="center" style="color:white; background-color:#1565c0;height:60px;padding-top:20px;padding-bottom: 20px"> PAY</button></div>
+
+          </div>
+
+  </body>
+
+</html>
