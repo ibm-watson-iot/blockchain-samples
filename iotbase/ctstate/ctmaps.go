@@ -14,12 +14,7 @@ Contributors:
 Kim Letkeman - Initial Contribution
 */
 
-// ************************************
-// KL 14 Mar 2016 backport from 4.0
-// KL 27 Mar 2016 support for loose JSON-RPC naming for 3.0.5
-// KL 10 Aug 2016 added more flexibility in "GetObjectAsInteger"
-// KL 02 Nov 2016 add to package ctstate
-// ************************************
+// v0.1 KL -- new iot chaincode platform
 
 package ctstate
 

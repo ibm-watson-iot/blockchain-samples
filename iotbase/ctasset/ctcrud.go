@@ -25,7 +25,6 @@ import (
 	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	h "github.com/ibm-watson-iot/blockchain-samples/iotbase/cthistory"
 	st "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctstate"
 )
 
@@ -184,26 +183,26 @@ func (a *Asset) putMarshalledState(stub shim.ChaincodeStubInterface) error {
 	return nil
 }
 
-// Pushes state to the ledger using assetID, which is expected to be prefixed.
-func removeOneAssetFromWorldState(stub shim.ChaincodeStubInterface, caller string, assetName string, assetID string) error {
-	err := stub.DelState(assetID)
+// RemoveOneAssetFromWorldState remove the asset from world state
+func removeOneAssetFromWorldState(stub shim.ChaincodeStubInterface, assetKey string) error {
+	err := stub.DelState(assetKey)
 	if err != nil {
-		err = fmt.Errorf("%s: %s assetID %s deletion failed", caller, assetName, assetID)
-		log.Errorf(err.Error())
+		err = fmt.Errorf("removeOneAssetFromWorldState: asset %s failed", assetKey)
+		log.Error(err)
 		return err
 	}
-	err = RemoveAssetFromRecentStates(stub, assetID)
+	err = RemoveAssetFromRecentStates(stub, assetKey)
 	if err != nil {
-		err = fmt.Errorf("%s: %s assetID %s deletion failed", caller, assetName, assetID)
-		log.Errorf(err.Error())
+		err = fmt.Errorf("removeOneAssetFromWorldState: asset %s could not be removed from recent states: %s", assetKey, err)
+		log.Error(err)
 		return err
 	}
-	err = h.DeleteStateHistory(stub, assetID)
-	if err != nil {
-		err = fmt.Errorf("%s: %s assetID %s history deletion failed", caller, assetName, assetID)
-		log.Errorf(err.Error())
-		return err
-	}
+	// err = h.DeleteStateHistory(stub, assetID)
+	// if err != nil {
+	// 	err = fmt.Errorf("%s: %s assetID %s history deletion failed", caller, assetName, assetID)
+	// 	log.Error(err)
+	// 	return err
+	// }
 	return nil
 }
 

@@ -14,7 +14,7 @@ Contributors:
 Kim Letkeman - Initial Contribution
 */
 
-// v0.1 KL -- new IOT sample with Trade Lane properties and behaviors
+// v0.1 KL -- new iot chaincode platform
 
 package iotbase
 

@@ -16,63 +16,68 @@ var schemas = `
                 "args": {
                     "description": "args are JSON encoded strings",
                     "items": {
-                        "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
                         "properties": {
-                            "barcode": {
-                                "description": "The ID of a container.",
-                                "type": "string"
-                            },
-                            "carrier": {
-                                "description": "transport entity currently in possession of the container",
-                                "type": "string"
-                            },
-                            "common": {
-                                "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                            "container": {
+                                "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
                                 "properties": {
-                                    "devicetimestamp": {
-                                        "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                    "barcode": {
+                                        "description": "The ID of a container.",
                                         "type": "string"
                                     },
-                                    "extension": {
-                                        "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                        "items": {
-                                            "properties": {},
-                                            "type": "object"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
+                                    "carrier": {
+                                        "description": "transport entity currently in possession of the container",
+                                        "type": "string"
                                     },
-                                    "location": {
-                                        "description": "A geographical coordinate",
+                                    "common": {
+                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
                                         "properties": {
-                                            "latitude": {
-                                                "type": "number"
+                                            "devicetimestamp": {
+                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                "type": "string"
                                             },
-                                            "longitude": {
-                                                "type": "number"
+                                            "extension": {
+                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                                "items": {
+                                                    "properties": {},
+                                                    "type": "object"
+                                                },
+                                                "minItems": 0,
+                                                "type": "array"
+                                            },
+                                            "location": {
+                                                "description": "A geographical coordinate",
+                                                "properties": {
+                                                    "latitude": {
+                                                        "type": "number"
+                                                    },
+                                                    "longitude": {
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "references": {
+                                                "description": "An array of external references relevant to this asset.",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "minItems": 0,
+                                                "type": "array"
                                             }
                                         },
                                         "type": "object"
                                     },
-                                    "references": {
-                                        "description": "An array of external references relevant to this asset.",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
+                                    "temperature": {
+                                        "description": "Temperature of the inside of the container in CELSIUS.",
+                                        "type": "number"
                                     }
                                 },
+                                "required": [
+                                    "barcode"
+                                ],
                                 "type": "object"
-                            },
-                            "temperature": {
-                                "description": "Temperature of the inside of the container in CELSIUS.",
-                                "type": "number"
                             }
                         },
-                        "required": [
-                            "barcode"
-                        ],
                         "type": "object"
                     },
                     "maxItems": 1,
@@ -94,9 +99,39 @@ var schemas = `
             "description": "Delete the state of all assets. No arguments are accepted. For each managed asset, the state and history are erased, and the asset is removed if necessary from recent states.",
             "properties": {
                 "args": {
-                    "description": "accepts no arguments",
-                    "items": {},
-                    "maxItems": 0,
+                    "items": {
+                        "description": "A state filter consists of a match mode and an array of k:v pairs with the key being a qualified property name and the value being the value to match.",
+                        "properties": {
+                            "entries": {
+                                "description": "Array of qualified propery name and value pairs to match to the state.",
+                                "items": {
+                                    "properties": {
+                                        "qprop": {
+                                            "description": "Qualified property name as dot separated levels terminated by a leaf node. An example would be 'container.barcode'.",
+                                            "type": "string"
+                                        },
+                                        "value": {
+                                            "description": "Property value to be matched.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            },
+                            "matchmode": {
+                                "description": "Match mode is ANY, ALL or NONE.",
+                                "enum": [
+                                    "ALL",
+                                    "ANY",
+                                    "NONE"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "maxItems": 1,
                     "minItems": 0,
                     "type": "array"
                 },
@@ -115,13 +150,23 @@ var schemas = `
             "description": "Delete an asset, its history, and any recent state activity. Argument is a JSON encoded string containing only an 'assetID'.",
             "properties": {
                 "args": {
-                    "description": "args are JSON encoded strings",
                     "items": {
-                        "description": "The ID of a container.",
-                        "type": "string"
+                        "description": "args are JSON encoded strings",
+                        "maxItems": 1,
+                        "minItems": 1,
+                        "properties": {
+                            "container": {
+                                "properties": {
+                                    "barcode": {
+                                        "description": "The ID of a container.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
                     },
-                    "maxItems": 1,
-                    "minItems": 1,
                     "type": "array"
                 },
                 "function": {
@@ -139,19 +184,19 @@ var schemas = `
             "description": "Delete one or more properties from an asset's state. Argument is a JSON encoded string containing an 'assetID' and an array of qualified property names. For example, in an event object containing common and custom properties objects, the argument might look like {'assetID':'A1',['common.location', 'custom.carrier', 'custom.temperature']} and the result of that invoke would be the removal of the location, carrier and temperature properties. The missing temperature would clear a 'OVERTEMP' alert when the rules engine runs.",
             "properties": {
                 "args": {
-                    "description": "args are JSON encoded strings",
                     "items": {
-                        "barcode": {
-                            "description": "The ID of a container.",
-                            "type": "string"
+                        "properties": {
+                            "container": {
+                                "properties": {
+                                    "barcode": {
+                                        "description": "container ID",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
                         },
-                        "qprops": {
-                            "items": {
-                                "description": "The qualified name of a property. E.g. 'event.common.carrier', 'event.custom.temperature', etc.",
-                                "type": "string"
-                            },
-                            "type": "array"
-                        }
+                        "type": "object"
                     },
                     "maxItems": 1,
                     "minItems": 1,
@@ -168,21 +213,24 @@ var schemas = `
             },
             "type": "object"
         },
-        "init": {
-            "description": "Initializes the contract when started, either by deployment or by peer restart.",
+        "initContract": {
+            "description": "Sets contract version and nickname",
             "properties": {
                 "args": {
                     "description": "args are JSON encoded strings",
                     "items": {
-                        "nickname": {
-                            "default": "CTIORSAMPLE",
-                            "description": "The nickname of the current contract",
-                            "type": "string"
+                        "properties": {
+                            "nickname": {
+                                "default": "CTIORSAMPLE",
+                                "description": "The nickname of the current contract",
+                                "type": "string"
+                            },
+                            "version": {
+                                "description": "The version number of the current contract",
+                                "type": "string"
+                            }
                         },
-                        "version": {
-                            "description": "The version number of the current contract",
-                            "type": "string"
-                        }
+                        "type": "object"
                     },
                     "maxItems": 1,
                     "minItems": 1,
@@ -203,9 +251,39 @@ var schemas = `
             "description": "Returns the state of all assets as an array of JSON encoded strings. Accepts no arguments. For each managed asset, the state is read from the ledger and added to the returned array. Array is sorted by 'assetID'.",
             "properties": {
                 "args": {
-                    "description": "accepts no arguments",
-                    "items": {},
-                    "maxItems": 0,
+                    "items": {
+                        "description": "A state filter consists of a match mode and an array of k:v pairs with the key being a qualified property name and the value being the value to match.",
+                        "properties": {
+                            "entries": {
+                                "description": "Array of qualified propery name and value pairs to match to the state.",
+                                "items": {
+                                    "properties": {
+                                        "qprop": {
+                                            "description": "Qualified property name as dot separated levels terminated by a leaf node. An example would be 'container.barcode'.",
+                                            "type": "string"
+                                        },
+                                        "value": {
+                                            "description": "Property value to be matched.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            },
+                            "matchmode": {
+                                "description": "Match mode is ANY, ALL or NONE.",
+                                "enum": [
+                                    "ALL",
+                                    "ANY",
+                                    "NONE"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "maxItems": 1,
                     "minItems": 0,
                     "type": "array"
                 },
@@ -222,7 +300,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "The external state of one container asset.",
+                                "description": "The shape of all asset states.",
                                 "properties": {
                                     "AssetKey": {
                                         "description": "The World State asset ID. Used to read and write state.",
@@ -432,12 +510,19 @@ var schemas = `
             "description": "Returns the state an asset. Argument is a JSON encoded string. The arg is an 'assetID' property.",
             "properties": {
                 "args": {
-                    "description": "args are JSON encoded strings",
                     "items": {
-                        "barcode": {
-                            "description": "The ID of a container.",
-                            "type": "string"
-                        }
+                        "properties": {
+                            "container": {
+                                "properties": {
+                                    "barcode": {
+                                        "description": "container ID",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
                     },
                     "maxItems": 1,
                     "minItems": 1,
@@ -452,7 +537,7 @@ var schemas = `
                 },
                 "method": "query",
                 "result": {
-                    "description": "The external state of one container asset.",
+                    "description": "The shape of all asset states.",
                     "properties": {
                         "AssetKey": {
                             "description": "The World State asset ID. Used to read and write state.",
@@ -658,22 +743,25 @@ var schemas = `
                 "args": {
                     "description": "args are JSON encoded strings",
                     "items": {
-                        "barcode": {
-                            "description": "The ID of a container.",
-                            "type": "string"
+                        "properties": {
+                            "barcode": {
+                                "description": "The ID of a container.",
+                                "type": "string"
+                            },
+                            "end": {
+                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                "format": "date-time",
+                                "sample": "yyyy-mm-dd hh:mm:ss",
+                                "type": "string"
+                            },
+                            "start": {
+                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                "format": "date-time",
+                                "sample": "yyyy-mm-dd hh:mm:ss",
+                                "type": "string"
+                            }
                         },
-                        "end": {
-                            "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                            "format": "date-time",
-                            "sample": "yyyy-mm-dd hh:mm:ss",
-                            "type": "string"
-                        },
-                        "start": {
-                            "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                            "format": "date-time",
-                            "sample": "yyyy-mm-dd hh:mm:ss",
-                            "type": "string"
-                        }
+                        "type": "object"
                     },
                     "maxItems": 1,
                     "minItems": 1,
@@ -692,7 +780,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "The external state of one container asset.",
+                                "description": "The shape of all asset states.",
                                 "properties": {
                                     "AssetKey": {
                                         "description": "The World State asset ID. Used to read and write state.",
@@ -921,7 +1009,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "The external state of one container asset.",
+                                "description": "The shape of all asset states.",
                                 "properties": {
                                     "AssetKey": {
                                         "description": "The World State asset ID. Used to read and write state.",
@@ -1191,63 +1279,68 @@ var schemas = `
                 "args": {
                     "description": "args are JSON encoded strings",
                     "items": {
-                        "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
                         "properties": {
-                            "barcode": {
-                                "description": "The ID of a container.",
-                                "type": "string"
-                            },
-                            "carrier": {
-                                "description": "transport entity currently in possession of the container",
-                                "type": "string"
-                            },
-                            "common": {
-                                "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                            "container": {
+                                "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
                                 "properties": {
-                                    "devicetimestamp": {
-                                        "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                    "barcode": {
+                                        "description": "The ID of a container.",
                                         "type": "string"
                                     },
-                                    "extension": {
-                                        "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
-                                        "items": {
-                                            "properties": {},
-                                            "type": "object"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
+                                    "carrier": {
+                                        "description": "transport entity currently in possession of the container",
+                                        "type": "string"
                                     },
-                                    "location": {
-                                        "description": "A geographical coordinate",
+                                    "common": {
+                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
                                         "properties": {
-                                            "latitude": {
-                                                "type": "number"
+                                            "devicetimestamp": {
+                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
+                                                "type": "string"
                                             },
-                                            "longitude": {
-                                                "type": "number"
+                                            "extension": {
+                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                                "items": {
+                                                    "properties": {},
+                                                    "type": "object"
+                                                },
+                                                "minItems": 0,
+                                                "type": "array"
+                                            },
+                                            "location": {
+                                                "description": "A geographical coordinate",
+                                                "properties": {
+                                                    "latitude": {
+                                                        "type": "number"
+                                                    },
+                                                    "longitude": {
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "references": {
+                                                "description": "An array of external references relevant to this asset.",
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "minItems": 0,
+                                                "type": "array"
                                             }
                                         },
                                         "type": "object"
                                     },
-                                    "references": {
-                                        "description": "An array of external references relevant to this asset.",
-                                        "items": {
-                                            "type": "string"
-                                        },
-                                        "minItems": 0,
-                                        "type": "array"
+                                    "temperature": {
+                                        "description": "Temperature of the inside of the container in CELSIUS.",
+                                        "type": "number"
                                     }
                                 },
+                                "required": [
+                                    "barcode"
+                                ],
                                 "type": "object"
-                            },
-                            "temperature": {
-                                "description": "Temperature of the inside of the container in CELSIUS.",
-                                "type": "number"
                             }
                         },
-                        "required": [
-                            "barcode"
-                        ],
                         "type": "object"
                     },
                     "maxItems": 1,
@@ -1328,7 +1421,7 @@ var schemas = `
             "type": "object"
         },
         "containerstate": {
-            "description": "The external state of one container asset.",
+            "description": "The shape of all asset states.",
             "properties": {
                 "AssetKey": {
                     "description": "The World State asset ID. Used to read and write state.",
@@ -1530,7 +1623,7 @@ var schemas = `
             "items": {
                 "patternProperties": {
                     "^CON": {
-                        "description": "The external state of one container asset.",
+                        "description": "The shape of all asset states.",
                         "properties": {
                             "AssetKey": {
                                 "description": "The World State asset ID. Used to read and write state.",
@@ -1736,7 +1829,7 @@ var schemas = `
         "containerstateexternal": {
             "patternProperties": {
                 "^CON": {
-                    "description": "The external state of one container asset.",
+                    "description": "The shape of all asset states.",
                     "properties": {
                         "AssetKey": {
                             "description": "The World State asset ID. Used to read and write state.",

@@ -52,6 +52,14 @@ var updateAssetContainer as.ChaincodeFunc = func(stub shim.ChaincodeStubInterfac
 	return ContainerClass.UpdateAsset(stub, args, "updateAssetContainer", []as.QPropNV{})
 }
 
+var deleteAssetContainer as.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	return ContainerClass.DeleteAsset(stub, args)
+}
+
+var deleteAllAssetsContainer as.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	return ContainerClass.DeleteAllAssets(stub, args)
+}
+
 var deletePropertiesFromAssetContainer as.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return ContainerClass.DeletePropertiesFromAsset(stub, args, "deletePropertiesFromAssetContainer", []as.QPropNV{})
 }
@@ -71,6 +79,8 @@ var readAllAssetsContainer as.ChaincodeFunc = func(stub shim.ChaincodeStubInterf
 func init() {
 	as.AddRoute("createAssetContainer", "invoke", ContainerClass, createAssetContainer)
 	as.AddRoute("updateAssetContainer", "invoke", ContainerClass, updateAssetContainer)
+	as.AddRoute("deleteAssetContainer", "invoke", ContainerClass, deleteAssetContainer)
+	as.AddRoute("deleteAllAssetsContainer", "invoke", ContainerClass, deleteAllAssetsContainer)
 	as.AddRoute("deletePropertiesFromAssetContainer", "invoke", ContainerClass, deletePropertiesFromAssetContainer)
 	as.AddRoute("readAssetContainer", "query", ContainerClass, readAssetContainer)
 	as.AddRoute("readAllAssetsContainer", "query", ContainerClass, readAllAssetsContainer)

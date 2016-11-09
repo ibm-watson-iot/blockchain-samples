@@ -3,11 +3,11 @@
     "definitions": {
         "API": {
             "type": "object",
-            "description": "The API for the tradelane sample contract consisting of the init function, the crud functions to change state, and a set of query functions for asset state, asset history, recent states, and so on.",
+            "description": "Contract API",
             "properties": {
-                "init": {
+                "initContract": {
                     "type": "object",
-                    "description": "Initializes the contract when started, either by deployment or by peer restart.",
+                    "description": "Sets contract version and nickname",
                     "properties": {
                         "method": "deploy",
                         "function": {
@@ -20,11 +20,14 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "version": {
-                                    "$ref": "#/definitions/version"
-                                },
-                                "nickname": {
-                                    "$ref": "#/definitions/nickname"
+                                "type": "object",
+                                "properties": {
+                                    "version": {
+                                        "$ref": "#/definitions/version"
+                                    },
+                                    "nickname": {
+                                        "$ref": "#/definitions/nickname"
+                                    }
                                 }
                             },
                             "minItems": 1,
@@ -48,7 +51,12 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/container"
+                                "type": "object",
+                                "properties": {
+                                    "container": {
+                                        "$ref": "#/definitions/container"
+                                    }
+                                }
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -71,7 +79,12 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/container"
+                                "type": "object",
+                                "properties": {
+                                    "container": {
+                                        "$ref": "#/definitions/container"
+                                    }
+                                }
                             },
                             "minItems": 1,
                             "maxItems": 1,
@@ -94,11 +107,21 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/barcode"
-                            },
-                            "minItems": 1,
-                            "maxItems": 1,
-                            "description": "args are JSON encoded strings"
+                                "type": "object",
+                                "properties": {
+                                    "container": {
+                                        "type": "object",
+                                        "properties": {
+                                            "barcode": {
+                                                "$ref": "#/definitions/barcode"
+                                            }
+                                        }
+                                    }
+                                },
+                                "minItems": 1,
+                                "maxItems": 1,
+                                "description": "args are JSON encoded strings"
+                            }
                         }
                     }
                 },
@@ -117,16 +140,21 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "barcode": {
-                                    "$ref": "#/definitions/barcode"
-                                },
-                                "qprops": {
-                                    "$ref": "#/definitions/QProps"
+                                "type": "object",
+                                "properties": {
+                                    "container": {
+                                        "type": "object",
+                                        "properties": {
+                                            "barcode": {
+                                                "type": "string",
+                                                "description": "container ID"
+                                            }
+                                        }
+                                    }
                                 }
                             },
                             "minItems": 1,
-                            "maxItems": 1,
-                            "description": "args are JSON encoded strings"
+                            "maxItems": 1
                         }
                     }
                 },
@@ -144,10 +172,11 @@
                         },
                         "args": {
                             "type": "array",
-                            "items": {},
+                            "items": {
+                                "$ref": "#/definitions/stateFilter"
+                            },
                             "minItems": 0,
-                            "maxItems": 0,
-                            "description": "accepts no arguments"
+                            "maxItems": 1
                         }
                     }
                 },
@@ -166,13 +195,21 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "barcode": {
-                                    "$ref": "#/definitions/barcode"
+                                "type": "object",
+                                "properties": {
+                                    "container": {
+                                        "type": "object",
+                                        "properties": {
+                                            "barcode": {
+                                                "type": "string",
+                                                "description": "container ID"
+                                            }
+                                        }
+                                    }
                                 }
                             },
                             "minItems": 1,
-                            "maxItems": 1,
-                            "description": "args are JSON encoded strings"
+                            "maxItems": 1
                         },
                         "result": {
                             "$ref": "#/definitions/containerstate"
@@ -193,10 +230,11 @@
                         },
                         "args": {
                             "type": "array",
-                            "items": {},
+                            "items": {
+                                "$ref": "#/definitions/stateFilter"
+                            },
                             "minItems": 0,
-                            "maxItems": 0,
-                            "description": "accepts no arguments"
+                            "maxItems": 1
                         },
                         "result": {
                             "$ref": "#/definitions/containerstatearray"
@@ -218,20 +256,23 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "barcode": {
-                                    "$ref": "#/definitions/barcode"
-                                },
-                                "start": {
-                                    "type": "string",
-                                    "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                    "format": "date-time",
-                                    "sample": "yyyy-mm-dd hh:mm:ss"
-                                },
-                                "end": {
-                                    "type": "string",
-                                    "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                    "format": "date-time",
-                                    "sample": "yyyy-mm-dd hh:mm:ss"
+                                "type": "object",
+                                "properties": {
+                                    "barcode": {
+                                        "$ref": "#/definitions/barcode"
+                                    },
+                                    "start": {
+                                        "type": "string",
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss"
+                                    },
+                                    "end": {
+                                        "type": "string",
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss"
+                                    }
                                 }
                             },
                             "minItems": 1,
@@ -366,7 +407,7 @@
                                         "WARNING",
                                         "NOTICE",
                                         "INFO",
-                                        "DEBUG"                                    
+                                        "DEBUG"
                                     ]
                                 }
                             },
@@ -442,7 +483,7 @@
             "type": "array",
             "items": {
                 "type": "string",
-                "description": "The qualified name of a property. E.g. 'event.common.carrier', 'event.custom.temperature', etc." 
+                "description": "The qualified name of a property. E.g. 'event.common.carrier', 'event.custom.temperature', etc."
             }
         },
         "container": {
@@ -579,6 +620,38 @@
                     "type": "object",
                     "description": "The external state of one container asset.",
                     "$ref": "#/definitions/containerstate"
+                }
+            }
+        },
+        "stateFilter": {
+            "type": "object",
+            "description": "A state filter consists of a match mode and an array of k:v pairs with the key being a qualified property name and the value being the value to match.",
+            "properties": {
+                "matchmode": {
+                    "type": "string",
+                    "description": "Match mode is ANY, ALL or NONE.",
+                    "enum": [
+                        "ALL",
+                        "ANY",
+                        "NONE"
+                    ]
+                },
+                "entries": {
+                    "type": "array",
+                    "description": "Array of qualified propery name and value pairs to match to the state.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "qprop": {
+                                "type": "string",
+                                "description": "Qualified property name as dot separated levels terminated by a leaf node. An example would be 'container.barcode'."
+                            },
+                            "value": {
+                                "type": "string",
+                                "description": "Property value to be matched."
+                            }
+                        }
+                    }
                 }
             }
         },

@@ -3,7 +3,7 @@
     "schemaFilename": "payloadschema.json",
     "goSchemaFilename": "schemas.go",
     "API": [
-      "init",
+      "initContract",
       "createAssetContainer",
       "updateAssetContainer",
       "deleteAssetContainer",
