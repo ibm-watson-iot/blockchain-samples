@@ -1,6 +1,13 @@
 package main
 
+
+	import (
+		"github.com/hyperledger/fabric/core/chaincode/shim"
+		as "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctasset"
+	)
+
 var samples = `
+
 {
     "container": {
         "barcode": "The ID of a container.",
@@ -218,3 +225,13 @@ var samples = `
         ]
     }
 }`
+
+
+	var readAssetSamples as.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+		return []byte(samples), nil
+	}
+
+	func init() {
+		as.AddRoute("readAssetSamples", "query", as.SystemClass, readAssetSamples)
+	}
+	

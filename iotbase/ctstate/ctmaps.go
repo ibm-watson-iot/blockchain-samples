@@ -26,10 +26,16 @@ package ctstate
 import (
 	"encoding/json"
 	"fmt"
-	// "reflect"
 	"sort"
 	"strings"
+
+	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
+
+var log = shim.NewLogger("maps")
+
+// Enabled is false by default, import it into your main and set it to true
+var Enabled bool
 
 // AsMap does its best to interpret or cast the incoming generic to map[string]interface{}
 func AsMap(obj interface{}) (toMap map[string]interface{}, ok bool) {

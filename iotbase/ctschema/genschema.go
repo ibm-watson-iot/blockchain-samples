@@ -166,10 +166,10 @@ func referencesExist(schema map[string]interface{}) bool {
 // Generates a file <munged elementName>.go to contain a string literal for the pretty version
 // of the schema with all references resolved. In the same file, creates a sample JSON that
 // can be used to show a complete structure of the object.
-func generateGoSchemaFile(schema map[string]interface{}, config Config) {
+func generateGoSchemaFile(schema map[string]interface{}, config Config, imports string, regSchemas string) {
 	var obj map[string]interface{}
 	var schemas = make(map[string]interface{})
-	var outString = "package main\n\nvar schemas = `\n"
+	var outString = "package main\n\n" + imports + "\n\n" + "var schemas = `\n\n"
 
 	var filename = config.Schemas.GoSchemaFilename
 	var apiFunctions = config.Schemas.API
@@ -213,7 +213,7 @@ func generateGoSchemaFile(schema map[string]interface{}, config Config) {
 		fmt.Printf("** ERR ** cannot marshal schema file output for writing\n")
 		return
 	}
-	outString += string(schemaOut) + "`"
+	outString += string(schemaOut) + "`\n\n" + regSchemas
 	ioutil.WriteFile(filename, []byte(outString), 0644)
 }
 
@@ -365,10 +365,10 @@ func arrayFromSchema(schema map[string]interface{}, elementName string) interfac
 // Generates a file <munged elementName>.go to contain a string literal for the pretty version
 // of the schema with all references resolved. In the same file, creates a sample JSON that
 // can be used to show a complete structure of the object.
-func generateGoSampleFile(schema map[string]interface{}, config Config) {
+func generateGoSampleFile(schema map[string]interface{}, config Config, imports string, regSamples string) {
 	var obj map[string]interface{}
 	var samples = make(map[string]interface{})
-	var outString = "package main\n\nvar samples = `\n"
+	var outString = "package main\n\n" + imports + "\n\n" + "var samples = `\n\n"
 
 	var filename = config.Samples.GoSampleFilename
 	var elementNames = config.Samples.GoSampleElements
@@ -395,7 +395,7 @@ func generateGoSampleFile(schema map[string]interface{}, config Config) {
 		fmt.Println("** ERR ** cannot marshal sample file output for writing")
 		return
 	}
-	outString += string(samplesOut) + "`"
+	outString += string(samplesOut) + "`\n\n" + regSamples
 	ioutil.WriteFile(filename, []byte(outString), 0644)
 }
 
@@ -411,6 +411,29 @@ func generateGoObjectModel(schema map[string]interface{}, config Config) {
 // Reads payloadschema.json api file
 // encodes as a string literal in payloadschema.go
 func main() {
+
+	var regReadSamples = `
+	var readAssetSamples as.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+		return []byte(samples), nil
+	}
+
+	func init() {
+		as.AddRoute("readAssetSamples", "query", as.SystemClass, readAssetSamples)
+	}
+	`
+	var regReadSchemas = `
+	var readAssetSchemas as.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+		return []byte(schemas), nil
+	}
+	func init() {
+		as.AddRoute("readAssetSchemas", "query", as.SystemClass, readAssetSchemas)
+	}
+	`
+	var imports = `
+	import (
+		"github.com/hyperledger/fabric/core/chaincode/shim"
+		as "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctasset"
+	)`
 
 	var configFileName = "generate.json"
 
@@ -478,8 +501,8 @@ func main() {
 	// generate the Go files that the contract needs -- for now, complete schema and
 	// event schema and sample object
 
-	generateGoSchemaFile(schema, config)
-	generateGoSampleFile(schema, config)
+	generateGoSchemaFile(schema, config, imports, regReadSchemas)
+	generateGoSampleFile(schema, config, imports, regReadSamples)
 
 	// experimental
 	//generateGoObjectModel(schema, config)

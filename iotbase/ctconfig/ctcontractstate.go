@@ -14,26 +14,18 @@ Contributors:
 Kim Letkeman - Initial Contribution
 */
 
-// v3.0 HM 25 Feb 2016 Moved the asset state history code into a separate package.
-// v3.0.1 HM 03 Mar 2016 Store the state history in descending order.
-// v3.0.2 KL 07 Mar 2016 Reduce memory garbage in updateStateHistory
-// v3.0.3 KL             backported from original 3.1/4.0
-// v4.0 KL 17 Mar 2016 Update version number to 4.0 for Hyperledger compatibility.
-//                     Clean up lint issues.
-// v4.3 KL August 2016 Remove activeAssets array as it is not useful in a multi-asset
-//                     contract. World state is polled instead.
+// v0.1 KL -- new iot chaincode platform
 
 package ctconfig
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	as "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctasset"
 )
-
-// DEFAULTNICKNAME is used when a contract is initialized without giving it a nickname
-const DEFAULTNICKNAME string = "CTIOTCONTRACT"
 
 // CONTRACTSTATEKEY is used to store contract state, including version, nickname and activeAssets
 const CONTRACTSTATEKEY string = "ContractStateKey"
@@ -45,27 +37,30 @@ type ContractState struct {
 	Nickname string `json:"nickname"`
 }
 
-var log = shim.NewLogger("conf")
+var log = shim.NewLogger("cstt")
 
 // GETContractStateFromLedger retrieves state from ledger and returns to caller
 func GETContractStateFromLedger(stub shim.ChaincodeStubInterface) (ContractState, error) {
-	var state = ContractState{"NOTSET", "NOTSET"}
 	var err error
+	var state ContractState
 	contractStateBytes, err := stub.GetState(CONTRACTSTATEKEY)
-	// minimum string is {"version":""} and version cannot be empty
-	if err == nil && len(contractStateBytes) > 14 {
-		// apparently, this blockchain instance is being reloaded, has the version changed?
-		err = json.Unmarshal(contractStateBytes, &state)
-		if err != nil {
-			err = fmt.Errorf("Unmarshal failed for contract state: %s", err)
-			log.Criticalf(err.Error())
-			return ContractState{}, err
-		}
-	} else {
-		// empty state already initialized
-		log.Noticef("Initialized newly deployed contract state version %s", state.Version)
+	if err != nil {
+		err = fmt.Errorf("GETContractStateFromLedger returned error: %s", err)
+		log.Notice(err)
+		return ContractState{}, err
 	}
-	log.Debugf("GETContractState successful")
+	if len(contractStateBytes) == 0 {
+		err = errors.New("GETContractStateFromLedger returned length 0")
+		log.Notice(err)
+		return ContractState{}, err
+	}
+	// apparently, this blockchain instance is being reloaded, has the version changed?
+	err = json.Unmarshal(contractStateBytes, &state)
+	if err != nil {
+		err = fmt.Errorf("Unmarshal failed for contract state: %s", err)
+		log.Critical(err)
+		return ContractState{}, err
+	}
 	return state, nil
 }
 
@@ -76,16 +71,15 @@ func PUTContractStateToLedger(stub shim.ChaincodeStubInterface, state ContractSt
 	contractStateJSON, err = json.Marshal(state)
 	if err != nil {
 		err = fmt.Errorf("Failed to marshal contract state: %s", err)
-		log.Criticalf(err.Error())
+		log.Critical(err)
 		return err
 	}
 	err = stub.PutState(CONTRACTSTATEKEY, contractStateJSON)
 	if err != nil {
 		err = fmt.Errorf("Failed to PUTSTATE contract state: %s", err)
-		log.Criticalf(err.Error())
+		log.Critical(err)
 		return err
 	}
-	log.Debugf("PUTContractState: %#v", state)
 	return nil
 }
 
@@ -94,30 +88,79 @@ func InitializeContractState(stub shim.ChaincodeStubInterface, contractversion s
 	var state ContractState
 	var err error
 	if versionarg != contractversion {
-		err = fmt.Errorf("Contract version: %s does not match version argument: %s", contractversion, versionarg)
-		log.Criticalf(err.Error())
+		err = fmt.Errorf("Deploy version argument: %s MUST match contract version: %s", versionarg, contractversion)
+		log.Critical(err)
 		return err
 	}
 	state, err = GETContractStateFromLedger(stub)
 	if err != nil {
-		return err
+		// assume new
+		log.Noticef("Deployed contract version %s appears to be newly deployed", versionarg)
+		state.Version = contractversion
+		state.Nickname = nicknamearg
+	} else {
+		log.Noticef("Deployed contract version %s appears to be redeployed", versionarg)
 	}
 	if contractversion != state.Version {
-		log.Noticef("Contract version has changed from %s to %s", versionarg, contractversion)
-		// keep going, this is an update of version -- later this will
-		// be handled by pulling state from the superseded contract version
+		log.Noticef("Deployed contract version has changed from %s to %s", versionarg, contractversion)
 	}
-	state.Version = contractversion
-	state.Nickname = nicknamearg
 	return PUTContractStateToLedger(stub, state)
 }
 
-func getLedgerContractVersion(stub shim.ChaincodeStubInterface) (string, error) {
-	var state ContractState
+var readContractState = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
-	state, err = GETContractStateFromLedger(stub)
-	if err != nil {
-		return "", err
+
+	if len(args) != 0 {
+		err = errors.New("Too many arguments. Expecting none.")
+		log.Errorf(err.Error())
+		return nil, err
 	}
-	return state.Version, nil
+
+	// Get the state from the ledger
+	chaincodeBytes, err := stub.GetState(CONTRACTSTATEKEY)
+	if err != nil {
+		err = fmt.Errorf("readContractState failed GETSTATE: %s", err)
+		log.Errorf(err.Error())
+		return nil, err
+	}
+
+	return chaincodeBytes, nil
+}
+
+var initContract = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var stateArg ContractState
+	var err error
+
+	log.Infof("Entering initContract with args: %+v", args)
+
+	if len(args) != 2 {
+		err = errors.New("initContract expects two arguments, a JSON object with version and nickname, and the contract version")
+		log.Criticalf(err.Error())
+		return nil, err
+	}
+
+	err = json.Unmarshal([]byte(args[0]), &stateArg)
+	if err != nil {
+		err = fmt.Errorf("initContract argument unmarshal failed: %s", err)
+		log.Criticalf(err.Error())
+		return nil, err
+	}
+
+	if stateArg.Nickname == "" {
+		stateArg.Nickname = "IOTSampleContractII"
+	}
+
+	// the framework requires that args[1] be set by the router from the contract version passed from main
+	err = InitializeContractState(stub, args[1], stateArg.Nickname, stateArg.Version)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Infof("initContract - contract initialized")
+	return nil, nil
+}
+
+func init() {
+	as.AddRoute("readContractState", "query", as.SystemClass, readContractState)
+	as.AddRoute("initContract", "deploy", as.SystemClass, initContract)
 }

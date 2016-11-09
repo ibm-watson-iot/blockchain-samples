@@ -14,9 +14,7 @@ Contributors:
 Kim Letkeman - Initial Contribution
 */
 
-// v1 KL 07 Aug 2016 Separate crud API for assets
-// V2 KL 03 Nov 2016 Adapted from aviation contract as new iot sample
-//                   Tracks containers in trade lane fashion
+// v0.1 KL -- new IOT sample with Trade Lane properties and behaviors
 
 package main
 
@@ -46,26 +44,34 @@ func newContainer() as.Asset {
 	}
 }
 
-func (t *SimpleChaincode) createAssetContainer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+var createAssetContainer as.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return ContainerClass.CreateAsset(stub, args, "createAssetContainer", []as.QPropNV{})
 }
 
-func (t *SimpleChaincode) updateAssetContainer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+var updateAssetContainer as.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return ContainerClass.UpdateAsset(stub, args, "updateAssetContainer", []as.QPropNV{})
 }
 
-func (t *SimpleChaincode) deletePropertiesFromAssetContainer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+var deletePropertiesFromAssetContainer as.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return ContainerClass.DeletePropertiesFromAsset(stub, args, "deletePropertiesFromAssetContainer", []as.QPropNV{})
 }
 
-func (t *SimpleChaincode) readAssetContainer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+var readAssetContainer as.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return ContainerClass.ReadAsset(stub, args)
 }
 
-func (t *SimpleChaincode) readAllAssetsContainer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+var readAllAssetsContainer as.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return ContainerClass.ReadAllAssets(stub, args)
 }
 
 // func (t *SimpleChaincode) readAssetIOTHistory(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 // 	return as.ReadAssetHistory(stub, args, "iot", "readAssetIOTHistory")
 // }
+
+func init() {
+	as.AddRoute("createAssetContainer", "invoke", ContainerClass, createAssetContainer)
+	as.AddRoute("updateAssetContainer", "invoke", ContainerClass, updateAssetContainer)
+	as.AddRoute("deletePropertiesFromAssetContainer", "invoke", ContainerClass, deletePropertiesFromAssetContainer)
+	as.AddRoute("readAssetContainer", "query", ContainerClass, readAssetContainer)
+	as.AddRoute("readAllAssetsContainer", "query", ContainerClass, readAllAssetsContainer)
+}

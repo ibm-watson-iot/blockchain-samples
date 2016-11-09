@@ -14,25 +14,22 @@ Contributors:
 Kim Letkeman - Initial Contribution
 */
 
-// v1 KL 09 Aug 2016 Creation of assetUtils as boilerplate for any asset to call for standard
-//                   crud like behaviors. Make extensive use of crudUtils.
-// v2 KL 02 Nov 2016 new package ctasset
+// v0.1 KL -- new iot chaincode platform
 
 package ctasset
 
 import (
 	"encoding/json"
-	// "errors"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	// cf "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctconfig"
-	// h "github.com/ibm-watson-iot/blockchain-samples/iotbase/cthistory"
-	"sort"
-
 	st "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctstate"
 )
+
+// Enabled is false by default, import it into your main and set it to true
+var Enabled bool
 
 // InvokeEvent carries the event that is to be set upon exit from the chaincode
 type InvokeEvent struct {

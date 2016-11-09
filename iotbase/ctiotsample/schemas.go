@@ -1,6 +1,13 @@
 package main
 
+
+	import (
+		"github.com/hyperledger/fabric/core/chaincode/shim"
+		as "github.com/ibm-watson-iot/blockchain-samples/iotbase/ctasset"
+	)
+
 var schemas = `
+
 {
     "API": {
         "createAssetContainer": {
@@ -215,7 +222,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "The shape of all asset states.",
+                                "description": "The external state of one container asset.",
                                 "properties": {
                                     "AssetKey": {
                                         "description": "The World State asset ID. Used to read and write state.",
@@ -445,7 +452,7 @@ var schemas = `
                 },
                 "method": "query",
                 "result": {
-                    "description": "The shape of all asset states.",
+                    "description": "The external state of one container asset.",
                     "properties": {
                         "AssetKey": {
                             "description": "The World State asset ID. Used to read and write state.",
@@ -685,7 +692,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "The shape of all asset states.",
+                                "description": "The external state of one container asset.",
                                 "properties": {
                                     "AssetKey": {
                                         "description": "The World State asset ID. Used to read and write state.",
@@ -914,7 +921,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "The shape of all asset states.",
+                                "description": "The external state of one container asset.",
                                 "properties": {
                                     "AssetKey": {
                                         "description": "The World State asset ID. Used to read and write state.",
@@ -1321,7 +1328,7 @@ var schemas = `
             "type": "object"
         },
         "containerstate": {
-            "description": "The shape of all asset states.",
+            "description": "The external state of one container asset.",
             "properties": {
                 "AssetKey": {
                     "description": "The World State asset ID. Used to read and write state.",
@@ -1523,7 +1530,7 @@ var schemas = `
             "items": {
                 "patternProperties": {
                     "^CON": {
-                        "description": "The shape of all asset states.",
+                        "description": "The external state of one container asset.",
                         "properties": {
                             "AssetKey": {
                                 "description": "The World State asset ID. Used to read and write state.",
@@ -1729,7 +1736,7 @@ var schemas = `
         "containerstateexternal": {
             "patternProperties": {
                 "^CON": {
-                    "description": "The shape of all asset states.",
+                    "description": "The external state of one container asset.",
                     "properties": {
                         "AssetKey": {
                             "description": "The World State asset ID. Used to read and write state.",
@@ -1985,3 +1992,12 @@ var schemas = `
         }
     }
 }`
+
+
+	var readAssetSchemas as.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+		return []byte(schemas), nil
+	}
+	func init() {
+		as.AddRoute("readAssetSchemas", "query", as.SystemClass, readAssetSchemas)
+	}
+	

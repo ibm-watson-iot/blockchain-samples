@@ -14,8 +14,7 @@ Contributors:
 Kim Letkeman - Initial Contribution
 */
 
-// v1 KL 08 Aug 2016 Separate crudUtils to their own module.
-// v2 KL 02 Nov 2016 new package ctasset
+// v0.1 KL -- new iot chaincode platform
 
 package ctasset
 
@@ -33,6 +32,13 @@ import (
 // **************************************************
 // CRUD utility functions
 // **************************************************
+
+// SystemClass acts as the class of all containers
+var SystemClass = AssetClass{
+	Name:        "system",
+	Prefix:      "SYS",
+	AssetIDPath: "n/a",
+}
 
 // Incoming asset CRUD events must have an assetID, which must be where the asset
 // definition says it is. This function creates the world state representation by
@@ -258,81 +264,5 @@ func (a *Asset) injectProps(qprops []QPropNV) error {
 			return err
 		}
 	}
-	return nil
-}
-
-// ReadWorldState read everything in the database for debugging purposes ...
-func ReadWorldState(stub shim.ChaincodeStubInterface) ([]byte, error) {
-	var err error
-	var results map[string]interface{}
-	var state interface{}
-
-	iter, err := stub.RangeQueryState("", "")
-	if err != nil {
-		err = fmt.Errorf("readWorldState failed to get a range query iterator: %s", err)
-		log.Errorf(err.Error())
-		return nil, err
-	}
-	defer iter.Close()
-	results = make(map[string]interface{})
-	for iter.HasNext() {
-		assetID, assetBytes, err := iter.Next()
-		if err != nil {
-			err = fmt.Errorf("readWorldState iter.Next() failed: %s", err)
-			log.Errorf(err.Error())
-			return nil, err
-		}
-		err = json.Unmarshal(assetBytes, &state)
-		if err != nil {
-			err = fmt.Errorf("readWorldState unmarshal failed: %s", err)
-			log.Errorf(err.Error())
-			return nil, err
-		}
-		results[assetID] = state
-	}
-
-	resultsBytes, err := json.MarshalIndent(&results, "", "    ")
-	if err != nil {
-		err = fmt.Errorf("readWorldState failed to marshal results: %s", err)
-		log.Errorf(err.Error())
-		return nil, err
-	}
-
-	log.Debugf(string(resultsBytes))
-
-	return resultsBytes, nil
-}
-
-// DeleteWorldState clear everything out from the database for DEBUGGING purposes ...
-func DeleteWorldState(stub shim.ChaincodeStubInterface) error {
-	// obtain the current contract config and reinitialize the contract later as if just
-	// deployed (saves developer time)
-	cstate, _ := st.GETContractStateFromLedger(stub)
-
-	iter, err := stub.RangeQueryState("", "")
-	if err != nil {
-		err = fmt.Errorf("clearWorldState failed to get a range query iterator: %s", err)
-		log.Errorf(err.Error())
-		return err
-	}
-	defer iter.Close()
-	for iter.HasNext() {
-		assetID, _, err := iter.Next()
-		if err != nil {
-			err = fmt.Errorf("clearWorldState iter.Next() failed: %s", err)
-			log.Errorf(err.Error())
-			return err
-		}
-		// Delete the key / asset from the ledger
-		err = stub.DelState(assetID)
-		if err != nil {
-			log.Errorf("deleteAsset assetID %s failed DELSTATE", assetID)
-			return err
-		}
-	}
-	log.Debugf("\n\n********** WORLD STATE CLEARED *************\n\n")
-	time.Sleep(300)
-	st.InitializeContractState(stub, cstate.Version, cstate.Nickname)
-	log.Debugf("\n\n********** WORLD STATE REINITIALIZED *************\n\n")
 	return nil
 }

@@ -14,17 +14,14 @@ Contributors:
 Kim Letkeman - Initial Contribution
 */
 
-// Recent state management
-// v1   KL 21 Feb 2016 Initial split from contract
-// v2   KL 11 Mar 2016 All state stored in the ledger.
-// v3   KL 15 Mar 2016 read cleaned up and returns one level of escaping now
-// v5   KL 31 Oct 2016 new package ctrecent
+// v0.1 KL -- new iot chaincode platform
 
 package ctasset
 
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -168,11 +165,15 @@ func findAssetInRecent(assetID string, rstate RecentStates) (int, error) {
 	return -1, nil
 }
 
-// ReadRecentStates returns the marshaled recent states from the ledger
-func ReadRecentStates(stub shim.ChaincodeStubInterface) ([]byte, error) {
+// readRecentStates returns the marshaled recent states from the ledger
+var readRecentStates = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	r, err := GETRecentStatesFromLedger(stub)
 	if err != nil {
 		return nil, err
 	}
 	return json.Marshal(r)
+}
+
+func init() {
+	AddRoute("readRecentStates", "query", SystemClass, readRecentStates)
 }

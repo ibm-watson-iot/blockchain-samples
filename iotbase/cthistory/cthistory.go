@@ -15,11 +15,7 @@ Howard McKinney- Initial Contribution
 Kim Letkeman - Initial Contribution
 */
 
-// v3.0 HM 25 Feb 2016 Moved the asset state history code into a separate package.
-// v3.0.1 HM 03 Mar 2016 Store the state history in descending order.
-// v4.3  KL  August 2016 redirect to "create" from "update" so that the context of the
-//                       update is no longer required. This flexibility is needed when using
-//                       abstract / boilerplate code.
+// v0.1 KL -- new iot chaincode platform
 
 package cthistory
 
@@ -34,6 +30,9 @@ import (
 
 // Logger for the cthistory package
 var log = shim.NewLogger("hist")
+
+// Enabled is false by default, import it into your main and set it to true
+var Enabled bool
 
 // STATEHISTORYKEY is used to separate history from current asset state and is prepended
 // to the assetID
