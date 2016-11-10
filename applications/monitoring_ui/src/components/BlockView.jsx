@@ -36,7 +36,7 @@ const BlockView = ({isExpanded, blockNumber, timestampString, onBlockClick, urlR
       showExpandableButton={true}
       subtitle={blockData ? moment.unix(blockData.nonHashData.localLedgerCommitTimestamp.seconds).format("M/D/YY LT") : ""}/>
     <CardText expandable={true}>
-      <u>{blockData ? blockData.transactions.length + " " + strings.BLOCK_CARD_CONTENTS_TRANSACTION_TEXT : "" }</u>
+      <u>{blockData ? blockData.transactions.length + " " + strings.BLOCK_CARD_CONTENTS_TRANSACTION_TEXT : "No Transactions" }</u>
       <ol>
       {blockData ? blockData.transactions.map(function(transaction, index){
           return(
@@ -49,7 +49,7 @@ const BlockView = ({isExpanded, blockNumber, timestampString, onBlockClick, urlR
                    {window.atob(transaction.payload).split('\n')[FUNCTION_PAYLOAD_INDEX]}
                  </li>
                  <li>
-				 result: {blockData.nonHashData.transactionResults[index].error ? blockData.nonHashData.transactionResults[index].error : "ok"}
+                   {window.atob(transaction.payload).split('\n')[3].substr(1)}
                  </li>
                </ul>
              </li>
