@@ -44,16 +44,16 @@ const (
 
 // MatchName is a map of ID to name
 var MatchName = map[int]string{
-	0: "matchall",
-	1: "matchany",
-	2: "matchnone",
+	0: "ALL",
+	1: "ANY",
+	2: "NONE",
 }
 
 // MatchValue is a map of name to ID
 var MatchValue = map[string]int32{
-	"matchall":  0,
-	"matchany":  1,
-	"matchnone": 2,
+	"ALL":  0,
+	"ANY":  1,
+	"NONE": 2,
 }
 
 func (x MatchType) String() string {
@@ -70,8 +70,8 @@ type QPropNV struct {
 
 // StateFilter is an array of QPropNV
 type StateFilter struct {
-	MatchMode string    `json:"matchmode"`
-	Entries   []QPropNV `json:"entries"`
+	MatchMode string    `json:"match"`
+	Entries   []QPropNV `json:"select"`
 }
 
 var emptyFilter = StateFilter{"matchall", make([]QPropNV, 0)}

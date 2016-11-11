@@ -14,8 +14,7 @@
                             "type": "string",
                             "enum": [
                                 "init"
-                            ],
-                            "description": "init function"
+                            ]
                         },
                         "args": {
                             "type": "array",
@@ -31,22 +30,20 @@
                                 }
                             },
                             "minItems": 1,
-                            "maxItems": 1,
-                            "description": "args are JSON encoded strings"
+                            "maxItems": 1
                         }
                     }
                 },
                 "createAssetContainer": {
                     "type": "object",
-                    "description": "Create an asset. One argument, a JSON encoded event. The 'assetID' property is required with zero or more writable properties. Establishes an initial asset state.",
+                    "description": "Creates a new container",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
                                 "createAsset"
-                            ],
-                            "description": "createAsset function"
+                            ]
                         },
                         "args": {
                             "type": "array",
@@ -59,22 +56,20 @@
                                 }
                             },
                             "minItems": 1,
-                            "maxItems": 1,
-                            "description": "args are JSON encoded strings"
+                            "maxItems": 1
                         }
                     }
                 },
                 "updateAssetContainer": {
                     "type": "object",
-                    "description": "Update the state of an asset. The one argument is a JSON encoded event. The 'assetID' property is required along with one or more writable properties. Establishes the next asset state. ",
+                    "description": "Update a contaner's state with one or more property changes",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
                                 "updateAsset"
-                            ],
-                            "description": "updateAsset function"
+                            ]
                         },
                         "args": {
                             "type": "array",
@@ -87,22 +82,20 @@
                                 }
                             },
                             "minItems": 1,
-                            "maxItems": 1,
-                            "description": "args are JSON encoded strings"
+                            "maxItems": 1
                         }
                     }
                 },
                 "deleteAssetContainer": {
                     "type": "object",
-                    "description": "Delete an asset, its history, and any recent state activity. Argument is a JSON encoded string containing only an 'assetID'.",
+                    "description": "Delete a container from world state, transactions remain on the blockchain",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
                                 "deleteAsset"
-                            ],
-                            "description": "deleteAsset function"
+                            ]
                         },
                         "args": {
                             "type": "array",
@@ -119,23 +112,21 @@
                                     }
                                 },
                                 "minItems": 1,
-                                "maxItems": 1,
-                                "description": "args are JSON encoded strings"
+                                "maxItems": 1
                             }
                         }
                     }
                 },
                 "deletePropertiesFromAssetContainer": {
                     "type": "object",
-                    "description": "Delete one or more properties from an asset's state. Argument is a JSON encoded string containing an 'assetID' and an array of qualified property names. For example, in an event object containing common and custom properties objects, the argument might look like {'assetID':'A1',['common.location', 'custom.carrier', 'custom.temperature']} and the result of that invoke would be the removal of the location, carrier and temperature properties. The missing temperature would clear a 'OVERTEMP' alert when the rules engine runs.",
+                    "description": "Delete one or more properties from a container's state, an example being temperature, which is only relevant for sensitive (as in frozen) shipments",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
                                 "deletePropertiesFromAsset"
-                            ],
-                            "description": "deletePropertiesFromAsset function"
+                            ]
                         },
                         "args": {
                             "type": "array",
@@ -147,7 +138,7 @@
                                         "properties": {
                                             "barcode": {
                                                 "type": "string",
-                                                "description": "container ID"
+                                                "description": "a container's ID"
                                             }
                                         }
                                     }
@@ -160,15 +151,14 @@
                 },
                 "deleteAllAssetsContainer": {
                     "type": "object",
-                    "description": "Delete the state of all assets. No arguments are accepted. For each managed asset, the state and history are erased, and the asset is removed if necessary from recent states.",
+                    "description": "Delete all containers from world state, supports filters",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
                                 "deleteAllAssets"
-                            ],
-                            "description": "deleteAllAssets function"
+                            ]
                         },
                         "args": {
                             "type": "array",
@@ -182,15 +172,14 @@
                 },
                 "readAssetContainer": {
                     "type": "object",
-                    "description": "Returns the state an asset. Argument is a JSON encoded string. The arg is an 'assetID' property.",
+                    "description": "Returns the state a container",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
                                 "readAsset"
-                            ],
-                            "description": "readAsset function"
+                            ]
                         },
                         "args": {
                             "type": "array",
@@ -202,7 +191,7 @@
                                         "properties": {
                                             "barcode": {
                                                 "type": "string",
-                                                "description": "container ID"
+                                                "description": "a container's ID"
                                             }
                                         }
                                     }
@@ -218,15 +207,14 @@
                 },
                 "readAllAssetsContainer": {
                     "type": "object",
-                    "description": "Returns the state of all assets as an array of JSON encoded strings. Accepts no arguments. For each managed asset, the state is read from the ledger and added to the returned array. Array is sorted by 'assetID'.",
+                    "description": "Returns the state of all containers, supports filters",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
                                 "readAllAssets"
-                            ],
-                            "description": "readAllAssets function"
+                            ]
                         },
                         "args": {
                             "type": "array",
@@ -243,15 +231,14 @@
                 },
                 "readAssetHistoryContainer": {
                     "type": "object",
-                    "description": "Requests a specified number of history states for an assets. Returns an array of states sorted with the most recent first. The 'assetID' property is required and the count property is optional. A missing count, a count of zero, or too large a count returns all existing history states.",
+                    "description": "Returns the history of a container",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
                                 "readAssetHistory"
-                            ],
-                            "description": "readAssetHistory function"
+                            ]
                         },
                         "args": {
                             "type": "array",
@@ -276,8 +263,7 @@
                                 }
                             },
                             "minItems": 1,
-                            "maxItems": 1,
-                            "description": "args are JSON encoded strings"
+                            "maxItems": 1
                         },
                         "result": {
                             "$ref": "#/definitions/containerstatearray"
@@ -286,74 +272,66 @@
                 },
                 "readAssetSchemas": {
                     "type": "object",
-                    "description": "Returns a string generated from the schema that contains APIs and Objects as specified in the file 'generate.json' in the /scripts folder.",
+                    "description": "Returns the API for this contract for the use of self-configuring applications; is MANDATORY for integration with the Watson IoT Platform",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
                                 "readAssetSchemas"
-                            ],
-                            "description": "readAssetSchemas function"
+                            ]
                         },
                         "args": {
                             "type": "array",
                             "items": {},
                             "minItems": 0,
-                            "maxItems": 0,
-                            "description": "accepts no arguments"
+                            "maxItems": 0
                         },
                         "result": {
                             "type": "object",
-                            "description": "Selected samples, controlled by generate.json",
                             "properties": {}
                         }
                     }
                 },
                 "readAssetSamples": {
                     "type": "object",
-                    "description": "Returns a string generated from the schema that contains sample Objects as specified in the file 'generate.json' in the /scripts folder.",
+                    "description": "Returns samples of selected contract objects",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
                                 "readAssetSamples"
-                            ],
-                            "description": "readAssetSamples function"
+                            ]
                         },
                         "args": {
                             "type": "array",
                             "items": {},
                             "minItems": 0,
-                            "maxItems": 0,
-                            "description": "accepts no arguments"
+                            "maxItems": 0
                         },
                         "result": {
                             "type": "object",
-                            "description": "Selected schemas, controlled by generate.json",
                             "properties": {}
                         }
                     }
                 },
                 "readRecentStates": {
                     "type": "object",
-                    "description": "Returns the state of recently updated assets as an array of objects sorted with the most recently updated asset first. Each asset appears exactly once up to a maxmum of 20 in this version of the contract.",
+                    "description": "Returns the state of recently updated assets",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
                                 "readRecentStates"
-                            ],
-                            "description": "readRecentStates function"
+                            ]
                         },
                         "args": {
                             "type": "array",
                             "items": {},
                             "minItems": 0,
-                            "maxItems": 0,
-                            "description": "accepts no arguments"
+                            "maxItems": 0
                         },
                         "result": {
                             "$ref": "#/definitions/containerstatearray"
@@ -362,22 +340,20 @@
                 },
                 "readContractState": {
                     "type": "object",
-                    "description": "Returns the state of the contract, which includes its version, its nickname and a list of 'assetID's that are currently managed.",
+                    "description": "Returns this contract instance's version and nickname",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
                                 "readContractState"
-                            ],
-                            "description": "readContractState function"
+                            ]
                         },
                         "args": {
                             "type": "array",
                             "items": {},
                             "minItems": 0,
-                            "maxItems": 0,
-                            "description": "accepts no arguments"
+                            "maxItems": 0
                         },
                         "result": {
                             "$ref": "#/definitions/contractState"
@@ -386,15 +362,14 @@
                 },
                 "setLoggingLevel": {
                     "type": "object",
-                    "description": "Sets the logging level in the contract.",
+                    "description": "Sets the logging level for the contract",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
                                 "setLoggingLevel"
-                            ],
-                            "description": "setLoggingLevel function"
+                            ]
                         },
                         "args": {
                             "type": "array",
@@ -412,22 +387,20 @@
                                 }
                             },
                             "minItems": 1,
-                            "maxItems": 1,
-                            "description": "logging levels indicate what you see"
+                            "maxItems": 1
                         }
                     }
                 },
                 "setCreateOnUpdate": {
                     "type": "object",
-                    "description": "Allow updateAsset to redirect to createAsset when 'assetID' does not exist.",
+                    "description": "Allow updateAsset to create a container upon receipt of its first event",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
                                 "setCreateOnUpdate"
-                            ],
-                            "description": "setCreateOnUpdate function"
+                            ]
                         },
                         "args": {
                             "type": "array",
@@ -437,8 +410,49 @@
                                 }
                             },
                             "minItems": 1,
-                            "maxItems": 1,
-                            "description": "True for redirect allowed, false for error on asset does not exist."
+                            "maxItems": 1
+                        }
+                    }
+                },
+                "readWorldState": {
+                    "type": "object",
+                    "description": "Returns the entire contents of world state",
+                    "properties": {
+                        "method": "query",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "readWorldState"
+                            ]
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0
+                        },
+                        "result": {
+                            "type": "object",
+                            "properties": {}
+                        }
+                    }
+                },
+                "deleteWorldState": {
+                    "type": "object",
+                    "description": "**** WARNING *** Clears the entire contents of world state, redeploy the contract after using this, in debugging mode, will require a restart",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deleteWorldState"
+                            ]
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {},
+                            "minItems": 0,
+                            "maxItems": 0
                         }
                     }
                 }
@@ -446,27 +460,27 @@
         },
         "version": {
             "type": "string",
-            "description": "The version number of the current contract"
+            "description": "The version number of the current contract instance"
         },
         "nickname": {
             "type": "string",
             "default": "CTIORSAMPLE",
-            "description": "The nickname of the current contract"
+            "description": "The nickname of the current contract instance"
         },
         "barcode": {
             "type": "string",
-            "description": "The ID of a container."
+            "description": "A container's ID"
         },
         "alertName": {
             "type": "string",
             "enum": [
                 "OVERTTEMP"
             ],
-            "description": "Container alerts. Triggered or cleared by contract rules."
+            "description": "An alert name"
         },
         "alerts": {
             "type": "array",
-            "description": "List of alert names that are currently active.",
+            "description": "A list of alert names",
             "items": {
                 "$ref": "#/definitions/alertName"
             }
@@ -483,12 +497,12 @@
             "type": "array",
             "items": {
                 "type": "string",
-                "description": "The qualified name of a property. E.g. 'event.common.carrier', 'event.custom.temperature', etc."
+                "description": "A qualified name of a property such as container.barcode"
             }
         },
         "container": {
             "type": "object",
-            "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+            "description": "The changeable properties for a container, also considered its 'event' as a partial state",
             "properties": {
                 "common": {
                     "$ref": "#/definitions/ioteventcommon"
@@ -498,11 +512,11 @@
                 },
                 "temperature": {
                     "type": "number",
-                    "description": "Temperature of the inside of the container in CELSIUS."
+                    "description": "Temperature of a container's contents in degrees Celsuis"
                 },
                 "carrier": {
                     "type": "string",
-                    "description": "transport entity currently in possession of the container"
+                    "description": "The carrier in possession of this container"
                 }
             },
             "required": [
@@ -511,67 +525,71 @@
         },
         "invokeevent": {
             "type": "object",
-            "description": "An event that is emitted at the end of an invoke, if it is present.",
+            "description": "An chaincode event emitted by a contract invoke",
             "properties": {
                 "name": {
                     "type": "string",
-                    "description": "Event name."
+                    "description": "The chaincode event's name"
                 },
                 "payload": {
                     "type": "object",
-                    "description": "A json object containing the event's properties.",
+                    "description": "The chaincode event's properties",
                     "properties": {}
                 }
             }
         },
         "ioteventcommon": {
             "type": "object",
-            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+            "description": "Common properties for all containers",
             "properties": {
                 "devicetimestamp": {
                     "type": "string",
-                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context."
+                    "description": "A timestamp recoded by the device that sent the current event"
                 },
                 "location": {
                     "$ref": "#/definitions/geo"
                 },
-                "extension": {
+                "appdata": {
                     "type": "array",
-                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                    "description": "Application managed information as an array of key:value pairs",
                     "minItems": 0,
-                    "items": { "type": "object", "properties": {} }
-                },
-                "references": {
-                    "type": "array",
-                    "description": "An array of external references relevant to this asset.",
-                    "minItems": 0,
-                    "items": { "type": "string" }
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "K": {
+                                "type": "string"
+                            },
+                            "V": {
+                                "type": "string"
+                            }
+                        }
+                    }
                 }
             }
         },
         "containerstate": {
             "type": "object",
-            "description": "The shape of all asset states.",
+            "description": "A container's complete state",
             "properties": {
                 "class": {
                     "type": "string",
-                    "description": "Asset class."
+                    "description": "The container's asset class"
                 },
                 "prefix": {
                     "type": "string",
-                    "description": "Asset class prefix in World State."
+                    "description": "The container's asset class prefix in world state"
                 },
                 "assetIDpath": {
                     "type": "string",
-                    "description": "Qualified property path to the asset's ID."
+                    "description": "Qualified property path to the container's ID, declared in the contract code"
                 },
                 "AssetKey": {
                     "type": "string",
-                    "description": "The World State asset ID. Used to read and write state."
+                    "description": "This container's world state container ID"
                 },
                 "state": {
                     "type": "object",
-                    "description": "The state of the one asset.",
+                    "description": "Properties that have been received or calculated for this container",
                     "properties": {
                         "container": {
                             "$ref": "#/definitions/container"
@@ -580,7 +598,7 @@
                 },
                 "eventin": {
                     "type": "object",
-                    "description": "The event that created this state.",
+                    "description": "The contract event that created this state, for example updateAssetContainer",
                     "properties": {
                         "container": {
                             "$ref": "#/definitions/container"
@@ -589,15 +607,15 @@
                 },
                 "txnts": {
                     "type": "string",
-                    "description": "Transaction timestamp matching that in the blockchain."
+                    "description": "Transaction timestamp matching the blockchain"
                 },
                 "txnid": {
                     "type": "string",
-                    "description": "Transaction UUID matching that in the blockchain."
+                    "description": "Transaction UUID matching the blockchain"
                 },
                 "eventout": {
                     "type": "object",
-                    "description": "A chaincode event to be emitted on invoke exit.",
+                    "description": "The chaincode event emitted on invoke exit, if any",
                     "properties": {
                         "container": {
                             "$ref": "#/definitions/invokeevent"
@@ -609,7 +627,7 @@
                 },
                 "compliant": {
                     "type": "boolean",
-                    "description": "A contract-specific indication that this asset is compliant."
+                    "description": "This container has no active alerts"
                 }
             }
         },
@@ -618,37 +636,37 @@
             "patternProperties": {
                 "^CON": {
                     "type": "object",
-                    "description": "The external state of one container asset.",
+                    "description": "The external state of one container asset, named by its world state ID",
                     "$ref": "#/definitions/containerstate"
                 }
             }
         },
         "stateFilter": {
             "type": "object",
-            "description": "A state filter consists of a match mode and an array of k:v pairs with the key being a qualified property name and the value being the value to match.",
+            "description": "Match mode plus array of property : value pairs",
             "properties": {
-                "matchmode": {
+                "match": {
                     "type": "string",
-                    "description": "Match mode is ANY, ALL or NONE.",
+                    "description": "Select match mode, missing property counts as not matched",
                     "enum": [
                         "ALL",
                         "ANY",
                         "NONE"
                     ]
                 },
-                "entries": {
+                "select": {
                     "type": "array",
-                    "description": "Array of qualified propery name and value pairs to match to the state.",
+                    "description": "Array of property : value pairs to match",
                     "items": {
                         "type": "object",
                         "properties": {
                             "qprop": {
                                 "type": "string",
-                                "description": "Qualified property name as dot separated levels terminated by a leaf node. An example would be 'container.barcode'."
+                                "description": "Qualified property name, e.g. container.barcode"
                             },
                             "value": {
                                 "type": "string",
-                                "description": "Property value to be matched."
+                                "description": "Property value to be matched"
                             }
                         }
                     }
@@ -661,7 +679,7 @@
                 "$ref": "#/definitions/containerstateexternal"
             },
             "minItems": 0,
-            "description": "an array of container states, often for different assets"
+            "description": "Array of container states, can mix asset classes"
         },
         "contractState": {
             "type": "object",

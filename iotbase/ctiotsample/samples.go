@@ -10,218 +10,227 @@ var samples = `
 
 {
     "container": {
-        "barcode": "The ID of a container.",
-        "carrier": "transport entity currently in possession of the container",
+        "barcode": "A container's ID",
+        "carrier": "The carrier in possession of this container",
         "common": {
-            "devicetimestamp": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-            "extension": [
-                {}
+            "appdata": [
+                {
+                    "K": "carpe noctem",
+                    "V": "carpe noctem"
+                }
             ],
+            "devicetimestamp": "A timestamp recoded by the device that sent the current event",
             "location": {
                 "latitude": 123.456,
                 "longitude": 123.456
-            },
-            "references": [
-                "carpe noctem"
-            ]
+            }
         },
         "temperature": 123.456
     },
     "containerstate": {
-        "AssetKey": "The World State asset ID. Used to read and write state.",
+        "AssetKey": "This container's world state container ID",
         "alerts": [
             "OVERTTEMP"
         ],
-        "assetIDpath": "Qualified property path to the asset's ID.",
-        "class": "Asset class.",
+        "assetIDpath": "Qualified property path to the container's ID, declared in the contract code",
+        "class": "The container's asset class",
         "compliant": true,
         "eventin": {
             "container": {
-                "barcode": "The ID of a container.",
-                "carrier": "transport entity currently in possession of the container",
+                "barcode": "A container's ID",
+                "carrier": "The carrier in possession of this container",
                 "common": {
-                    "devicetimestamp": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                    "extension": [
-                        {}
+                    "appdata": [
+                        {
+                            "K": "carpe noctem",
+                            "V": "carpe noctem"
+                        }
                     ],
+                    "devicetimestamp": "A timestamp recoded by the device that sent the current event",
                     "location": {
                         "latitude": 123.456,
                         "longitude": 123.456
-                    },
-                    "references": [
-                        "carpe noctem"
-                    ]
+                    }
                 },
                 "temperature": 123.456
             }
         },
         "eventout": {
             "container": {
-                "name": "Event name.",
+                "name": "The chaincode event's name",
                 "payload": {}
             }
         },
-        "prefix": "Asset class prefix in World State.",
+        "prefix": "The container's asset class prefix in world state",
         "state": {
             "container": {
-                "barcode": "The ID of a container.",
-                "carrier": "transport entity currently in possession of the container",
+                "barcode": "A container's ID",
+                "carrier": "The carrier in possession of this container",
                 "common": {
-                    "devicetimestamp": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                    "extension": [
-                        {}
+                    "appdata": [
+                        {
+                            "K": "carpe noctem",
+                            "V": "carpe noctem"
+                        }
                     ],
+                    "devicetimestamp": "A timestamp recoded by the device that sent the current event",
                     "location": {
                         "latitude": 123.456,
                         "longitude": 123.456
-                    },
-                    "references": [
-                        "carpe noctem"
-                    ]
+                    }
                 },
                 "temperature": 123.456
             }
         },
-        "txnid": "Transaction UUID matching that in the blockchain.",
-        "txnts": "Transaction timestamp matching that in the blockchain."
+        "txnid": "Transaction UUID matching the blockchain",
+        "txnts": "Transaction timestamp matching the blockchain"
     },
     "containerstatearray": [
         {
             "^CON": {
-                "AssetKey": "The World State asset ID. Used to read and write state.",
+                "AssetKey": "This container's world state container ID",
                 "alerts": [
                     "OVERTTEMP"
                 ],
-                "assetIDpath": "Qualified property path to the asset's ID.",
-                "class": "Asset class.",
+                "assetIDpath": "Qualified property path to the container's ID, declared in the contract code",
+                "class": "The container's asset class",
                 "compliant": true,
                 "eventin": {
                     "container": {
-                        "barcode": "The ID of a container.",
-                        "carrier": "transport entity currently in possession of the container",
+                        "barcode": "A container's ID",
+                        "carrier": "The carrier in possession of this container",
                         "common": {
-                            "devicetimestamp": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                            "extension": [
-                                {}
+                            "appdata": [
+                                {
+                                    "K": "carpe noctem",
+                                    "V": "carpe noctem"
+                                }
                             ],
+                            "devicetimestamp": "A timestamp recoded by the device that sent the current event",
                             "location": {
                                 "latitude": 123.456,
                                 "longitude": 123.456
-                            },
-                            "references": [
-                                "carpe noctem"
-                            ]
+                            }
                         },
                         "temperature": 123.456
                     }
                 },
                 "eventout": {
                     "container": {
-                        "name": "Event name.",
+                        "name": "The chaincode event's name",
                         "payload": {}
                     }
                 },
-                "prefix": "Asset class prefix in World State.",
+                "prefix": "The container's asset class prefix in world state",
                 "state": {
                     "container": {
-                        "barcode": "The ID of a container.",
-                        "carrier": "transport entity currently in possession of the container",
+                        "barcode": "A container's ID",
+                        "carrier": "The carrier in possession of this container",
                         "common": {
-                            "devicetimestamp": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                            "extension": [
-                                {}
+                            "appdata": [
+                                {
+                                    "K": "carpe noctem",
+                                    "V": "carpe noctem"
+                                }
                             ],
+                            "devicetimestamp": "A timestamp recoded by the device that sent the current event",
                             "location": {
                                 "latitude": 123.456,
                                 "longitude": 123.456
-                            },
-                            "references": [
-                                "carpe noctem"
-                            ]
+                            }
                         },
                         "temperature": 123.456
                     }
                 },
-                "txnid": "Transaction UUID matching that in the blockchain.",
-                "txnts": "Transaction timestamp matching that in the blockchain."
+                "txnid": "Transaction UUID matching the blockchain",
+                "txnts": "Transaction timestamp matching the blockchain"
             }
         }
     ],
     "containerstateexternal": {
         "^CON": {
-            "AssetKey": "The World State asset ID. Used to read and write state.",
+            "AssetKey": "This container's world state container ID",
             "alerts": [
                 "OVERTTEMP"
             ],
-            "assetIDpath": "Qualified property path to the asset's ID.",
-            "class": "Asset class.",
+            "assetIDpath": "Qualified property path to the container's ID, declared in the contract code",
+            "class": "The container's asset class",
             "compliant": true,
             "eventin": {
                 "container": {
-                    "barcode": "The ID of a container.",
-                    "carrier": "transport entity currently in possession of the container",
+                    "barcode": "A container's ID",
+                    "carrier": "The carrier in possession of this container",
                     "common": {
-                        "devicetimestamp": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                        "extension": [
-                            {}
+                        "appdata": [
+                            {
+                                "K": "carpe noctem",
+                                "V": "carpe noctem"
+                            }
                         ],
+                        "devicetimestamp": "A timestamp recoded by the device that sent the current event",
                         "location": {
                             "latitude": 123.456,
                             "longitude": 123.456
-                        },
-                        "references": [
-                            "carpe noctem"
-                        ]
+                        }
                     },
                     "temperature": 123.456
                 }
             },
             "eventout": {
                 "container": {
-                    "name": "Event name.",
+                    "name": "The chaincode event's name",
                     "payload": {}
                 }
             },
-            "prefix": "Asset class prefix in World State.",
+            "prefix": "The container's asset class prefix in world state",
             "state": {
                 "container": {
-                    "barcode": "The ID of a container.",
-                    "carrier": "transport entity currently in possession of the container",
+                    "barcode": "A container's ID",
+                    "carrier": "The carrier in possession of this container",
                     "common": {
-                        "devicetimestamp": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                        "extension": [
-                            {}
+                        "appdata": [
+                            {
+                                "K": "carpe noctem",
+                                "V": "carpe noctem"
+                            }
                         ],
+                        "devicetimestamp": "A timestamp recoded by the device that sent the current event",
                         "location": {
                             "latitude": 123.456,
                             "longitude": 123.456
-                        },
-                        "references": [
-                            "carpe noctem"
-                        ]
+                        }
                     },
                     "temperature": 123.456
                 }
             },
-            "txnid": "Transaction UUID matching that in the blockchain.",
-            "txnts": "Transaction timestamp matching that in the blockchain."
+            "txnid": "Transaction UUID matching the blockchain",
+            "txnts": "Transaction timestamp matching the blockchain"
         }
     },
     "invokeevent": {
-        "name": "Event name.",
+        "name": "The chaincode event's name",
         "payload": {}
     },
     "ioteventcommon": {
-        "devicetimestamp": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-        "extension": [
-            {}
+        "appdata": [
+            {
+                "K": "carpe noctem",
+                "V": "carpe noctem"
+            }
         ],
+        "devicetimestamp": "A timestamp recoded by the device that sent the current event",
         "location": {
             "latitude": 123.456,
             "longitude": 123.456
-        },
-        "references": [
-            "carpe noctem"
+        }
+    },
+    "stateFilter": {
+        "match": "ANY",
+        "select": [
+            {
+                "qprop": "Qualified property name, e.g. container.barcode",
+                "value": "Property value to be matched"
+            }
         ]
     }
 }`

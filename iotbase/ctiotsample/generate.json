@@ -1,39 +1,43 @@
 {
-  "schemas": {
-    "schemaFilename": "payloadschema.json",
-    "goSchemaFilename": "schemas.go",
-    "API": [
-      "initContract",
-      "createAssetContainer",
-      "updateAssetContainer",
-      "deleteAssetContainer",
-      "deletePropertiesFromAssetContainer",
-      "deleteAllAssetsContainer",
-      "readAssetContainer",
-      "readAllAssetsContainer",
-      "readAssetHistoryContainer",
-      "readRecentStates",
-      "setLoggingLevel",
-      "setCreateOnUpdate"
-    ],
-    "goSchemaElements": [
-      "container",
-      "invokeevent",
-      "ioteventcommon",
-      "containerstate",
-      "containerstateexternal",
-      "containerstatearray"
-    ]
-  },
-  "samples": {
-    "goSampleFilename": "samples.go",
-    "goSampleElements": [
-      "container",
-      "invokeevent",
-      "ioteventcommon",
-      "containerstate",
-      "containerstateexternal",
-      "containerstatearray"
-    ]
-  }
+    "schemas": {
+        "schemaFilename": "payloadschema.json",
+        "goSchemaFilename": "schemas.go",
+        "API": [
+            "initContract",
+            "createAssetContainer",
+            "updateAssetContainer",
+            "deleteAssetContainer",
+            "deletePropertiesFromAssetContainer",
+            "deleteAllAssetsContainer",
+            "readAssetContainer",
+            "readAllAssetsContainer",
+            "readWorldState",
+            "deleteWorldState",
+            "readAssetHistoryContainer",
+            "readRecentStates",
+            "setLoggingLevel",
+            "setCreateOnUpdate"
+        ],
+        "goSchemaElements": [
+            "container",
+            "invokeevent",
+            "ioteventcommon",
+            "containerstate",
+            "containerstateexternal",
+            "containerstatearray",
+            "stateFilter"
+        ]
+    },
+    "samples": {
+        "goSampleFilename": "samples.go",
+        "goSampleElements": [
+            "container",
+            "invokeevent",
+            "ioteventcommon",
+            "containerstate",
+            "containerstateexternal",
+            "containerstatearray",
+            "stateFilter"
+        ]
+    }
 }

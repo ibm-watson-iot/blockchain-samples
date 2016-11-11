@@ -11,38 +11,44 @@ var schemas = `
 {
     "API": {
         "createAssetContainer": {
-            "description": "Create an asset. One argument, a JSON encoded event. The 'assetID' property is required with zero or more writable properties. Establishes an initial asset state.",
+            "description": "Creates a new container",
             "properties": {
                 "args": {
-                    "description": "args are JSON encoded strings",
                     "items": {
                         "properties": {
                             "container": {
-                                "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                                "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                                 "properties": {
                                     "barcode": {
-                                        "description": "The ID of a container.",
+                                        "description": "A container's ID",
                                         "type": "string"
                                     },
                                     "carrier": {
-                                        "description": "transport entity currently in possession of the container",
+                                        "description": "The carrier in possession of this container",
                                         "type": "string"
                                     },
                                     "common": {
-                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                        "description": "Common properties for all containers",
                                         "properties": {
-                                            "devicetimestamp": {
-                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                "type": "string"
-                                            },
-                                            "extension": {
-                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                            "appdata": {
+                                                "description": "Application managed information as an array of key:value pairs",
                                                 "items": {
-                                                    "properties": {},
+                                                    "properties": {
+                                                        "K": {
+                                                            "type": "string"
+                                                        },
+                                                        "V": {
+                                                            "type": "string"
+                                                        }
+                                                    },
                                                     "type": "object"
                                                 },
                                                 "minItems": 0,
                                                 "type": "array"
+                                            },
+                                            "devicetimestamp": {
+                                                "description": "A timestamp recoded by the device that sent the current event",
+                                                "type": "string"
                                             },
                                             "location": {
                                                 "description": "A geographical coordinate",
@@ -55,20 +61,12 @@ var schemas = `
                                                     }
                                                 },
                                                 "type": "object"
-                                            },
-                                            "references": {
-                                                "description": "An array of external references relevant to this asset.",
-                                                "items": {
-                                                    "type": "string"
-                                                },
-                                                "minItems": 0,
-                                                "type": "array"
                                             }
                                         },
                                         "type": "object"
                                     },
                                     "temperature": {
-                                        "description": "Temperature of the inside of the container in CELSIUS.",
+                                        "description": "Temperature of a container's contents in degrees Celsuis",
                                         "type": "number"
                                     }
                                 },
@@ -85,7 +83,6 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "createAsset function",
                     "enum": [
                         "createAsset"
                     ],
@@ -96,37 +93,37 @@ var schemas = `
             "type": "object"
         },
         "deleteAllAssetsContainer": {
-            "description": "Delete the state of all assets. No arguments are accepted. For each managed asset, the state and history are erased, and the asset is removed if necessary from recent states.",
+            "description": "Delete all containers from world state, supports filters",
             "properties": {
                 "args": {
                     "items": {
-                        "description": "A state filter consists of a match mode and an array of k:v pairs with the key being a qualified property name and the value being the value to match.",
+                        "description": "Match mode plus array of property : value pairs",
                         "properties": {
-                            "entries": {
-                                "description": "Array of qualified propery name and value pairs to match to the state.",
-                                "items": {
-                                    "properties": {
-                                        "qprop": {
-                                            "description": "Qualified property name as dot separated levels terminated by a leaf node. An example would be 'container.barcode'.",
-                                            "type": "string"
-                                        },
-                                        "value": {
-                                            "description": "Property value to be matched.",
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "type": "array"
-                            },
-                            "matchmode": {
-                                "description": "Match mode is ANY, ALL or NONE.",
+                            "match": {
+                                "description": "Select match mode, missing property counts as not matched",
                                 "enum": [
                                     "ALL",
                                     "ANY",
                                     "NONE"
                                 ],
                                 "type": "string"
+                            },
+                            "select": {
+                                "description": "Array of property : value pairs to match",
+                                "items": {
+                                    "properties": {
+                                        "qprop": {
+                                            "description": "Qualified property name, e.g. container.barcode",
+                                            "type": "string"
+                                        },
+                                        "value": {
+                                            "description": "Property value to be matched",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "type": "array"
                             }
                         },
                         "type": "object"
@@ -136,7 +133,6 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "deleteAllAssets function",
                     "enum": [
                         "deleteAllAssets"
                     ],
@@ -147,18 +143,17 @@ var schemas = `
             "type": "object"
         },
         "deleteAssetContainer": {
-            "description": "Delete an asset, its history, and any recent state activity. Argument is a JSON encoded string containing only an 'assetID'.",
+            "description": "Delete a container from world state, transactions remain on the blockchain",
             "properties": {
                 "args": {
                     "items": {
-                        "description": "args are JSON encoded strings",
                         "maxItems": 1,
                         "minItems": 1,
                         "properties": {
                             "container": {
                                 "properties": {
                                     "barcode": {
-                                        "description": "The ID of a container.",
+                                        "description": "A container's ID",
                                         "type": "string"
                                     }
                                 },
@@ -170,7 +165,6 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "deleteAsset function",
                     "enum": [
                         "deleteAsset"
                     ],
@@ -181,7 +175,7 @@ var schemas = `
             "type": "object"
         },
         "deletePropertiesFromAssetContainer": {
-            "description": "Delete one or more properties from an asset's state. Argument is a JSON encoded string containing an 'assetID' and an array of qualified property names. For example, in an event object containing common and custom properties objects, the argument might look like {'assetID':'A1',['common.location', 'custom.carrier', 'custom.temperature']} and the result of that invoke would be the removal of the location, carrier and temperature properties. The missing temperature would clear a 'OVERTEMP' alert when the rules engine runs.",
+            "description": "Delete one or more properties from a container's state, an example being temperature, which is only relevant for sensitive (as in frozen) shipments",
             "properties": {
                 "args": {
                     "items": {
@@ -189,7 +183,7 @@ var schemas = `
                             "container": {
                                 "properties": {
                                     "barcode": {
-                                        "description": "container ID",
+                                        "description": "a container's ID",
                                         "type": "string"
                                     }
                                 },
@@ -203,9 +197,27 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "deletePropertiesFromAsset function",
                     "enum": [
                         "deletePropertiesFromAsset"
+                    ],
+                    "type": "string"
+                },
+                "method": "invoke"
+            },
+            "type": "object"
+        },
+        "deleteWorldState": {
+            "description": "**** WARNING *** Clears the entire contents of world state, redeploy the contract after using this, in debugging mode, will require a restart",
+            "properties": {
+                "args": {
+                    "items": {},
+                    "maxItems": 0,
+                    "minItems": 0,
+                    "type": "array"
+                },
+                "function": {
+                    "enum": [
+                        "deleteWorldState"
                     ],
                     "type": "string"
                 },
@@ -217,16 +229,15 @@ var schemas = `
             "description": "Sets contract version and nickname",
             "properties": {
                 "args": {
-                    "description": "args are JSON encoded strings",
                     "items": {
                         "properties": {
                             "nickname": {
                                 "default": "CTIORSAMPLE",
-                                "description": "The nickname of the current contract",
+                                "description": "The nickname of the current contract instance",
                                 "type": "string"
                             },
                             "version": {
-                                "description": "The version number of the current contract",
+                                "description": "The version number of the current contract instance",
                                 "type": "string"
                             }
                         },
@@ -237,7 +248,6 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "init function",
                     "enum": [
                         "init"
                     ],
@@ -248,37 +258,37 @@ var schemas = `
             "type": "object"
         },
         "readAllAssetsContainer": {
-            "description": "Returns the state of all assets as an array of JSON encoded strings. Accepts no arguments. For each managed asset, the state is read from the ledger and added to the returned array. Array is sorted by 'assetID'.",
+            "description": "Returns the state of all containers, supports filters",
             "properties": {
                 "args": {
                     "items": {
-                        "description": "A state filter consists of a match mode and an array of k:v pairs with the key being a qualified property name and the value being the value to match.",
+                        "description": "Match mode plus array of property : value pairs",
                         "properties": {
-                            "entries": {
-                                "description": "Array of qualified propery name and value pairs to match to the state.",
-                                "items": {
-                                    "properties": {
-                                        "qprop": {
-                                            "description": "Qualified property name as dot separated levels terminated by a leaf node. An example would be 'container.barcode'.",
-                                            "type": "string"
-                                        },
-                                        "value": {
-                                            "description": "Property value to be matched.",
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "type": "array"
-                            },
-                            "matchmode": {
-                                "description": "Match mode is ANY, ALL or NONE.",
+                            "match": {
+                                "description": "Select match mode, missing property counts as not matched",
                                 "enum": [
                                     "ALL",
                                     "ANY",
                                     "NONE"
                                 ],
                                 "type": "string"
+                            },
+                            "select": {
+                                "description": "Array of property : value pairs to match",
+                                "items": {
+                                    "properties": {
+                                        "qprop": {
+                                            "description": "Qualified property name, e.g. container.barcode",
+                                            "type": "string"
+                                        },
+                                        "value": {
+                                            "description": "Property value to be matched",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "type": "array"
                             }
                         },
                         "type": "object"
@@ -288,7 +298,6 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "readAllAssets function",
                     "enum": [
                         "readAllAssets"
                     ],
@@ -296,20 +305,20 @@ var schemas = `
                 },
                 "method": "query",
                 "result": {
-                    "description": "an array of container states, often for different assets",
+                    "description": "Array of container states, can mix asset classes",
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "The shape of all asset states.",
+                                "description": "A container's complete state",
                                 "properties": {
                                     "AssetKey": {
-                                        "description": "The World State asset ID. Used to read and write state.",
+                                        "description": "This container's world state container ID",
                                         "type": "string"
                                     },
                                     "alerts": {
-                                        "description": "List of alert names that are currently active.",
+                                        "description": "A list of alert names",
                                         "items": {
-                                            "description": "Container alerts. Triggered or cleared by contract rules.",
+                                            "description": "An alert name",
                                             "enum": [
                                                 "OVERTTEMP"
                                             ],
@@ -318,46 +327,53 @@ var schemas = `
                                         "type": "array"
                                     },
                                     "assetIDpath": {
-                                        "description": "Qualified property path to the asset's ID.",
+                                        "description": "Qualified property path to the container's ID, declared in the contract code",
                                         "type": "string"
                                     },
                                     "class": {
-                                        "description": "Asset class.",
+                                        "description": "The container's asset class",
                                         "type": "string"
                                     },
                                     "compliant": {
-                                        "description": "A contract-specific indication that this asset is compliant.",
+                                        "description": "This container has no active alerts",
                                         "type": "boolean"
                                     },
                                     "eventin": {
-                                        "description": "The event that created this state.",
+                                        "description": "The contract event that created this state, for example updateAssetContainer",
                                         "properties": {
                                             "container": {
-                                                "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                                                "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                                                 "properties": {
                                                     "barcode": {
-                                                        "description": "The ID of a container.",
+                                                        "description": "A container's ID",
                                                         "type": "string"
                                                     },
                                                     "carrier": {
-                                                        "description": "transport entity currently in possession of the container",
+                                                        "description": "The carrier in possession of this container",
                                                         "type": "string"
                                                     },
                                                     "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                        "description": "Common properties for all containers",
                                                         "properties": {
-                                                            "devicetimestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                "type": "string"
-                                                            },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                                            "appdata": {
+                                                                "description": "Application managed information as an array of key:value pairs",
                                                                 "items": {
-                                                                    "properties": {},
+                                                                    "properties": {
+                                                                        "K": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "V": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
                                                                     "type": "object"
                                                                 },
                                                                 "minItems": 0,
                                                                 "type": "array"
+                                                            },
+                                                            "devicetimestamp": {
+                                                                "description": "A timestamp recoded by the device that sent the current event",
+                                                                "type": "string"
                                                             },
                                                             "location": {
                                                                 "description": "A geographical coordinate",
@@ -370,20 +386,12 @@ var schemas = `
                                                                     }
                                                                 },
                                                                 "type": "object"
-                                                            },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
                                                             }
                                                         },
                                                         "type": "object"
                                                     },
                                                     "temperature": {
-                                                        "description": "Temperature of the inside of the container in CELSIUS.",
+                                                        "description": "Temperature of a container's contents in degrees Celsuis",
                                                         "type": "number"
                                                     }
                                                 },
@@ -396,17 +404,17 @@ var schemas = `
                                         "type": "object"
                                     },
                                     "eventout": {
-                                        "description": "A chaincode event to be emitted on invoke exit.",
+                                        "description": "The chaincode event emitted on invoke exit, if any",
                                         "properties": {
                                             "container": {
-                                                "description": "An event that is emitted at the end of an invoke, if it is present.",
+                                                "description": "An chaincode event emitted by a contract invoke",
                                                 "properties": {
                                                     "name": {
-                                                        "description": "Event name.",
+                                                        "description": "The chaincode event's name",
                                                         "type": "string"
                                                     },
                                                     "payload": {
-                                                        "description": "A json object containing the event's properties.",
+                                                        "description": "The chaincode event's properties",
                                                         "properties": {},
                                                         "type": "object"
                                                     }
@@ -417,38 +425,45 @@ var schemas = `
                                         "type": "object"
                                     },
                                     "prefix": {
-                                        "description": "Asset class prefix in World State.",
+                                        "description": "The container's asset class prefix in world state",
                                         "type": "string"
                                     },
                                     "state": {
-                                        "description": "The state of the one asset.",
+                                        "description": "Properties that have been received or calculated for this container",
                                         "properties": {
                                             "container": {
-                                                "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                                                "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                                                 "properties": {
                                                     "barcode": {
-                                                        "description": "The ID of a container.",
+                                                        "description": "A container's ID",
                                                         "type": "string"
                                                     },
                                                     "carrier": {
-                                                        "description": "transport entity currently in possession of the container",
+                                                        "description": "The carrier in possession of this container",
                                                         "type": "string"
                                                     },
                                                     "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                        "description": "Common properties for all containers",
                                                         "properties": {
-                                                            "devicetimestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                "type": "string"
-                                                            },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                                            "appdata": {
+                                                                "description": "Application managed information as an array of key:value pairs",
                                                                 "items": {
-                                                                    "properties": {},
+                                                                    "properties": {
+                                                                        "K": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "V": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
                                                                     "type": "object"
                                                                 },
                                                                 "minItems": 0,
                                                                 "type": "array"
+                                                            },
+                                                            "devicetimestamp": {
+                                                                "description": "A timestamp recoded by the device that sent the current event",
+                                                                "type": "string"
                                                             },
                                                             "location": {
                                                                 "description": "A geographical coordinate",
@@ -461,20 +476,12 @@ var schemas = `
                                                                     }
                                                                 },
                                                                 "type": "object"
-                                                            },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
                                                             }
                                                         },
                                                         "type": "object"
                                                     },
                                                     "temperature": {
-                                                        "description": "Temperature of the inside of the container in CELSIUS.",
+                                                        "description": "Temperature of a container's contents in degrees Celsuis",
                                                         "type": "number"
                                                     }
                                                 },
@@ -487,11 +494,11 @@ var schemas = `
                                         "type": "object"
                                     },
                                     "txnid": {
-                                        "description": "Transaction UUID matching that in the blockchain.",
+                                        "description": "Transaction UUID matching the blockchain",
                                         "type": "string"
                                     },
                                     "txnts": {
-                                        "description": "Transaction timestamp matching that in the blockchain.",
+                                        "description": "Transaction timestamp matching the blockchain",
                                         "type": "string"
                                     }
                                 },
@@ -507,7 +514,7 @@ var schemas = `
             "type": "object"
         },
         "readAssetContainer": {
-            "description": "Returns the state an asset. Argument is a JSON encoded string. The arg is an 'assetID' property.",
+            "description": "Returns the state a container",
             "properties": {
                 "args": {
                     "items": {
@@ -515,7 +522,7 @@ var schemas = `
                             "container": {
                                 "properties": {
                                     "barcode": {
-                                        "description": "container ID",
+                                        "description": "a container's ID",
                                         "type": "string"
                                     }
                                 },
@@ -529,7 +536,6 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "readAsset function",
                     "enum": [
                         "readAsset"
                     ],
@@ -537,16 +543,16 @@ var schemas = `
                 },
                 "method": "query",
                 "result": {
-                    "description": "The shape of all asset states.",
+                    "description": "A container's complete state",
                     "properties": {
                         "AssetKey": {
-                            "description": "The World State asset ID. Used to read and write state.",
+                            "description": "This container's world state container ID",
                             "type": "string"
                         },
                         "alerts": {
-                            "description": "List of alert names that are currently active.",
+                            "description": "A list of alert names",
                             "items": {
-                                "description": "Container alerts. Triggered or cleared by contract rules.",
+                                "description": "An alert name",
                                 "enum": [
                                     "OVERTTEMP"
                                 ],
@@ -555,46 +561,53 @@ var schemas = `
                             "type": "array"
                         },
                         "assetIDpath": {
-                            "description": "Qualified property path to the asset's ID.",
+                            "description": "Qualified property path to the container's ID, declared in the contract code",
                             "type": "string"
                         },
                         "class": {
-                            "description": "Asset class.",
+                            "description": "The container's asset class",
                             "type": "string"
                         },
                         "compliant": {
-                            "description": "A contract-specific indication that this asset is compliant.",
+                            "description": "This container has no active alerts",
                             "type": "boolean"
                         },
                         "eventin": {
-                            "description": "The event that created this state.",
+                            "description": "The contract event that created this state, for example updateAssetContainer",
                             "properties": {
                                 "container": {
-                                    "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                                    "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                                     "properties": {
                                         "barcode": {
-                                            "description": "The ID of a container.",
+                                            "description": "A container's ID",
                                             "type": "string"
                                         },
                                         "carrier": {
-                                            "description": "transport entity currently in possession of the container",
+                                            "description": "The carrier in possession of this container",
                                             "type": "string"
                                         },
                                         "common": {
-                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                            "description": "Common properties for all containers",
                                             "properties": {
-                                                "devicetimestamp": {
-                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                    "type": "string"
-                                                },
-                                                "extension": {
-                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                                "appdata": {
+                                                    "description": "Application managed information as an array of key:value pairs",
                                                     "items": {
-                                                        "properties": {},
+                                                        "properties": {
+                                                            "K": {
+                                                                "type": "string"
+                                                            },
+                                                            "V": {
+                                                                "type": "string"
+                                                            }
+                                                        },
                                                         "type": "object"
                                                     },
                                                     "minItems": 0,
                                                     "type": "array"
+                                                },
+                                                "devicetimestamp": {
+                                                    "description": "A timestamp recoded by the device that sent the current event",
+                                                    "type": "string"
                                                 },
                                                 "location": {
                                                     "description": "A geographical coordinate",
@@ -607,20 +620,12 @@ var schemas = `
                                                         }
                                                     },
                                                     "type": "object"
-                                                },
-                                                "references": {
-                                                    "description": "An array of external references relevant to this asset.",
-                                                    "items": {
-                                                        "type": "string"
-                                                    },
-                                                    "minItems": 0,
-                                                    "type": "array"
                                                 }
                                             },
                                             "type": "object"
                                         },
                                         "temperature": {
-                                            "description": "Temperature of the inside of the container in CELSIUS.",
+                                            "description": "Temperature of a container's contents in degrees Celsuis",
                                             "type": "number"
                                         }
                                     },
@@ -633,17 +638,17 @@ var schemas = `
                             "type": "object"
                         },
                         "eventout": {
-                            "description": "A chaincode event to be emitted on invoke exit.",
+                            "description": "The chaincode event emitted on invoke exit, if any",
                             "properties": {
                                 "container": {
-                                    "description": "An event that is emitted at the end of an invoke, if it is present.",
+                                    "description": "An chaincode event emitted by a contract invoke",
                                     "properties": {
                                         "name": {
-                                            "description": "Event name.",
+                                            "description": "The chaincode event's name",
                                             "type": "string"
                                         },
                                         "payload": {
-                                            "description": "A json object containing the event's properties.",
+                                            "description": "The chaincode event's properties",
                                             "properties": {},
                                             "type": "object"
                                         }
@@ -654,38 +659,45 @@ var schemas = `
                             "type": "object"
                         },
                         "prefix": {
-                            "description": "Asset class prefix in World State.",
+                            "description": "The container's asset class prefix in world state",
                             "type": "string"
                         },
                         "state": {
-                            "description": "The state of the one asset.",
+                            "description": "Properties that have been received or calculated for this container",
                             "properties": {
                                 "container": {
-                                    "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                                    "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                                     "properties": {
                                         "barcode": {
-                                            "description": "The ID of a container.",
+                                            "description": "A container's ID",
                                             "type": "string"
                                         },
                                         "carrier": {
-                                            "description": "transport entity currently in possession of the container",
+                                            "description": "The carrier in possession of this container",
                                             "type": "string"
                                         },
                                         "common": {
-                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                            "description": "Common properties for all containers",
                                             "properties": {
-                                                "devicetimestamp": {
-                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                    "type": "string"
-                                                },
-                                                "extension": {
-                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                                "appdata": {
+                                                    "description": "Application managed information as an array of key:value pairs",
                                                     "items": {
-                                                        "properties": {},
+                                                        "properties": {
+                                                            "K": {
+                                                                "type": "string"
+                                                            },
+                                                            "V": {
+                                                                "type": "string"
+                                                            }
+                                                        },
                                                         "type": "object"
                                                     },
                                                     "minItems": 0,
                                                     "type": "array"
+                                                },
+                                                "devicetimestamp": {
+                                                    "description": "A timestamp recoded by the device that sent the current event",
+                                                    "type": "string"
                                                 },
                                                 "location": {
                                                     "description": "A geographical coordinate",
@@ -698,20 +710,12 @@ var schemas = `
                                                         }
                                                     },
                                                     "type": "object"
-                                                },
-                                                "references": {
-                                                    "description": "An array of external references relevant to this asset.",
-                                                    "items": {
-                                                        "type": "string"
-                                                    },
-                                                    "minItems": 0,
-                                                    "type": "array"
                                                 }
                                             },
                                             "type": "object"
                                         },
                                         "temperature": {
-                                            "description": "Temperature of the inside of the container in CELSIUS.",
+                                            "description": "Temperature of a container's contents in degrees Celsuis",
                                             "type": "number"
                                         }
                                     },
@@ -724,11 +728,11 @@ var schemas = `
                             "type": "object"
                         },
                         "txnid": {
-                            "description": "Transaction UUID matching that in the blockchain.",
+                            "description": "Transaction UUID matching the blockchain",
                             "type": "string"
                         },
                         "txnts": {
-                            "description": "Transaction timestamp matching that in the blockchain.",
+                            "description": "Transaction timestamp matching the blockchain",
                             "type": "string"
                         }
                     },
@@ -738,14 +742,13 @@ var schemas = `
             "type": "object"
         },
         "readAssetHistoryContainer": {
-            "description": "Requests a specified number of history states for an assets. Returns an array of states sorted with the most recent first. The 'assetID' property is required and the count property is optional. A missing count, a count of zero, or too large a count returns all existing history states.",
+            "description": "Returns the history of a container",
             "properties": {
                 "args": {
-                    "description": "args are JSON encoded strings",
                     "items": {
                         "properties": {
                             "barcode": {
-                                "description": "The ID of a container.",
+                                "description": "A container's ID",
                                 "type": "string"
                             },
                             "end": {
@@ -768,7 +771,6 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "readAssetHistory function",
                     "enum": [
                         "readAssetHistory"
                     ],
@@ -776,20 +778,20 @@ var schemas = `
                 },
                 "method": "query",
                 "result": {
-                    "description": "an array of container states, often for different assets",
+                    "description": "Array of container states, can mix asset classes",
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "The shape of all asset states.",
+                                "description": "A container's complete state",
                                 "properties": {
                                     "AssetKey": {
-                                        "description": "The World State asset ID. Used to read and write state.",
+                                        "description": "This container's world state container ID",
                                         "type": "string"
                                     },
                                     "alerts": {
-                                        "description": "List of alert names that are currently active.",
+                                        "description": "A list of alert names",
                                         "items": {
-                                            "description": "Container alerts. Triggered or cleared by contract rules.",
+                                            "description": "An alert name",
                                             "enum": [
                                                 "OVERTTEMP"
                                             ],
@@ -798,46 +800,53 @@ var schemas = `
                                         "type": "array"
                                     },
                                     "assetIDpath": {
-                                        "description": "Qualified property path to the asset's ID.",
+                                        "description": "Qualified property path to the container's ID, declared in the contract code",
                                         "type": "string"
                                     },
                                     "class": {
-                                        "description": "Asset class.",
+                                        "description": "The container's asset class",
                                         "type": "string"
                                     },
                                     "compliant": {
-                                        "description": "A contract-specific indication that this asset is compliant.",
+                                        "description": "This container has no active alerts",
                                         "type": "boolean"
                                     },
                                     "eventin": {
-                                        "description": "The event that created this state.",
+                                        "description": "The contract event that created this state, for example updateAssetContainer",
                                         "properties": {
                                             "container": {
-                                                "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                                                "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                                                 "properties": {
                                                     "barcode": {
-                                                        "description": "The ID of a container.",
+                                                        "description": "A container's ID",
                                                         "type": "string"
                                                     },
                                                     "carrier": {
-                                                        "description": "transport entity currently in possession of the container",
+                                                        "description": "The carrier in possession of this container",
                                                         "type": "string"
                                                     },
                                                     "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                        "description": "Common properties for all containers",
                                                         "properties": {
-                                                            "devicetimestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                "type": "string"
-                                                            },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                                            "appdata": {
+                                                                "description": "Application managed information as an array of key:value pairs",
                                                                 "items": {
-                                                                    "properties": {},
+                                                                    "properties": {
+                                                                        "K": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "V": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
                                                                     "type": "object"
                                                                 },
                                                                 "minItems": 0,
                                                                 "type": "array"
+                                                            },
+                                                            "devicetimestamp": {
+                                                                "description": "A timestamp recoded by the device that sent the current event",
+                                                                "type": "string"
                                                             },
                                                             "location": {
                                                                 "description": "A geographical coordinate",
@@ -850,20 +859,12 @@ var schemas = `
                                                                     }
                                                                 },
                                                                 "type": "object"
-                                                            },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
                                                             }
                                                         },
                                                         "type": "object"
                                                     },
                                                     "temperature": {
-                                                        "description": "Temperature of the inside of the container in CELSIUS.",
+                                                        "description": "Temperature of a container's contents in degrees Celsuis",
                                                         "type": "number"
                                                     }
                                                 },
@@ -876,17 +877,17 @@ var schemas = `
                                         "type": "object"
                                     },
                                     "eventout": {
-                                        "description": "A chaincode event to be emitted on invoke exit.",
+                                        "description": "The chaincode event emitted on invoke exit, if any",
                                         "properties": {
                                             "container": {
-                                                "description": "An event that is emitted at the end of an invoke, if it is present.",
+                                                "description": "An chaincode event emitted by a contract invoke",
                                                 "properties": {
                                                     "name": {
-                                                        "description": "Event name.",
+                                                        "description": "The chaincode event's name",
                                                         "type": "string"
                                                     },
                                                     "payload": {
-                                                        "description": "A json object containing the event's properties.",
+                                                        "description": "The chaincode event's properties",
                                                         "properties": {},
                                                         "type": "object"
                                                     }
@@ -897,38 +898,45 @@ var schemas = `
                                         "type": "object"
                                     },
                                     "prefix": {
-                                        "description": "Asset class prefix in World State.",
+                                        "description": "The container's asset class prefix in world state",
                                         "type": "string"
                                     },
                                     "state": {
-                                        "description": "The state of the one asset.",
+                                        "description": "Properties that have been received or calculated for this container",
                                         "properties": {
                                             "container": {
-                                                "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                                                "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                                                 "properties": {
                                                     "barcode": {
-                                                        "description": "The ID of a container.",
+                                                        "description": "A container's ID",
                                                         "type": "string"
                                                     },
                                                     "carrier": {
-                                                        "description": "transport entity currently in possession of the container",
+                                                        "description": "The carrier in possession of this container",
                                                         "type": "string"
                                                     },
                                                     "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                        "description": "Common properties for all containers",
                                                         "properties": {
-                                                            "devicetimestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                "type": "string"
-                                                            },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                                            "appdata": {
+                                                                "description": "Application managed information as an array of key:value pairs",
                                                                 "items": {
-                                                                    "properties": {},
+                                                                    "properties": {
+                                                                        "K": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "V": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
                                                                     "type": "object"
                                                                 },
                                                                 "minItems": 0,
                                                                 "type": "array"
+                                                            },
+                                                            "devicetimestamp": {
+                                                                "description": "A timestamp recoded by the device that sent the current event",
+                                                                "type": "string"
                                                             },
                                                             "location": {
                                                                 "description": "A geographical coordinate",
@@ -941,20 +949,12 @@ var schemas = `
                                                                     }
                                                                 },
                                                                 "type": "object"
-                                                            },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
                                                             }
                                                         },
                                                         "type": "object"
                                                     },
                                                     "temperature": {
-                                                        "description": "Temperature of the inside of the container in CELSIUS.",
+                                                        "description": "Temperature of a container's contents in degrees Celsuis",
                                                         "type": "number"
                                                     }
                                                 },
@@ -967,11 +967,11 @@ var schemas = `
                                         "type": "object"
                                     },
                                     "txnid": {
-                                        "description": "Transaction UUID matching that in the blockchain.",
+                                        "description": "Transaction UUID matching the blockchain",
                                         "type": "string"
                                     },
                                     "txnts": {
-                                        "description": "Transaction timestamp matching that in the blockchain.",
+                                        "description": "Transaction timestamp matching the blockchain",
                                         "type": "string"
                                     }
                                 },
@@ -987,17 +987,15 @@ var schemas = `
             "type": "object"
         },
         "readRecentStates": {
-            "description": "Returns the state of recently updated assets as an array of objects sorted with the most recently updated asset first. Each asset appears exactly once up to a maxmum of 20 in this version of the contract.",
+            "description": "Returns the state of recently updated assets",
             "properties": {
                 "args": {
-                    "description": "accepts no arguments",
                     "items": {},
                     "maxItems": 0,
                     "minItems": 0,
                     "type": "array"
                 },
                 "function": {
-                    "description": "readRecentStates function",
                     "enum": [
                         "readRecentStates"
                     ],
@@ -1005,20 +1003,20 @@ var schemas = `
                 },
                 "method": "query",
                 "result": {
-                    "description": "an array of container states, often for different assets",
+                    "description": "Array of container states, can mix asset classes",
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "The shape of all asset states.",
+                                "description": "A container's complete state",
                                 "properties": {
                                     "AssetKey": {
-                                        "description": "The World State asset ID. Used to read and write state.",
+                                        "description": "This container's world state container ID",
                                         "type": "string"
                                     },
                                     "alerts": {
-                                        "description": "List of alert names that are currently active.",
+                                        "description": "A list of alert names",
                                         "items": {
-                                            "description": "Container alerts. Triggered or cleared by contract rules.",
+                                            "description": "An alert name",
                                             "enum": [
                                                 "OVERTTEMP"
                                             ],
@@ -1027,46 +1025,53 @@ var schemas = `
                                         "type": "array"
                                     },
                                     "assetIDpath": {
-                                        "description": "Qualified property path to the asset's ID.",
+                                        "description": "Qualified property path to the container's ID, declared in the contract code",
                                         "type": "string"
                                     },
                                     "class": {
-                                        "description": "Asset class.",
+                                        "description": "The container's asset class",
                                         "type": "string"
                                     },
                                     "compliant": {
-                                        "description": "A contract-specific indication that this asset is compliant.",
+                                        "description": "This container has no active alerts",
                                         "type": "boolean"
                                     },
                                     "eventin": {
-                                        "description": "The event that created this state.",
+                                        "description": "The contract event that created this state, for example updateAssetContainer",
                                         "properties": {
                                             "container": {
-                                                "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                                                "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                                                 "properties": {
                                                     "barcode": {
-                                                        "description": "The ID of a container.",
+                                                        "description": "A container's ID",
                                                         "type": "string"
                                                     },
                                                     "carrier": {
-                                                        "description": "transport entity currently in possession of the container",
+                                                        "description": "The carrier in possession of this container",
                                                         "type": "string"
                                                     },
                                                     "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                        "description": "Common properties for all containers",
                                                         "properties": {
-                                                            "devicetimestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                "type": "string"
-                                                            },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                                            "appdata": {
+                                                                "description": "Application managed information as an array of key:value pairs",
                                                                 "items": {
-                                                                    "properties": {},
+                                                                    "properties": {
+                                                                        "K": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "V": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
                                                                     "type": "object"
                                                                 },
                                                                 "minItems": 0,
                                                                 "type": "array"
+                                                            },
+                                                            "devicetimestamp": {
+                                                                "description": "A timestamp recoded by the device that sent the current event",
+                                                                "type": "string"
                                                             },
                                                             "location": {
                                                                 "description": "A geographical coordinate",
@@ -1079,20 +1084,12 @@ var schemas = `
                                                                     }
                                                                 },
                                                                 "type": "object"
-                                                            },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
                                                             }
                                                         },
                                                         "type": "object"
                                                     },
                                                     "temperature": {
-                                                        "description": "Temperature of the inside of the container in CELSIUS.",
+                                                        "description": "Temperature of a container's contents in degrees Celsuis",
                                                         "type": "number"
                                                     }
                                                 },
@@ -1105,17 +1102,17 @@ var schemas = `
                                         "type": "object"
                                     },
                                     "eventout": {
-                                        "description": "A chaincode event to be emitted on invoke exit.",
+                                        "description": "The chaincode event emitted on invoke exit, if any",
                                         "properties": {
                                             "container": {
-                                                "description": "An event that is emitted at the end of an invoke, if it is present.",
+                                                "description": "An chaincode event emitted by a contract invoke",
                                                 "properties": {
                                                     "name": {
-                                                        "description": "Event name.",
+                                                        "description": "The chaincode event's name",
                                                         "type": "string"
                                                     },
                                                     "payload": {
-                                                        "description": "A json object containing the event's properties.",
+                                                        "description": "The chaincode event's properties",
                                                         "properties": {},
                                                         "type": "object"
                                                     }
@@ -1126,38 +1123,45 @@ var schemas = `
                                         "type": "object"
                                     },
                                     "prefix": {
-                                        "description": "Asset class prefix in World State.",
+                                        "description": "The container's asset class prefix in world state",
                                         "type": "string"
                                     },
                                     "state": {
-                                        "description": "The state of the one asset.",
+                                        "description": "Properties that have been received or calculated for this container",
                                         "properties": {
                                             "container": {
-                                                "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                                                "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                                                 "properties": {
                                                     "barcode": {
-                                                        "description": "The ID of a container.",
+                                                        "description": "A container's ID",
                                                         "type": "string"
                                                     },
                                                     "carrier": {
-                                                        "description": "transport entity currently in possession of the container",
+                                                        "description": "The carrier in possession of this container",
                                                         "type": "string"
                                                     },
                                                     "common": {
-                                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                        "description": "Common properties for all containers",
                                                         "properties": {
-                                                            "devicetimestamp": {
-                                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                                "type": "string"
-                                                            },
-                                                            "extension": {
-                                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                                            "appdata": {
+                                                                "description": "Application managed information as an array of key:value pairs",
                                                                 "items": {
-                                                                    "properties": {},
+                                                                    "properties": {
+                                                                        "K": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "V": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
                                                                     "type": "object"
                                                                 },
                                                                 "minItems": 0,
                                                                 "type": "array"
+                                                            },
+                                                            "devicetimestamp": {
+                                                                "description": "A timestamp recoded by the device that sent the current event",
+                                                                "type": "string"
                                                             },
                                                             "location": {
                                                                 "description": "A geographical coordinate",
@@ -1170,20 +1174,12 @@ var schemas = `
                                                                     }
                                                                 },
                                                                 "type": "object"
-                                                            },
-                                                            "references": {
-                                                                "description": "An array of external references relevant to this asset.",
-                                                                "items": {
-                                                                    "type": "string"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
                                                             }
                                                         },
                                                         "type": "object"
                                                     },
                                                     "temperature": {
-                                                        "description": "Temperature of the inside of the container in CELSIUS.",
+                                                        "description": "Temperature of a container's contents in degrees Celsuis",
                                                         "type": "number"
                                                     }
                                                 },
@@ -1196,11 +1192,11 @@ var schemas = `
                                         "type": "object"
                                     },
                                     "txnid": {
-                                        "description": "Transaction UUID matching that in the blockchain.",
+                                        "description": "Transaction UUID matching the blockchain",
                                         "type": "string"
                                     },
                                     "txnts": {
-                                        "description": "Transaction timestamp matching that in the blockchain.",
+                                        "description": "Transaction timestamp matching the blockchain",
                                         "type": "string"
                                     }
                                 },
@@ -1215,11 +1211,33 @@ var schemas = `
             },
             "type": "object"
         },
-        "setCreateOnUpdate": {
-            "description": "Allow updateAsset to redirect to createAsset when 'assetID' does not exist.",
+        "readWorldState": {
+            "description": "Returns the entire contents of world state",
             "properties": {
                 "args": {
-                    "description": "True for redirect allowed, false for error on asset does not exist.",
+                    "items": {},
+                    "maxItems": 0,
+                    "minItems": 0,
+                    "type": "array"
+                },
+                "function": {
+                    "enum": [
+                        "readWorldState"
+                    ],
+                    "type": "string"
+                },
+                "method": "query",
+                "result": {
+                    "properties": {},
+                    "type": "object"
+                }
+            },
+            "type": "object"
+        },
+        "setCreateOnUpdate": {
+            "description": "Allow updateAsset to create a container upon receipt of its first event",
+            "properties": {
+                "args": {
                     "items": {
                         "setCreateOnUpdate": {
                             "type": "boolean"
@@ -1230,7 +1248,6 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "setCreateOnUpdate function",
                     "enum": [
                         "setCreateOnUpdate"
                     ],
@@ -1241,10 +1258,9 @@ var schemas = `
             "type": "object"
         },
         "setLoggingLevel": {
-            "description": "Sets the logging level in the contract.",
+            "description": "Sets the logging level for the contract",
             "properties": {
                 "args": {
-                    "description": "logging levels indicate what you see",
                     "items": {
                         "logLevel": {
                             "enum": [
@@ -1263,7 +1279,6 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "setLoggingLevel function",
                     "enum": [
                         "setLoggingLevel"
                     ],
@@ -1274,38 +1289,44 @@ var schemas = `
             "type": "object"
         },
         "updateAssetContainer": {
-            "description": "Update the state of an asset. The one argument is a JSON encoded event. The 'assetID' property is required along with one or more writable properties. Establishes the next asset state. ",
+            "description": "Update a contaner's state with one or more property changes",
             "properties": {
                 "args": {
-                    "description": "args are JSON encoded strings",
                     "items": {
                         "properties": {
                             "container": {
-                                "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                                "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                                 "properties": {
                                     "barcode": {
-                                        "description": "The ID of a container.",
+                                        "description": "A container's ID",
                                         "type": "string"
                                     },
                                     "carrier": {
-                                        "description": "transport entity currently in possession of the container",
+                                        "description": "The carrier in possession of this container",
                                         "type": "string"
                                     },
                                     "common": {
-                                        "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                        "description": "Common properties for all containers",
                                         "properties": {
-                                            "devicetimestamp": {
-                                                "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                "type": "string"
-                                            },
-                                            "extension": {
-                                                "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                            "appdata": {
+                                                "description": "Application managed information as an array of key:value pairs",
                                                 "items": {
-                                                    "properties": {},
+                                                    "properties": {
+                                                        "K": {
+                                                            "type": "string"
+                                                        },
+                                                        "V": {
+                                                            "type": "string"
+                                                        }
+                                                    },
                                                     "type": "object"
                                                 },
                                                 "minItems": 0,
                                                 "type": "array"
+                                            },
+                                            "devicetimestamp": {
+                                                "description": "A timestamp recoded by the device that sent the current event",
+                                                "type": "string"
                                             },
                                             "location": {
                                                 "description": "A geographical coordinate",
@@ -1318,20 +1339,12 @@ var schemas = `
                                                     }
                                                 },
                                                 "type": "object"
-                                            },
-                                            "references": {
-                                                "description": "An array of external references relevant to this asset.",
-                                                "items": {
-                                                    "type": "string"
-                                                },
-                                                "minItems": 0,
-                                                "type": "array"
                                             }
                                         },
                                         "type": "object"
                                     },
                                     "temperature": {
-                                        "description": "Temperature of the inside of the container in CELSIUS.",
+                                        "description": "Temperature of a container's contents in degrees Celsuis",
                                         "type": "number"
                                     }
                                 },
@@ -1348,7 +1361,6 @@ var schemas = `
                     "type": "array"
                 },
                 "function": {
-                    "description": "updateAsset function",
                     "enum": [
                         "updateAsset"
                     ],
@@ -1361,31 +1373,38 @@ var schemas = `
     },
     "objectModelSchemas": {
         "container": {
-            "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+            "description": "The changeable properties for a container, also considered its 'event' as a partial state",
             "properties": {
                 "barcode": {
-                    "description": "The ID of a container.",
+                    "description": "A container's ID",
                     "type": "string"
                 },
                 "carrier": {
-                    "description": "transport entity currently in possession of the container",
+                    "description": "The carrier in possession of this container",
                     "type": "string"
                 },
                 "common": {
-                    "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                    "description": "Common properties for all containers",
                     "properties": {
-                        "devicetimestamp": {
-                            "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                            "type": "string"
-                        },
-                        "extension": {
-                            "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                        "appdata": {
+                            "description": "Application managed information as an array of key:value pairs",
                             "items": {
-                                "properties": {},
+                                "properties": {
+                                    "K": {
+                                        "type": "string"
+                                    },
+                                    "V": {
+                                        "type": "string"
+                                    }
+                                },
                                 "type": "object"
                             },
                             "minItems": 0,
                             "type": "array"
+                        },
+                        "devicetimestamp": {
+                            "description": "A timestamp recoded by the device that sent the current event",
+                            "type": "string"
                         },
                         "location": {
                             "description": "A geographical coordinate",
@@ -1398,20 +1417,12 @@ var schemas = `
                                 }
                             },
                             "type": "object"
-                        },
-                        "references": {
-                            "description": "An array of external references relevant to this asset.",
-                            "items": {
-                                "type": "string"
-                            },
-                            "minItems": 0,
-                            "type": "array"
                         }
                     },
                     "type": "object"
                 },
                 "temperature": {
-                    "description": "Temperature of the inside of the container in CELSIUS.",
+                    "description": "Temperature of a container's contents in degrees Celsuis",
                     "type": "number"
                 }
             },
@@ -1421,16 +1432,16 @@ var schemas = `
             "type": "object"
         },
         "containerstate": {
-            "description": "The shape of all asset states.",
+            "description": "A container's complete state",
             "properties": {
                 "AssetKey": {
-                    "description": "The World State asset ID. Used to read and write state.",
+                    "description": "This container's world state container ID",
                     "type": "string"
                 },
                 "alerts": {
-                    "description": "List of alert names that are currently active.",
+                    "description": "A list of alert names",
                     "items": {
-                        "description": "Container alerts. Triggered or cleared by contract rules.",
+                        "description": "An alert name",
                         "enum": [
                             "OVERTTEMP"
                         ],
@@ -1439,46 +1450,53 @@ var schemas = `
                     "type": "array"
                 },
                 "assetIDpath": {
-                    "description": "Qualified property path to the asset's ID.",
+                    "description": "Qualified property path to the container's ID, declared in the contract code",
                     "type": "string"
                 },
                 "class": {
-                    "description": "Asset class.",
+                    "description": "The container's asset class",
                     "type": "string"
                 },
                 "compliant": {
-                    "description": "A contract-specific indication that this asset is compliant.",
+                    "description": "This container has no active alerts",
                     "type": "boolean"
                 },
                 "eventin": {
-                    "description": "The event that created this state.",
+                    "description": "The contract event that created this state, for example updateAssetContainer",
                     "properties": {
                         "container": {
-                            "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                            "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                             "properties": {
                                 "barcode": {
-                                    "description": "The ID of a container.",
+                                    "description": "A container's ID",
                                     "type": "string"
                                 },
                                 "carrier": {
-                                    "description": "transport entity currently in possession of the container",
+                                    "description": "The carrier in possession of this container",
                                     "type": "string"
                                 },
                                 "common": {
-                                    "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                    "description": "Common properties for all containers",
                                     "properties": {
-                                        "devicetimestamp": {
-                                            "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                            "type": "string"
-                                        },
-                                        "extension": {
-                                            "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                        "appdata": {
+                                            "description": "Application managed information as an array of key:value pairs",
                                             "items": {
-                                                "properties": {},
+                                                "properties": {
+                                                    "K": {
+                                                        "type": "string"
+                                                    },
+                                                    "V": {
+                                                        "type": "string"
+                                                    }
+                                                },
                                                 "type": "object"
                                             },
                                             "minItems": 0,
                                             "type": "array"
+                                        },
+                                        "devicetimestamp": {
+                                            "description": "A timestamp recoded by the device that sent the current event",
+                                            "type": "string"
                                         },
                                         "location": {
                                             "description": "A geographical coordinate",
@@ -1491,20 +1509,12 @@ var schemas = `
                                                 }
                                             },
                                             "type": "object"
-                                        },
-                                        "references": {
-                                            "description": "An array of external references relevant to this asset.",
-                                            "items": {
-                                                "type": "string"
-                                            },
-                                            "minItems": 0,
-                                            "type": "array"
                                         }
                                     },
                                     "type": "object"
                                 },
                                 "temperature": {
-                                    "description": "Temperature of the inside of the container in CELSIUS.",
+                                    "description": "Temperature of a container's contents in degrees Celsuis",
                                     "type": "number"
                                 }
                             },
@@ -1517,17 +1527,17 @@ var schemas = `
                     "type": "object"
                 },
                 "eventout": {
-                    "description": "A chaincode event to be emitted on invoke exit.",
+                    "description": "The chaincode event emitted on invoke exit, if any",
                     "properties": {
                         "container": {
-                            "description": "An event that is emitted at the end of an invoke, if it is present.",
+                            "description": "An chaincode event emitted by a contract invoke",
                             "properties": {
                                 "name": {
-                                    "description": "Event name.",
+                                    "description": "The chaincode event's name",
                                     "type": "string"
                                 },
                                 "payload": {
-                                    "description": "A json object containing the event's properties.",
+                                    "description": "The chaincode event's properties",
                                     "properties": {},
                                     "type": "object"
                                 }
@@ -1538,38 +1548,45 @@ var schemas = `
                     "type": "object"
                 },
                 "prefix": {
-                    "description": "Asset class prefix in World State.",
+                    "description": "The container's asset class prefix in world state",
                     "type": "string"
                 },
                 "state": {
-                    "description": "The state of the one asset.",
+                    "description": "Properties that have been received or calculated for this container",
                     "properties": {
                         "container": {
-                            "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                            "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                             "properties": {
                                 "barcode": {
-                                    "description": "The ID of a container.",
+                                    "description": "A container's ID",
                                     "type": "string"
                                 },
                                 "carrier": {
-                                    "description": "transport entity currently in possession of the container",
+                                    "description": "The carrier in possession of this container",
                                     "type": "string"
                                 },
                                 "common": {
-                                    "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                    "description": "Common properties for all containers",
                                     "properties": {
-                                        "devicetimestamp": {
-                                            "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                            "type": "string"
-                                        },
-                                        "extension": {
-                                            "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                        "appdata": {
+                                            "description": "Application managed information as an array of key:value pairs",
                                             "items": {
-                                                "properties": {},
+                                                "properties": {
+                                                    "K": {
+                                                        "type": "string"
+                                                    },
+                                                    "V": {
+                                                        "type": "string"
+                                                    }
+                                                },
                                                 "type": "object"
                                             },
                                             "minItems": 0,
                                             "type": "array"
+                                        },
+                                        "devicetimestamp": {
+                                            "description": "A timestamp recoded by the device that sent the current event",
+                                            "type": "string"
                                         },
                                         "location": {
                                             "description": "A geographical coordinate",
@@ -1582,20 +1599,12 @@ var schemas = `
                                                 }
                                             },
                                             "type": "object"
-                                        },
-                                        "references": {
-                                            "description": "An array of external references relevant to this asset.",
-                                            "items": {
-                                                "type": "string"
-                                            },
-                                            "minItems": 0,
-                                            "type": "array"
                                         }
                                     },
                                     "type": "object"
                                 },
                                 "temperature": {
-                                    "description": "Temperature of the inside of the container in CELSIUS.",
+                                    "description": "Temperature of a container's contents in degrees Celsuis",
                                     "type": "number"
                                 }
                             },
@@ -1608,31 +1617,31 @@ var schemas = `
                     "type": "object"
                 },
                 "txnid": {
-                    "description": "Transaction UUID matching that in the blockchain.",
+                    "description": "Transaction UUID matching the blockchain",
                     "type": "string"
                 },
                 "txnts": {
-                    "description": "Transaction timestamp matching that in the blockchain.",
+                    "description": "Transaction timestamp matching the blockchain",
                     "type": "string"
                 }
             },
             "type": "object"
         },
         "containerstatearray": {
-            "description": "an array of container states, often for different assets",
+            "description": "Array of container states, can mix asset classes",
             "items": {
                 "patternProperties": {
                     "^CON": {
-                        "description": "The shape of all asset states.",
+                        "description": "A container's complete state",
                         "properties": {
                             "AssetKey": {
-                                "description": "The World State asset ID. Used to read and write state.",
+                                "description": "This container's world state container ID",
                                 "type": "string"
                             },
                             "alerts": {
-                                "description": "List of alert names that are currently active.",
+                                "description": "A list of alert names",
                                 "items": {
-                                    "description": "Container alerts. Triggered or cleared by contract rules.",
+                                    "description": "An alert name",
                                     "enum": [
                                         "OVERTTEMP"
                                     ],
@@ -1641,46 +1650,53 @@ var schemas = `
                                 "type": "array"
                             },
                             "assetIDpath": {
-                                "description": "Qualified property path to the asset's ID.",
+                                "description": "Qualified property path to the container's ID, declared in the contract code",
                                 "type": "string"
                             },
                             "class": {
-                                "description": "Asset class.",
+                                "description": "The container's asset class",
                                 "type": "string"
                             },
                             "compliant": {
-                                "description": "A contract-specific indication that this asset is compliant.",
+                                "description": "This container has no active alerts",
                                 "type": "boolean"
                             },
                             "eventin": {
-                                "description": "The event that created this state.",
+                                "description": "The contract event that created this state, for example updateAssetContainer",
                                 "properties": {
                                     "container": {
-                                        "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                                        "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                                         "properties": {
                                             "barcode": {
-                                                "description": "The ID of a container.",
+                                                "description": "A container's ID",
                                                 "type": "string"
                                             },
                                             "carrier": {
-                                                "description": "transport entity currently in possession of the container",
+                                                "description": "The carrier in possession of this container",
                                                 "type": "string"
                                             },
                                             "common": {
-                                                "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                "description": "Common properties for all containers",
                                                 "properties": {
-                                                    "devicetimestamp": {
-                                                        "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                        "type": "string"
-                                                    },
-                                                    "extension": {
-                                                        "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                                    "appdata": {
+                                                        "description": "Application managed information as an array of key:value pairs",
                                                         "items": {
-                                                            "properties": {},
+                                                            "properties": {
+                                                                "K": {
+                                                                    "type": "string"
+                                                                },
+                                                                "V": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
                                                             "type": "object"
                                                         },
                                                         "minItems": 0,
                                                         "type": "array"
+                                                    },
+                                                    "devicetimestamp": {
+                                                        "description": "A timestamp recoded by the device that sent the current event",
+                                                        "type": "string"
                                                     },
                                                     "location": {
                                                         "description": "A geographical coordinate",
@@ -1693,20 +1709,12 @@ var schemas = `
                                                             }
                                                         },
                                                         "type": "object"
-                                                    },
-                                                    "references": {
-                                                        "description": "An array of external references relevant to this asset.",
-                                                        "items": {
-                                                            "type": "string"
-                                                        },
-                                                        "minItems": 0,
-                                                        "type": "array"
                                                     }
                                                 },
                                                 "type": "object"
                                             },
                                             "temperature": {
-                                                "description": "Temperature of the inside of the container in CELSIUS.",
+                                                "description": "Temperature of a container's contents in degrees Celsuis",
                                                 "type": "number"
                                             }
                                         },
@@ -1719,17 +1727,17 @@ var schemas = `
                                 "type": "object"
                             },
                             "eventout": {
-                                "description": "A chaincode event to be emitted on invoke exit.",
+                                "description": "The chaincode event emitted on invoke exit, if any",
                                 "properties": {
                                     "container": {
-                                        "description": "An event that is emitted at the end of an invoke, if it is present.",
+                                        "description": "An chaincode event emitted by a contract invoke",
                                         "properties": {
                                             "name": {
-                                                "description": "Event name.",
+                                                "description": "The chaincode event's name",
                                                 "type": "string"
                                             },
                                             "payload": {
-                                                "description": "A json object containing the event's properties.",
+                                                "description": "The chaincode event's properties",
                                                 "properties": {},
                                                 "type": "object"
                                             }
@@ -1740,38 +1748,45 @@ var schemas = `
                                 "type": "object"
                             },
                             "prefix": {
-                                "description": "Asset class prefix in World State.",
+                                "description": "The container's asset class prefix in world state",
                                 "type": "string"
                             },
                             "state": {
-                                "description": "The state of the one asset.",
+                                "description": "Properties that have been received or calculated for this container",
                                 "properties": {
                                     "container": {
-                                        "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                                        "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                                         "properties": {
                                             "barcode": {
-                                                "description": "The ID of a container.",
+                                                "description": "A container's ID",
                                                 "type": "string"
                                             },
                                             "carrier": {
-                                                "description": "transport entity currently in possession of the container",
+                                                "description": "The carrier in possession of this container",
                                                 "type": "string"
                                             },
                                             "common": {
-                                                "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                                "description": "Common properties for all containers",
                                                 "properties": {
-                                                    "devicetimestamp": {
-                                                        "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                        "type": "string"
-                                                    },
-                                                    "extension": {
-                                                        "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                                    "appdata": {
+                                                        "description": "Application managed information as an array of key:value pairs",
                                                         "items": {
-                                                            "properties": {},
+                                                            "properties": {
+                                                                "K": {
+                                                                    "type": "string"
+                                                                },
+                                                                "V": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
                                                             "type": "object"
                                                         },
                                                         "minItems": 0,
                                                         "type": "array"
+                                                    },
+                                                    "devicetimestamp": {
+                                                        "description": "A timestamp recoded by the device that sent the current event",
+                                                        "type": "string"
                                                     },
                                                     "location": {
                                                         "description": "A geographical coordinate",
@@ -1784,20 +1799,12 @@ var schemas = `
                                                             }
                                                         },
                                                         "type": "object"
-                                                    },
-                                                    "references": {
-                                                        "description": "An array of external references relevant to this asset.",
-                                                        "items": {
-                                                            "type": "string"
-                                                        },
-                                                        "minItems": 0,
-                                                        "type": "array"
                                                     }
                                                 },
                                                 "type": "object"
                                             },
                                             "temperature": {
-                                                "description": "Temperature of the inside of the container in CELSIUS.",
+                                                "description": "Temperature of a container's contents in degrees Celsuis",
                                                 "type": "number"
                                             }
                                         },
@@ -1810,11 +1817,11 @@ var schemas = `
                                 "type": "object"
                             },
                             "txnid": {
-                                "description": "Transaction UUID matching that in the blockchain.",
+                                "description": "Transaction UUID matching the blockchain",
                                 "type": "string"
                             },
                             "txnts": {
-                                "description": "Transaction timestamp matching that in the blockchain.",
+                                "description": "Transaction timestamp matching the blockchain",
                                 "type": "string"
                             }
                         },
@@ -1829,16 +1836,16 @@ var schemas = `
         "containerstateexternal": {
             "patternProperties": {
                 "^CON": {
-                    "description": "The shape of all asset states.",
+                    "description": "A container's complete state",
                     "properties": {
                         "AssetKey": {
-                            "description": "The World State asset ID. Used to read and write state.",
+                            "description": "This container's world state container ID",
                             "type": "string"
                         },
                         "alerts": {
-                            "description": "List of alert names that are currently active.",
+                            "description": "A list of alert names",
                             "items": {
-                                "description": "Container alerts. Triggered or cleared by contract rules.",
+                                "description": "An alert name",
                                 "enum": [
                                     "OVERTTEMP"
                                 ],
@@ -1847,46 +1854,53 @@ var schemas = `
                             "type": "array"
                         },
                         "assetIDpath": {
-                            "description": "Qualified property path to the asset's ID.",
+                            "description": "Qualified property path to the container's ID, declared in the contract code",
                             "type": "string"
                         },
                         "class": {
-                            "description": "Asset class.",
+                            "description": "The container's asset class",
                             "type": "string"
                         },
                         "compliant": {
-                            "description": "A contract-specific indication that this asset is compliant.",
+                            "description": "This container has no active alerts",
                             "type": "boolean"
                         },
                         "eventin": {
-                            "description": "The event that created this state.",
+                            "description": "The contract event that created this state, for example updateAssetContainer",
                             "properties": {
                                 "container": {
-                                    "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                                    "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                                     "properties": {
                                         "barcode": {
-                                            "description": "The ID of a container.",
+                                            "description": "A container's ID",
                                             "type": "string"
                                         },
                                         "carrier": {
-                                            "description": "transport entity currently in possession of the container",
+                                            "description": "The carrier in possession of this container",
                                             "type": "string"
                                         },
                                         "common": {
-                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                            "description": "Common properties for all containers",
                                             "properties": {
-                                                "devicetimestamp": {
-                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                    "type": "string"
-                                                },
-                                                "extension": {
-                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                                "appdata": {
+                                                    "description": "Application managed information as an array of key:value pairs",
                                                     "items": {
-                                                        "properties": {},
+                                                        "properties": {
+                                                            "K": {
+                                                                "type": "string"
+                                                            },
+                                                            "V": {
+                                                                "type": "string"
+                                                            }
+                                                        },
                                                         "type": "object"
                                                     },
                                                     "minItems": 0,
                                                     "type": "array"
+                                                },
+                                                "devicetimestamp": {
+                                                    "description": "A timestamp recoded by the device that sent the current event",
+                                                    "type": "string"
                                                 },
                                                 "location": {
                                                     "description": "A geographical coordinate",
@@ -1899,20 +1913,12 @@ var schemas = `
                                                         }
                                                     },
                                                     "type": "object"
-                                                },
-                                                "references": {
-                                                    "description": "An array of external references relevant to this asset.",
-                                                    "items": {
-                                                        "type": "string"
-                                                    },
-                                                    "minItems": 0,
-                                                    "type": "array"
                                                 }
                                             },
                                             "type": "object"
                                         },
                                         "temperature": {
-                                            "description": "Temperature of the inside of the container in CELSIUS.",
+                                            "description": "Temperature of a container's contents in degrees Celsuis",
                                             "type": "number"
                                         }
                                     },
@@ -1925,17 +1931,17 @@ var schemas = `
                             "type": "object"
                         },
                         "eventout": {
-                            "description": "A chaincode event to be emitted on invoke exit.",
+                            "description": "The chaincode event emitted on invoke exit, if any",
                             "properties": {
                                 "container": {
-                                    "description": "An event that is emitted at the end of an invoke, if it is present.",
+                                    "description": "An chaincode event emitted by a contract invoke",
                                     "properties": {
                                         "name": {
-                                            "description": "Event name.",
+                                            "description": "The chaincode event's name",
                                             "type": "string"
                                         },
                                         "payload": {
-                                            "description": "A json object containing the event's properties.",
+                                            "description": "The chaincode event's properties",
                                             "properties": {},
                                             "type": "object"
                                         }
@@ -1946,38 +1952,45 @@ var schemas = `
                             "type": "object"
                         },
                         "prefix": {
-                            "description": "Asset class prefix in World State.",
+                            "description": "The container's asset class prefix in world state",
                             "type": "string"
                         },
                         "state": {
-                            "description": "The state of the one asset.",
+                            "description": "Properties that have been received or calculated for this container",
                             "properties": {
                                 "container": {
-                                    "description": "The set of writable properties that define an asset's state. For asset creation, the only mandatory property is the 'assetID'. Updates should include at least one other writable property. This exemplifies the IoT contract pattern 'partial state as event'.",
+                                    "description": "The changeable properties for a container, also considered its 'event' as a partial state",
                                     "properties": {
                                         "barcode": {
-                                            "description": "The ID of a container.",
+                                            "description": "A container's ID",
                                             "type": "string"
                                         },
                                         "carrier": {
-                                            "description": "transport entity currently in possession of the container",
+                                            "description": "The carrier in possession of this container",
                                             "type": "string"
                                         },
                                         "common": {
-                                            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+                                            "description": "Common properties for all containers",
                                             "properties": {
-                                                "devicetimestamp": {
-                                                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                                                    "type": "string"
-                                                },
-                                                "extension": {
-                                                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                                                "appdata": {
+                                                    "description": "Application managed information as an array of key:value pairs",
                                                     "items": {
-                                                        "properties": {},
+                                                        "properties": {
+                                                            "K": {
+                                                                "type": "string"
+                                                            },
+                                                            "V": {
+                                                                "type": "string"
+                                                            }
+                                                        },
                                                         "type": "object"
                                                     },
                                                     "minItems": 0,
                                                     "type": "array"
+                                                },
+                                                "devicetimestamp": {
+                                                    "description": "A timestamp recoded by the device that sent the current event",
+                                                    "type": "string"
                                                 },
                                                 "location": {
                                                     "description": "A geographical coordinate",
@@ -1990,20 +2003,12 @@ var schemas = `
                                                         }
                                                     },
                                                     "type": "object"
-                                                },
-                                                "references": {
-                                                    "description": "An array of external references relevant to this asset.",
-                                                    "items": {
-                                                        "type": "string"
-                                                    },
-                                                    "minItems": 0,
-                                                    "type": "array"
                                                 }
                                             },
                                             "type": "object"
                                         },
                                         "temperature": {
-                                            "description": "Temperature of the inside of the container in CELSIUS.",
+                                            "description": "Temperature of a container's contents in degrees Celsuis",
                                             "type": "number"
                                         }
                                     },
@@ -2016,11 +2021,11 @@ var schemas = `
                             "type": "object"
                         },
                         "txnid": {
-                            "description": "Transaction UUID matching that in the blockchain.",
+                            "description": "Transaction UUID matching the blockchain",
                             "type": "string"
                         },
                         "txnts": {
-                            "description": "Transaction timestamp matching that in the blockchain.",
+                            "description": "Transaction timestamp matching the blockchain",
                             "type": "string"
                         }
                     },
@@ -2030,14 +2035,14 @@ var schemas = `
             "type": "object"
         },
         "invokeevent": {
-            "description": "An event that is emitted at the end of an invoke, if it is present.",
+            "description": "An chaincode event emitted by a contract invoke",
             "properties": {
                 "name": {
-                    "description": "Event name.",
+                    "description": "The chaincode event's name",
                     "type": "string"
                 },
                 "payload": {
-                    "description": "A json object containing the event's properties.",
+                    "description": "The chaincode event's properties",
                     "properties": {},
                     "type": "object"
                 }
@@ -2045,20 +2050,27 @@ var schemas = `
             "type": "object"
         },
         "ioteventcommon": {
-            "description": "The set of common properties for any event to a contract that adheres to the IoT contract pattern 'partial state as event' for assets and that may have pure events that are *about* these assets.",
+            "description": "Common properties for all containers",
             "properties": {
-                "devicetimestamp": {
-                    "description": "Optional device timestamp. Note that the contract retains the blockchain-assigned transaction UUID and timestamp, which reflect the time that the event arrived at the Hyperledger fabric. The device timestamp has meaning that is relevant to the device, asset and application context.",
-                    "type": "string"
-                },
-                "extension": {
-                    "description": "Application managed array of extension properties. Opaque to contract. To be used in emergencies or for sidecar information that is not relevant to contract rule processing.",
+                "appdata": {
+                    "description": "Application managed information as an array of key:value pairs",
                     "items": {
-                        "properties": {},
+                        "properties": {
+                            "K": {
+                                "type": "string"
+                            },
+                            "V": {
+                                "type": "string"
+                            }
+                        },
                         "type": "object"
                     },
                     "minItems": 0,
                     "type": "array"
+                },
+                "devicetimestamp": {
+                    "description": "A timestamp recoded by the device that sent the current event",
+                    "type": "string"
                 },
                 "location": {
                     "description": "A geographical coordinate",
@@ -2071,13 +2083,37 @@ var schemas = `
                         }
                     },
                     "type": "object"
+                }
+            },
+            "type": "object"
+        },
+        "stateFilter": {
+            "description": "Match mode plus array of property : value pairs",
+            "properties": {
+                "match": {
+                    "description": "Select match mode, missing property counts as not matched",
+                    "enum": [
+                        "ALL",
+                        "ANY",
+                        "NONE"
+                    ],
+                    "type": "string"
                 },
-                "references": {
-                    "description": "An array of external references relevant to this asset.",
+                "select": {
+                    "description": "Array of property : value pairs to match",
                     "items": {
-                        "type": "string"
+                        "properties": {
+                            "qprop": {
+                                "description": "Qualified property name, e.g. container.barcode",
+                                "type": "string"
+                            },
+                            "value": {
+                                "description": "Property value to be matched",
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
                     },
-                    "minItems": 0,
                     "type": "array"
                 }
             },
