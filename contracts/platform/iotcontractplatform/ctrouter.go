@@ -139,18 +139,22 @@ func Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]
 // readAllRoutes shows all registered routes
 var readAllRoutes = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	type RoutesOut struct {
-		Routes []ChaincodeRoute `json:"routes"`
+		FunctionName string     `json:"functionnamr"`
+		Method       string     `json:"method"`
+		Class        AssetClass `json:"class"`
 	}
-	var r = RoutesOut{
-		make([]ChaincodeRoute, 0, len(router)),
-	}
+	var r = make([]RoutesOut, 0, len(router))
 	for _, route := range router {
-		r.Routes = append(r.Routes, route)
+		ro := RoutesOut{
+			route.FunctionName,
+			route.Method,
+			route.Class,
+		}
+		r = append(r, ro)
 	}
 	return json.Marshal(r)
 }
 
 func init() {
-	AddRoute("readRecentStates", "query", SystemClass, readRecentStates)
 	AddRoute("readAllRoutes", "query", SystemClass, readAllRoutes)
 }

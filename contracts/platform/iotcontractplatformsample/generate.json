@@ -11,6 +11,7 @@
             "deleteAllAssetsContainer",
             "readAssetContainer",
             "readAllAssetsContainer",
+            "readAllRoutes",
             "readWorldState",
             "deleteWorldState",
             "readAssetHistoryContainer",

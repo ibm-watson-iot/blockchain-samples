@@ -141,6 +141,13 @@
                                                 "description": "a container's ID"
                                             }
                                         }
+                                    },
+                                    "qprops": {
+                                        "type": "array",
+                                        "description": "Qualified property names, e.g. container.barcode",
+                                        "items": {
+                                            "type": "string"
+                                        }
                                     }
                                 }
                             },
@@ -396,16 +403,19 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "logLevel": {
-                                    "type": "string",
-                                    "enum": [
-                                        "CRITICAL",
-                                        "ERROR",
-                                        "WARNING",
-                                        "NOTICE",
-                                        "INFO",
-                                        "DEBUG"
-                                    ]
+                                "type": "object",
+                                "properties": {
+                                    "logLevel": {
+                                        "type": "string",
+                                        "enum": [
+                                            "CRITICAL",
+                                            "ERROR",
+                                            "WARNING",
+                                            "NOTICE",
+                                            "INFO",
+                                            "DEBUG"
+                                        ]
+                                    }
                                 }
                             },
                             "minItems": 1,
@@ -427,8 +437,17 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "setCreateOnUpdate": {
-                                    "type": "boolean"
+                                "type": "object",
+                                "properties": {
+                                    "setCreateOnUpdate": {
+                                        "type": "object",
+                                        "description": "Allows updates to create missing assets on first event",
+                                        "properties": {
+                                            "createOnUpdate": {
+                                                "type": "boolean"
+                                            }
+                                        }
+                                    }
                                 }
                             },
                             "minItems": 1,

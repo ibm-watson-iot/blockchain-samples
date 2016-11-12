@@ -192,6 +192,13 @@ var schemas = `
                                     }
                                 },
                                 "type": "object"
+                            },
+                            "qprops": {
+                                "description": "Qualified property names, e.g. container.barcode",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
                             }
                         },
                         "type": "object"
@@ -304,6 +311,239 @@ var schemas = `
                 "function": {
                     "enum": [
                         "readAllAssetsContainer"
+                    ],
+                    "type": "string"
+                },
+                "method": "query",
+                "result": {
+                    "description": "Array of container states, can mix asset classes",
+                    "items": {
+                        "patternProperties": {
+                            "^CON": {
+                                "description": "A container's complete state",
+                                "properties": {
+                                    "AssetKey": {
+                                        "description": "This container's world state container ID",
+                                        "type": "string"
+                                    },
+                                    "alerts": {
+                                        "description": "A list of alert names",
+                                        "items": {
+                                            "description": "An alert name",
+                                            "enum": [
+                                                "OVERTTEMP"
+                                            ],
+                                            "type": "string"
+                                        },
+                                        "type": "array"
+                                    },
+                                    "assetIDpath": {
+                                        "description": "Qualified property path to the container's ID, declared in the contract code",
+                                        "type": "string"
+                                    },
+                                    "class": {
+                                        "description": "The container's asset class",
+                                        "type": "string"
+                                    },
+                                    "compliant": {
+                                        "description": "This container has no active alerts",
+                                        "type": "boolean"
+                                    },
+                                    "eventin": {
+                                        "description": "The contract event that created this state, for example updateAssetContainer",
+                                        "properties": {
+                                            "container": {
+                                                "description": "The changeable properties for a container, also considered its 'event' as a partial state",
+                                                "properties": {
+                                                    "barcode": {
+                                                        "description": "A container's ID",
+                                                        "type": "string"
+                                                    },
+                                                    "carrier": {
+                                                        "description": "The carrier in possession of this container",
+                                                        "type": "string"
+                                                    },
+                                                    "common": {
+                                                        "description": "Common properties for all containers",
+                                                        "properties": {
+                                                            "appdata": {
+                                                                "description": "Application managed information as an array of key:value pairs",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "K": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "V": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "minItems": 0,
+                                                                "type": "array"
+                                                            },
+                                                            "deviceID": {
+                                                                "description": "A unique identifier for the device that sent the current event",
+                                                                "type": "string"
+                                                            },
+                                                            "devicetimestamp": {
+                                                                "description": "A timestamp recoded by the device that sent the current event",
+                                                                "type": "string"
+                                                            },
+                                                            "location": {
+                                                                "description": "A geographical coordinate",
+                                                                "properties": {
+                                                                    "latitude": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "longitude": {
+                                                                        "type": "number"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "temperature": {
+                                                        "description": "Temperature of a container's contents in degrees Celsuis",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "barcode"
+                                                ],
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "eventout": {
+                                        "description": "The chaincode event emitted on invoke exit, if any",
+                                        "properties": {
+                                            "container": {
+                                                "description": "An chaincode event emitted by a contract invoke",
+                                                "properties": {
+                                                    "name": {
+                                                        "description": "The chaincode event's name",
+                                                        "type": "string"
+                                                    },
+                                                    "payload": {
+                                                        "description": "The chaincode event's properties",
+                                                        "properties": {},
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "prefix": {
+                                        "description": "The container's asset class prefix in world state",
+                                        "type": "string"
+                                    },
+                                    "state": {
+                                        "description": "Properties that have been received or calculated for this container",
+                                        "properties": {
+                                            "container": {
+                                                "description": "The changeable properties for a container, also considered its 'event' as a partial state",
+                                                "properties": {
+                                                    "barcode": {
+                                                        "description": "A container's ID",
+                                                        "type": "string"
+                                                    },
+                                                    "carrier": {
+                                                        "description": "The carrier in possession of this container",
+                                                        "type": "string"
+                                                    },
+                                                    "common": {
+                                                        "description": "Common properties for all containers",
+                                                        "properties": {
+                                                            "appdata": {
+                                                                "description": "Application managed information as an array of key:value pairs",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "K": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "V": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "minItems": 0,
+                                                                "type": "array"
+                                                            },
+                                                            "deviceID": {
+                                                                "description": "A unique identifier for the device that sent the current event",
+                                                                "type": "string"
+                                                            },
+                                                            "devicetimestamp": {
+                                                                "description": "A timestamp recoded by the device that sent the current event",
+                                                                "type": "string"
+                                                            },
+                                                            "location": {
+                                                                "description": "A geographical coordinate",
+                                                                "properties": {
+                                                                    "latitude": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "longitude": {
+                                                                        "type": "number"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "temperature": {
+                                                        "description": "Temperature of a container's contents in degrees Celsuis",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "barcode"
+                                                ],
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "txnid": {
+                                        "description": "Transaction UUID matching the blockchain",
+                                        "type": "string"
+                                    },
+                                    "txnts": {
+                                        "description": "Transaction timestamp matching the blockchain",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "minItems": 0,
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "readAllRoutes": {
+            "description": "Returns an array of registered API calls by function (debugging)",
+            "properties": {
+                "args": {
+                    "items": {},
+                    "maxItems": 0,
+                    "minItems": 0,
+                    "type": "array"
+                },
+                "function": {
+                    "enum": [
+                        "readAllRoutes"
                     ],
                     "type": "string"
                 },
@@ -1275,9 +1515,18 @@ var schemas = `
             "properties": {
                 "args": {
                     "items": {
-                        "setCreateOnUpdate": {
-                            "type": "boolean"
-                        }
+                        "properties": {
+                            "setCreateOnUpdate": {
+                                "description": "Allows updates to create missing assets on first event",
+                                "properties": {
+                                    "createOnUpdate": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
                     },
                     "maxItems": 1,
                     "minItems": 1,
@@ -1298,17 +1547,20 @@ var schemas = `
             "properties": {
                 "args": {
                     "items": {
-                        "logLevel": {
-                            "enum": [
-                                "CRITICAL",
-                                "ERROR",
-                                "WARNING",
-                                "NOTICE",
-                                "INFO",
-                                "DEBUG"
-                            ],
-                            "type": "string"
-                        }
+                        "properties": {
+                            "logLevel": {
+                                "enum": [
+                                    "CRITICAL",
+                                    "ERROR",
+                                    "WARNING",
+                                    "NOTICE",
+                                    "INFO",
+                                    "DEBUG"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
                     },
                     "maxItems": 1,
                     "minItems": 1,
