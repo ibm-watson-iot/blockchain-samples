@@ -36,7 +36,7 @@ const BlockView = ({isExpanded, blockNumber, timestampString, onBlockClick, urlR
       showExpandableButton={true}
       subtitle={blockData ? moment.unix(blockData.nonHashData.localLedgerCommitTimestamp.seconds).format("M/D/YY LT") : ""}/>
     <CardText expandable={true}>
-      <u>{blockData ? blockData.transactions.length + " " + strings.BLOCK_CARD_CONTENTS_TRANSACTION_TEXT : "No Transactions" }</u>
+      <h5>{blockData ? blockData.transactions.length + " " + strings.BLOCK_CARD_CONTENTS_TRANSACTION_TEXT : "No Transactions" }</h5>
       <ol>
       {blockData ? blockData.transactions.map(function(transaction, index){
           return(
