@@ -1258,7 +1258,19 @@ var schemas = `
             "description": "Returns the state of recently updated assets",
             "properties": {
                 "args": {
-                    "items": {},
+                    "items": {
+                        "properties": {
+                            "begin": {
+                                "description": "zero based beginning of range",
+                                "type": "integer"
+                            },
+                            "end": {
+                                "description": "zero based end of range, absence means to end",
+                                "type": "integer"
+                            }
+                        },
+                        "type": "object"
+                    },
                     "maxItems": 0,
                     "minItems": 0,
                     "type": "array"

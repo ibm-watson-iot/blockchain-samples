@@ -58,14 +58,14 @@ func (c AssetClass) String() string {
 // Asset is a type that holds all information about an asset, including its name,
 // its world state prefix, and the qualified property name that is its assetID
 type Asset struct {
-	Class        AssetClass              `json:"assetclass"`         // this asset's class
-	AssetKey     string                  `json:"assetkey"`           // world state key prefixed
-	State        *map[string]interface{} `json:"state"`              // current state
-	EventIn      *map[string]interface{} `json:"eventin"`            // most recent event
-	FunctionIn   string                  `json:"functionin"`         // function that created this state
-	TXNID        string                  `json:"txnid"`              // transaction UUID linking back to blockchain
+	Class        AssetClass              `json:"assetclass"`         // asset's classifier with metadata
+	AssetKey     string                  `json:"assetkey"`           // asset's world state key
+	State        *map[string]interface{} `json:"assetstate"`         // asset's current state
+	EventIn      *map[string]interface{} `json:"eventpayload"`       // most recent event body
+	FunctionIn   string                  `json:"eventfunction"`      // most recent event function
+	TXNID        string                  `json:"txnid"`              // transaction UUID matching blockchain
 	TXNTS        *time.Time              `json:"txnts,omitempty"`    // transaction timestamp matching blockchain
-	EventOut     *InvokeEvent            `json:"eventout,omitempty"` // event (if any) emitted upon exit from the invoke
+	EventOut     *InvokeEvent            `json:"eventout,omitempty"` // event (if any) emitted upon exit from an invoke
 	AlertsActive AlertNameArray          `json:"alerts,omitempty"`   // array of active alerts
 	Compliant    bool                    `json:"compliant"`          // true if the asset complies with the contract terms
 }
@@ -220,13 +220,13 @@ func (c *AssetClass) DeleteAsset(stub shim.ChaincodeStubInterface, args []string
 	var arg = c.NewAsset()
 
 	if err := arg.unmarshallEventIn(stub, args); err != nil {
-		err := fmt.Errorf("ReadAsset for class %s could not unmarshall, err is %s", c.Name, err)
+		err := fmt.Errorf("DeleteAsset for class %s could not unmarshall, err is %s", c.Name, err)
 		log.Errorf(err.Error())
 		return nil, err
 	}
 	assetKey, err := arg.getAssetKey()
 	if err != nil {
-		err = fmt.Errorf("ReadAsset for class %s could not find id at %s, err is %s", c.Name, c.AssetIDPath, err)
+		err = fmt.Errorf("DeleteAsset for class %s could not find id at %s, err is %s", c.Name, c.AssetIDPath, err)
 		log.Errorf(err.Error())
 		return nil, err
 	}

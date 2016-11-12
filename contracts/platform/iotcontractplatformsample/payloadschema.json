@@ -336,7 +336,19 @@
                         },
                         "args": {
                             "type": "array",
-                            "items": {},
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "begin": {
+                                        "type": "integer",
+                                        "description": "zero based beginning of range"
+                                    },
+                                    "end": {
+                                        "type": "integer",
+                                        "description": "zero based end of range, absence means to end"
+                                    }
+                                }
+                            },
                             "minItems": 0,
                             "maxItems": 0
                         },

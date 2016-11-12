@@ -24,6 +24,8 @@ import (
 	"fmt"
 	"time"
 
+	"strings"
+
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -54,32 +56,65 @@ func (a *Asset) getAssetKey() (string, error) {
 		log.Errorf(err.Error())
 		return "", err
 	}
-
+	// bit of a side-effect, sorry
 	a.AssetKey = a.Class.Prefix + assetID
 	return a.AssetKey, nil
 }
 
-// The assetId is in the database and has > 0 bytes of info
-func (c AssetClass) getAssetFromWorldState(stub shim.ChaincodeStubInterface, assetKey string) (stateout []byte, exists bool, err error) {
-	stateout, err = stub.GetState(assetKey)
+// Class convenience method to retrieve the asset by key, checks for consistency
+func (c AssetClass) getAssetFromWorldState(stub shim.ChaincodeStubInterface, assetKey string) (assetBytes []byte, exists bool, err error) {
+	if !strings.HasPrefix(assetKey, c.Prefix) {
+		// inconsistency
+		err := fmt.Errorf("getAssetFromWorldState: asset key is %s is onconsistent with class prefix %s", assetKey, c)
+		log.Error(err)
+		return nil, false, err
+	}
+
+	assetBytes, err = stub.GetState(assetKey)
 	if err != nil {
 		err := fmt.Errorf("getAssetFromWorldState: GetState of %s returned error %s", assetKey, err)
 		log.Errorf(err.Error())
 		return nil, false, err
 	}
 
-	// some keys exist with no data in them
-	if len(stateout) == 0 {
-		err := fmt.Errorf("getAssetFromWorldState: state for asset %s is zero length", assetKey)
-		log.Warningf(err.Error())
-		// log, but suppress this error as the key can be reused (i.e. it is not really
-		// there and does not show up when iterating)
+	if assetBytes == nil || len(assetBytes) == 0 {
+		// log, but not a real error
+		err := fmt.Errorf("getAssetFromWorldState: state for asset %s is nil or zero length", assetKey)
+		log.Info(err)
 		return nil, false, nil
 	}
 
 	// We do not Unmarshal here because the result is ignored more often than it is used
 
-	return stateout, true, nil
+	return assetBytes, true, nil
+}
+
+// GetAssetFromLedger accepts an assetKey and returns an Asset structure
+func GetAssetFromLedger(stub shim.ChaincodeStubInterface, assetKey string) (assetOut Asset, exists bool, err error) {
+	assetBytes, err := stub.GetState(assetKey)
+	if err != nil {
+		err := fmt.Errorf("GetAssetFromLedger: GetState of %s returned error %s", assetKey, err)
+		log.Errorf(err.Error())
+		return Asset{}, false, err
+	}
+
+	if assetBytes == nil || len(assetBytes) == 0 {
+		// log, but not a real error
+		err := fmt.Errorf("GetAssetFromLedger: state for asset %s is nil or zero length", assetKey)
+		log.Info(err)
+		return Asset{}, false, nil
+	}
+
+	var a Asset
+
+	err = json.Unmarshal(assetBytes, &a)
+	if err != nil {
+		err := fmt.Errorf("GetAssetFromLedger for asset %s Unmarshal failed with err %s", assetKey, err)
+		log.Errorf(err.Error())
+		return Asset{}, true, err
+	}
+
+	return a, true, nil
 }
 
 // Decodes args[0], which must be a map containing a JSON object representing

@@ -27,7 +27,7 @@ import (
 )
 
 // CONTRACTSTATEKEY is used to store contract state, including version, nickname and activeAssets
-const CONTRACTSTATEKEY string = "ContractStateKey"
+const CONTRACTSTATEKEY string = "IOTCP:ContractStateKey"
 
 // ContractState struct defines contract state. Unlike the main contract maps, structs work fine
 // for this fixed structure.
