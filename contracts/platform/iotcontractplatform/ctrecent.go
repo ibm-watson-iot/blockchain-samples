@@ -39,7 +39,7 @@ import (
 // a begin.
 
 // RECENTSTATESKEY is used as key for recent states bucket
-const RECENTSTATESKEY string = "IOTCP:RecentStates"
+const RECENTSTATESKEY string = "IOTCP.RecentStates"
 
 // MaxRecentStates is an arbitrary limit on how many asset states we track across the
 // entire contract
@@ -116,7 +116,7 @@ func (a *Asset) PushRecentState(stub shim.ChaincodeStubInterface) error {
 	if assetPosn == -1 {
 		// shift right
 		rstates.States = append(rstates.States, a.AssetKey)
-		copy(rstates.States[1:MaxRecentStates], rstates.States[0:len(rstates.States)])
+		copy(rstates.States[1:], rstates.States[0:])
 	} else {
 		// shift right to close the gap
 		copy(rstates.States[1:], rstates.States[0:assetPosn])
@@ -128,7 +128,7 @@ func (a *Asset) PushRecentState(stub shim.ChaincodeStubInterface) error {
 }
 
 // RemoveAssetFromRecentStates is called when an asset is deleted
-func RemoveAssetFromRecentStates(stub shim.ChaincodeStubInterface, assetID string) error {
+func (a *Asset) RemoveAssetFromRecentStates(stub shim.ChaincodeStubInterface) error {
 	var rstates RecentStates
 	var err error
 
@@ -136,7 +136,7 @@ func RemoveAssetFromRecentStates(stub shim.ChaincodeStubInterface, assetID strin
 	if err != nil {
 		return err
 	}
-	posn := findAssetInRecent(assetID, rstates)
+	posn := findAssetInRecent(a.AssetKey, rstates)
 	if posn >= 0 {
 		rstates.States = append(rstates.States[:posn], rstates.States[posn+1:]...)
 	}

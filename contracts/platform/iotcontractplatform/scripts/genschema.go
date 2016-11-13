@@ -452,6 +452,9 @@ func main() {
 	var lineOut = 1
 	var offsets [5000]int
 
+	// _, currentFilePath, _, _ := runtime.Caller(0)
+	// mypath := path.Dir(currentFilePath)
+
 	// read the configuration from the json file
 	filename, _ := filepath.Abs("./" + configFile)
 	jsonFile, err := ioutil.ReadFile(filename)

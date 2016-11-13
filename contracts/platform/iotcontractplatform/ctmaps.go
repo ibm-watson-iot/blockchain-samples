@@ -21,6 +21,7 @@ package iotcontractplatform
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 )
@@ -316,62 +317,36 @@ func GetObjectAsInteger(objIn *map[string]interface{}, qname string) (int, bool)
 	return 0, false
 }
 
-// Contains does its best to assert an array type on the incoming array
-// and the matching type on the incoming val, and then searches for val
-// in arr.
+// Contains checks every element with a deepEqual
 func Contains(arr interface{}, val interface{}) bool {
-	switch t := arr.(type) {
+	switch arr.(type) {
+	case AlertNameArray:
+		arr2 := arr.(AlertNameArray)
+		for _, v := range arr2 {
+			return reflect.DeepEqual(v, val)
+		}
 	case []string:
 		arr2 := arr.([]string)
 		for _, v := range arr2 {
-			if v == val {
-				return true
-			}
+			return reflect.DeepEqual(v, val)
 		}
 	case []int:
 		arr2 := arr.([]int)
 		for _, v := range arr2 {
-			if v == val {
-				return true
-			}
+			return reflect.DeepEqual(v, val)
 		}
 	case []float64:
 		arr2 := arr.([]float64)
 		for _, v := range arr2 {
-			if v == val {
-				return true
-			}
+			return reflect.DeepEqual(v, val)
 		}
 	case []interface{}:
-		//todo: try cast instead of assertion
-		//todo: use schema to determine if we even call this function or just add the value
 		arr2 := arr.([]interface{})
 		for _, v := range arr2 {
-			switch tt := val.(type) {
-			case string:
-				if v.(string) == val.(string) {
-					return true
-				}
-			case int:
-				if v.(int) == val.(int) {
-					return true
-				}
-			case float64:
-				if v.(float64) == val.(float64) {
-					return true
-				}
-			case interface{}:
-				if v.(interface{}) == val.(interface{}) {
-					return true
-				}
-			default:
-				log.Errorf("Contains passed array containing unknown type: %+v\n", tt)
-				return false
-			}
+			return reflect.DeepEqual(v, val)
 		}
 	default:
-		log.Errorf("Contains passed array of unknown type: %+v\n", t)
-		return false
+		return reflect.DeepEqual(arr, val)
 	}
 	return false
 }

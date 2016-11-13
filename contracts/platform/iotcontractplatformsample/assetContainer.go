@@ -72,9 +72,9 @@ var readAllAssetsContainer iot.ChaincodeFunc = func(stub shim.ChaincodeStubInter
 	return ContainerClass.ReadAllAssets(stub, args)
 }
 
-// func (t *SimpleChaincode) readAssetIOTHistory(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-// 	return iot.ReadAssetHistory(stub, args, "iot", "readAssetIOTHistory")
-// }
+var readAssetHistoryContainer = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	return ContainerClass.ReadAssetStateHistory(stub, args)
+}
 
 var overtempAlert iot.AlertName = "OVERTEMP"
 var overtempRule iot.RuleFunc = func(stub shim.ChaincodeStubInterface, container *iot.Asset) error {
@@ -97,5 +97,6 @@ func init() {
 	iot.AddRoute("deleteAllAssetsContainer", "invoke", ContainerClass, deleteAllAssetsContainer)
 	iot.AddRoute("deletePropertiesFromAssetContainer", "invoke", ContainerClass, deletePropertiesFromAssetContainer)
 	iot.AddRoute("readAssetContainer", "query", ContainerClass, readAssetContainer)
+	iot.AddRoute("readAssetHistoryContainer", "query", ContainerClass, readAssetHistoryContainer)
 	iot.AddRoute("readAllAssetsContainer", "query", ContainerClass, readAllAssetsContainer)
 }

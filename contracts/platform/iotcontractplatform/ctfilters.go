@@ -30,29 +30,33 @@ import (
 type MatchType int32
 
 const (
+	// MatchDisabled causes the filter to not execute
+	MatchDisabled = 0
 	// MatchAll requires that every property in the filter be present and have
 	// the same value
-	MatchAll MatchType = 0
+	MatchAll MatchType = 1
 	// MatchAny requires that at least one property in the filter be present and have
 	// the same value
-	MatchAny MatchType = 1
+	MatchAny MatchType = 2
 	// MatchNone requires that every property in the filter either be present and have
 	// a different value. or not be present
-	MatchNone MatchType = 2
+	MatchNone MatchType = 3
 )
 
 // MatchName is a map of ID to name
 var MatchName = map[int]string{
-	0: "ALL",
-	1: "ANY",
-	2: "NONE",
+	0: "n/a",
+	1: "all",
+	2: "any",
+	3: "none",
 }
 
 // MatchValue is a map of name to ID
 var MatchValue = map[string]int32{
-	"ALL":  0,
-	"ANY":  1,
-	"NONE": 2,
+	"n/a":  0,
+	"all":  1,
+	"any":  2,
+	"none": 3,
 }
 
 func (x MatchType) String() string {
@@ -67,22 +71,37 @@ type QPropNV struct {
 	Value string `json:"value"`
 }
 
-// StateFilter is an array of QPropNV
-type StateFilter struct {
-	MatchMode string    `json:"match"`
-	Entries   []QPropNV `json:"select"`
+// FilterGroup is a matchmode with a list of K:V pairs
+type FilterGroup struct {
+	Match  string    `json:"match"`
+	Select []QPropNV `json:"select"`
 }
 
-var emptyFilter = StateFilter{"matchall", make([]QPropNV, 0)}
+// StateFilter is a complete filter for a state
+type StateFilter struct {
+	Filter FilterGroup `json:"filter"`
+}
+
+var emptyFilter = StateFilter{
+	FilterGroup{
+		"n/a",
+		make([]QPropNV, 0),
+	},
+}
 
 // Filter returns true if the filter's conditions are all met
 func (a *Asset) Filter(filter StateFilter) bool {
-	switch filter.MatchMode {
-	case "ALL":
+	if len(filter.Filter.Select) == 0 {
+		return true
+	}
+	switch filter.Filter.Match {
+	case "n/a":
+		return true
+	case "all":
 		return matchAll(a, filter)
-	case "ANY":
+	case "any":
 		return matchAny(a, filter)
-	case "NONE":
+	case "none":
 		return matchNone(a, filter)
 	default:
 		err := fmt.Errorf("filterObject has unknown matchType in filter: %+v", filter)
@@ -92,7 +111,7 @@ func (a *Asset) Filter(filter StateFilter) bool {
 }
 
 func matchAll(a *Asset, filter StateFilter) bool {
-	for _, f := range filter.Entries {
+	for _, f := range filter.Filter.Select {
 		if !performOneMatch(a.State, f) {
 			// must match all
 			return false
@@ -103,7 +122,7 @@ func matchAll(a *Asset, filter StateFilter) bool {
 }
 
 func matchAny(a *Asset, filter StateFilter) bool {
-	for _, f := range filter.Entries {
+	for _, f := range filter.Filter.Select {
 		if performOneMatch(a.State, f) {
 			// must match at least one
 			return true
@@ -114,7 +133,7 @@ func matchAny(a *Asset, filter StateFilter) bool {
 }
 
 func matchNone(a *Asset, filter StateFilter) bool {
-	for _, f := range filter.Entries {
+	for _, f := range filter.Filter.Select {
 		if performOneMatch(a.State, f) {
 			// must not match any
 			return false
@@ -164,23 +183,23 @@ func performOneMatch(obj *map[string]interface{}, prop QPropNV) bool {
 	return false
 }
 
-// Returns a map containing the JSON object represented by args[0]
-func getUnmarshalledStateFilter(stub shim.ChaincodeStubInterface, caller string, args []string) StateFilter {
+// Returns a filter found in the json object in args[0]
+func getUnmarshalledStateFilter(stub shim.ChaincodeStubInterface, args []string) (StateFilter, error) {
 	var filter StateFilter
 	var err error
 
 	if len(args) != 1 {
 		// perfectly normal to not have a filter
-		return emptyFilter
+		return emptyFilter, nil
 	}
 
 	fBytes := []byte(args[0])
 	err = json.Unmarshal(fBytes, &filter)
 	if err != nil {
-		err = fmt.Errorf("%s failed to unmarshal filter: %s error: %s", caller, args[0], err)
-		log.Errorf(err.Error())
-		return emptyFilter
+		err = fmt.Errorf("getUnmarshalledStateFilter failed to unmarshal %s as filter, error: %s", args[0], err)
+		log.Error(err)
+		return emptyFilter, err
 	}
 
-	return filter
+	return filter, nil
 }

@@ -34,15 +34,15 @@
                         }
                     }
                 },
-                "createAssetContainer": {
+                "createAsset": {
                     "type": "object",
-                    "description": "Creates a new container",
+                    "description": "Creates a new asset by class",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "createAssetContainer"
+                                "createAsset"
                             ]
                         },
                         "args": {
@@ -50,8 +50,8 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "container": {
-                                        "$ref": "#/definitions/container"
+                                    "asset": {
+                                        "$ref": "#/definitions/asset"
                                     }
                                 }
                             },
@@ -60,15 +60,15 @@
                         }
                     }
                 },
-                "updateAssetContainer": {
+                "updateAssetAsset": {
                     "type": "object",
-                    "description": "Update a contaner's state with one or more property changes",
+                    "description": "Update an asset's state with one or more property changes",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "updateAssetContainer"
+                                "updateAsset"
                             ]
                         },
                         "args": {
@@ -76,8 +76,8 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "container": {
-                                        "$ref": "#/definitions/container"
+                                    "asset": {
+                                        "$ref": "#/definitions/asset"
                                     }
                                 }
                             },
@@ -86,15 +86,15 @@
                         }
                     }
                 },
-                "deleteAssetContainer": {
+                "deleteAsset": {
                     "type": "object",
-                    "description": "Delete a container from world state, transactions remain on the blockchain",
+                    "description": "Delete an asset from world state, transactions remain on the blockchain",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "deleteAssetContainer"
+                                "deleteAsset"
                             ]
                         },
                         "args": {
@@ -102,11 +102,11 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "container": {
+                                    "asset": {
                                         "type": "object",
                                         "properties": {
-                                            "barcode": {
-                                                "$ref": "#/definitions/barcode"
+                                            "assetKey": {
+                                                "$ref": "#/definitions/assetKey"
                                             }
                                         }
                                     }
@@ -117,15 +117,15 @@
                         }
                     }
                 },
-                "deletePropertiesFromAssetContainer": {
+                "deletePropertiesFromAsset": {
                     "type": "object",
-                    "description": "Delete one or more properties from a container's state, an example being temperature, which is only relevant for sensitive (as in frozen) shipments",
+                    "description": "Delete one or more properties from an asset's state",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "deletePropertiesFromAssetContainer"
+                                "deletePropertiesFromAsset"
                             ]
                         },
                         "args": {
@@ -133,18 +133,18 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "container": {
+                                    "asset": {
                                         "type": "object",
                                         "properties": {
-                                            "barcode": {
+                                            "assetKey": {
                                                 "type": "string",
-                                                "description": "a container's ID"
+                                                "description": "an asset's ID"
                                             }
                                         }
                                     },
                                     "qprops": {
                                         "type": "array",
-                                        "description": "Qualified property names, e.g. container.barcode",
+                                        "description": "Qualified property names, e.g. asset.assetKey",
                                         "items": {
                                             "type": "string"
                                         }
@@ -156,15 +156,15 @@
                         }
                     }
                 },
-                "deleteAllAssetsContainer": {
+                "deleteAllAssets": {
                     "type": "object",
-                    "description": "Delete all containers from world state, supports filters",
+                    "description": "Delete all assets from world state, supports filters",
                     "properties": {
                         "method": "invoke",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "deleteAllAssetsContainer"
+                                "deleteAllAssets"
                             ]
                         },
                         "args": {
@@ -177,15 +177,15 @@
                         }
                     }
                 },
-                "readAssetContainer": {
+                "readAsset": {
                     "type": "object",
-                    "description": "Returns the state a container",
+                    "description": "Returns the state an asset",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "readAssetContainer"
+                                "readAsset"
                             ]
                         },
                         "args": {
@@ -193,12 +193,12 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "container": {
+                                    "asset": {
                                         "type": "object",
                                         "properties": {
-                                            "barcode": {
+                                            "assetKey": {
                                                 "type": "string",
-                                                "description": "a container's ID"
+                                                "description": "an asset's ID"
                                             }
                                         }
                                     }
@@ -208,19 +208,19 @@
                             "maxItems": 1
                         },
                         "result": {
-                            "$ref": "#/definitions/containerstate"
+                            "$ref": "#/definitions/assetstate"
                         }
                     }
                 },
-                "readAllAssetsContainer": {
+                "readAllAssets": {
                     "type": "object",
-                    "description": "Returns the state of all containers, supports filters",
+                    "description": "Returns the state of all assets, supports filters",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "readAllAssetsContainer"
+                                "readAllAssets"
                             ]
                         },
                         "args": {
@@ -237,19 +237,19 @@
                             "maxItems": 1
                         },
                         "result": {
-                            "$ref": "#/definitions/containerstatearray"
+                            "$ref": "#/definitions/assetstatearray"
                         }
                     }
                 },
-                "readAssetHistoryContainer": {
+                "readAssetHistory": {
                     "type": "object",
-                    "description": "Returns the history of a container",
+                    "description": "Returns the history of an asset",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "readAssetHistoryContainer"
+                                "readAssetHistory"
                             ]
                         },
                         "args": {
@@ -257,15 +257,15 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "container": {
+                                    "asset": {
                                         "type": "object",
                                         "properties": {
-                                            "barcode": {
-                                                "$ref": "#/definitions/barcode"
+                                            "assetKey": {
+                                                "$ref": "#/definitions/assetKey"
                                             }
                                         },
                                         "required": [
-                                            "barcode"
+                                            "assetKey"
                                         ]
                                     },
                                     "range": {
@@ -291,14 +291,14 @@
                                     }
                                 },
                                 "required": [
-                                    "container"
+                                    "asset"
                                 ]
                             },
                             "minItems": 1,
                             "maxItems": 1
                         },
                         "result": {
-                            "$ref": "#/definitions/containerstatearray"
+                            "$ref": "#/definitions/assetstatearray"
                         }
                     }
                 },
@@ -378,7 +378,7 @@
                             "maxItems": 0
                         },
                         "result": {
-                            "$ref": "#/definitions/containerstatearray"
+                            "$ref": "#/definitions/assetstatearray"
                         }
                     }
                 },
@@ -400,7 +400,7 @@
                             "maxItems": 0
                         },
                         "result": {
-                            "$ref": "#/definitions/containerstatearray"
+                            "$ref": "#/definitions/assetstatearray"
                         }
                     }
                 },
@@ -462,7 +462,7 @@
                 },
                 "setCreateOnUpdate": {
                     "type": "object",
-                    "description": "Allow updateAsset to create a container upon receipt of its first event",
+                    "description": "Allow updateAsset to create an asset upon receipt of its first event",
                     "properties": {
                         "method": "invoke",
                         "function": {
@@ -545,14 +545,14 @@
             "default": "CTIORSAMPLE",
             "description": "The nickname of the current contract instance"
         },
-        "barcode": {
+        "assetKey": {
             "type": "string",
-            "description": "A container's ID"
+            "description": "A asset's ID"
         },
         "alertName": {
             "type": "string",
             "enum": [
-                "OVERTTEMP"
+                ""
             ],
             "description": "An alert name"
         },
@@ -575,30 +575,30 @@
             "type": "array",
             "items": {
                 "type": "string",
-                "description": "A qualified name of a property such as container.barcode"
+                "description": "A qualified name of a property such as asset.assetKey"
             }
         },
-        "container": {
+        "asset": {
             "type": "object",
-            "description": "The changeable properties for a container, also considered its 'event' as a partial state",
+            "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
             "properties": {
                 "common": {
                     "$ref": "#/definitions/ioteventcommon"
                 },
-                "barcode": {
-                    "$ref": "#/definitions/barcode"
+                "assetKey": {
+                    "$ref": "#/definitions/assetKey"
                 },
                 "temperature": {
                     "type": "number",
-                    "description": "Temperature of a container's contents in degrees Celsuis"
+                    "description": "Temperature of an asset's contents in degrees Celsuis"
                 },
                 "carrier": {
                     "type": "string",
-                    "description": "The carrier in possession of this container"
+                    "description": "The carrier in possession of this asset"
                 }
             },
             "required": [
-                "barcode"
+                "assetKey"
             ]
         },
         "invokeevent": {
@@ -618,7 +618,7 @@
         },
         "ioteventcommon": {
             "type": "object",
-            "description": "Common properties for all containers",
+            "description": "Common properties for all assets",
             "properties": {
                 "devicetimestamp": {
                     "type": "string",
@@ -649,41 +649,41 @@
                 }
             }
         },
-        "containerstate": {
+        "assetstate": {
             "type": "object",
-            "description": "A container's complete state",
+            "description": "A asset's complete state",
             "properties": {
                 "class": {
                     "type": "string",
-                    "description": "The container's asset class"
+                    "description": "The asset's asset class"
                 },
                 "prefix": {
                     "type": "string",
-                    "description": "The container's asset class prefix in world state"
+                    "description": "The asset's asset class prefix in world state"
                 },
                 "assetIDpath": {
                     "type": "string",
-                    "description": "Qualified property path to the container's ID, declared in the contract code"
+                    "description": "Qualified property path to the asset's ID, declared in the contract code"
                 },
-                "AssetKey": {
+                "assetKey": {
                     "type": "string",
-                    "description": "This container's world state container ID"
+                    "description": "This asset's world state asset ID"
                 },
                 "state": {
                     "type": "object",
-                    "description": "Properties that have been received or calculated for this container",
+                    "description": "Properties that have been received or calculated for this asset",
                     "properties": {
-                        "container": {
-                            "$ref": "#/definitions/container"
+                        "asset": {
+                            "$ref": "#/definitions/asset"
                         }
                     }
                 },
                 "eventin": {
                     "type": "object",
-                    "description": "The contract event that created this state, for example updateAssetContainer",
+                    "description": "The contract event that created this state, for example updateAsset",
                     "properties": {
-                        "container": {
-                            "$ref": "#/definitions/container"
+                        "asset": {
+                            "$ref": "#/definitions/asset"
                         }
                     }
                 },
@@ -699,7 +699,7 @@
                     "type": "object",
                     "description": "The chaincode event emitted on invoke exit, if any",
                     "properties": {
-                        "container": {
+                        "asset": {
                             "$ref": "#/definitions/invokeevent"
                         }
                     }
@@ -709,17 +709,17 @@
                 },
                 "compliant": {
                     "type": "boolean",
-                    "description": "This container has no active alerts"
+                    "description": "This asset has no active alerts"
                 }
             }
         },
-        "containerstateexternal": {
+        "assetstateexternal": {
             "type": "object",
             "patternProperties": {
                 "^CON": {
                     "type": "object",
-                    "description": "The external state of one container asset, named by its world state ID",
-                    "$ref": "#/definitions/containerstate"
+                    "description": "The external state of one asset asset, named by its world state ID",
+                    "$ref": "#/definitions/assetstate"
                 }
             }
         },
@@ -746,7 +746,7 @@
                         "properties": {
                             "qprop": {
                                 "type": "string",
-                                "description": "Qualified property name, e.g. container.barcode"
+                                "description": "Qualified property name, e.g. asset.assetKey"
                             },
                             "value": {
                                 "type": "string",
@@ -757,13 +757,13 @@
                 }
             }
         },
-        "containerstatearray": {
+        "assetstatearray": {
             "type": "array",
             "items": {
-                "$ref": "#/definitions/containerstateexternal"
+                "$ref": "#/definitions/assetstateexternal"
             },
             "minItems": 0,
-            "description": "Array of container states, can mix asset classes"
+            "description": "Array of asset states, can mix asset classes"
         },
         "contractState": {
             "type": "object",

@@ -101,19 +101,21 @@ var schemas = `
             "properties": {
                 "args": {
                     "items": {
-                        "description": "Match mode plus array of property : value pairs",
+                        "description": "Filter asset states",
                         "properties": {
                             "match": {
-                                "description": "Select match mode, missing property counts as not matched",
+                                "default": "n/a",
+                                "description": "Defines how to match properties, missing property always fails match",
                                 "enum": [
-                                    "ALL",
-                                    "ANY",
-                                    "NONE"
+                                    "n/a",
+                                    "all",
+                                    "any",
+                                    "none"
                                 ],
                                 "type": "string"
                             },
                             "select": {
-                                "description": "Array of property : value pairs to match",
+                                "description": "Qualified property names and values match",
                                 "items": {
                                     "properties": {
                                         "qprop": {
@@ -121,7 +123,7 @@ var schemas = `
                                             "type": "string"
                                         },
                                         "value": {
-                                            "description": "Property value to be matched",
+                                            "description": "Match this property value",
                                             "type": "string"
                                         }
                                     },
@@ -273,33 +275,40 @@ var schemas = `
             "properties": {
                 "args": {
                     "items": {
-                        "description": "Match mode plus array of property : value pairs",
                         "properties": {
-                            "match": {
-                                "description": "Select match mode, missing property counts as not matched",
-                                "enum": [
-                                    "ALL",
-                                    "ANY",
-                                    "NONE"
-                                ],
-                                "type": "string"
-                            },
-                            "select": {
-                                "description": "Array of property : value pairs to match",
-                                "items": {
-                                    "properties": {
-                                        "qprop": {
-                                            "description": "Qualified property name, e.g. container.barcode",
-                                            "type": "string"
-                                        },
-                                        "value": {
-                                            "description": "Property value to be matched",
-                                            "type": "string"
-                                        }
+                            "filter": {
+                                "description": "Filter asset states",
+                                "properties": {
+                                    "match": {
+                                        "default": "n/a",
+                                        "description": "Defines how to match properties, missing property always fails match",
+                                        "enum": [
+                                            "n/a",
+                                            "all",
+                                            "any",
+                                            "none"
+                                        ],
+                                        "type": "string"
                                     },
-                                    "type": "object"
+                                    "select": {
+                                        "description": "Qualified property names and values match",
+                                        "items": {
+                                            "properties": {
+                                                "qprop": {
+                                                    "description": "Qualified property name, e.g. container.barcode",
+                                                    "type": "string"
+                                                },
+                                                "value": {
+                                                    "description": "Match this property value",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "type": "array"
+                                    }
                                 },
-                                "type": "array"
+                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -1007,23 +1016,74 @@ var schemas = `
                 "args": {
                     "items": {
                         "properties": {
-                            "barcode": {
-                                "description": "A container's ID",
-                                "type": "string"
+                            "container": {
+                                "properties": {
+                                    "barcode": {
+                                        "description": "A container's ID",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "barcode"
+                                ],
+                                "type": "object"
                             },
-                            "end": {
-                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                "format": "date-time",
-                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                "type": "string"
+                            "filter": {
+                                "description": "Filter asset states",
+                                "properties": {
+                                    "match": {
+                                        "default": "n/a",
+                                        "description": "Defines how to match properties, missing property always fails match",
+                                        "enum": [
+                                            "n/a",
+                                            "all",
+                                            "any",
+                                            "none"
+                                        ],
+                                        "type": "string"
+                                    },
+                                    "select": {
+                                        "description": "Qualified property names and values match",
+                                        "items": {
+                                            "properties": {
+                                                "qprop": {
+                                                    "description": "Qualified property name, e.g. container.barcode",
+                                                    "type": "string"
+                                                },
+                                                "value": {
+                                                    "description": "Match this property value",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "type": "array"
+                                    }
+                                },
+                                "type": "object"
                             },
-                            "start": {
-                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                "format": "date-time",
-                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                "type": "string"
+                            "range": {
+                                "description": "if specified, dates must fall in between these values, inclusive",
+                                "properties": {
+                                    "begin": {
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss",
+                                        "type": "string"
+                                    },
+                                    "end": {
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             }
                         },
+                        "required": [
+                            "container"
+                        ],
                         "type": "object"
                     },
                     "maxItems": 1,
@@ -2424,19 +2484,21 @@ var schemas = `
             "type": "object"
         },
         "stateFilter": {
-            "description": "Match mode plus array of property : value pairs",
+            "description": "Filter asset states",
             "properties": {
                 "match": {
-                    "description": "Select match mode, missing property counts as not matched",
+                    "default": "n/a",
+                    "description": "Defines how to match properties, missing property always fails match",
                     "enum": [
-                        "ALL",
-                        "ANY",
-                        "NONE"
+                        "n/a",
+                        "all",
+                        "any",
+                        "none"
                     ],
                     "type": "string"
                 },
                 "select": {
-                    "description": "Array of property : value pairs to match",
+                    "description": "Qualified property names and values match",
                     "items": {
                         "properties": {
                             "qprop": {
@@ -2444,7 +2506,7 @@ var schemas = `
                                 "type": "string"
                             },
                             "value": {
-                                "description": "Property value to be matched",
+                                "description": "Match this property value",
                                 "type": "string"
                             }
                         },

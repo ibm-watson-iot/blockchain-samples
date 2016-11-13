@@ -207,36 +207,35 @@ func (a *Asset) putMarshalledState(stub shim.ChaincodeStubInterface) error {
 		return err
 	}
 
-	// // add history state
-	// err = h.UpdateStateHistory(stub, assetID, string(stateJSON))
-	// if err != nil {
-	//     err = fmt.Errorf("%s: event %s assetID %s push history failed: %s", caller, eventName, assetID, err)
-	//     log.Errorf(err.Error())
-	//     return err
-	// }
+	err = a.PUTAssetStateHistory(stub)
+	if err != nil {
+		err = fmt.Errorf("putMarshalledState failed to put asset %s history: %s", a.AssetKey, err)
+		log.Error(err)
+		return err
+	}
 	return nil
 }
 
 // RemoveOneAssetFromWorldState remove the asset from world state
-func removeOneAssetFromWorldState(stub shim.ChaincodeStubInterface, assetKey string) error {
-	err := stub.DelState(assetKey)
+func (a *Asset) removeOneAssetFromWorldState(stub shim.ChaincodeStubInterface) error {
+	err := stub.DelState(a.AssetKey)
 	if err != nil {
-		err = fmt.Errorf("removeOneAssetFromWorldState: asset %s failed", assetKey)
+		err = fmt.Errorf("removeOneAssetFromWorldState: asset %s failed", a.AssetKey)
 		log.Error(err)
 		return err
 	}
-	err = RemoveAssetFromRecentStates(stub, assetKey)
+	err = a.RemoveAssetFromRecentStates(stub)
 	if err != nil {
-		err = fmt.Errorf("removeOneAssetFromWorldState: asset %s could not be removed from recent states: %s", assetKey, err)
+		err = fmt.Errorf("removeOneAssetFromWorldState: asset %s could not be removed from recent states: %s", a.AssetKey, err)
 		log.Error(err)
 		return err
 	}
-	// err = h.DeleteStateHistory(stub, assetID)
-	// if err != nil {
-	// 	err = fmt.Errorf("%s: %s assetID %s history deletion failed", caller, assetName, assetID)
-	// 	log.Error(err)
-	// 	return err
-	// }
+	err = a.DeleteAssetStateHistory(stub)
+	if err != nil {
+		err = fmt.Errorf("putMarshalledState failed to put asset %s history: %s", a.AssetKey, err)
+		log.Error(err)
+		return err
+	}
 	return nil
 }
 

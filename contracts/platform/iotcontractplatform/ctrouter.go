@@ -139,7 +139,7 @@ func Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]
 // readAllRoutes shows all registered routes
 var readAllRoutes = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	type RoutesOut struct {
-		FunctionName string     `json:"functionnamr"`
+		FunctionName string     `json:"functionname"`
 		Method       string     `json:"method"`
 		Class        AssetClass `json:"class"`
 	}

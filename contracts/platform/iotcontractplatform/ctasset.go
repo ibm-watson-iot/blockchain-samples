@@ -230,7 +230,7 @@ func (c *AssetClass) DeleteAsset(stub shim.ChaincodeStubInterface, args []string
 		log.Errorf(err.Error())
 		return nil, err
 	}
-	err = removeOneAssetFromWorldState(stub, assetKey)
+	err = arg.removeOneAssetFromWorldState(stub)
 	if err != nil {
 		err := fmt.Errorf("DeleteAsset: removeOneAssetFromWorldState class %s, asset %s, returned error: %s", c.Name, assetKey, err)
 		log.Errorf(err.Error())
@@ -243,7 +243,12 @@ func (c *AssetClass) DeleteAsset(stub shim.ChaincodeStubInterface, args []string
 func (c *AssetClass) DeleteAllAssets(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var filter StateFilter
 
-	filter = getUnmarshalledStateFilter(stub, "DeleteAllAssets", args)
+	filter, err := getUnmarshalledStateFilter(stub, args)
+	if err != nil {
+		err = fmt.Errorf("DeleteAllAssets failed to get the filter: %s", err)
+		log.Error(err)
+		return nil, err
+	}
 	iter, err := stub.RangeQueryState(c.Prefix, c.Prefix+"}")
 	if err != nil {
 		err = fmt.Errorf("DeleteAllAssets failed to get a range query iterator: %s", err)
@@ -265,8 +270,8 @@ func (c *AssetClass) DeleteAllAssets(stub shim.ChaincodeStubInterface, args []st
 			log.Errorf(err.Error())
 			return nil, err
 		}
-		if len(filter.Entries) == 0 || state.Filter(filter) {
-			err = removeOneAssetFromWorldState(stub, key)
+		if state.Filter(filter) {
+			err = state.removeOneAssetFromWorldState(stub)
 			if err != nil {
 				err = fmt.Errorf("DeleteAllAssets removeOneAssetFromWorldState for asset %s failed: %s", key, err)
 				log.Errorf(err.Error())
@@ -410,7 +415,12 @@ func (c AssetClass) ReadAllAssetsUnmarshalled(stub shim.ChaincodeStubInterface, 
 	var err error
 	var filter StateFilter
 
-	filter = getUnmarshalledStateFilter(stub, "ReadAllAssetsUnmarshalled", args)
+	filter, err = getUnmarshalledStateFilter(stub, args)
+	if err != nil {
+		err = fmt.Errorf("readAllAssetsUnmarshalled failed to get a filter: %s", err)
+		log.Errorf(err.Error())
+		return nil, err
+	}
 
 	iter, err := stub.RangeQueryState(c.Prefix, c.Prefix+"}")
 	if err != nil {
@@ -433,7 +443,7 @@ func (c AssetClass) ReadAllAssetsUnmarshalled(stub shim.ChaincodeStubInterface, 
 			log.Errorf(err.Error())
 			return nil, err
 		}
-		if len(filter.Entries) == 0 || state.Filter(filter) {
+		if state.Filter(filter) {
 			assets = append(assets, *state)
 		}
 	}
@@ -447,50 +457,15 @@ func (c AssetClass) ReadAllAssetsUnmarshalled(stub shim.ChaincodeStubInterface, 
 	return assets, nil
 }
 
-// // ReadAssetHistory returns an asset's history from world state as an array
-// func ReadAssetHistory(stub shim.ChaincodeStubInterface, args []string, assetName string, caller string) ([]byte, error) {
-//     argsMap, err := getUnmarshalledArgument(stub, caller, args)
-//     if err != nil {
-//         return nil, err
-//     }
-//     assetID, err := validateAssetID(caller, assetName, argsMap)
-//     if err != nil {
-//         return nil, err
-//     }
-//     stateHistory, err := h.ReadStateHistory(stub, assetID)
-//     if err != nil {
-//         return nil, err
-//     }
-//     // is count present?
-//     var olen int
-//     countBytes, found := GetObject(argsMap, "count")
-//     if found {
-//         olen = int(countBytes.(float64))
-//     }
-//     if olen <= 0 || olen > len(stateHistory.AssetHistory) {
-//         olen = len(stateHistory.AssetHistory)
-//     }
-//     var hStatesOut = make([]interface{}, 0, olen)
-//     for i := 0; i < olen; i++ {
-//         var obj interface{}
-//         err = json.Unmarshal([]byte(stateHistory.AssetHistory[i]), &obj)
-//         if err != nil {
-//             log.Errorf("readAssetHistory JSON unmarshal of entry %d failed [%#v]", i, stateHistory.AssetHistory[i])
-//             return nil, err
-//         }
-//         hStatesOut = append(hStatesOut, obj)
-//     }
-//     assetBytes, err := json.Marshal(hStatesOut)
-//     if err != nil {
-//         log.Errorf("readAssetHistory failed to marshal results: %s", err)
-//         return nil, err
-//     }
-
-//     return []byte(assetBytes), nil
-// }
-
 //********** sort interface for AssetArray
 
 func (aa AssetArray) Len() int           { return len(aa) }
 func (aa AssetArray) Swap(i, j int)      { aa[i], aa[j] = aa[j], aa[i] }
 func (aa AssetArray) Less(i, j int) bool { return aa[i].AssetKey < aa[j].AssetKey }
+
+// ByTimestamp alias for sorting by timestamp
+type ByTimestamp AssetArray
+
+func (aa ByTimestamp) Len() int           { return len(aa) }
+func (aa ByTimestamp) Swap(i, j int)      { aa[i], aa[j] = aa[j], aa[i] }
+func (aa ByTimestamp) Less(i, j int) bool { return (*aa[i].TXNTS).Before(*aa[j].TXNTS) }
