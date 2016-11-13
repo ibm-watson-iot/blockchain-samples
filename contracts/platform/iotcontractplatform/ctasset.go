@@ -161,18 +161,21 @@ func (c *AssetClass) UpdateAsset(stub shim.ChaincodeStubInterface, args []string
 	}
 	assetBytes, exists, err := c.getAssetFromWorldState(stub, assetKey)
 	if err != nil {
-		err := fmt.Errorf("UpdateAsset for class %s asset %s read from world state returned error %s", c.Name, a.AssetKey, err)
+		err := fmt.Errorf("UpdateAsset for class %s asset %s read from world state returned error %s", c.Name, assetKey, err)
 		log.Errorf(err.Error())
 		return nil, err
 	}
 	if !exists {
-		err := fmt.Errorf("UpdateAsset for class %s asset %s asset does not exist", c.Name, a.AssetKey)
+		if CanCreateOnFirstUpdate(stub) {
+			return c.CreateAsset(stub, args, caller, inject)
+		}
+		err := fmt.Errorf("UpdateAsset for class %s asset %s asset does not exist", c.Name, assetKey)
 		log.Errorf(err.Error())
 		return nil, err
 	}
 	err = json.Unmarshal(assetBytes, &a)
 	if err != nil {
-		err := fmt.Errorf("UpdateAsset for class %s asset %s Unmarshal failed with err %s", c.Name, a.AssetKey, err)
+		err := fmt.Errorf("UpdateAsset for class %s asset %s Unmarshal failed with err %s", c.Name, assetKey, err)
 		log.Errorf(err.Error())
 		return nil, err
 	}

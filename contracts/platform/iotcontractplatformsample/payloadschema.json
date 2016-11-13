@@ -460,7 +460,7 @@
                         }
                     }
                 },
-                "setCreateOnUpdate": {
+                "setCreateOnFirstUpdate": {
                     "type": "object",
                     "description": "Allow updateAsset to create a container upon receipt of its first event",
                     "properties": {
@@ -468,7 +468,7 @@
                         "function": {
                             "type": "string",
                             "enum": [
-                                "setCreateOnUpdate"
+                                "setCreateOnFirstUpdate"
                             ]
                         },
                         "args": {
@@ -476,14 +476,9 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "setCreateOnUpdate": {
-                                        "type": "object",
-                                        "description": "Allows updates to create missing assets on first event",
-                                        "properties": {
-                                            "createOnUpdate": {
-                                                "type": "boolean"
-                                            }
-                                        }
+                                    "setCreateOnFirstUpdate": {
+                                        "type": "boolean",
+                                        "description": "Allows updates to create missing assets on first event"
                                     }
                                 }
                             },

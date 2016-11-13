@@ -17,7 +17,7 @@
             "readAssetHistoryContainer",
             "readRecentStates",
             "setLoggingLevel",
-            "setCreateOnUpdate"
+            "setCreateOnFirstUpdate"
         ],
         "goSchemaElements": [
             "container",

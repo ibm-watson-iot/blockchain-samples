@@ -1582,20 +1582,15 @@ var schemas = `
             },
             "type": "object"
         },
-        "setCreateOnUpdate": {
+        "setCreateOnFirstUpdate": {
             "description": "Allow updateAsset to create a container upon receipt of its first event",
             "properties": {
                 "args": {
                     "items": {
                         "properties": {
-                            "setCreateOnUpdate": {
+                            "setCreateOnFirstUpdate": {
                                 "description": "Allows updates to create missing assets on first event",
-                                "properties": {
-                                    "createOnUpdate": {
-                                        "type": "boolean"
-                                    }
-                                },
-                                "type": "object"
+                                "type": "boolean"
                             }
                         },
                         "type": "object"
@@ -1606,7 +1601,7 @@ var schemas = `
                 },
                 "function": {
                     "enum": [
-                        "setCreateOnUpdate"
+                        "setCreateOnFirstUpdate"
                     ],
                     "type": "string"
                 },

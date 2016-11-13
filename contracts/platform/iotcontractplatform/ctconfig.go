@@ -35,6 +35,9 @@ func SetContractLogger(logger *shim.ChaincodeLogger) {
 	log = logger
 }
 
+// CREATEONFIRSTUPDATEKEY is used to store can create on update status, which if true by default
+const CREATEONFIRSTUPDATEKEY string = "IOTCP:CreateOnFirstUpdate"
+
 // readWorldState read everything in the database for debugging purposes ...
 var readWorldState ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
@@ -153,76 +156,76 @@ var setLoggingLevel ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args 
 	return nil, nil
 }
 
-// CreateOnUpdate is a shared parameter structure for the use of
+// CreateOnFirstUpdate is a shared parameter structure for the use of
 // the createonupdate feature
-type CreateOnUpdate struct {
-	CreateOnUpdate bool `json:"createOnUpdate"`
+type CreateOnFirstUpdate struct {
+	SetCreateOnFirstUpdate bool `json:"setCreateOnFirstUpdate"`
 }
 
 // ************************************
-// setCreateOnUpdate
+// setCreateOnFirstUpdate
 // ************************************
-var setCreateOnUpdate ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	var createOnUpdate CreateOnUpdate
+var setCreateOnFirstUpdate ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var createOnFirstUpdate CreateOnFirstUpdate
 	var err error
 	if len(args) != 1 {
-		err = errors.New("setCreateOnUpdate expects a single parameter")
+		err = errors.New("setCreateOnFirstUpdate expects a single parameter")
 		log.Errorf(err.Error())
 		return nil, err
 	}
-	err = json.Unmarshal([]byte(args[0]), &createOnUpdate)
+	err = json.Unmarshal([]byte(args[0]), &createOnFirstUpdate)
 	if err != nil {
-		err = fmt.Errorf("setCreateOnUpdate failed to unmarshal arg: %s", err)
+		err = fmt.Errorf("setCreateOnFirstUpdate failed to unmarshal arg: %s", err)
 		log.Errorf(err.Error())
 		return nil, err
 	}
-	err = PUTcreateOnUpdate(stub, createOnUpdate)
+	err = PUTcreateOnFirstUpdate(stub, createOnFirstUpdate)
 	if err != nil {
-		err = fmt.Errorf("setCreateOnUpdate failed to PUT setting: %s", err)
+		err = fmt.Errorf("setCreateOnFirstUpdate failed to PUT setting: %s", err)
 		log.Errorf(err.Error())
 		return nil, err
 	}
 	return nil, nil
 }
 
-// PUTcreateOnUpdate marshals the new setting and writes it to the ledger
-func PUTcreateOnUpdate(stub shim.ChaincodeStubInterface, createOnUpdate CreateOnUpdate) (err error) {
-	createOnUpdateBytes, err := json.Marshal(createOnUpdate)
+// PUTcreateOnFirstUpdate marshals the new setting and writes it to the ledger
+func PUTcreateOnFirstUpdate(stub shim.ChaincodeStubInterface, createOnFirstUpdate CreateOnFirstUpdate) (err error) {
+	createOnFirstUpdateBytes, err := json.Marshal(createOnFirstUpdate)
 	if err != nil {
-		err = errors.New("PUTcreateOnUpdate failed to marshal")
+		err = errors.New("PUTcreateOnFirstUpdate failed to marshal")
 		log.Errorf(err.Error())
 		return err
 	}
-	err = stub.PutState("CreateOnUpdate", createOnUpdateBytes)
+	err = stub.PutState(CREATEONFIRSTUPDATEKEY, createOnFirstUpdateBytes)
 	if err != nil {
-		err = fmt.Errorf("PUTSTATE createOnUpdate failed: %s", err)
+		err = fmt.Errorf("PUTSTATE createOnFirstUpdate failed: %s", err)
 		log.Errorf(err.Error())
 		return err
 	}
 	return nil
 }
 
-// CanCreateOnUpdate retrieves the setting from the ledger and returns it to the calling function
-func CanCreateOnUpdate(stub shim.ChaincodeStubInterface) bool {
-	var createOnUpdate CreateOnUpdate
-	createOnUpdateBytes, err := stub.GetState("CreateOnUpdate")
+// CanCreateOnFirstUpdate retrieves the setting from the ledger and returns it to the calling function
+func CanCreateOnFirstUpdate(stub shim.ChaincodeStubInterface) bool {
+	var createOnFirstUpdate CreateOnFirstUpdate
+	createOnFirstUpdateBytes, err := stub.GetState(CREATEONFIRSTUPDATEKEY)
 	if err != nil {
-		err = fmt.Errorf("GETSTATE for canCreateOnUpdate failed: %s", err)
+		err = fmt.Errorf("GETSTATE for canCreateOnFirstUpdate failed: %s", err)
 		log.Errorf(err.Error())
 		return true // true is the default
 	}
-	err = json.Unmarshal(createOnUpdateBytes, &createOnUpdate)
+	err = json.Unmarshal(createOnFirstUpdateBytes, &createOnFirstUpdate)
 	if err != nil {
-		err = fmt.Errorf("canCreateOnUpdate failed to marshal: %s", err)
+		err = fmt.Errorf("canCreateOnFirstUpdate failed to marshal: %s", err)
 		log.Errorf(err.Error())
 		return true // true is the default
 	}
-	return createOnUpdate.CreateOnUpdate
+	return createOnFirstUpdate.SetCreateOnFirstUpdate
 }
 
 func init() {
 	AddRoute("deleteWorldState", "invoke", SystemClass, deleteWorldState)
 	AddRoute("readWorldState", "query", SystemClass, readWorldState)
 	AddRoute("setLoggingLevel", "invoke", SystemClass, setLoggingLevel)
-	AddRoute("setCreateOnUpdate", "invoke", SystemClass, setCreateOnUpdate)
+	AddRoute("setCreateOnFirstUpdate", "invoke", SystemClass, setCreateOnFirstUpdate)
 }
