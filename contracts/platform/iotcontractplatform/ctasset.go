@@ -81,6 +81,34 @@ func (aa AssetArray) String() string {
 	return PrettyPrint(aa)
 }
 
+// PUTAsset stores an asset into world state after performing property injection,
+// rule execution, and JSON marshaling
+func (a *Asset) PUTAsset(stub shim.ChaincodeStubInterface, caller string, inject []QPropNV) ([]byte, error) {
+
+	// save original asset function
+	a.FunctionIn = caller
+
+	if len(inject) > 0 {
+		err := a.injectProps(inject)
+		if err != nil {
+			err = fmt.Errorf("PUTAsset for class %s failed to inject properties %+v for %s, err is %s", a.Class.Name, inject, a.AssetKey, err)
+			log.Errorf(err.Error())
+			return nil, err
+		}
+	}
+	if err := a.ExecuteRules(stub); err != nil {
+		err = fmt.Errorf("PUTAsset for class %s failed in rules engine for %s, err is %s", a.Class.Name, a.AssetKey, err)
+		log.Errorf(err.Error())
+		return nil, err
+	}
+	if err := a.putMarshalledState(stub); err != nil {
+		err = fmt.Errorf("PUTAsset for class %s failed to marshall for %s, err is %s", a.Class.Name, a.AssetKey, err)
+		log.Errorf(err.Error())
+		return nil, err
+	}
+	return nil, nil
+}
+
 // CreateAsset inializes a new asset and stores it in world state
 func (c *AssetClass) CreateAsset(stub shim.ChaincodeStubInterface, args []string, caller string, inject []QPropNV) ([]byte, error) {
 
@@ -118,28 +146,47 @@ func (c *AssetClass) CreateAsset(stub shim.ChaincodeStubInterface, args []string
 		return nil, err
 	}
 
-	// save original asset function
-	a.FunctionIn = caller
+	return a.PUTAsset(stub, caller, inject)
+}
 
-	if len(inject) > 0 {
-		err := a.injectProps(inject)
-		if err != nil {
-			err = fmt.Errorf("CreateAsset for class %s failed to inject properties %+v for %s, err is %s", c.Name, inject, a.AssetKey, err)
-			log.Errorf(err.Error())
-			return nil, err
-		}
-	}
-	if err := a.ExecuteRules(stub); err != nil {
-		err = fmt.Errorf("CreateAsset for class %s failed in rules engine for %s, err is %s", c.Name, a.AssetKey, err)
+// ReplaceAsset replaces an asset completely in world state
+func (c *AssetClass) ReplaceAsset(stub shim.ChaincodeStubInterface, args []string, caller string, inject []QPropNV) ([]byte, error) {
+
+	var a = c.NewAsset()
+
+	if err := a.unmarshallEventIn(stub, args); err != nil {
+		err = fmt.Errorf("ReplaceAsset for class %s could not unmarshall, err is %s", c.Name, err)
 		log.Errorf(err.Error())
 		return nil, err
 	}
-	if err := a.putMarshalledState(stub); err != nil {
-		err = fmt.Errorf("CreateAsset for class %s failed to marshall for %s, err is %s", c.Name, a.AssetKey, err)
+	assetKey, err := a.getAssetKey()
+	if err != nil {
+		err = fmt.Errorf("ReplaceAsset for class %s could not find id at %s, err is %s", c.Name, c.AssetIDPath, err)
 		log.Errorf(err.Error())
 		return nil, err
 	}
-	return nil, nil
+	_, exists, err := c.getAssetFromWorldState(stub, assetKey)
+	if err != nil {
+		err := fmt.Errorf("ReplaceAsset for class %s asset %s read from world state returned error %s", c.Name, a.AssetKey, err)
+		log.Errorf(err.Error())
+		return nil, err
+	}
+	if !exists {
+		err := fmt.Errorf("ReplaceAsset for class %s asset %s asset does not exist", c.Name, a.AssetKey)
+		log.Errorf(err.Error())
+		return nil, err
+	}
+
+	// copy the event into a new state
+	astate := DeepMergeMap(*a.EventIn, make(map[string]interface{}))
+	a.State = &astate
+	if err := a.addTXNTimestampToState(stub); err != nil {
+		err = fmt.Errorf("CreateAsset for class %s failed to add txn timestamp for %s, err is %s", c.Name, a.AssetKey, err)
+		log.Errorf(err.Error())
+		return nil, err
+	}
+
+	return a.PUTAsset(stub, caller, inject)
 }
 
 // UpdateAsset updates an asset and stores it in world state
@@ -193,29 +240,7 @@ func (c *AssetClass) UpdateAsset(stub shim.ChaincodeStubInterface, args []string
 		return nil, err
 	}
 
-	// save original asset function
-	a.FunctionIn = caller
-
-	if len(inject) > 0 {
-		err := a.injectProps(inject)
-		if err != nil {
-			err = fmt.Errorf("UpdateAsset for class %s failed to inject properties %+v for %s, err is %s", c.Name, inject, a.AssetKey, err)
-			log.Errorf(err.Error())
-			return nil, err
-		}
-	}
-	if err := a.ExecuteRules(stub); err != nil {
-		err = fmt.Errorf("UpdateAsset for class %s failed in rules engine for %s, err is %s", c.Name, a.AssetKey, err)
-		log.Errorf(err.Error())
-		return nil, err
-	}
-	if err := a.putMarshalledState(stub); err != nil {
-		err = fmt.Errorf("CreateAsset for class %s failed to to marshall for %s, err is %s", c.Name, a.AssetKey, err)
-		log.Errorf(err.Error())
-		return nil, err
-	}
-
-	return nil, nil
+	return a.PUTAsset(stub, caller, inject)
 }
 
 // DeleteAsset deletes an asset from world state

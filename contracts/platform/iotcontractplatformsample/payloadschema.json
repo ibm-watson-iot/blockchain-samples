@@ -36,7 +36,7 @@
                 },
                 "createAssetContainer": {
                     "type": "object",
-                    "description": "Creates a new container",
+                    "description": "Creates a new container (e.g. put new)",
                     "properties": {
                         "method": "invoke",
                         "function": {
@@ -60,9 +60,35 @@
                         }
                     }
                 },
+                "replaceAssetContainer": {
+                    "type": "object",
+                    "description": "Replaces a container's state (e.g. put existing)",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "replaceAssetContainer"
+                            ]
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "container": {
+                                        "$ref": "#/definitions/container"
+                                    }
+                                }
+                            },
+                            "minItems": 1,
+                            "maxItems": 1
+                        }
+                    }
+                },
                 "updateAssetContainer": {
                     "type": "object",
-                    "description": "Update a contaner's state with one or more property changes",
+                    "description": "Update a contaner's state with one or more property changes (e.g. patch existing)",
                     "properties": {
                         "method": "invoke",
                         "function": {
@@ -201,7 +227,12 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/stateFilter"
+                                "type": "object",
+                                "properties": {
+                                    "filter": {
+                                        "$ref": "#/definitions/stateFilter"
+                                    }
+                                }
                             },
                             "minItems": 0,
                             "maxItems": 1

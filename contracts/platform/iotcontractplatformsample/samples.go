@@ -9,6 +9,58 @@ package main
 var samples = `
 
 {
+    "API/createAssetContainer": {
+        "args": [
+            {
+                "container": {
+                    "barcode": "A container's ID",
+                    "carrier": "The carrier in possession of this container",
+                    "common": {
+                        "appdata": [
+                            {
+                                "K": "carpe noctem",
+                                "V": "carpe noctem"
+                            }
+                        ],
+                        "deviceID": "A unique identifier for the device that sent the current event",
+                        "devicetimestamp": "A timestamp recoded by the device that sent the current event",
+                        "location": {
+                            "latitude": 123.456,
+                            "longitude": 123.456
+                        }
+                    },
+                    "temperature": 123.456
+                }
+            }
+        ],
+        "function": "createAssetContainer"
+    },
+    "API/updateAssetContainer": {
+        "args": [
+            {
+                "container": {
+                    "barcode": "A container's ID",
+                    "carrier": "The carrier in possession of this container",
+                    "common": {
+                        "appdata": [
+                            {
+                                "K": "carpe noctem",
+                                "V": "carpe noctem"
+                            }
+                        ],
+                        "deviceID": "A unique identifier for the device that sent the current event",
+                        "devicetimestamp": "A timestamp recoded by the device that sent the current event",
+                        "location": {
+                            "latitude": 123.456,
+                            "longitude": 123.456
+                        }
+                    },
+                    "temperature": 123.456
+                }
+            }
+        ],
+        "function": "updateAssetContainer"
+    },
     "container": {
         "barcode": "A container's ID",
         "carrier": "The carrier in possession of this container",

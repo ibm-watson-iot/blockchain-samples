@@ -24,15 +24,17 @@ import FlatButton from 'material-ui/lib/flat-button'
 import CardText from 'material-ui/lib/card/card-text'
 import Toggle from 'material-ui/lib/toggle';
 
-const ResponsePayloadHeaderView = ({func, args, removeFn, isRemoveBtnEnabled, index}) => (
+const ResponsePayloadHeaderView = ({func, args, removeFn, isRemoveBtnEnabled, index, togglePayloadPolling}) => (
   <div>
-    {isRemoveBtnEnabled ? <FlatButton label="X" primary={true} onClick={() => {removeFn(index)}}/> :
-    <FlatButton label="X" disabled={true}/>
+  <div>
+    {isRemoveBtnEnabled ? <FlatButton label="[X]" primary={true} onClick={() => {removeFn(index)}}/> :
+    <FlatButton label="[X]" disabled={true}/>
     }
 
     {/* label for the response payloads is: function() or function(args) if not null */}
     {func.concat("( ").concat((args==null) ? "" : JSON.stringify(args)).concat(" )")}
-  </div>
+  </div>  </div>
+  
 )
 
 /**
@@ -47,18 +49,15 @@ hideRemoveFn is responsible for hiding the remove asset button that calls remove
 const ResponsePayloadView = ({rPayload, removeFn, displayFn, enableRemoveBtnFn, disableRemoveBtnFn, index, isRemoveBtnEnabled, togglePayloadPolling}) => (
   <Card initiallyExpanded={true}>
     <CardHeader
-      title={<ResponsePayloadHeaderView func={rPayload.fn} args={rPayload.args} removeFn={removeFn} isRemoveBtnEnabled={isRemoveBtnEnabled} index={index}/>}
+      title={<ResponsePayloadHeaderView func={rPayload.fn} args={rPayload.args} removeFn={removeFn} isRemoveBtnEnabled={isRemoveBtnEnabled} index={index} togglePayloadPolling={togglePayloadPolling}/>}
       actAsExpander={false}
       showExpandableButton={true}
       onMouseEnter={() => {enableRemoveBtnFn(index)}}
       onMouseLeave={() => {disableRemoveBtnFn(index)}}
     />
     <CardText expandable={true} >
+      <Toggle onToggle={()=>{togglePayloadPolling(index)}} label="poll"/>
       {/*displayObj is a function that describes how to display the data.*/}
-      <Toggle
-        onToggle={()=>{togglePayloadPolling(index)}}
-        label="Poll for changes"
-      />
       {displayFn(rPayload.responsePayload, [], 0).map(function(item){
         return item;
       })}

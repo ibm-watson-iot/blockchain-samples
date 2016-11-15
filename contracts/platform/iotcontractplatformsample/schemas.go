@@ -11,7 +11,7 @@ var schemas = `
 {
     "API": {
         "createAssetContainer": {
-            "description": "Creates a new container",
+            "description": "Creates a new container (e.g. put new)",
             "properties": {
                 "args": {
                     "items": {
@@ -101,35 +101,40 @@ var schemas = `
             "properties": {
                 "args": {
                     "items": {
-                        "description": "Filter asset states",
                         "properties": {
-                            "match": {
-                                "default": "n/a",
-                                "description": "Defines how to match properties, missing property always fails match",
-                                "enum": [
-                                    "n/a",
-                                    "all",
-                                    "any",
-                                    "none"
-                                ],
-                                "type": "string"
-                            },
-                            "select": {
-                                "description": "Qualified property names and values match",
-                                "items": {
-                                    "properties": {
-                                        "qprop": {
-                                            "description": "Qualified property name, e.g. container.barcode",
-                                            "type": "string"
-                                        },
-                                        "value": {
-                                            "description": "Match this property value",
-                                            "type": "string"
-                                        }
+                            "filter": {
+                                "description": "Filter asset states",
+                                "properties": {
+                                    "match": {
+                                        "default": "n/a",
+                                        "description": "Defines how to match properties, missing property always fails match",
+                                        "enum": [
+                                            "n/a",
+                                            "all",
+                                            "any",
+                                            "none"
+                                        ],
+                                        "type": "string"
                                     },
-                                    "type": "object"
+                                    "select": {
+                                        "description": "Qualified property names and values match",
+                                        "items": {
+                                            "properties": {
+                                                "qprop": {
+                                                    "description": "Qualified property name, e.g. container.barcode",
+                                                    "type": "string"
+                                                },
+                                                "value": {
+                                                    "description": "Match this property value",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "type": "array"
+                                    }
                                 },
-                                "type": "array"
+                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -361,7 +366,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "The external state of one container asset, named by its world state ID",
+                                "description": "A container's complete state",
                                 "properties": {
                                     "AssetKey": {
                                         "description": "This container's world state container ID",
@@ -594,7 +599,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "The external state of one container asset, named by its world state ID",
+                                "description": "A container's complete state",
                                 "properties": {
                                     "AssetKey": {
                                         "description": "This container's world state container ID",
@@ -836,7 +841,7 @@ var schemas = `
                 },
                 "method": "query",
                 "result": {
-                    "description": "The external state of one container asset, named by its world state ID",
+                    "description": "A container's complete state",
                     "properties": {
                         "AssetKey": {
                             "description": "This container's world state container ID",
@@ -1134,7 +1139,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "The external state of one container asset, named by its world state ID",
+                                "description": "A container's complete state",
                                 "properties": {
                                     "AssetKey": {
                                         "description": "This container's world state container ID",
@@ -1379,7 +1384,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "The external state of one container asset, named by its world state ID",
+                                "description": "A container's complete state",
                                 "properties": {
                                     "AssetKey": {
                                         "description": "This container's world state container ID",
@@ -1614,6 +1619,92 @@ var schemas = `
             },
             "type": "object"
         },
+        "replaceAssetContainer": {
+            "description": "Replaces a container's state (e.g. put existing)",
+            "properties": {
+                "args": {
+                    "items": {
+                        "properties": {
+                            "container": {
+                                "description": "The changeable properties for a container, also considered its 'event' as a partial state",
+                                "properties": {
+                                    "barcode": {
+                                        "description": "A container's ID",
+                                        "type": "string"
+                                    },
+                                    "carrier": {
+                                        "description": "The carrier in possession of this container",
+                                        "type": "string"
+                                    },
+                                    "common": {
+                                        "description": "Common properties for all containers",
+                                        "properties": {
+                                            "appdata": {
+                                                "description": "Application managed information as an array of key:value pairs",
+                                                "items": {
+                                                    "properties": {
+                                                        "K": {
+                                                            "type": "string"
+                                                        },
+                                                        "V": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "minItems": 0,
+                                                "type": "array"
+                                            },
+                                            "deviceID": {
+                                                "description": "A unique identifier for the device that sent the current event",
+                                                "type": "string"
+                                            },
+                                            "devicetimestamp": {
+                                                "description": "A timestamp recoded by the device that sent the current event",
+                                                "type": "string"
+                                            },
+                                            "location": {
+                                                "description": "A geographical coordinate",
+                                                "properties": {
+                                                    "latitude": {
+                                                        "type": "number"
+                                                    },
+                                                    "longitude": {
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "temperature": {
+                                        "description": "Temperature of a container's contents in degrees Celsuis",
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "barcode"
+                                ],
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "maxItems": 1,
+                    "minItems": 1,
+                    "type": "array"
+                },
+                "function": {
+                    "enum": [
+                        "replaceAssetContainer"
+                    ],
+                    "type": "string"
+                },
+                "method": "invoke"
+            },
+            "type": "object"
+        },
         "setCreateOnFirstUpdate": {
             "description": "Allow updateAsset to create a container upon receipt of its first event",
             "properties": {
@@ -1676,7 +1767,7 @@ var schemas = `
             "type": "object"
         },
         "updateAssetContainer": {
-            "description": "Update a contaner's state with one or more property changes",
+            "description": "Update a contaner's state with one or more property changes (e.g. patch existing)",
             "properties": {
                 "args": {
                     "items": {
@@ -1827,7 +1918,7 @@ var schemas = `
             "type": "object"
         },
         "containerstate": {
-            "description": "The external state of one container asset, named by its world state ID",
+            "description": "A container's complete state",
             "properties": {
                 "AssetKey": {
                     "description": "This container's world state container ID",
@@ -2035,7 +2126,7 @@ var schemas = `
             "items": {
                 "patternProperties": {
                     "^CON": {
-                        "description": "The external state of one container asset, named by its world state ID",
+                        "description": "A container's complete state",
                         "properties": {
                             "AssetKey": {
                                 "description": "This container's world state container ID",
@@ -2247,7 +2338,7 @@ var schemas = `
         "containerstateexternal": {
             "patternProperties": {
                 "^CON": {
-                    "description": "The external state of one container asset, named by its world state ID",
+                    "description": "A container's complete state",
                     "properties": {
                         "AssetKey": {
                             "description": "This container's world state container ID",

@@ -34,11 +34,11 @@ const BlockView = ({isExpanded, blockNumber, timestampString, onBlockClick, urlR
       title={strings.BLOCK_CARD_HEADER_TEXT + " #"+blockNumber}
       actAsExpander={true}
       showExpandableButton={true}
-      subtitle={blockData ? moment.unix(blockData.nonHashData.localLedgerCommitTimestamp.seconds).format("M/D/YY LT") : ""}/>
+      subtitle={(typeof blockData === "object") ? moment.unix(blockData.nonHashData.localLedgerCommitTimestamp.seconds).format("M/D/YY LT") : ""}/>
     <CardText expandable={true}>
-      <h5>{blockData ? blockData.transactions.length + " " + strings.BLOCK_CARD_CONTENTS_TRANSACTION_TEXT : "No Transactions" }</h5>
+      <h5>{(typeof blockData === "object" && typeof blockData.transactions === "object" ) ? blockData.transactions.length + " " + strings.BLOCK_CARD_CONTENTS_TRANSACTION_TEXT : "No Transactions" }</h5>
       <ol>
-      {blockData ? blockData.transactions.map(function(transaction, index){
+      {(typeof blockData === "object" && typeof blockData.transactions === "object" ) ? blockData.transactions.map(function(transaction, index){
           return(
              <li key={index}> {transaction.uuid}
                <ul>

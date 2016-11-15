@@ -5,6 +5,7 @@
         "API": [
             "initContract",
             "createAssetContainer",
+            "replaceAssetContainer",
             "updateAssetContainer",
             "deleteAssetContainer",
             "deleteAssetStateHistoryContainer",
@@ -39,7 +40,9 @@
             "containerstate",
             "containerstateexternal",
             "containerstatearray",
-            "stateFilter"
+            "stateFilter",
+            "API/createAssetContainer",
+            "API/updateAssetContainer"
         ]
     }
 }

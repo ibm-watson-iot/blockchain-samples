@@ -48,6 +48,10 @@ var createAssetContainer iot.ChaincodeFunc = func(stub shim.ChaincodeStubInterfa
 	return ContainerClass.CreateAsset(stub, args, "createAssetContainer", []iot.QPropNV{})
 }
 
+var replaceAssetContainer iot.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	return ContainerClass.ReplaceAsset(stub, args, "replaceAssetContainer", []iot.QPropNV{})
+}
+
 var updateAssetContainer iot.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return ContainerClass.UpdateAsset(stub, args, "updateAssetContainer", []iot.QPropNV{})
 }
@@ -96,6 +100,7 @@ var overtempRule iot.RuleFunc = func(stub shim.ChaincodeStubInterface, container
 func init() {
 	iot.AddRule("Over Temperature Alert", ContainerClass, []iot.AlertName{overtempAlert}, overtempRule)
 	iot.AddRoute("createAssetContainer", "invoke", ContainerClass, createAssetContainer)
+	iot.AddRoute("replaceAssetContainer", "invoke", ContainerClass, replaceAssetContainer)
 	iot.AddRoute("updateAssetContainer", "invoke", ContainerClass, updateAssetContainer)
 	iot.AddRoute("deleteAssetContainer", "invoke", ContainerClass, deleteAssetContainer)
 	iot.AddRoute("deleteAssetStateHistoryContainer", "invoke", ContainerClass, deleteAssetStateHistoryContainer)
