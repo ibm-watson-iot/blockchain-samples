@@ -56,6 +56,10 @@ var deleteAssetContainer iot.ChaincodeFunc = func(stub shim.ChaincodeStubInterfa
 	return ContainerClass.DeleteAsset(stub, args)
 }
 
+var deleteAssetStateHistoryContainer iot.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	return ContainerClass.DeleteAssetStateHistory(stub, args)
+}
+
 var deleteAllAssetsContainer iot.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return ContainerClass.DeleteAllAssets(stub, args)
 }
@@ -72,7 +76,7 @@ var readAllAssetsContainer iot.ChaincodeFunc = func(stub shim.ChaincodeStubInter
 	return ContainerClass.ReadAllAssets(stub, args)
 }
 
-var readAssetHistoryContainer = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+var readAssetStateHistoryContainer = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return ContainerClass.ReadAssetStateHistory(stub, args)
 }
 
@@ -94,9 +98,10 @@ func init() {
 	iot.AddRoute("createAssetContainer", "invoke", ContainerClass, createAssetContainer)
 	iot.AddRoute("updateAssetContainer", "invoke", ContainerClass, updateAssetContainer)
 	iot.AddRoute("deleteAssetContainer", "invoke", ContainerClass, deleteAssetContainer)
+	iot.AddRoute("deleteAssetStateHistoryContainer", "invoke", ContainerClass, deleteAssetStateHistoryContainer)
 	iot.AddRoute("deleteAllAssetsContainer", "invoke", ContainerClass, deleteAllAssetsContainer)
 	iot.AddRoute("deletePropertiesFromAssetContainer", "invoke", ContainerClass, deletePropertiesFromAssetContainer)
 	iot.AddRoute("readAssetContainer", "query", ContainerClass, readAssetContainer)
-	iot.AddRoute("readAssetHistoryContainer", "query", ContainerClass, readAssetHistoryContainer)
+	iot.AddRoute("readAssetStateHistoryContainer", "query", ContainerClass, readAssetStateHistoryContainer)
 	iot.AddRoute("readAllAssetsContainer", "query", ContainerClass, readAllAssetsContainer)
 }

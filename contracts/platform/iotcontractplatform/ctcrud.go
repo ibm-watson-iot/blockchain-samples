@@ -230,12 +230,7 @@ func (a *Asset) removeOneAssetFromWorldState(stub shim.ChaincodeStubInterface) e
 		log.Error(err)
 		return err
 	}
-	err = a.DeleteAssetStateHistory(stub)
-	if err != nil {
-		err = fmt.Errorf("putMarshalledState failed to put asset %s history: %s", a.AssetKey, err)
-		log.Error(err)
-		return err
-	}
+	// delete history must be executed separately
 	return nil
 }
 

@@ -76,15 +76,29 @@ func (a *Asset) PUTAssetStateHistory(stub shim.ChaincodeStubInterface) error {
 }
 
 // DeleteAssetStateHistory deletes all history for an asset
-func (a *Asset) DeleteAssetStateHistory(stub shim.ChaincodeStubInterface) error {
+func (c *AssetClass) DeleteAssetStateHistory(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var err error
+	var arg = c.NewAsset()
 
-	var historyKey = STATEHISTORYKEY + a.AssetKey + "."
+	if err = arg.unmarshallEventIn(stub, args); err != nil {
+		err := fmt.Errorf("DeleteAssetStateHistory for class %s could not unmarshall, err is %s", c.Name, err)
+		log.Error(err)
+		return nil, err
+	}
+	assetKey, err := arg.getAssetKey()
+	if err != nil {
+		err = fmt.Errorf("DeleteAssetStateHistory for class %s could not find id at %s, err is %s", c.Name, c.AssetIDPath, err)
+		log.Error(err)
+		return nil, err
+	}
+
+	var historyKey = STATEHISTORYKEY + assetKey + "."
 
 	iter, err := stub.RangeQueryState(historyKey, historyKey+"}")
 	if err != nil {
 		err = fmt.Errorf("DeleteAssetStateHistory failed to get a range query iterator: %s", err)
 		log.Errorf(err.Error())
-		return err
+		return nil, err
 	}
 	defer iter.Close()
 	for iter.HasNext() {
@@ -92,22 +106,22 @@ func (a *Asset) DeleteAssetStateHistory(stub shim.ChaincodeStubInterface) error 
 		if err != nil {
 			err = fmt.Errorf("DeleteAssetStateHistory iter.Next() failed: %s", err)
 			log.Errorf(err.Error())
-			return err
+			return nil, err
 		}
 		err = stub.DelState(key)
 		if err != nil {
 			err = fmt.Errorf("DeleteAssetStateHistory DelState for asset %s failed: %s ", key, err)
 			log.Errorf(err.Error())
-			return err
+			return nil, err
 		}
 	}
 
-	return nil
+	return nil, nil
 }
 
 // ReadAssetStateHistory gets the state history for an asset.
 func (c *AssetClass) ReadAssetStateHistory(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	var assets AssetArray
+	var assets = make(AssetArray, 0)
 	var err error
 	var filter StateFilter
 	var dr DateRange

@@ -180,6 +180,38 @@ var schemas = `
             },
             "type": "object"
         },
+        "deleteAssetStateHistoryContainer": {
+            "description": "Delete a container's history from world state, transactions remain on the blockchain",
+            "properties": {
+                "args": {
+                    "items": {
+                        "maxItems": 1,
+                        "minItems": 1,
+                        "properties": {
+                            "container": {
+                                "properties": {
+                                    "barcode": {
+                                        "description": "A container's ID",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "type": "array"
+                },
+                "function": {
+                    "enum": [
+                        "deleteAssetStateHistoryContainer"
+                    ],
+                    "type": "string"
+                },
+                "method": "invoke"
+            },
+            "type": "object"
+        },
         "deletePropertiesFromAssetContainer": {
             "description": "Delete one or more properties from a container's state, an example being temperature, which is only relevant for sensitive (as in frozen) shipments",
             "properties": {
@@ -329,7 +361,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "A container's complete state",
+                                "description": "The external state of one container asset, named by its world state ID",
                                 "properties": {
                                     "AssetKey": {
                                         "description": "This container's world state container ID",
@@ -562,7 +594,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "A container's complete state",
+                                "description": "The external state of one container asset, named by its world state ID",
                                 "properties": {
                                     "AssetKey": {
                                         "description": "This container's world state container ID",
@@ -804,7 +836,7 @@ var schemas = `
                 },
                 "method": "query",
                 "result": {
-                    "description": "A container's complete state",
+                    "description": "The external state of one container asset, named by its world state ID",
                     "properties": {
                         "AssetKey": {
                             "description": "This container's world state container ID",
@@ -1010,8 +1042,8 @@ var schemas = `
             },
             "type": "object"
         },
-        "readAssetHistoryContainer": {
-            "description": "Returns the history of a container",
+        "readAssetStateHistoryContainer": {
+            "description": "Returns history states for a container",
             "properties": {
                 "args": {
                     "items": {
@@ -1092,7 +1124,7 @@ var schemas = `
                 },
                 "function": {
                     "enum": [
-                        "readAssetHistoryContainer"
+                        "readAssetStateHistoryContainer"
                     ],
                     "type": "string"
                 },
@@ -1102,7 +1134,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "A container's complete state",
+                                "description": "The external state of one container asset, named by its world state ID",
                                 "properties": {
                                     "AssetKey": {
                                         "description": "This container's world state container ID",
@@ -1347,7 +1379,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "A container's complete state",
+                                "description": "The external state of one container asset, named by its world state ID",
                                 "properties": {
                                     "AssetKey": {
                                         "description": "This container's world state container ID",
@@ -1795,7 +1827,7 @@ var schemas = `
             "type": "object"
         },
         "containerstate": {
-            "description": "A container's complete state",
+            "description": "The external state of one container asset, named by its world state ID",
             "properties": {
                 "AssetKey": {
                     "description": "This container's world state container ID",
@@ -2003,7 +2035,7 @@ var schemas = `
             "items": {
                 "patternProperties": {
                     "^CON": {
-                        "description": "A container's complete state",
+                        "description": "The external state of one container asset, named by its world state ID",
                         "properties": {
                             "AssetKey": {
                                 "description": "This container's world state container ID",
@@ -2215,7 +2247,7 @@ var schemas = `
         "containerstateexternal": {
             "patternProperties": {
                 "^CON": {
-                    "description": "A container's complete state",
+                    "description": "The external state of one container asset, named by its world state ID",
                     "properties": {
                         "AssetKey": {
                             "description": "This container's world state container ID",

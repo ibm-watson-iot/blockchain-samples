@@ -117,6 +117,37 @@
                         }
                     }
                 },
+                "deleteAssetStateHistoryContainer": {
+                    "type": "object",
+                    "description": "Delete a container's history from world state, transactions remain on the blockchain",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deleteAssetStateHistoryContainer"
+                            ]
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "container": {
+                                        "type": "object",
+                                        "properties": {
+                                            "barcode": {
+                                                "$ref": "#/definitions/barcode"
+                                            }
+                                        }
+                                    }
+                                },
+                                "minItems": 1,
+                                "maxItems": 1
+                            }
+                        }
+                    }
+                },
                 "deletePropertiesFromAssetContainer": {
                     "type": "object",
                     "description": "Delete one or more properties from a container's state, an example being temperature, which is only relevant for sensitive (as in frozen) shipments",
@@ -241,15 +272,15 @@
                         }
                     }
                 },
-                "readAssetHistoryContainer": {
+                "readAssetStateHistoryContainer": {
                     "type": "object",
-                    "description": "Returns the history of a container",
+                    "description": "Returns history states for a container",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "readAssetHistoryContainer"
+                                "readAssetStateHistoryContainer"
                             ]
                         },
                         "args": {
