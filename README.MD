@@ -50,7 +50,7 @@ Notes:
 
 - [PingPong Contract]
 
-    This contract has been derived from the IoT Sample contract. Please read the introductory articles in the [docs folder](https://github.com/ibm-watson-iot/blockchain-samples/docs) if you are not familiar with how these contracts function.
+    This contract has been derived from the IoT Sample contract. Please read the introductory articles in the [docs folder](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/docs) if you are not familiar with how these contracts function.
 
     This contract adds the ability to send outgoing events from an advanced IoT contract. Three events are registered, as clipped from the code:
 
