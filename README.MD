@@ -50,7 +50,7 @@ Notes:
 
 - [PingPong Contract]
 
-    This contract has been derived from the IoT Sample contract. Please read the introductory articles in the [docs folder](../../../docs) if you are not familiar with how these contracts function.
+    This contract has been derived from the IoT Sample contract. Please read the introductory articles in the [docs folder](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/docs) if you are not familiar with how these contracts function.
 
     This contract adds the ability to send outgoing events from an advanced IoT contract. Three events are registered, as clipped from the code:
 
@@ -65,7 +65,7 @@ Notes:
     const EVTPING = "EVTPING"
     ```
 
-    See the [event listener application](../../../applcations/event_listener) README and code to understand how the client registers interest in specific events and then catches them in a gRPB stream (modeled in Go as channels).
+    See the [event listener application](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/applications/event_listener) README and code to understand how the client registers interest in specific events and then catches them in a gRPB stream (modeled in Go as channels).
 
 - [`aviation_sample_contract`](https://github.com/ibm-watson-iot/blockchain-samples/tree/master/contracts/industry/aviation_sample_contract)
 

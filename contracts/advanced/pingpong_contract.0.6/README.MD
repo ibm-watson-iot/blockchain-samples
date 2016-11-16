@@ -17,5 +17,5 @@ const EVTPONG = "EVTPONG"
 const EVTPING = "EVTPING"
 ```
 
-See the [event listener application](../../../applcations/event_listener) README and code to understand how the client registers interest in specific events and then catches them in a gRPB stream (modeled in Go as channels).
+See the [event listener application](../../../applications/event_listener) README and code to understand how the client registers interest in specific events and then catches them in a gRPB stream (modeled in Go as channels).
 
