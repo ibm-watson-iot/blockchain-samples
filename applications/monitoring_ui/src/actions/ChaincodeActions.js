@@ -214,8 +214,7 @@ function removeEmptyProps(args, requestType) {
                 console.log("****skip args[" + propertyName + "]");
             } else if (JSON.stringify(args[propertyName]) === JSON.stringify([])) {
                 console.log("****skip args[" + propertyName + "]");
-            } else if (requestType.toLowerCase() === "invoke" && (propertyName === "match" && ["n/a", "all", "any", "none"].indexOf(args[propertyName]) > -1)) {
-                // bandaid over fragile state code
+            } else if (propertyName === "match" && ["n/a"].indexOf(args[propertyName]) > -1) {
                 console.log("****skip args[" + propertyName + "]");
             } else if (typeof args[propertyName] === "object") {
                 var tmp = removeEmptyProps(args[propertyName], requestType)

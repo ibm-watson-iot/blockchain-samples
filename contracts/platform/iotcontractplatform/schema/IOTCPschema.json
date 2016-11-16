@@ -1,5 +1,7 @@
 {
+    "id": "https://github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatform/schema/IOTCPschema.json",
     "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Watson IoT Hyperledger Smart Contract Platform Schema",
     "definitions": {
         "API": {
             "type": "object",
@@ -60,7 +62,33 @@
                         }
                     }
                 },
-                "updateAssetAsset": {
+                "replaceAsset": {
+                    "type": "object",
+                    "description": "Replaces an asset's state (e.g. put existing)",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "replaceAsset"
+                            ]
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "asset": {
+                                        "$ref": "#/definitions/asset"
+                                    }
+                                }
+                            },
+                            "minItems": 1,
+                            "maxItems": 1
+                        }
+                    }
+                },
+                "updateAsset": {
                     "type": "object",
                     "description": "Update an asset's state with one or more property changes",
                     "properties": {
@@ -102,18 +130,35 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "asset": {
-                                        "type": "object",
-                                        "properties": {
-                                            "assetKey": {
-                                                "$ref": "#/definitions/assetKey"
-                                            }
-                                        }
-                                    }
-                                },
-                                "minItems": 1,
-                                "maxItems": 1
-                            }
+                                    "$ref": "#/definitions/assetKey"
+                                }
+                            },
+                            "minItems": 1,
+                            "maxItems": 1
+                        }
+                    }
+                },
+                "deleteAssetStateHistory": {
+                    "type": "object",
+                    "description": "Delete an asset's history from world state, transactions remain on the blockchain",
+                    "properties": {
+                        "method": "invoke",
+                        "function": {
+                            "type": "string",
+                            "enum": [
+                                "deleteAssetStateHistory"
+                            ]
+                        },
+                        "args": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "$ref": "#/definitions/assetKey"
+                                }
+                            },
+                            "minItems": 1,
+                            "maxItems": 1
                         }
                     }
                 },
@@ -133,18 +178,10 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "asset": {
-                                        "type": "object",
-                                        "properties": {
-                                            "assetKey": {
-                                                "type": "string",
-                                                "description": "an asset's ID"
-                                            }
-                                        }
-                                    },
+                                    "$ref": "#/definitions/assetKey",
                                     "qprops": {
                                         "type": "array",
-                                        "description": "Qualified property names, e.g. asset.assetKey",
+                                        "description": "Qualified property names, e.g. asset.assetID",
                                         "items": {
                                             "type": "string"
                                         }
@@ -170,7 +207,12 @@
                         "args": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/stateFilter"
+                                "type": "object",
+                                "properties": {
+                                    "filter": {
+                                        "$ref": "#/definitions/stateFilter"
+                                    }
+                                }
                             },
                             "minItems": 0,
                             "maxItems": 1
@@ -193,15 +235,7 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "asset": {
-                                        "type": "object",
-                                        "properties": {
-                                            "assetKey": {
-                                                "type": "string",
-                                                "description": "an asset's ID"
-                                            }
-                                        }
-                                    }
+                                    "$ref": "#/definitions/assetKey"
                                 }
                             },
                             "minItems": 1,
@@ -241,15 +275,15 @@
                         }
                     }
                 },
-                "readAssetHistory": {
+                "readAssetStateHistory": {
                     "type": "object",
-                    "description": "Returns the history of an asset",
+                    "description": "Returns history for an asset",
                     "properties": {
                         "method": "query",
                         "function": {
                             "type": "string",
                             "enum": [
-                                "readAssetHistory"
+                                "readAssetStateHistory"
                             ]
                         },
                         "args": {
@@ -257,17 +291,7 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "asset": {
-                                        "type": "object",
-                                        "properties": {
-                                            "assetKey": {
-                                                "$ref": "#/definitions/assetKey"
-                                            }
-                                        },
-                                        "required": [
-                                            "assetKey"
-                                        ]
-                                    },
+                                    "$ref": "#/definitions/assetKey",
                                     "range": {
                                         "type": "object",
                                         "description": "if specified, dates must fall in between these values, inclusive",
@@ -460,7 +484,7 @@
                         }
                     }
                 },
-                "setCreateOnUpdate": {
+                "setCreateOnFirstUpdate": {
                     "type": "object",
                     "description": "Allow updateAsset to create an asset upon receipt of its first event",
                     "properties": {
@@ -468,7 +492,7 @@
                         "function": {
                             "type": "string",
                             "enum": [
-                                "setCreateOnUpdate"
+                                "setCreateOnFirstUpdate"
                             ]
                         },
                         "args": {
@@ -476,14 +500,9 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "setCreateOnUpdate": {
-                                        "type": "object",
-                                        "description": "Allows updates to create missing assets on first event",
-                                        "properties": {
-                                            "createOnUpdate": {
-                                                "type": "boolean"
-                                            }
-                                        }
+                                    "setCreateOnFirstUpdate": {
+                                        "type": "boolean",
+                                        "description": "Allows updates to create missing assets on first event"
                                     }
                                 }
                             },
@@ -542,12 +561,22 @@
         },
         "nickname": {
             "type": "string",
-            "default": "CTIORSAMPLE",
+            "default": "IOT Contract Platform",
             "description": "The nickname of the current contract instance"
         },
-        "assetKey": {
+        "assetID": {
             "type": "string",
-            "description": "A asset's ID"
+            "description": "An asset's unique ID, barcode, VIN, etc."
+        },
+        "assetKey": {
+            "asset": {
+                "type": "object",
+                "properties": {
+                    "assetID": {
+                        "$ref": "#/definitions/assetID"
+                    }
+                }
+            }
         },
         "alertName": {
             "type": "string",
@@ -575,7 +604,7 @@
             "type": "array",
             "items": {
                 "type": "string",
-                "description": "A qualified name of a property such as asset.assetKey"
+                "description": "A qualified name of a property such as asset.assetID"
             }
         },
         "asset": {
@@ -585,8 +614,8 @@
                 "common": {
                     "$ref": "#/definitions/ioteventcommon"
                 },
-                "assetKey": {
-                    "$ref": "#/definitions/assetKey"
+                "assetID": {
+                    "$ref": "#/definitions/assetID"
                 },
                 "temperature": {
                     "type": "number",
@@ -598,7 +627,7 @@
                 }
             },
             "required": [
-                "assetKey"
+                "assetID"
             ]
         },
         "invokeevent": {
@@ -665,7 +694,7 @@
                     "type": "string",
                     "description": "Qualified property path to the asset's ID, declared in the contract code"
                 },
-                "assetKey": {
+                "assetID": {
                     "type": "string",
                     "description": "This asset's world state asset ID"
                 },
@@ -746,7 +775,7 @@
                         "properties": {
                             "qprop": {
                                 "type": "string",
-                                "description": "Qualified property name, e.g. asset.assetKey"
+                                "description": "Qualified property name, e.g. asset.assetID"
                             },
                             "value": {
                                 "type": "string",

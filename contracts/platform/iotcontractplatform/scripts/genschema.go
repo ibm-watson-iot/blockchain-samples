@@ -28,6 +28,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -80,7 +81,7 @@ func printSyntaxError(js string, off *[5000]int, err interface{}) {
 func getObject(schema map[string]interface{}, objName string) map[string]interface{} {
 	// return a copy of the selected object
 	// handles full path, or path starting after definitions
-	if !strings.HasPrefix(objName, "#/definitions/") {
+	if objName != "#/definitions" && !strings.HasPrefix(objName, "#/definitions/") {
 		objName = "#/definitions/" + objName
 	}
 	s := strings.Split(objName, "/")
@@ -420,6 +421,48 @@ func init() {
 	flag.StringVar(&configFile, "cf", defaultConfigFile, usage+" (shorthand)")
 }
 
+func getIncludedFile(path string) string {
+	fmt.Println("****** getIncludedFile include file: " + path)
+	var retstr = make([]byte, 0)
+	var err error
+	parts := strings.Split(path, "/#")
+	includeschema := parts[0]
+	level := parts[1]
+	paths := strings.Split(os.Getenv("GOPATH"), ":")
+	for _, s := range paths {
+		retstr, err = ioutil.ReadFile(s + "/src/" + includeschema)
+		if err != nil {
+			if os.IsNotExist(err) {
+				// fmt.Println("****** include file not found on path: " + s + "/src/" + includeschema)
+				continue
+			}
+			panic(errors.New("unknown error reading include file " + s + includeschema + err.Error()))
+		} else {
+			// fmt.Println("****** include file found on path: " + s + "/src/" + includeschema)
+			break
+		}
+	}
+	var ischema interface{}
+	err = json.Unmarshal(retstr, &ischema)
+	if err != nil {
+		panic(errors.New("failed to unmarshal included schema: " + err.Error()))
+	}
+	m, found := ischema.(map[string]interface{})
+	if !found {
+		panic(errors.New("included schema is not map shaped"))
+	}
+	o := getObject(m, "#/"+level)
+	if o == nil {
+		panic(errors.New("Level " + level + " not found in schema " + path))
+	}
+	retstr, err = json.MarshalIndent(o, "", "   ")
+	if err != nil {
+		panic(errors.New("Level " + level + " in schema " + path + " failed to marshal: " + err.Error()))
+	}
+	// fmt.Println("\n\n RETURNING FROM INCLUDE PROCESSING\n\n" + string(retstr) + "\n\n")
+	return string(retstr)
+}
+
 // Reads payloadschema.json api file
 // encodes as a string literal in payloadschema.go
 func main() {
@@ -452,46 +495,57 @@ func main() {
 	var lineOut = 1
 	var offsets [5000]int
 
-	// _, currentFilePath, _, _ := runtime.Caller(0)
-	// mypath := path.Dir(currentFilePath)
-
-	// read the configuration from the json file
 	filename, _ := filepath.Abs("./" + configFile)
 	jsonFile, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Println("error reading json file")
-		panic(err)
+		panic(errors.New("error reading json file" + err.Error()))
 	}
 	var config Config
 	err = json.Unmarshal(jsonFile, &config)
 	if err != nil {
-		fmt.Println("error unmarshaling json config")
-		panic(err)
+		panic(errors.New("error unmarshaling json config" + err.Error()))
 	}
 
-	// read the schema file, stripping comments and blank lines, calculate offsets for error output
-	file, err := os.Open(config.Schemas.SchemaFilename)
+	// read the schema and preprocess, inserting any included external schemas, either via local file reference or URI
+	// fmt.Println("OPENING SCHEMA FILE: " + config.Schemas.SchemaFilename)
+	filepre, err := os.Open(config.Schemas.SchemaFilename)
 	if err != nil {
-		fmt.Printf("** ERR ** [%s] opening schema file at %s\n", err, config.Schemas.SchemaFilename)
+		fmt.Printf("** ERR ** [%s] opening input schema file at %s\n", err, config.Schemas.SchemaFilename)
 		return
 	}
-	defer file.Close()
-	reader := bufio.NewReader(file)
+	defer filepre.Close()
+	reader := bufio.NewReader(filepre)
 	scanner := bufio.NewScanner(reader)
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
-		ts := strings.TrimSpace(scanner.Text())
+		l := scanner.Text()
+		// fmt.Println("MAIN SCHEMA: " + l)
+		ts := strings.TrimSpace(l)
 		if strings.HasPrefix(ts, "#") {
 			fmt.Println("Line: ", line, " is a comment")
 		} else if ts == "" {
 			fmt.Println("Line: ", line, " is blank")
+		} else if strings.HasPrefix(ts, "\"$ref\"") && strings.Index(ts, "\"#/") == -1 {
+			ss := strings.Split(ts, "\"")
+			p := ss[len(ss)-2]
+			refArr := getIncludedFile(p)
+			lines := strings.Split(refArr, "\n")
+			// remove open and close brace as we are replacing the reference in place with the contents of the names object
+			lines = lines[1 : len(lines)-1]
+			for _, l2 := range lines {
+				api += l2 + "\n"
+				lineOut++
+			}
+			api += ","
 		} else {
-			api += ts + "\n"
+			api += l + "\n"
 			lineOut++
 		}
 		offsets[lineOut] = line
 		line++
 	}
+
+	// fmt.Println("\n\n FINAL SCHEMA\n\n" + api + "\n")
 
 	// verify the JSON format by unmarshaling it into a map
 

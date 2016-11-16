@@ -129,17 +129,18 @@ export const chaincode = (state = {
                 }
             })
         case ADD_RESPONSE_PAYLOAD:
+            let newResponsePayloads = [{
+                args: action.args,
+                fn: action.fn,
+                opType: action.opType,
+                isPolling: action.isPolling,
+                responsePayload: action.rPayload,
+                isRemoveBtnEnabled: action.isRemoveBtnEnabled,
+            }].concat(state.ui.responsePayloads)
             return update(state, {
                 ui: {
                     responsePayloads: {
-                        $push: [{
-                            args: action.args,
-                            fn: action.fn,
-                            opType: action.opType,
-                            isPolling: action.isPolling,
-                            responsePayload: action.rPayload,
-                            isRemoveBtnEnabled: action.isRemoveBtnEnabled,
-                        }]
+                        $set: newResponsePayloads
                     }
                 }
             })

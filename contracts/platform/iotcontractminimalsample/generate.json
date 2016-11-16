@@ -1,0 +1,41 @@
+{
+    "schemas": {
+        "schemaFilename": "minimal.json",
+        "goSchemaFilename": "schemas.go",
+        "API": [
+            "initContract",
+            "createAsset",
+            "replaceAsset",
+            "updateAsset",
+            "deleteAsset",
+            "deleteAssetStateHistory",
+            "deletePropertiesFromAsset",
+            "deleteAllAssets",
+            "readAsset",
+            "readAllAssets",
+            "readAllRoutes",
+            "readWorldState",
+            "deleteWorldState",
+            "readAssetStateHistory",
+            "readRecentStates",
+            "setLoggingLevel",
+            "setCreateOnFirstUpdate"
+        ],
+        "goSchemaElements": [
+            "asset"
+        ]
+    },
+    "samples": {
+        "goSampleFilename": "samples.go",
+        "goSampleElements": [
+            "asset",
+            "invokeevent",
+            "ioteventcommon",
+            "assetstate",
+            "assetstateexternal",
+            "assetstatearray",
+            "stateFilter",
+            "API/createAsset"
+        ]
+    }
+}
