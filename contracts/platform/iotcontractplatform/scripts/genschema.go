@@ -422,7 +422,6 @@ func init() {
 }
 
 func getIncludedFile(path string) string {
-	fmt.Println("****** getIncludedFile include file: " + path)
 	var retstr = make([]byte, 0)
 	var err error
 	parts := strings.Split(path, "/#")
@@ -528,6 +527,7 @@ func main() {
 		} else if strings.HasPrefix(ts, "\"$ref\"") && strings.Index(ts, "\"#/") == -1 {
 			ss := strings.Split(ts, "\"")
 			p := ss[len(ss)-2]
+			fmt.Printf("line: %d includes: %s\n", line, p)
 			refArr := getIncludedFile(p)
 			lines := strings.Split(refArr, "\n")
 			// remove open and close brace as we are replacing the reference in place with the contents of the names object
@@ -536,7 +536,9 @@ func main() {
 				api += l2 + "\n"
 				lineOut++
 			}
-			api += ","
+			if len(ss) > 0 && ss[len(ss)-1] == "," {
+				api += ","
+			}
 		} else {
 			api += l + "\n"
 			lineOut++

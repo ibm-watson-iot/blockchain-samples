@@ -181,7 +181,7 @@
                                     "$ref": "#/definitions/assetKey",
                                     "qprops": {
                                         "type": "array",
-                                        "description": "Qualified property names, e.g. asset.assetID",
+                                        "description": "Qualified property names such as common.location",
                                         "items": {
                                             "type": "string"
                                         }
@@ -600,13 +600,6 @@
                 "longitude": { "type": "number" }
             }
         },
-        "QProps": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "description": "A qualified name of a property such as asset.assetID"
-            }
-        },
         "asset": {
             "type": "object",
             "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
@@ -745,7 +738,7 @@
         "assetstateexternal": {
             "type": "object",
             "patternProperties": {
-                "^CON": {
+                "^DEF": {
                     "type": "object",
                     "description": "The external state of one asset asset, named by its world state ID",
                     "$ref": "#/definitions/assetstate"
@@ -764,8 +757,7 @@
                         "all",
                         "any",
                         "none"
-                    ],
-                    "default": "n/a"
+                    ]
                 },
                 "select": {
                     "type": "array",
@@ -775,11 +767,11 @@
                         "properties": {
                             "qprop": {
                                 "type": "string",
-                                "description": "Qualified property name, e.g. asset.assetID"
+                                "description": "Qualified property to compare, for example 'asset.assetID'"
                             },
                             "value": {
                                 "type": "string",
-                                "description": "Match this property value"
+                                "description": "Value to be compared"
                             }
                         }
                     }

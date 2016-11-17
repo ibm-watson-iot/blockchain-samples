@@ -106,7 +106,6 @@ var schemas = `
                                 "description": "Filter asset states",
                                 "properties": {
                                     "match": {
-                                        "default": "n/a",
                                         "description": "Defines how to match properties, missing property always fails match",
                                         "enum": [
                                             "n/a",
@@ -121,11 +120,11 @@ var schemas = `
                                         "items": {
                                             "properties": {
                                                 "qprop": {
-                                                    "description": "Qualified property name, e.g. asset.assetID",
+                                                    "description": "Qualified property to compare, for example 'asset.assetID'",
                                                     "type": "string"
                                                 },
                                                 "value": {
-                                                    "description": "Match this property value",
+                                                    "description": "Value to be compared",
                                                     "type": "string"
                                                 }
                                             },
@@ -172,7 +171,6 @@ var schemas = `
                                 "description": "Filter asset states",
                                 "properties": {
                                     "match": {
-                                        "default": "n/a",
                                         "description": "Defines how to match properties, missing property always fails match",
                                         "enum": [
                                             "n/a",
@@ -187,11 +185,11 @@ var schemas = `
                                         "items": {
                                             "properties": {
                                                 "qprop": {
-                                                    "description": "Qualified property name, e.g. asset.assetID",
+                                                    "description": "Qualified property to compare, for example 'asset.assetID'",
                                                     "type": "string"
                                                 },
                                                 "value": {
-                                                    "description": "Match this property value",
+                                                    "description": "Value to be compared",
                                                     "type": "string"
                                                 }
                                             },
@@ -203,11 +201,29 @@ var schemas = `
                                 "type": "object"
                             },
                             "qprops": {
-                                "description": "Qualified property names, e.g. asset.assetID",
+                                "description": "Qualified property names such as common.location",
                                 "items": {
                                     "type": "string"
                                 },
                                 "type": "array"
+                            },
+                            "range": {
+                                "description": "if specified, dates must fall in between these values, inclusive",
+                                "properties": {
+                                    "begin": {
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss",
+                                        "type": "string"
+                                    },
+                                    "end": {
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -245,7 +261,6 @@ var schemas = `
                                 "description": "Filter asset states",
                                 "properties": {
                                     "match": {
-                                        "default": "n/a",
                                         "description": "Defines how to match properties, missing property always fails match",
                                         "enum": [
                                             "n/a",
@@ -260,11 +275,11 @@ var schemas = `
                                         "items": {
                                             "properties": {
                                                 "qprop": {
-                                                    "description": "Qualified property name, e.g. asset.assetID",
+                                                    "description": "Qualified property to compare, for example 'asset.assetID'",
                                                     "type": "string"
                                                 },
                                                 "value": {
-                                                    "description": "Match this property value",
+                                                    "description": "Value to be compared",
                                                     "type": "string"
                                                 }
                                             },
@@ -276,11 +291,29 @@ var schemas = `
                                 "type": "object"
                             },
                             "qprops": {
-                                "description": "Qualified property names, e.g. asset.assetID",
+                                "description": "Qualified property names such as common.location",
                                 "items": {
                                     "type": "string"
                                 },
                                 "type": "array"
+                            },
+                            "range": {
+                                "description": "if specified, dates must fall in between these values, inclusive",
+                                "properties": {
+                                    "begin": {
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss",
+                                        "type": "string"
+                                    },
+                                    "end": {
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -318,7 +351,6 @@ var schemas = `
                                 "description": "Filter asset states",
                                 "properties": {
                                     "match": {
-                                        "default": "n/a",
                                         "description": "Defines how to match properties, missing property always fails match",
                                         "enum": [
                                             "n/a",
@@ -333,11 +365,11 @@ var schemas = `
                                         "items": {
                                             "properties": {
                                                 "qprop": {
-                                                    "description": "Qualified property name, e.g. asset.assetID",
+                                                    "description": "Qualified property to compare, for example 'asset.assetID'",
                                                     "type": "string"
                                                 },
                                                 "value": {
-                                                    "description": "Match this property value",
+                                                    "description": "Value to be compared",
                                                     "type": "string"
                                                 }
                                             },
@@ -349,11 +381,29 @@ var schemas = `
                                 "type": "object"
                             },
                             "qprops": {
-                                "description": "Qualified property names, e.g. asset.assetID",
+                                "description": "Qualified property names such as common.location",
                                 "items": {
                                     "type": "string"
                                 },
                                 "type": "array"
+                            },
+                            "range": {
+                                "description": "if specified, dates must fall in between these values, inclusive",
+                                "properties": {
+                                    "begin": {
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss",
+                                        "type": "string"
+                                    },
+                                    "end": {
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -433,7 +483,6 @@ var schemas = `
                                 "description": "Filter asset states",
                                 "properties": {
                                     "match": {
-                                        "default": "n/a",
                                         "description": "Defines how to match properties, missing property always fails match",
                                         "enum": [
                                             "n/a",
@@ -448,11 +497,11 @@ var schemas = `
                                         "items": {
                                             "properties": {
                                                 "qprop": {
-                                                    "description": "Qualified property name, e.g. asset.assetID",
+                                                    "description": "Qualified property to compare, for example 'asset.assetID'",
                                                     "type": "string"
                                                 },
                                                 "value": {
-                                                    "description": "Match this property value",
+                                                    "description": "Value to be compared",
                                                     "type": "string"
                                                 }
                                             },
@@ -481,7 +530,7 @@ var schemas = `
                     "description": "Array of asset states, can mix asset classes",
                     "items": {
                         "patternProperties": {
-                            "^CON": {
+                            "^DEF": {
                                 "description": "The external state of one asset asset, named by its world state ID",
                                 "properties": {
                                     "alerts": {
@@ -714,7 +763,7 @@ var schemas = `
                     "description": "Array of asset states, can mix asset classes",
                     "items": {
                         "patternProperties": {
-                            "^CON": {
+                            "^DEF": {
                                 "description": "The external state of one asset asset, named by its world state ID",
                                 "properties": {
                                     "alerts": {
@@ -946,7 +995,6 @@ var schemas = `
                                 "description": "Filter asset states",
                                 "properties": {
                                     "match": {
-                                        "default": "n/a",
                                         "description": "Defines how to match properties, missing property always fails match",
                                         "enum": [
                                             "n/a",
@@ -961,11 +1009,11 @@ var schemas = `
                                         "items": {
                                             "properties": {
                                                 "qprop": {
-                                                    "description": "Qualified property name, e.g. asset.assetID",
+                                                    "description": "Qualified property to compare, for example 'asset.assetID'",
                                                     "type": "string"
                                                 },
                                                 "value": {
-                                                    "description": "Match this property value",
+                                                    "description": "Value to be compared",
                                                     "type": "string"
                                                 }
                                             },
@@ -977,11 +1025,29 @@ var schemas = `
                                 "type": "object"
                             },
                             "qprops": {
-                                "description": "Qualified property names, e.g. asset.assetID",
+                                "description": "Qualified property names such as common.location",
                                 "items": {
                                     "type": "string"
                                 },
                                 "type": "array"
+                            },
+                            "range": {
+                                "description": "if specified, dates must fall in between these values, inclusive",
+                                "properties": {
+                                    "begin": {
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss",
+                                        "type": "string"
+                                    },
+                                    "end": {
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -1223,7 +1289,6 @@ var schemas = `
                                 "description": "Filter asset states",
                                 "properties": {
                                     "match": {
-                                        "default": "n/a",
                                         "description": "Defines how to match properties, missing property always fails match",
                                         "enum": [
                                             "n/a",
@@ -1238,11 +1303,11 @@ var schemas = `
                                         "items": {
                                             "properties": {
                                                 "qprop": {
-                                                    "description": "Qualified property name, e.g. asset.assetID",
+                                                    "description": "Qualified property to compare, for example 'asset.assetID'",
                                                     "type": "string"
                                                 },
                                                 "value": {
-                                                    "description": "Match this property value",
+                                                    "description": "Value to be compared",
                                                     "type": "string"
                                                 }
                                             },
@@ -1254,11 +1319,29 @@ var schemas = `
                                 "type": "object"
                             },
                             "qprops": {
-                                "description": "Qualified property names, e.g. asset.assetID",
+                                "description": "Qualified property names such as common.location",
                                 "items": {
                                     "type": "string"
                                 },
                                 "type": "array"
+                            },
+                            "range": {
+                                "description": "if specified, dates must fall in between these values, inclusive",
+                                "properties": {
+                                    "begin": {
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss",
+                                        "type": "string"
+                                    },
+                                    "end": {
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             }
                         },
                         "required": [
@@ -1281,7 +1364,7 @@ var schemas = `
                     "description": "Array of asset states, can mix asset classes",
                     "items": {
                         "patternProperties": {
-                            "^CON": {
+                            "^DEF": {
                                 "description": "The external state of one asset asset, named by its world state ID",
                                 "properties": {
                                     "alerts": {
@@ -1526,7 +1609,7 @@ var schemas = `
                     "description": "Array of asset states, can mix asset classes",
                     "items": {
                         "patternProperties": {
-                            "^CON": {
+                            "^DEF": {
                                 "description": "The external state of one asset asset, named by its world state ID",
                                 "properties": {
                                     "alerts": {

@@ -116,7 +116,7 @@ var samples = `
     },
     "assetstatearray": [
         {
-            "^CON": {
+            "^DEF": {
                 "alerts": [
                     ""
                 ],
@@ -179,7 +179,7 @@ var samples = `
         }
     ],
     "assetstateexternal": {
-        "^CON": {
+        "^DEF": {
             "alerts": [
                 ""
             ],
@@ -259,11 +259,11 @@ var samples = `
         }
     },
     "stateFilter": {
-        "match": "n/a",
+        "match": "all",
         "select": [
             {
-                "qprop": "Qualified property name, e.g. asset.assetID",
-                "value": "Match this property value"
+                "qprop": "Qualified property to compare, for example 'asset.assetID'",
+                "value": "Value to be compared"
             }
         ]
     }

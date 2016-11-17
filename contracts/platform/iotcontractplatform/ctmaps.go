@@ -321,34 +321,49 @@ func GetObjectAsInteger(objIn *map[string]interface{}, qname string) (int, bool)
 func Contains(arr interface{}, val interface{}) bool {
 	switch arr.(type) {
 	case AlertNameArray:
+		fmt.Printf("CONTAINS AlertNameArray\n")
 		arr2 := arr.(AlertNameArray)
 		for _, v := range arr2 {
-			return reflect.DeepEqual(v, val)
+			if string(v) == val {
+				return true
+			}
 		}
+		return false
 	case []string:
 		arr2 := arr.([]string)
 		for _, v := range arr2 {
-			return reflect.DeepEqual(v, val)
+			if reflect.DeepEqual(v, val) {
+				return true
+			}
 		}
+		return false
 	case []int:
 		arr2 := arr.([]int)
 		for _, v := range arr2 {
-			return reflect.DeepEqual(v, val)
+			if reflect.DeepEqual(v, val) {
+				return true
+			}
 		}
+		return false
 	case []float64:
 		arr2 := arr.([]float64)
 		for _, v := range arr2 {
-			return reflect.DeepEqual(v, val)
+			if reflect.DeepEqual(v, val) {
+				return true
+			}
 		}
+		return false
 	case []interface{}:
 		arr2 := arr.([]interface{})
 		for _, v := range arr2 {
-			return reflect.DeepEqual(v, val)
+			if reflect.DeepEqual(v, val) {
+				return true
+			}
 		}
+		return false
 	default:
 		return reflect.DeepEqual(arr, val)
 	}
-	return false
 }
 
 // DeepMergeMap all levels of a src map into a dst map and return dst
