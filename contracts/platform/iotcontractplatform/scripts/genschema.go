@@ -441,6 +441,13 @@ func getIncludedFile(path string) string {
 			break
 		}
 	}
+	if retstr == nil || len(retstr) == 0 {
+		fmt.Println("\nIncluded schema file not found on GOPATH: " + os.Getenv("GOPATH") + ": " + includeschema)
+		fmt.Println("    -- please ensure that you have cloned or fetched the platform to your GOPATH")
+		fmt.Println("    -- also, please ensure that you add /local-dev to your GOPATH using the command")
+		fmt.Printf("       'export GOPATH=/opt/gopath:/local-dev' and then run 'go generate' again\n\n")
+		os.Exit(1)
+	}
 	var ischema interface{}
 	err = json.Unmarshal(retstr, &ischema)
 	if err != nil {

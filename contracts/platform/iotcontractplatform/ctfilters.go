@@ -24,8 +24,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-
-	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
 // MatchType denotes how a filter should operate.
@@ -77,10 +75,21 @@ type StateFilter struct {
 	Select []QPropNV `json:"select"`
 }
 
+// TaggedFilter is a complete filter for a state, inside a "filter" object"
+type TaggedFilter struct {
+	Filter StateFilter `json:"filter"`
+}
+
+var emptyStateFilter = StateFilter{"", make([]QPropNV, 0)}
+var emptyTaggedFilter = TaggedFilter{StateFilter{"", make([]QPropNV, 0)}}
+
 // Filter returns true if the filter's conditions are all met
 func (a *Asset) Filter(filter StateFilter) bool {
+	if len(filter.Select) == 0 {
+		return true
+	}
 	switch filter.Match {
-	case "n/a":
+	case "n/a", "":
 		return true
 	case "all":
 		return a.matchAll(filter)
@@ -89,8 +98,7 @@ func (a *Asset) Filter(filter StateFilter) bool {
 	case "none":
 		return a.matchNone(filter)
 	default:
-		err := fmt.Errorf("filterObject has unknown matchType in filter: %+v", filter)
-		log.Notice(err)
+		log.Noticef("filterObject has unknown matchType in filter: %+v", filter)
 		return true
 	}
 }
@@ -137,8 +145,7 @@ func findJSONPropInStruct(p string, v reflect.Value) (reflect.Value, interface{}
 	for i := 0; i < v.NumField(); i++ {
 		f := v.Field(i)
 		json := typear.Field(i).Tag.Get("json")
-		dump("findJSONPropInStruct loop", f, f.Kind(), p, json)
-		if strings.TrimSuffix(json, ",omitempty") == p {
+		if strings.TrimSuffix(json, ",omitempty") == strings.TrimSuffix(p, ".") {
 			return f, f.Interface(), f.Kind(), true
 		}
 	}
@@ -222,44 +229,79 @@ func (a *Asset) performOneMatch(prop QPropNV) bool {
 }
 
 // Returns a filter found in the json object in args[0]
-func getUnmarshalledStateFilter(stub shim.ChaincodeStubInterface, args []string) (StateFilter, error) {
+func getUnmarshalledStateFilter(args []string) (StateFilter, error) {
+	var filter StateFilter
+	var err error
+
+	if len(args) < 1 {
+		// perfectly normal to not have a filter
+		return emptyStateFilter, nil
+	}
+
+	filter, err = getCanonicalFilterFromEventIn(args)
+	if err == nil && filter.Match != "" && filter.Match != "n/a" && len(filter.Select) > 0 {
+		return filter, nil
+	}
+	filter, err = getMapFormatFilterFromEventIn(args)
+	if err == nil && filter.Match != "" && filter.Match != "n/a" && len(filter.Select) > 0 {
+		return filter, nil
+	}
+	return emptyStateFilter, nil
+}
+
+func getCanonicalFilterFromEventIn(args []string) (StateFilter, error) {
+	var filter StateFilter
+	var taggedFilter TaggedFilter
+
+	fBytes := []byte(args[0])
+	errtagged := json.Unmarshal(fBytes, &taggedFilter)
+	if errtagged == nil && taggedFilter.Filter.Match != "" && taggedFilter.Filter.Match != "n/a" {
+		return taggedFilter.Filter, nil
+	}
+	erruntagged := json.Unmarshal(fBytes, &filter)
+	if erruntagged == nil && filter.Match != "" && filter.Match != "n/a" {
+		return filter, nil
+	}
+	// log.Debugf("getCanonicalFilterFromEventIn failed to unmarshal %+v\n        tagged error: %s,\n        untagged error: %s\n", args[0], errtagged, erruntagged)
+	return emptyStateFilter, nil
+}
+
+func getMapFormatFilterFromEventIn(args []string) (StateFilter, error) {
 	var filter = StateFilter{"", make([]QPropNV, 0)}
 	var f interface{}
 	var err error
 
-	dump("getUnmarshalledStateFilter args", args, nil, nil, nil)
-
-	if len(args) != 1 {
-		// perfectly normal to not have a filter
-		return filter, nil
-	}
-
 	fBytes := []byte(args[0])
 	err = json.Unmarshal(fBytes, &f)
 	if err != nil {
-		err = fmt.Errorf("getUnmarshalledStateFilter failed to unmarshal %s, error: %s", args[0], err)
-		log.Error(err)
-		return filter, err
+		log.Warningf("getMapFormatFilterFromEventIn failed to unmarshal incoming argument %s, error: %s\n", args[0], err)
+		return emptyStateFilter, err
 	}
 
 	amap, found := AsMap(f)
 	if !found {
-		err = fmt.Errorf("getUnmarshalledStateFilter %s is not map shaped", args[0])
-		log.Error(err)
-		return filter, err
+		log.Warningf("getMapFormatFilterFromEventIn args: %s is not map shaped\n", args[0])
+		return emptyStateFilter, err
 	}
 
 	fobj, found := GetObjectAsMap(&amap, "filter")
 	if !found {
-		return filter, nil
+		// we'll try untagged format then
+		fobj = amap
 	}
 
 	m, mfound := GetObjectAsString(&fobj, "match")
 	sel, selfound := GetObjectAsMap(&fobj, "select")
-	if !mfound || !selfound {
-		err = fmt.Errorf("getUnmarshalledStateFilter matchfound: %t selectfound %t", mfound, selfound)
-		log.Error(err)
-		return filter, err
+	if !mfound {
+		if selfound {
+			log.Warningf("getMapFormatFilterFromEventIn incorrect filter format 'match' found: %t 'select' found %t\n", mfound, selfound)
+			return emptyStateFilter, err
+		}
+	} else {
+		if !selfound {
+			log.Warningf("getMapFormatFilterFromEventIn incorrect filter format 'match' found: %t 'select' found %t\n", mfound, selfound)
+			return emptyStateFilter, err
+		}
 	}
 
 	filter.Match = m
@@ -267,18 +309,19 @@ func getUnmarshalledStateFilter(stub shim.ChaincodeStubInterface, args []string)
 	for _, e := range sel {
 		emap, found := AsMap(e)
 		if !found {
-			return filter, nil
+			log.Warningf("getMapFormatFilterFromEventIn prop:value not a map shape: %+v\n", e)
+			return emptyStateFilter, nil
 		}
 		k, kfound := GetObjectAsString(&emap, "qprop")
 		v, vfound := GetObjectAsString(&emap, "value")
 		if !kfound || !vfound {
-			err = fmt.Errorf("getUnmarshalledStateFilter matchfound: %t selectfound %t", kfound, vfound)
-			log.Error(err)
-			return filter, err
+			log.Warningf("getMapFormatFilterFromEventIn prop or value not found: prop %t value %t\n", kfound, vfound)
+			return emptyStateFilter, err
 		}
 		qprops = append(qprops, QPropNV{k, v})
 	}
 	filter.Select = qprops
 
+	// log.Debugf("getMapFormatFilterFromEventIn returning filter %+v\n", filter)
 	return filter, nil
 }

@@ -141,7 +141,7 @@ func (c *AssetClass) ReadAssetStateHistory(stub shim.ChaincodeStubInterface, arg
 		return nil, err
 	}
 
-	filter, err = getUnmarshalledStateFilter(stub, args)
+	filter, err = getUnmarshalledStateFilter(args)
 	if err != nil {
 		err = fmt.Errorf("ReadAssetStateHistory failed while getting filter for %s %s, err is %s", c.Name, assetKey, err)
 		log.Error(err)

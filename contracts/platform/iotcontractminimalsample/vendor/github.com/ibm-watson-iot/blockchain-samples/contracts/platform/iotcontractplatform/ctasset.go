@@ -271,7 +271,7 @@ func (c *AssetClass) DeleteAsset(stub shim.ChaincodeStubInterface, args []string
 func (c *AssetClass) DeleteAllAssets(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var filter StateFilter
 
-	filter, err := getUnmarshalledStateFilter(stub, args)
+	filter, err := getUnmarshalledStateFilter(args)
 	if err != nil {
 		err = fmt.Errorf("DeleteAllAssets failed to get the filter: %s", err)
 		log.Error(err)
@@ -443,7 +443,7 @@ func (c AssetClass) ReadAllAssetsUnmarshalled(stub shim.ChaincodeStubInterface, 
 	var err error
 	var filter StateFilter
 
-	filter, err = getUnmarshalledStateFilter(stub, args)
+	filter, err = getUnmarshalledStateFilter(args)
 	if err != nil {
 		err = fmt.Errorf("readAllAssetsUnmarshalled failed to get a filter: %s", err)
 		log.Errorf(err.Error())

@@ -206,24 +206,6 @@ var schemas = `
                                     "type": "string"
                                 },
                                 "type": "array"
-                            },
-                            "range": {
-                                "description": "if specified, dates must fall in between these values, inclusive",
-                                "properties": {
-                                    "begin": {
-                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                        "format": "date-time",
-                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                        "type": "string"
-                                    },
-                                    "end": {
-                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                        "format": "date-time",
-                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                        "type": "string"
-                                    }
-                                },
-                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -296,24 +278,6 @@ var schemas = `
                                     "type": "string"
                                 },
                                 "type": "array"
-                            },
-                            "range": {
-                                "description": "if specified, dates must fall in between these values, inclusive",
-                                "properties": {
-                                    "begin": {
-                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                        "format": "date-time",
-                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                        "type": "string"
-                                    },
-                                    "end": {
-                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                        "format": "date-time",
-                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                        "type": "string"
-                                    }
-                                },
-                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -386,24 +350,6 @@ var schemas = `
                                     "type": "string"
                                 },
                                 "type": "array"
-                            },
-                            "range": {
-                                "description": "if specified, dates must fall in between these values, inclusive",
-                                "properties": {
-                                    "begin": {
-                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                        "format": "date-time",
-                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                        "type": "string"
-                                    },
-                                    "end": {
-                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                        "format": "date-time",
-                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                        "type": "string"
-                                    }
-                                },
-                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -1030,24 +976,6 @@ var schemas = `
                                     "type": "string"
                                 },
                                 "type": "array"
-                            },
-                            "range": {
-                                "description": "if specified, dates must fall in between these values, inclusive",
-                                "properties": {
-                                    "begin": {
-                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                        "format": "date-time",
-                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                        "type": "string"
-                                    },
-                                    "end": {
-                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                        "format": "date-time",
-                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                        "type": "string"
-                                    }
-                                },
-                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -1324,24 +1252,6 @@ var schemas = `
                                     "type": "string"
                                 },
                                 "type": "array"
-                            },
-                            "range": {
-                                "description": "if specified, dates must fall in between these values, inclusive",
-                                "properties": {
-                                    "begin": {
-                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                        "format": "date-time",
-                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                        "type": "string"
-                                    },
-                                    "end": {
-                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                        "format": "date-time",
-                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                        "type": "string"
-                                    }
-                                },
-                                "type": "object"
                             }
                         },
                         "required": [
