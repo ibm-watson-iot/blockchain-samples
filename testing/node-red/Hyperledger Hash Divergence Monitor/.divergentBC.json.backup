@@ -1202,11 +1202,11 @@
         "id": "4434fb5f.303074",
         "type": "function",
         "z": "4caae3a5.513f3c",
-        "name": "CONFIG TEST FABRIC II",
-        "func": "var peers = [\n    \"https://8b226b2ea18a4039857f25c4c06bcd75-vp0.us.blockchain.ibm.com:5001\",\n    \"https://8b226b2ea18a4039857f25c4c06bcd75-vp1.us.blockchain.ibm.com:5001\",\n    \"https://8b226b2ea18a4039857f25c4c06bcd75-vp2.us.blockchain.ibm.com:5001\",\n    \"https://8b226b2ea18a4039857f25c4c06bcd75-vp3.us.blockchain.ibm.com:5001\"\n];\nglobal.set(\"peers\", peers);\nglobal.set(\"height\", 0);\nglobal.set(\"numpeers\", peers.length);\nreturn msg;",
+        "name": "CONFIG TP-LETKEMANK",
+        "func": "var peers = [\n    \"http://tp-letkemank:5000\"\n];\nglobal.set(\"peers\", peers)\nglobal.set(\"height\", 0)\nglobal.set(\"numpeers\", peers.length)\nreturn msg;",
         "outputs": "1",
         "noerr": 0,
-        "x": 352,
+        "x": 362,
         "y": 192,
         "wires": [
             [

@@ -1,0 +1,203 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>STATUS</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <style>
+        .table {
+            width: 100%;
+        }
+        
+        .td, .th {
+            text-align: left;
+            padding: 8px;
+        }
+        .container-full {
+          margin: 0 auto;
+          width: 100%;
+        }
+        .level1 {
+          padding-left: 20px;
+        }
+        .level2 {
+          padding-left: 80px;
+        }
+        .level3 {
+          padding-left: 160px;
+        }
+        </style>
+    </head>
+    <body>
+		<div class="container-fluid">
+			<div class="panel panel-primary" margin: 15px;>
+    			<div class="panel-heading container-full">
+    			    <div class="row">
+    				    <div class="col-lg-12"><h1 class="text-center">Hyperledger Hash Divergence Monitor</h1></div>
+    			    </div>
+    			    <div class="row">
+    				    <div class="col-lg-4"><h3 class="text-center">Chain Height: 9</h2></div>
+    				    <div class="col-lg-4"><h3 class="text-center">Common Height: 9</h2></div>
+                        <h3 class="text-center">Common Top Block: 8
+                        
+    			    </div>
+    		    </div>
+				<div class="panel-body">
+                    <table class="table table-striped table-condensed" id="results-table" style="width: 100%">
+                        <thead>
+        				    <tr>
+        				        <th style="width: 10%">Peer</th>
+        				        <th style="width: 45%">Block Hash</th>
+        				        <th style="width: 45%">Previous Block Hash</th>
+        				    </tr>
+                        </thead>
+    				    <tbody>
+                                <tr>
+                                    <td style="width: 25%">vp0</td>
+                                    <td style="width: 50%">nbVKPk31&#x2F;auyY0+MBxif&#x2F;Net3E7I4rpoHtAK9DC6RCberUTj5X&#x2F;Ac3amlBCca87Q9PTkJ7aK7ud9ujPpca3JLg&#x3D;&#x3D;</td>
+                                    <td style="width: 50%">eAy35bcB2yy22sLYFfh4+b9vy2P3cxMz7YFm0MWoGXxOUQDCCXrUumyGRPfvnyl&#x2F;XqNQ6S8+MVcV9O6e0Lppjw&#x3D;&#x3D;</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 25%">vp1</td>
+                                    <td style="width: 50%">nbVKPk31&#x2F;auyY0+MBxif&#x2F;Net3E7I4rpoHtAK9DC6RCberUTj5X&#x2F;Ac3amlBCca87Q9PTkJ7aK7ud9ujPpca3JLg&#x3D;&#x3D;</td>
+                                    <td style="width: 50%">eAy35bcB2yy22sLYFfh4+b9vy2P3cxMz7YFm0MWoGXxOUQDCCXrUumyGRPfvnyl&#x2F;XqNQ6S8+MVcV9O6e0Lppjw&#x3D;&#x3D;</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 25%">vp2</td>
+                                    <td style="width: 50%">nbVKPk31&#x2F;auyY0+MBxif&#x2F;Net3E7I4rpoHtAK9DC6RCberUTj5X&#x2F;Ac3amlBCca87Q9PTkJ7aK7ud9ujPpca3JLg&#x3D;&#x3D;</td>
+                                    <td style="width: 50%">eAy35bcB2yy22sLYFfh4+b9vy2P3cxMz7YFm0MWoGXxOUQDCCXrUumyGRPfvnyl&#x2F;XqNQ6S8+MVcV9O6e0Lppjw&#x3D;&#x3D;</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 25%">vp3</td>
+                                    <td style="width: 50%">nbVKPk31&#x2F;auyY0+MBxif&#x2F;Net3E7I4rpoHtAK9DC6RCberUTj5X&#x2F;Ac3amlBCca87Q9PTkJ7aK7ud9ujPpca3JLg&#x3D;&#x3D;</td>
+                                    <td style="width: 50%">eAy35bcB2yy22sLYFfh4+b9vy2P3cxMz7YFm0MWoGXxOUQDCCXrUumyGRPfvnyl&#x2F;XqNQ6S8+MVcV9O6e0Lppjw&#x3D;&#x3D;</td>
+                                </tr>
+    				    </tbody>
+				    </table>
+    			</div>
+			    <div class="container-full">
+                    <div class="panel-heading bg-success">
+                    
+    				    <div><h2 class="text-center">chain is not divergent</h2></div>
+				    </div>
+		        </div>
+		        <div class="panel-body">
+    				    
+    				    
+        				    <h3 class="text-left level1">vp0</h3>
+    			        </div>
+    				    
+    				    
+        				    <div class="row">
+            				    <div class="level2"><h4 class="text-left">Txn: 0</h4></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">UUID: f2f3ebbf-fc7f-4f6f-a18f-7acbcd27f1a6</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Url: https:&#x2F;&#x2F;8b226b2ea18a4039857f25c4c06bcd75-vp0.us.blockchain.ibm.com:5001&#x2F;chain&#x2F;blocks&#x2F;8</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Contract: �0e422aa33ed4b883d4c0900ab1a79dd5875fe686505319d84a809f34dddfc04f91d84f58880598bd47e4f0a211a560d7404b8396d414fecc4dcb49a0d5c86821</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Payload: 
+���0e422aa33ed4b883d4c0900ab1a79dd5875fe686505319d84a809f34dddfc04f91d84f58880598bd47e4f0a211a560d7404b8396d414fecc4dcb49a0d5c86821
+deleteAllAssets</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Result: </h5></div>
+        				    </div>
+    				    </div>
+    				    
+    				    
+        				    <h3 class="text-left level1">vp1</h3>
+    			        </div>
+    				    
+    				    
+        				    <div class="row">
+            				    <div class="level2"><h4 class="text-left">Txn: 0</h4></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">UUID: f2f3ebbf-fc7f-4f6f-a18f-7acbcd27f1a6</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Url: https:&#x2F;&#x2F;8b226b2ea18a4039857f25c4c06bcd75-vp1.us.blockchain.ibm.com:5001&#x2F;chain&#x2F;blocks&#x2F;8</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Contract: �0e422aa33ed4b883d4c0900ab1a79dd5875fe686505319d84a809f34dddfc04f91d84f58880598bd47e4f0a211a560d7404b8396d414fecc4dcb49a0d5c86821</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Payload: 
+���0e422aa33ed4b883d4c0900ab1a79dd5875fe686505319d84a809f34dddfc04f91d84f58880598bd47e4f0a211a560d7404b8396d414fecc4dcb49a0d5c86821
+deleteAllAssets</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Result: </h5></div>
+        				    </div>
+    				    </div>
+    				    
+    				    
+        				    <h3 class="text-left level1">vp2</h3>
+    			        </div>
+    				    
+    				    
+        				    <div class="row">
+            				    <div class="level2"><h4 class="text-left">Txn: 0</h4></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">UUID: f2f3ebbf-fc7f-4f6f-a18f-7acbcd27f1a6</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Url: https:&#x2F;&#x2F;8b226b2ea18a4039857f25c4c06bcd75-vp2.us.blockchain.ibm.com:5001&#x2F;chain&#x2F;blocks&#x2F;8</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Contract: �0e422aa33ed4b883d4c0900ab1a79dd5875fe686505319d84a809f34dddfc04f91d84f58880598bd47e4f0a211a560d7404b8396d414fecc4dcb49a0d5c86821</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Payload: 
+���0e422aa33ed4b883d4c0900ab1a79dd5875fe686505319d84a809f34dddfc04f91d84f58880598bd47e4f0a211a560d7404b8396d414fecc4dcb49a0d5c86821
+deleteAllAssets</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Result: </h5></div>
+        				    </div>
+    				    </div>
+    				    
+    				    
+        				    <h3 class="text-left level1">vp3</h3>
+    			        </div>
+    				    
+    				    
+        				    <div class="row">
+            				    <div class="level2"><h4 class="text-left">Txn: 0</h4></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">UUID: f2f3ebbf-fc7f-4f6f-a18f-7acbcd27f1a6</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Url: https:&#x2F;&#x2F;8b226b2ea18a4039857f25c4c06bcd75-vp3.us.blockchain.ibm.com:5001&#x2F;chain&#x2F;blocks&#x2F;8</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Contract: �0e422aa33ed4b883d4c0900ab1a79dd5875fe686505319d84a809f34dddfc04f91d84f58880598bd47e4f0a211a560d7404b8396d414fecc4dcb49a0d5c86821</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Payload: 
+���0e422aa33ed4b883d4c0900ab1a79dd5875fe686505319d84a809f34dddfc04f91d84f58880598bd47e4f0a211a560d7404b8396d414fecc4dcb49a0d5c86821
+deleteAllAssets</h5></div>
+        				    </div>
+        				    <div class="row">
+            				    <div class="level3"><h5 class="text-left">Result: </h5></div>
+        				    </div>
+    				    </div>
+   				</div>
+			</div>  	
+		</div> 
+    </body>
+</html>
