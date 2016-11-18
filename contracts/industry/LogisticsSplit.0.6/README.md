@@ -1,13 +1,22 @@
-#Update - commandline steps
+
+#Chaincodes calling chaincodes example.
+
+This folder contains a set of chaincodes, some calling others. The Bill of Ladign contract calls container and compliance. Container calls compliance. Common is a package that is external to the contracts and contains definitions used by these contracts. Common is consumed by the three chaincodes.
+
+#commandline steps
 
 ##Registration (only in sandbox)
 CORE_CHAINCODE_ID_NAME=comp CORE_PEER_ADDRESS=0.0.0.0:7051 ./compliance
+
 CORE_CHAINCODE_ID_NAME=cont CORE_PEER_ADDRESS=0.0.0.0:7051 ./container
+
 CORE_CHAINCODE_ID_NAME=blReg CORE_PEER_ADDRESS=0.0.0.0:7051 ./billoflading
 
 ##Deploy
 peer chaincode deploy -n comp -c '{"function":"Init", "args":["{\"Version\":\"2.0.0\"}"]}'
+
 peer chaincode deploy -n cont -c '{"function":"Init", "args":["{\"Version\":\"2.0.0\", \"compliancecc\":\"comp\"}"]}'
+
 peer chaincode deploy -n blReg -c '{"function":"Init", "args":["{\"Version\":\"2.0.0\", \"containercc\":\"cont\", \"compliancecc\":\"comp\"}"]}'
 
 ##Create Bill of Lading
@@ -57,4 +66,6 @@ peer chaincode invoke -n cont -c '{"function":"updateContainerLogistics", "args"
 ####No compliance violations:
 peer chaincode invoke -n cont -c '{"function":"updateContainerLogistics", "args":["{\"containerno\":\"CONT100\",\"location\":{\"latitude\":10, \"longitude\":9}, \"temperature\":4, \"carrier\":\"ARAMEX\", \"humidity\":20, \"light\":10, \"acceleration\":1, \"doorclosed\":true, \"airquality\":{\"oxygen\":1, \"carbondioxide\":1, \"ethylene\":1}}"]}'
 ##### In the above case, if you query the container record, it won't have an alert attached
+querying container history
 
+peer chaincode query -n cont -c '{"function":"readContainerHistory", "args":["{\"containerno\":\"CONT100\"}}"]}' This returns Query Result: {"conthistory":["{\"containerno\":\"CONT100\",\"location\":{\"latitude\":10, \"longitude\":9}, \"temperature\":4, \"carrier\":\"ARAMEX\", \"humidity\":20, \"light\":10, \"acceleration\":1, \"doorclosed\":true, \"airquality\":{\"oxygen\":1, \"carbondioxide\":1, \"ethylene\":1}}","{\"containerno\":\"CONT100\",\"location\":{\"latitude\":10, \"longitude\":9}, \"temperature\":4, \"carrier\":\"ARAMEX\", \"humidity\":20, \"light\":10, \"acceleration\":1, \"doorclosed\":true, \"airquality\":{\"oxygen\":1, \"carbondioxide\":1, \"ethylene\":1}}"]} 
