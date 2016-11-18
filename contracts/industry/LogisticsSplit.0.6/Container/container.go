@@ -415,10 +415,29 @@ func (t *SimpleChaincode) updateContainerLogistics(stub shim.ChaincodeStubInterf
         return nil, err
     }
     contHistKey:=contIn.ContainerNo+"_HISTORY"
-    var contSlice = make([]string, 0)
-    contSlice = append(contSlice, jsonData)
-    contSlice = append(contSlice, containerHistory.ContHistory...)
-    containerHistory.ContHistory = contSlice
+    // Fetching container history from the stub - Added Nov 18
+    contHistData, err := stub.GetState(contHistKey)
+    if err!=nil {
+         // No history exists. Create new history record
+	    var contSlice = make([]string, 0)
+	    contSlice = append(contSlice, jsonData)
+	    containerHistory.ContHistory = contSlice
+    } else {
+	   // fmt.Println("After cont state check")
+	    // This container record has been created in the registration phase
+	    // or this is not the first container record coming in. 
+	  //  fmt.Println("contData ", string(contData))
+	    err = json.Unmarshal(contHistData, &containerHistory)
+	    if err != nil {
+		err = errors.New("Unable to unmarshal JSON data from stub")
+	       // fmt.Println(err)
+		return nil, err
+	    }
+	    var contSlice = make([]string, 0)
+	    contSlice = append(contSlice, jsonData)
+	    contSlice = append(contSlice, containerHistory.ContHistory...)
+	    containerHistory.ContHistory = contSlice
+    }
     
     contHState, err := json.Marshal(&containerHistory)
     if err != nil {
