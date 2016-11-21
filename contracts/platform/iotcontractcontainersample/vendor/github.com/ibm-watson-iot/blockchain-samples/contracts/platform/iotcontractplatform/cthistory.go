@@ -51,10 +51,10 @@ var EmptyDateRange = DateRange{}
 
 // DateRange allows a function to return states between a begin and end time, inclusive
 type DateRange struct {
-	Range struct {
+	DateRange struct {
 		Begin string `json:"begin"`
 		End   string `json:"end"`
-	} `json:"range"`
+	} `json:"daterange"`
 }
 
 // PUTAssetStateHistory write an Asset state with history key
@@ -159,8 +159,8 @@ func (c *AssetClass) ReadAssetStateHistory(stub shim.ChaincodeStubInterface, arg
 		begin = ""
 		end = "}"
 	} else {
-		begin = dr.Range.Begin
-		end = dr.Range.End + "}"
+		begin = dr.DateRange.Begin
+		end = dr.DateRange.End + "}"
 	}
 
 	var historyKey = STATEHISTORYKEY + assetKey + "."
