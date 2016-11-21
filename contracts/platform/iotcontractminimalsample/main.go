@@ -24,7 +24,7 @@ import (
 )
 
 // Update the path to match your configuration
-//go:generate go run /local-dev/src/github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatform/scripts/genschema.go
+//go:generate go run /local-dev/src/github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatform/scripts/processSchema.go
 
 // SimpleChaincode is the receiver for all shim API
 type SimpleChaincode struct {
@@ -59,20 +59,6 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	return iot.Query(stub, function, args)
 }
 
-var overtempAlert iot.AlertName = "OVERTEMP"
-var overtempRule iot.RuleFunc = func(stub shim.ChaincodeStubInterface, asset *iot.Asset) error {
-	temp, found := iot.GetObjectAsNumber(asset.State, "asset.temperature")
-	if found {
-		if temp > 0 {
-			iot.RaiseAlert(asset, overtempAlert)
-		} else {
-			iot.ClearAlert(asset, overtempAlert)
-		}
-	}
-	return nil
-}
-
 func init() {
 	iot.RegisterDefaultRoutes()
-	iot.AddRule("Over Temperature Alert", iot.DefaultClass, []iot.AlertName{overtempAlert}, overtempRule)
 }

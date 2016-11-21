@@ -352,9 +352,15 @@ func (c *AssetClass) DeletePropertiesFromAsset(stub shim.ChaincodeStubInterface,
 	var qprops []string
 	qprops, found := GetObjectAsStringArray(arg.EventIn, "qprops")
 	if !found {
-		err = fmt.Errorf("deletePropertiesFromAsset asset %s has no qprops argument or qprops not a string array", assetKey)
-		log.Errorf(err.Error())
-		return nil, err
+		qpropsm, found := GetObjectAsMap(arg.EventIn, "qprops")
+		if !found {
+			err = fmt.Errorf("deletePropertiesFromAsset asset %s has no qprops argument or qprops not a string array", assetKey)
+			log.Errorf(err.Error())
+			return nil, err
+		}
+		for _, v := range qpropsm {
+			qprops = append(qprops, v.(string))
+		}
 	}
 
 	// remove qualified properties from state
@@ -546,6 +552,23 @@ func RegisterDefaultRoutes() {
 	AddRoute("readAsset", "query", DefaultClass, readAssetDefault)
 	AddRoute("readAssetStateHistory", "query", DefaultClass, readAssetStateHistoryDefault)
 	AddRoute("readAllAssets", "query", DefaultClass, readAllAssetsDefault)
+
+	AddRule("Over Temperature Alert", DefaultClass, []AlertName{overtempAlert}, overtempRule)
+}
+
+//********** default temperature rule
+
+var overtempAlert AlertName = "OVERTEMP"
+var overtempRule RuleFunc = func(stub shim.ChaincodeStubInterface, asset *Asset) error {
+	temp, found := GetObjectAsNumber(asset.State, "asset.temperature")
+	if found {
+		if temp > 0 {
+			RaiseAlert(asset, overtempAlert)
+		} else {
+			ClearAlert(asset, overtempAlert)
+		}
+	}
+	return nil
 }
 
 //********** sort interface for AssetArray
