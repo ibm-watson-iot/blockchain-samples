@@ -18,9 +18,7 @@ Kim Letkeman - Initial Contribution
 
 package iotcontractplatform
 
-import (
-	"sort"
-)
+import "sort"
 
 // AlertNameArray is a string that represents an alert
 type AlertNameArray []AlertName

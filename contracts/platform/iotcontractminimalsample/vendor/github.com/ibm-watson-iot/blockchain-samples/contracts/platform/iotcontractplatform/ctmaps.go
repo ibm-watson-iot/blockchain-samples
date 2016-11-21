@@ -321,10 +321,9 @@ func GetObjectAsInteger(objIn *map[string]interface{}, qname string) (int, bool)
 func Contains(arr interface{}, val interface{}) bool {
 	switch arr.(type) {
 	case AlertNameArray:
-		fmt.Printf("CONTAINS AlertNameArray\n")
 		arr2 := arr.(AlertNameArray)
 		for _, v := range arr2 {
-			if string(v) == val {
+			if reflect.DeepEqual(v, val) {
 				return true
 			}
 		}

@@ -13,29 +13,31 @@
             "deleteAllAssets",
             "readAsset",
             "readAllAssets",
+            "readAssetStateHistory",
             "readAllRoutes",
             "readWorldState",
             "deleteWorldState",
-            "readAssetStateHistory",
             "readRecentStates",
             "setLoggingLevel",
             "setCreateOnFirstUpdate"
         ],
-        "goSchemaElements": [
+        "Model": [
             "asset"
         ]
     },
     "samples": {
         "goSampleFilename": "samples.go",
-        "goSampleElements": [
+        "API": [
+            "createAsset"
+        ],
+        "Model": [
             "asset",
             "invokeevent",
             "ioteventcommon",
             "assetstate",
             "assetstateexternal",
             "assetstatearray",
-            "stateFilter",
-            "API/createAsset"
+            "stateFilter"
         ]
     }
 }

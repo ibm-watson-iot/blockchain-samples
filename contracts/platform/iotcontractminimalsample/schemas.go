@@ -20,7 +20,7 @@ var schemas = `
                                 "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
                                 "properties": {
                                     "assetID": {
-                                        "description": "An asset's unique ID, barcode, VIN, etc.",
+                                        "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
                                         "type": "string"
                                     },
                                     "carrier": {
@@ -161,51 +161,11 @@ var schemas = `
                             "asset": {
                                 "properties": {
                                     "assetID": {
-                                        "description": "An asset's unique ID, barcode, VIN, etc.",
+                                        "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
                                         "type": "string"
                                     }
                                 },
                                 "type": "object"
-                            },
-                            "filter": {
-                                "description": "Filter asset states",
-                                "properties": {
-                                    "match": {
-                                        "description": "Defines how to match properties, missing property always fails match",
-                                        "enum": [
-                                            "n/a",
-                                            "all",
-                                            "any",
-                                            "none"
-                                        ],
-                                        "type": "string"
-                                    },
-                                    "select": {
-                                        "description": "Qualified property names and values match",
-                                        "items": {
-                                            "properties": {
-                                                "qprop": {
-                                                    "description": "Qualified property to compare, for example 'asset.assetID'",
-                                                    "type": "string"
-                                                },
-                                                "value": {
-                                                    "description": "Value to be compared",
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "type": "array"
-                                    }
-                                },
-                                "type": "object"
-                            },
-                            "qprops": {
-                                "description": "Qualified property names such as common.location",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
                             }
                         },
                         "type": "object"
@@ -233,51 +193,11 @@ var schemas = `
                             "asset": {
                                 "properties": {
                                     "assetID": {
-                                        "description": "An asset's unique ID, barcode, VIN, etc.",
+                                        "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
                                         "type": "string"
                                     }
                                 },
                                 "type": "object"
-                            },
-                            "filter": {
-                                "description": "Filter asset states",
-                                "properties": {
-                                    "match": {
-                                        "description": "Defines how to match properties, missing property always fails match",
-                                        "enum": [
-                                            "n/a",
-                                            "all",
-                                            "any",
-                                            "none"
-                                        ],
-                                        "type": "string"
-                                    },
-                                    "select": {
-                                        "description": "Qualified property names and values match",
-                                        "items": {
-                                            "properties": {
-                                                "qprop": {
-                                                    "description": "Qualified property to compare, for example 'asset.assetID'",
-                                                    "type": "string"
-                                                },
-                                                "value": {
-                                                    "description": "Value to be compared",
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "type": "array"
-                                    }
-                                },
-                                "type": "object"
-                            },
-                            "qprops": {
-                                "description": "Qualified property names such as common.location",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
                             }
                         },
                         "type": "object"
@@ -305,41 +225,8 @@ var schemas = `
                             "asset": {
                                 "properties": {
                                     "assetID": {
-                                        "description": "An asset's unique ID, barcode, VIN, etc.",
+                                        "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
                                         "type": "string"
-                                    }
-                                },
-                                "type": "object"
-                            },
-                            "filter": {
-                                "description": "Filter asset states",
-                                "properties": {
-                                    "match": {
-                                        "description": "Defines how to match properties, missing property always fails match",
-                                        "enum": [
-                                            "n/a",
-                                            "all",
-                                            "any",
-                                            "none"
-                                        ],
-                                        "type": "string"
-                                    },
-                                    "select": {
-                                        "description": "Qualified property names and values match",
-                                        "items": {
-                                            "properties": {
-                                                "qprop": {
-                                                    "description": "Qualified property to compare, for example 'asset.assetID'",
-                                                    "type": "string"
-                                                },
-                                                "value": {
-                                                    "description": "Value to be compared",
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "type": "array"
                                     }
                                 },
                                 "type": "object"
@@ -475,210 +362,202 @@ var schemas = `
                 "result": {
                     "description": "Array of asset states, can mix asset classes",
                     "items": {
-                        "patternProperties": {
-                            "^DEF": {
-                                "description": "The external state of one asset asset, named by its world state ID",
+                        "description": "A asset's complete state",
+                        "properties": {
+                            "alerts": {
+                                "description": "A list of alert names",
+                                "items": {
+                                    "description": "An alert name",
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            "assetID": {
+                                "description": "This asset's world state asset ID",
+                                "type": "string"
+                            },
+                            "assetIDpath": {
+                                "description": "Qualified property path to the asset's ID, declared in the contract code",
+                                "type": "string"
+                            },
+                            "class": {
+                                "description": "The asset's asset class",
+                                "type": "string"
+                            },
+                            "compliant": {
+                                "description": "This asset has no active alerts",
+                                "type": "boolean"
+                            },
+                            "eventin": {
+                                "description": "The contract event that created this state, for example updateAsset",
                                 "properties": {
-                                    "alerts": {
-                                        "description": "A list of alert names",
-                                        "items": {
-                                            "description": "An alert name",
-                                            "enum": [
-                                                ""
-                                            ],
-                                            "type": "string"
-                                        },
-                                        "type": "array"
-                                    },
-                                    "assetID": {
-                                        "description": "This asset's world state asset ID",
-                                        "type": "string"
-                                    },
-                                    "assetIDpath": {
-                                        "description": "Qualified property path to the asset's ID, declared in the contract code",
-                                        "type": "string"
-                                    },
-                                    "class": {
-                                        "description": "The asset's asset class",
-                                        "type": "string"
-                                    },
-                                    "compliant": {
-                                        "description": "This asset has no active alerts",
-                                        "type": "boolean"
-                                    },
-                                    "eventin": {
-                                        "description": "The contract event that created this state, for example updateAsset",
+                                    "asset": {
+                                        "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
                                         "properties": {
-                                            "asset": {
-                                                "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
+                                            "assetID": {
+                                                "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
+                                                "type": "string"
+                                            },
+                                            "carrier": {
+                                                "description": "The carrier in possession of this asset",
+                                                "type": "string"
+                                            },
+                                            "common": {
+                                                "description": "Common properties for all assets",
                                                 "properties": {
-                                                    "assetID": {
-                                                        "description": "An asset's unique ID, barcode, VIN, etc.",
+                                                    "appdata": {
+                                                        "description": "Application managed information as an array of key:value pairs",
+                                                        "items": {
+                                                            "properties": {
+                                                                "K": {
+                                                                    "type": "string"
+                                                                },
+                                                                "V": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "minItems": 0,
+                                                        "type": "array"
+                                                    },
+                                                    "deviceID": {
+                                                        "description": "A unique identifier for the device that sent the current event",
                                                         "type": "string"
                                                     },
-                                                    "carrier": {
-                                                        "description": "The carrier in possession of this asset",
+                                                    "devicetimestamp": {
+                                                        "description": "A timestamp recoded by the device that sent the current event",
                                                         "type": "string"
                                                     },
-                                                    "common": {
-                                                        "description": "Common properties for all assets",
+                                                    "location": {
+                                                        "description": "A geographical coordinate",
                                                         "properties": {
-                                                            "appdata": {
-                                                                "description": "Application managed information as an array of key:value pairs",
-                                                                "items": {
-                                                                    "properties": {
-                                                                        "K": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "V": {
-                                                                            "type": "string"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
+                                                            "latitude": {
+                                                                "type": "number"
                                                             },
-                                                            "deviceID": {
-                                                                "description": "A unique identifier for the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "devicetimestamp": {
-                                                                "description": "A timestamp recoded by the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
+                                                            "longitude": {
+                                                                "type": "number"
                                                             }
                                                         },
                                                         "type": "object"
-                                                    },
-                                                    "temperature": {
-                                                        "description": "Temperature of an asset's contents in degrees Celsuis",
-                                                        "type": "number"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "assetID"
-                                                ],
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "eventout": {
-                                        "description": "The chaincode event emitted on invoke exit, if any",
-                                        "properties": {
-                                            "asset": {
-                                                "description": "An chaincode event emitted by a contract invoke",
-                                                "properties": {
-                                                    "name": {
-                                                        "description": "The chaincode event's name",
-                                                        "type": "string"
-                                                    },
-                                                    "payload": {
-                                                        "description": "The chaincode event's properties",
-                                                        "properties": {},
-                                                        "type": "object"
                                                     }
                                                 },
                                                 "type": "object"
+                                            },
+                                            "temperature": {
+                                                "description": "Temperature of an asset's contents in degrees Celsuis",
+                                                "type": "number"
                                             }
                                         },
+                                        "required": [
+                                            "assetID"
+                                        ],
                                         "type": "object"
-                                    },
-                                    "prefix": {
-                                        "description": "The asset's asset class prefix in world state",
-                                        "type": "string"
-                                    },
-                                    "state": {
-                                        "description": "Properties that have been received or calculated for this asset",
-                                        "properties": {
-                                            "asset": {
-                                                "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
-                                                "properties": {
-                                                    "assetID": {
-                                                        "description": "An asset's unique ID, barcode, VIN, etc.",
-                                                        "type": "string"
-                                                    },
-                                                    "carrier": {
-                                                        "description": "The carrier in possession of this asset",
-                                                        "type": "string"
-                                                    },
-                                                    "common": {
-                                                        "description": "Common properties for all assets",
-                                                        "properties": {
-                                                            "appdata": {
-                                                                "description": "Application managed information as an array of key:value pairs",
-                                                                "items": {
-                                                                    "properties": {
-                                                                        "K": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "V": {
-                                                                            "type": "string"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "deviceID": {
-                                                                "description": "A unique identifier for the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "devicetimestamp": {
-                                                                "description": "A timestamp recoded by the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "temperature": {
-                                                        "description": "Temperature of an asset's contents in degrees Celsuis",
-                                                        "type": "number"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "assetID"
-                                                ],
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "txnid": {
-                                        "description": "Transaction UUID matching the blockchain",
-                                        "type": "string"
-                                    },
-                                    "txnts": {
-                                        "description": "Transaction timestamp matching the blockchain",
-                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
+                            },
+                            "eventout": {
+                                "description": "The chaincode event emitted on invoke exit, if any",
+                                "properties": {
+                                    "asset": {
+                                        "description": "An chaincode event emitted by a contract invoke",
+                                        "properties": {
+                                            "name": {
+                                                "description": "The chaincode event's name",
+                                                "type": "string"
+                                            },
+                                            "payload": {
+                                                "description": "The chaincode event's properties",
+                                                "properties": {},
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "prefix": {
+                                "description": "The asset's asset class prefix in world state",
+                                "type": "string"
+                            },
+                            "state": {
+                                "description": "Properties that have been received or calculated for this asset",
+                                "properties": {
+                                    "asset": {
+                                        "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
+                                        "properties": {
+                                            "assetID": {
+                                                "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
+                                                "type": "string"
+                                            },
+                                            "carrier": {
+                                                "description": "The carrier in possession of this asset",
+                                                "type": "string"
+                                            },
+                                            "common": {
+                                                "description": "Common properties for all assets",
+                                                "properties": {
+                                                    "appdata": {
+                                                        "description": "Application managed information as an array of key:value pairs",
+                                                        "items": {
+                                                            "properties": {
+                                                                "K": {
+                                                                    "type": "string"
+                                                                },
+                                                                "V": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "minItems": 0,
+                                                        "type": "array"
+                                                    },
+                                                    "deviceID": {
+                                                        "description": "A unique identifier for the device that sent the current event",
+                                                        "type": "string"
+                                                    },
+                                                    "devicetimestamp": {
+                                                        "description": "A timestamp recoded by the device that sent the current event",
+                                                        "type": "string"
+                                                    },
+                                                    "location": {
+                                                        "description": "A geographical coordinate",
+                                                        "properties": {
+                                                            "latitude": {
+                                                                "type": "number"
+                                                            },
+                                                            "longitude": {
+                                                                "type": "number"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "temperature": {
+                                                "description": "Temperature of an asset's contents in degrees Celsuis",
+                                                "type": "number"
+                                            }
+                                        },
+                                        "required": [
+                                            "assetID"
+                                        ],
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "txnid": {
+                                "description": "Transaction UUID matching the blockchain",
+                                "type": "string"
+                            },
+                            "txnts": {
+                                "description": "Transaction timestamp matching the blockchain",
+                                "type": "string"
                             }
                         },
                         "type": "object"
@@ -708,210 +587,202 @@ var schemas = `
                 "result": {
                     "description": "Array of asset states, can mix asset classes",
                     "items": {
-                        "patternProperties": {
-                            "^DEF": {
-                                "description": "The external state of one asset asset, named by its world state ID",
+                        "description": "A asset's complete state",
+                        "properties": {
+                            "alerts": {
+                                "description": "A list of alert names",
+                                "items": {
+                                    "description": "An alert name",
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            "assetID": {
+                                "description": "This asset's world state asset ID",
+                                "type": "string"
+                            },
+                            "assetIDpath": {
+                                "description": "Qualified property path to the asset's ID, declared in the contract code",
+                                "type": "string"
+                            },
+                            "class": {
+                                "description": "The asset's asset class",
+                                "type": "string"
+                            },
+                            "compliant": {
+                                "description": "This asset has no active alerts",
+                                "type": "boolean"
+                            },
+                            "eventin": {
+                                "description": "The contract event that created this state, for example updateAsset",
                                 "properties": {
-                                    "alerts": {
-                                        "description": "A list of alert names",
-                                        "items": {
-                                            "description": "An alert name",
-                                            "enum": [
-                                                ""
-                                            ],
-                                            "type": "string"
-                                        },
-                                        "type": "array"
-                                    },
-                                    "assetID": {
-                                        "description": "This asset's world state asset ID",
-                                        "type": "string"
-                                    },
-                                    "assetIDpath": {
-                                        "description": "Qualified property path to the asset's ID, declared in the contract code",
-                                        "type": "string"
-                                    },
-                                    "class": {
-                                        "description": "The asset's asset class",
-                                        "type": "string"
-                                    },
-                                    "compliant": {
-                                        "description": "This asset has no active alerts",
-                                        "type": "boolean"
-                                    },
-                                    "eventin": {
-                                        "description": "The contract event that created this state, for example updateAsset",
+                                    "asset": {
+                                        "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
                                         "properties": {
-                                            "asset": {
-                                                "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
+                                            "assetID": {
+                                                "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
+                                                "type": "string"
+                                            },
+                                            "carrier": {
+                                                "description": "The carrier in possession of this asset",
+                                                "type": "string"
+                                            },
+                                            "common": {
+                                                "description": "Common properties for all assets",
                                                 "properties": {
-                                                    "assetID": {
-                                                        "description": "An asset's unique ID, barcode, VIN, etc.",
+                                                    "appdata": {
+                                                        "description": "Application managed information as an array of key:value pairs",
+                                                        "items": {
+                                                            "properties": {
+                                                                "K": {
+                                                                    "type": "string"
+                                                                },
+                                                                "V": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "minItems": 0,
+                                                        "type": "array"
+                                                    },
+                                                    "deviceID": {
+                                                        "description": "A unique identifier for the device that sent the current event",
                                                         "type": "string"
                                                     },
-                                                    "carrier": {
-                                                        "description": "The carrier in possession of this asset",
+                                                    "devicetimestamp": {
+                                                        "description": "A timestamp recoded by the device that sent the current event",
                                                         "type": "string"
                                                     },
-                                                    "common": {
-                                                        "description": "Common properties for all assets",
+                                                    "location": {
+                                                        "description": "A geographical coordinate",
                                                         "properties": {
-                                                            "appdata": {
-                                                                "description": "Application managed information as an array of key:value pairs",
-                                                                "items": {
-                                                                    "properties": {
-                                                                        "K": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "V": {
-                                                                            "type": "string"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
+                                                            "latitude": {
+                                                                "type": "number"
                                                             },
-                                                            "deviceID": {
-                                                                "description": "A unique identifier for the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "devicetimestamp": {
-                                                                "description": "A timestamp recoded by the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
+                                                            "longitude": {
+                                                                "type": "number"
                                                             }
                                                         },
                                                         "type": "object"
-                                                    },
-                                                    "temperature": {
-                                                        "description": "Temperature of an asset's contents in degrees Celsuis",
-                                                        "type": "number"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "assetID"
-                                                ],
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "eventout": {
-                                        "description": "The chaincode event emitted on invoke exit, if any",
-                                        "properties": {
-                                            "asset": {
-                                                "description": "An chaincode event emitted by a contract invoke",
-                                                "properties": {
-                                                    "name": {
-                                                        "description": "The chaincode event's name",
-                                                        "type": "string"
-                                                    },
-                                                    "payload": {
-                                                        "description": "The chaincode event's properties",
-                                                        "properties": {},
-                                                        "type": "object"
                                                     }
                                                 },
                                                 "type": "object"
+                                            },
+                                            "temperature": {
+                                                "description": "Temperature of an asset's contents in degrees Celsuis",
+                                                "type": "number"
                                             }
                                         },
+                                        "required": [
+                                            "assetID"
+                                        ],
                                         "type": "object"
-                                    },
-                                    "prefix": {
-                                        "description": "The asset's asset class prefix in world state",
-                                        "type": "string"
-                                    },
-                                    "state": {
-                                        "description": "Properties that have been received or calculated for this asset",
-                                        "properties": {
-                                            "asset": {
-                                                "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
-                                                "properties": {
-                                                    "assetID": {
-                                                        "description": "An asset's unique ID, barcode, VIN, etc.",
-                                                        "type": "string"
-                                                    },
-                                                    "carrier": {
-                                                        "description": "The carrier in possession of this asset",
-                                                        "type": "string"
-                                                    },
-                                                    "common": {
-                                                        "description": "Common properties for all assets",
-                                                        "properties": {
-                                                            "appdata": {
-                                                                "description": "Application managed information as an array of key:value pairs",
-                                                                "items": {
-                                                                    "properties": {
-                                                                        "K": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "V": {
-                                                                            "type": "string"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "deviceID": {
-                                                                "description": "A unique identifier for the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "devicetimestamp": {
-                                                                "description": "A timestamp recoded by the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "temperature": {
-                                                        "description": "Temperature of an asset's contents in degrees Celsuis",
-                                                        "type": "number"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "assetID"
-                                                ],
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "txnid": {
-                                        "description": "Transaction UUID matching the blockchain",
-                                        "type": "string"
-                                    },
-                                    "txnts": {
-                                        "description": "Transaction timestamp matching the blockchain",
-                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
+                            },
+                            "eventout": {
+                                "description": "The chaincode event emitted on invoke exit, if any",
+                                "properties": {
+                                    "asset": {
+                                        "description": "An chaincode event emitted by a contract invoke",
+                                        "properties": {
+                                            "name": {
+                                                "description": "The chaincode event's name",
+                                                "type": "string"
+                                            },
+                                            "payload": {
+                                                "description": "The chaincode event's properties",
+                                                "properties": {},
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "prefix": {
+                                "description": "The asset's asset class prefix in world state",
+                                "type": "string"
+                            },
+                            "state": {
+                                "description": "Properties that have been received or calculated for this asset",
+                                "properties": {
+                                    "asset": {
+                                        "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
+                                        "properties": {
+                                            "assetID": {
+                                                "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
+                                                "type": "string"
+                                            },
+                                            "carrier": {
+                                                "description": "The carrier in possession of this asset",
+                                                "type": "string"
+                                            },
+                                            "common": {
+                                                "description": "Common properties for all assets",
+                                                "properties": {
+                                                    "appdata": {
+                                                        "description": "Application managed information as an array of key:value pairs",
+                                                        "items": {
+                                                            "properties": {
+                                                                "K": {
+                                                                    "type": "string"
+                                                                },
+                                                                "V": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "minItems": 0,
+                                                        "type": "array"
+                                                    },
+                                                    "deviceID": {
+                                                        "description": "A unique identifier for the device that sent the current event",
+                                                        "type": "string"
+                                                    },
+                                                    "devicetimestamp": {
+                                                        "description": "A timestamp recoded by the device that sent the current event",
+                                                        "type": "string"
+                                                    },
+                                                    "location": {
+                                                        "description": "A geographical coordinate",
+                                                        "properties": {
+                                                            "latitude": {
+                                                                "type": "number"
+                                                            },
+                                                            "longitude": {
+                                                                "type": "number"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "temperature": {
+                                                "description": "Temperature of an asset's contents in degrees Celsuis",
+                                                "type": "number"
+                                            }
+                                        },
+                                        "required": [
+                                            "assetID"
+                                        ],
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "txnid": {
+                                "description": "Transaction UUID matching the blockchain",
+                                "type": "string"
+                            },
+                            "txnts": {
+                                "description": "Transaction timestamp matching the blockchain",
+                                "type": "string"
                             }
                         },
                         "type": "object"
@@ -931,51 +802,11 @@ var schemas = `
                             "asset": {
                                 "properties": {
                                     "assetID": {
-                                        "description": "An asset's unique ID, barcode, VIN, etc.",
+                                        "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
                                         "type": "string"
                                     }
                                 },
                                 "type": "object"
-                            },
-                            "filter": {
-                                "description": "Filter asset states",
-                                "properties": {
-                                    "match": {
-                                        "description": "Defines how to match properties, missing property always fails match",
-                                        "enum": [
-                                            "n/a",
-                                            "all",
-                                            "any",
-                                            "none"
-                                        ],
-                                        "type": "string"
-                                    },
-                                    "select": {
-                                        "description": "Qualified property names and values match",
-                                        "items": {
-                                            "properties": {
-                                                "qprop": {
-                                                    "description": "Qualified property to compare, for example 'asset.assetID'",
-                                                    "type": "string"
-                                                },
-                                                "value": {
-                                                    "description": "Value to be compared",
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "type": "array"
-                                    }
-                                },
-                                "type": "object"
-                            },
-                            "qprops": {
-                                "description": "Qualified property names such as common.location",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
                             }
                         },
                         "type": "object"
@@ -992,15 +823,12 @@ var schemas = `
                 },
                 "method": "query",
                 "result": {
-                    "description": "The external state of one asset asset, named by its world state ID",
+                    "description": "A asset's complete state",
                     "properties": {
                         "alerts": {
                             "description": "A list of alert names",
                             "items": {
                                 "description": "An alert name",
-                                "enum": [
-                                    ""
-                                ],
                                 "type": "string"
                             },
                             "type": "array"
@@ -1028,7 +856,7 @@ var schemas = `
                                     "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
                                     "properties": {
                                         "assetID": {
-                                            "description": "An asset's unique ID, barcode, VIN, etc.",
+                                            "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
                                             "type": "string"
                                         },
                                         "carrier": {
@@ -1122,7 +950,7 @@ var schemas = `
                                     "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
                                     "properties": {
                                         "assetID": {
-                                            "description": "An asset's unique ID, barcode, VIN, etc.",
+                                            "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
                                             "type": "string"
                                         },
                                         "carrier": {
@@ -1207,7 +1035,25 @@ var schemas = `
                             "asset": {
                                 "properties": {
                                     "assetID": {
-                                        "description": "An asset's unique ID, barcode, VIN, etc.",
+                                        "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "daterange": {
+                                "description": "if specified, dates must fall in between these values, inclusive",
+                                "properties": {
+                                    "begin": {
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss",
+                                        "type": "string"
+                                    },
+                                    "end": {
+                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
+                                        "format": "date-time",
+                                        "sample": "yyyy-mm-dd hh:mm:ss",
                                         "type": "string"
                                     }
                                 },
@@ -1245,18 +1091,8 @@ var schemas = `
                                     }
                                 },
                                 "type": "object"
-                            },
-                            "qprops": {
-                                "description": "Qualified property names such as common.location",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
                             }
                         },
-                        "required": [
-                            "asset"
-                        ],
                         "type": "object"
                     },
                     "maxItems": 1,
@@ -1273,210 +1109,202 @@ var schemas = `
                 "result": {
                     "description": "Array of asset states, can mix asset classes",
                     "items": {
-                        "patternProperties": {
-                            "^DEF": {
-                                "description": "The external state of one asset asset, named by its world state ID",
+                        "description": "A asset's complete state",
+                        "properties": {
+                            "alerts": {
+                                "description": "A list of alert names",
+                                "items": {
+                                    "description": "An alert name",
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            "assetID": {
+                                "description": "This asset's world state asset ID",
+                                "type": "string"
+                            },
+                            "assetIDpath": {
+                                "description": "Qualified property path to the asset's ID, declared in the contract code",
+                                "type": "string"
+                            },
+                            "class": {
+                                "description": "The asset's asset class",
+                                "type": "string"
+                            },
+                            "compliant": {
+                                "description": "This asset has no active alerts",
+                                "type": "boolean"
+                            },
+                            "eventin": {
+                                "description": "The contract event that created this state, for example updateAsset",
                                 "properties": {
-                                    "alerts": {
-                                        "description": "A list of alert names",
-                                        "items": {
-                                            "description": "An alert name",
-                                            "enum": [
-                                                ""
-                                            ],
-                                            "type": "string"
-                                        },
-                                        "type": "array"
-                                    },
-                                    "assetID": {
-                                        "description": "This asset's world state asset ID",
-                                        "type": "string"
-                                    },
-                                    "assetIDpath": {
-                                        "description": "Qualified property path to the asset's ID, declared in the contract code",
-                                        "type": "string"
-                                    },
-                                    "class": {
-                                        "description": "The asset's asset class",
-                                        "type": "string"
-                                    },
-                                    "compliant": {
-                                        "description": "This asset has no active alerts",
-                                        "type": "boolean"
-                                    },
-                                    "eventin": {
-                                        "description": "The contract event that created this state, for example updateAsset",
+                                    "asset": {
+                                        "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
                                         "properties": {
-                                            "asset": {
-                                                "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
+                                            "assetID": {
+                                                "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
+                                                "type": "string"
+                                            },
+                                            "carrier": {
+                                                "description": "The carrier in possession of this asset",
+                                                "type": "string"
+                                            },
+                                            "common": {
+                                                "description": "Common properties for all assets",
                                                 "properties": {
-                                                    "assetID": {
-                                                        "description": "An asset's unique ID, barcode, VIN, etc.",
+                                                    "appdata": {
+                                                        "description": "Application managed information as an array of key:value pairs",
+                                                        "items": {
+                                                            "properties": {
+                                                                "K": {
+                                                                    "type": "string"
+                                                                },
+                                                                "V": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "minItems": 0,
+                                                        "type": "array"
+                                                    },
+                                                    "deviceID": {
+                                                        "description": "A unique identifier for the device that sent the current event",
                                                         "type": "string"
                                                     },
-                                                    "carrier": {
-                                                        "description": "The carrier in possession of this asset",
+                                                    "devicetimestamp": {
+                                                        "description": "A timestamp recoded by the device that sent the current event",
                                                         "type": "string"
                                                     },
-                                                    "common": {
-                                                        "description": "Common properties for all assets",
+                                                    "location": {
+                                                        "description": "A geographical coordinate",
                                                         "properties": {
-                                                            "appdata": {
-                                                                "description": "Application managed information as an array of key:value pairs",
-                                                                "items": {
-                                                                    "properties": {
-                                                                        "K": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "V": {
-                                                                            "type": "string"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
+                                                            "latitude": {
+                                                                "type": "number"
                                                             },
-                                                            "deviceID": {
-                                                                "description": "A unique identifier for the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "devicetimestamp": {
-                                                                "description": "A timestamp recoded by the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
+                                                            "longitude": {
+                                                                "type": "number"
                                                             }
                                                         },
                                                         "type": "object"
-                                                    },
-                                                    "temperature": {
-                                                        "description": "Temperature of an asset's contents in degrees Celsuis",
-                                                        "type": "number"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "assetID"
-                                                ],
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "eventout": {
-                                        "description": "The chaincode event emitted on invoke exit, if any",
-                                        "properties": {
-                                            "asset": {
-                                                "description": "An chaincode event emitted by a contract invoke",
-                                                "properties": {
-                                                    "name": {
-                                                        "description": "The chaincode event's name",
-                                                        "type": "string"
-                                                    },
-                                                    "payload": {
-                                                        "description": "The chaincode event's properties",
-                                                        "properties": {},
-                                                        "type": "object"
                                                     }
                                                 },
                                                 "type": "object"
+                                            },
+                                            "temperature": {
+                                                "description": "Temperature of an asset's contents in degrees Celsuis",
+                                                "type": "number"
                                             }
                                         },
+                                        "required": [
+                                            "assetID"
+                                        ],
                                         "type": "object"
-                                    },
-                                    "prefix": {
-                                        "description": "The asset's asset class prefix in world state",
-                                        "type": "string"
-                                    },
-                                    "state": {
-                                        "description": "Properties that have been received or calculated for this asset",
-                                        "properties": {
-                                            "asset": {
-                                                "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
-                                                "properties": {
-                                                    "assetID": {
-                                                        "description": "An asset's unique ID, barcode, VIN, etc.",
-                                                        "type": "string"
-                                                    },
-                                                    "carrier": {
-                                                        "description": "The carrier in possession of this asset",
-                                                        "type": "string"
-                                                    },
-                                                    "common": {
-                                                        "description": "Common properties for all assets",
-                                                        "properties": {
-                                                            "appdata": {
-                                                                "description": "Application managed information as an array of key:value pairs",
-                                                                "items": {
-                                                                    "properties": {
-                                                                        "K": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "V": {
-                                                                            "type": "string"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "deviceID": {
-                                                                "description": "A unique identifier for the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "devicetimestamp": {
-                                                                "description": "A timestamp recoded by the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "temperature": {
-                                                        "description": "Temperature of an asset's contents in degrees Celsuis",
-                                                        "type": "number"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "assetID"
-                                                ],
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "txnid": {
-                                        "description": "Transaction UUID matching the blockchain",
-                                        "type": "string"
-                                    },
-                                    "txnts": {
-                                        "description": "Transaction timestamp matching the blockchain",
-                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
+                            },
+                            "eventout": {
+                                "description": "The chaincode event emitted on invoke exit, if any",
+                                "properties": {
+                                    "asset": {
+                                        "description": "An chaincode event emitted by a contract invoke",
+                                        "properties": {
+                                            "name": {
+                                                "description": "The chaincode event's name",
+                                                "type": "string"
+                                            },
+                                            "payload": {
+                                                "description": "The chaincode event's properties",
+                                                "properties": {},
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "prefix": {
+                                "description": "The asset's asset class prefix in world state",
+                                "type": "string"
+                            },
+                            "state": {
+                                "description": "Properties that have been received or calculated for this asset",
+                                "properties": {
+                                    "asset": {
+                                        "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
+                                        "properties": {
+                                            "assetID": {
+                                                "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
+                                                "type": "string"
+                                            },
+                                            "carrier": {
+                                                "description": "The carrier in possession of this asset",
+                                                "type": "string"
+                                            },
+                                            "common": {
+                                                "description": "Common properties for all assets",
+                                                "properties": {
+                                                    "appdata": {
+                                                        "description": "Application managed information as an array of key:value pairs",
+                                                        "items": {
+                                                            "properties": {
+                                                                "K": {
+                                                                    "type": "string"
+                                                                },
+                                                                "V": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "minItems": 0,
+                                                        "type": "array"
+                                                    },
+                                                    "deviceID": {
+                                                        "description": "A unique identifier for the device that sent the current event",
+                                                        "type": "string"
+                                                    },
+                                                    "devicetimestamp": {
+                                                        "description": "A timestamp recoded by the device that sent the current event",
+                                                        "type": "string"
+                                                    },
+                                                    "location": {
+                                                        "description": "A geographical coordinate",
+                                                        "properties": {
+                                                            "latitude": {
+                                                                "type": "number"
+                                                            },
+                                                            "longitude": {
+                                                                "type": "number"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "temperature": {
+                                                "description": "Temperature of an asset's contents in degrees Celsuis",
+                                                "type": "number"
+                                            }
+                                        },
+                                        "required": [
+                                            "assetID"
+                                        ],
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "txnid": {
+                                "description": "Transaction UUID matching the blockchain",
+                                "type": "string"
+                            },
+                            "txnts": {
+                                "description": "Transaction timestamp matching the blockchain",
+                                "type": "string"
                             }
                         },
                         "type": "object"
@@ -1518,210 +1346,202 @@ var schemas = `
                 "result": {
                     "description": "Array of asset states, can mix asset classes",
                     "items": {
-                        "patternProperties": {
-                            "^DEF": {
-                                "description": "The external state of one asset asset, named by its world state ID",
+                        "description": "A asset's complete state",
+                        "properties": {
+                            "alerts": {
+                                "description": "A list of alert names",
+                                "items": {
+                                    "description": "An alert name",
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            "assetID": {
+                                "description": "This asset's world state asset ID",
+                                "type": "string"
+                            },
+                            "assetIDpath": {
+                                "description": "Qualified property path to the asset's ID, declared in the contract code",
+                                "type": "string"
+                            },
+                            "class": {
+                                "description": "The asset's asset class",
+                                "type": "string"
+                            },
+                            "compliant": {
+                                "description": "This asset has no active alerts",
+                                "type": "boolean"
+                            },
+                            "eventin": {
+                                "description": "The contract event that created this state, for example updateAsset",
                                 "properties": {
-                                    "alerts": {
-                                        "description": "A list of alert names",
-                                        "items": {
-                                            "description": "An alert name",
-                                            "enum": [
-                                                ""
-                                            ],
-                                            "type": "string"
-                                        },
-                                        "type": "array"
-                                    },
-                                    "assetID": {
-                                        "description": "This asset's world state asset ID",
-                                        "type": "string"
-                                    },
-                                    "assetIDpath": {
-                                        "description": "Qualified property path to the asset's ID, declared in the contract code",
-                                        "type": "string"
-                                    },
-                                    "class": {
-                                        "description": "The asset's asset class",
-                                        "type": "string"
-                                    },
-                                    "compliant": {
-                                        "description": "This asset has no active alerts",
-                                        "type": "boolean"
-                                    },
-                                    "eventin": {
-                                        "description": "The contract event that created this state, for example updateAsset",
+                                    "asset": {
+                                        "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
                                         "properties": {
-                                            "asset": {
-                                                "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
+                                            "assetID": {
+                                                "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
+                                                "type": "string"
+                                            },
+                                            "carrier": {
+                                                "description": "The carrier in possession of this asset",
+                                                "type": "string"
+                                            },
+                                            "common": {
+                                                "description": "Common properties for all assets",
                                                 "properties": {
-                                                    "assetID": {
-                                                        "description": "An asset's unique ID, barcode, VIN, etc.",
+                                                    "appdata": {
+                                                        "description": "Application managed information as an array of key:value pairs",
+                                                        "items": {
+                                                            "properties": {
+                                                                "K": {
+                                                                    "type": "string"
+                                                                },
+                                                                "V": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "minItems": 0,
+                                                        "type": "array"
+                                                    },
+                                                    "deviceID": {
+                                                        "description": "A unique identifier for the device that sent the current event",
                                                         "type": "string"
                                                     },
-                                                    "carrier": {
-                                                        "description": "The carrier in possession of this asset",
+                                                    "devicetimestamp": {
+                                                        "description": "A timestamp recoded by the device that sent the current event",
                                                         "type": "string"
                                                     },
-                                                    "common": {
-                                                        "description": "Common properties for all assets",
+                                                    "location": {
+                                                        "description": "A geographical coordinate",
                                                         "properties": {
-                                                            "appdata": {
-                                                                "description": "Application managed information as an array of key:value pairs",
-                                                                "items": {
-                                                                    "properties": {
-                                                                        "K": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "V": {
-                                                                            "type": "string"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
+                                                            "latitude": {
+                                                                "type": "number"
                                                             },
-                                                            "deviceID": {
-                                                                "description": "A unique identifier for the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "devicetimestamp": {
-                                                                "description": "A timestamp recoded by the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
+                                                            "longitude": {
+                                                                "type": "number"
                                                             }
                                                         },
                                                         "type": "object"
-                                                    },
-                                                    "temperature": {
-                                                        "description": "Temperature of an asset's contents in degrees Celsuis",
-                                                        "type": "number"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "assetID"
-                                                ],
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "eventout": {
-                                        "description": "The chaincode event emitted on invoke exit, if any",
-                                        "properties": {
-                                            "asset": {
-                                                "description": "An chaincode event emitted by a contract invoke",
-                                                "properties": {
-                                                    "name": {
-                                                        "description": "The chaincode event's name",
-                                                        "type": "string"
-                                                    },
-                                                    "payload": {
-                                                        "description": "The chaincode event's properties",
-                                                        "properties": {},
-                                                        "type": "object"
                                                     }
                                                 },
                                                 "type": "object"
+                                            },
+                                            "temperature": {
+                                                "description": "Temperature of an asset's contents in degrees Celsuis",
+                                                "type": "number"
                                             }
                                         },
+                                        "required": [
+                                            "assetID"
+                                        ],
                                         "type": "object"
-                                    },
-                                    "prefix": {
-                                        "description": "The asset's asset class prefix in world state",
-                                        "type": "string"
-                                    },
-                                    "state": {
-                                        "description": "Properties that have been received or calculated for this asset",
-                                        "properties": {
-                                            "asset": {
-                                                "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
-                                                "properties": {
-                                                    "assetID": {
-                                                        "description": "An asset's unique ID, barcode, VIN, etc.",
-                                                        "type": "string"
-                                                    },
-                                                    "carrier": {
-                                                        "description": "The carrier in possession of this asset",
-                                                        "type": "string"
-                                                    },
-                                                    "common": {
-                                                        "description": "Common properties for all assets",
-                                                        "properties": {
-                                                            "appdata": {
-                                                                "description": "Application managed information as an array of key:value pairs",
-                                                                "items": {
-                                                                    "properties": {
-                                                                        "K": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "V": {
-                                                                            "type": "string"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "deviceID": {
-                                                                "description": "A unique identifier for the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "devicetimestamp": {
-                                                                "description": "A timestamp recoded by the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "temperature": {
-                                                        "description": "Temperature of an asset's contents in degrees Celsuis",
-                                                        "type": "number"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "assetID"
-                                                ],
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "txnid": {
-                                        "description": "Transaction UUID matching the blockchain",
-                                        "type": "string"
-                                    },
-                                    "txnts": {
-                                        "description": "Transaction timestamp matching the blockchain",
-                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
+                            },
+                            "eventout": {
+                                "description": "The chaincode event emitted on invoke exit, if any",
+                                "properties": {
+                                    "asset": {
+                                        "description": "An chaincode event emitted by a contract invoke",
+                                        "properties": {
+                                            "name": {
+                                                "description": "The chaincode event's name",
+                                                "type": "string"
+                                            },
+                                            "payload": {
+                                                "description": "The chaincode event's properties",
+                                                "properties": {},
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "prefix": {
+                                "description": "The asset's asset class prefix in world state",
+                                "type": "string"
+                            },
+                            "state": {
+                                "description": "Properties that have been received or calculated for this asset",
+                                "properties": {
+                                    "asset": {
+                                        "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
+                                        "properties": {
+                                            "assetID": {
+                                                "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
+                                                "type": "string"
+                                            },
+                                            "carrier": {
+                                                "description": "The carrier in possession of this asset",
+                                                "type": "string"
+                                            },
+                                            "common": {
+                                                "description": "Common properties for all assets",
+                                                "properties": {
+                                                    "appdata": {
+                                                        "description": "Application managed information as an array of key:value pairs",
+                                                        "items": {
+                                                            "properties": {
+                                                                "K": {
+                                                                    "type": "string"
+                                                                },
+                                                                "V": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "minItems": 0,
+                                                        "type": "array"
+                                                    },
+                                                    "deviceID": {
+                                                        "description": "A unique identifier for the device that sent the current event",
+                                                        "type": "string"
+                                                    },
+                                                    "devicetimestamp": {
+                                                        "description": "A timestamp recoded by the device that sent the current event",
+                                                        "type": "string"
+                                                    },
+                                                    "location": {
+                                                        "description": "A geographical coordinate",
+                                                        "properties": {
+                                                            "latitude": {
+                                                                "type": "number"
+                                                            },
+                                                            "longitude": {
+                                                                "type": "number"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "temperature": {
+                                                "description": "Temperature of an asset's contents in degrees Celsuis",
+                                                "type": "number"
+                                            }
+                                        },
+                                        "required": [
+                                            "assetID"
+                                        ],
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "txnid": {
+                                "description": "Transaction UUID matching the blockchain",
+                                "type": "string"
+                            },
+                            "txnts": {
+                                "description": "Transaction timestamp matching the blockchain",
+                                "type": "string"
                             }
                         },
                         "type": "object"
@@ -1765,7 +1585,7 @@ var schemas = `
                                 "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
                                 "properties": {
                                     "assetID": {
-                                        "description": "An asset's unique ID, barcode, VIN, etc.",
+                                        "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
                                         "type": "string"
                                     },
                                     "carrier": {
@@ -1912,7 +1732,7 @@ var schemas = `
                                 "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
                                 "properties": {
                                     "assetID": {
-                                        "description": "An asset's unique ID, barcode, VIN, etc.",
+                                        "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
                                         "type": "string"
                                     },
                                     "carrier": {
@@ -1989,12 +1809,12 @@ var schemas = `
             "type": "object"
         }
     },
-    "objectModelSchemas": {
+    "Model": {
         "asset": {
             "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
             "properties": {
                 "assetID": {
-                    "description": "An asset's unique ID, barcode, VIN, etc.",
+                    "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
                     "type": "string"
                 },
                 "carrier": {

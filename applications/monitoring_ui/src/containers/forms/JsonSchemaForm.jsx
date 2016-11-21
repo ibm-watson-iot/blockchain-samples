@@ -60,7 +60,7 @@ class JsonSchemaForm extends React.Component {
     }
 
     //TODO: We should have redux manage this form data's state. For now, clear the form on submit.
-    data.formData={};
+    // data.formData={};
 
     //dispatch the payload to the appropriate api endpoint
     dispatch(sendObcRequest(args, this.props.fnName, this.props.currentRequestType));
