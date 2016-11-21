@@ -1,6 +1,6 @@
 {
     "schemas": {
-        "schemaFilename": "payloadschema.json",
+        "schemaFilename": "container.json",
         "goSchemaFilename": "schemas.go",
         "API": [
             "initContract",
@@ -21,7 +21,7 @@
             "setLoggingLevel",
             "setCreateOnFirstUpdate"
         ],
-        "goSchemaElements": [
+        "Model": [
             "container",
             "invokeevent",
             "ioteventcommon",
@@ -33,16 +33,18 @@
     },
     "samples": {
         "goSampleFilename": "samples.go",
-        "goSampleElements": [
+        "API": [
+            "createAssetContainer",
+            "updateAssetContainer"
+        ],
+        "Model": [
             "container",
             "invokeevent",
             "ioteventcommon",
             "containerstate",
             "containerstateexternal",
             "containerstatearray",
-            "stateFilter",
-            "API/createAssetContainer",
-            "API/updateAssetContainer"
+            "stateFilter"
         ]
     }
 }
