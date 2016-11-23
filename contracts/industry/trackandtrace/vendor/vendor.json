@@ -97,10 +97,10 @@
 			"revisionTime": "2016-11-07T20:42:32Z"
 		},
 		{
-			"checksumSHA1": "op/hh/oNqAn6F5mLp5WBnHepyDQ=",
+			"checksumSHA1": "jBHML4s7/IanbYwIHFnBDhAYnTI=",
 			"path": "github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatform",
-			"revision": "17845a1b4b03907c8458fb2e1d7a99fe26e90687",
-			"revisionTime": "2016-11-21T21:45:27Z"
+			"revision": "a4207b010b84f40e875928cc672ddb77144df2c2",
+			"revisionTime": "2016-11-23T06:51:16Z"
 		},
 		{
 			"checksumSHA1": "1YeGotQXMZMqk+mmm8sbBVJywpw=",

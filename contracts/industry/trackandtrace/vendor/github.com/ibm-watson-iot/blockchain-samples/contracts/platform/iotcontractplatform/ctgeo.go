@@ -20,33 +20,24 @@ package iotcontractplatform
 
 import "math"
 
-// haversin(θ) function
-func hsin(theta float64) float64 {
-	return math.Pow(math.Sin(theta/2), 2)
-}
+// from a tweet by Rob Pike
+const x = math.Pi / 180
+const rEarth = 6372.8 // radius earth in km
 
-// Distance function returns the distance (in meters) between two points of
-//     a given longitude and latitude relatively accurately (using a spherical
-//     approximation of the Earth) through the Haversin Distance Formula for
-//     great arc distance on a sphere with accuracy for small distances
-//
-// point coordinates are supplied in degrees and converted into rad. in the func
-//
-// distance returned is METERS!!!!!!
-// http://en.wikipedia.org/wiki/Haversine_formula
+// Rad converts from degrees to radians
+func Rad(d float64) float64 { return d * x }
+
+// Deg converts from radians to degrees
+func Deg(r float64) float64 { return r / x }
+
+// Distance returns distance between geo coordinates in degrees, result is km
+// translated from groovy on rosettacode.com
 func Distance(lat1, lon1, lat2, lon2 float64) float64 {
-	// convert to radians
-	// must cast radius as float to multiply later
-	var la1, lo1, la2, lo2, r float64
-	la1 = lat1 * math.Pi / 180
-	lo1 = lon1 * math.Pi / 180
-	la2 = lat2 * math.Pi / 180
-	lo2 = lon2 * math.Pi / 180
-
-	r = 6378100 // Earth radius in METERS
-
-	// calculate
-	h := hsin(la2-la1) + math.Cos(la1)*math.Cos(la2)*hsin(lo2-lo1)
-
-	return 2 * r * math.Asin(math.Sqrt(h))
+	dLat := Rad(lat2 - lat1)
+	dLon := Rad(lon2 - lon1)
+	lat1 = Rad(lat1)
+	lat2 = Rad(lat2)
+	a := math.Sin(dLat/2)*math.Sin(dLat/2) + math.Sin(dLon/2)*math.Sin(dLon/2)*math.Cos(lat1)*math.Cos(lat2)
+	c := 2 * math.Asin(math.Sqrt(a))
+	return rEarth * c
 }

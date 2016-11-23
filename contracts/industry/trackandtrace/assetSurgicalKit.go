@@ -19,6 +19,8 @@ Kim Letkeman - Initial Contribution
 package main
 
 import (
+	"math"
+
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	iot "github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatform"
 )
@@ -136,7 +138,8 @@ var outOfAreaRule iot.RuleFunc = func(stub shim.ChaincodeStubInterface, Surgical
 	if !found {
 		return nil
 	}
-	distance := iot.Distance(lat, long, flat, flong)
+	// convert to meters and round up
+	distance := math.Ceil(iot.Distance(lat, long, flat, flong) * 1000)
 	if distance > radius {
 		iot.RaiseAlert(SurgicalKit, outOfAreaAlert)
 	} else {

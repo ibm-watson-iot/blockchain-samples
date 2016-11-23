@@ -166,9 +166,9 @@ var schemas = `
                                         "type": "string"
                                     },
                                     "status": {
-                                        "default": "oem",
                                         "description": "current kit status as a named entity in possession of the kit",
                                         "enum": [
+                                            "",
                                             "oem",
                                             "warehouse",
                                             "dealer",
@@ -197,9 +197,9 @@ var schemas = `
                                                 "type": "string"
                                             },
                                             "receiver": {
-                                                "default": "oem",
                                                 "description": "current kit status as a named entity in possession of the kit",
                                                 "enum": [
+                                                    "",
                                                     "oem",
                                                     "warehouse",
                                                     "dealer",
@@ -210,9 +210,9 @@ var schemas = `
                                                 "type": "string"
                                             },
                                             "shipper": {
-                                                "default": "oem",
                                                 "description": "current kit status as a named entity in possession of the kit",
                                                 "enum": [
+                                                    "",
                                                     "oem",
                                                     "warehouse",
                                                     "dealer",
@@ -516,512 +516,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "A surgicalkit's complete state",
-                                "properties": {
-                                    "AssetKey": {
-                                        "description": "This surgicalkit's world state surgicalkit ID",
-                                        "type": "string"
-                                    },
-                                    "alerts": {
-                                        "description": "A list of alert names",
-                                        "items": {
-                                            "description": "An alert name",
-                                            "type": "string"
-                                        },
-                                        "type": "array"
-                                    },
-                                    "assetIDpath": {
-                                        "description": "Qualified property path to the surgicalkit's ID, declared in the contract code",
-                                        "type": "string"
-                                    },
-                                    "class": {
-                                        "description": "The surgicalkit's asset class",
-                                        "type": "string"
-                                    },
-                                    "compliant": {
-                                        "description": "This surgicalkit has no active alerts",
-                                        "type": "boolean"
-                                    },
-                                    "eventin": {
-                                        "description": "The contract event that created this state, for example updateAssetSurgicalKit",
-                                        "properties": {
-                                            "surgicalkit": {
-                                                "description": "The changeable properties for a surgicalkit, also considered its 'event' as a partial state",
-                                                "properties": {
-                                                    "common": {
-                                                        "description": "Common properties for all assets",
-                                                        "properties": {
-                                                            "appdata": {
-                                                                "description": "Application managed information as an array of key:value pairs",
-                                                                "items": {
-                                                                    "properties": {
-                                                                        "K": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "V": {
-                                                                            "type": "string"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "deviceID": {
-                                                                "description": "A unique identifier for the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "devicetimestamp": {
-                                                                "description": "A timestamp recoded by the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "hospital": {
-                                                        "description": "the hospital within which the surgical kit is used, and within which it is geofenced",
-                                                        "properties": {
-                                                            "address": {
-                                                                "properties": {
-                                                                    "city": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "country": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "postcode": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "streetandnumber": {
-                                                                        "type": "string"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "fence": {
-                                                                "properties": {
-                                                                    "center": {
-                                                                        "description": "A geographical coordinate",
-                                                                        "properties": {
-                                                                            "latitude": {
-                                                                                "type": "number"
-                                                                            },
-                                                                            "longitude": {
-                                                                                "type": "number"
-                                                                            }
-                                                                        },
-                                                                        "type": "object"
-                                                                    },
-                                                                    "radius": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "name": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "sensors": {
-                                                        "description": "sensor readings for the surgical kit",
-                                                        "properties": {
-                                                            "begin": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "currtilt": {
-                                                                "description": "The current tilt that the kit is experiencing",
-                                                                "type": "number"
-                                                            },
-                                                            "end": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "endlocation": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "maxgforce": {
-                                                                "description": "The highest (in Gs) force that the kit experienced during the sample",
-                                                                "type": "number"
-                                                            },
-                                                            "maxtilt": {
-                                                                "description": "The highest (in degrees from horizontal) tilt that the kit experienced during the sample",
-                                                                "type": "number"
-                                                            },
-                                                            "startlocation": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "skitID": {
-                                                        "description": "A surgicalkit's ID",
-                                                        "type": "string"
-                                                    },
-                                                    "status": {
-                                                        "default": "oem",
-                                                        "description": "current kit status as a named entity in possession of the kit",
-                                                        "enum": [
-                                                            "oem",
-                                                            "warehouse",
-                                                            "dealer",
-                                                            "retailer",
-                                                            "hospital",
-                                                            "scrapped"
-                                                        ],
-                                                        "type": "string"
-                                                    },
-                                                    "transit": {
-                                                        "description": "shipping data during transit periods",
-                                                        "properties": {
-                                                            "begintransit": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "carrier": {
-                                                                "type": "string"
-                                                            },
-                                                            "endtransit": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "receiver": {
-                                                                "default": "oem",
-                                                                "description": "current kit status as a named entity in possession of the kit",
-                                                                "enum": [
-                                                                    "oem",
-                                                                    "warehouse",
-                                                                    "dealer",
-                                                                    "retailer",
-                                                                    "hospital",
-                                                                    "scrapped"
-                                                                ],
-                                                                "type": "string"
-                                                            },
-                                                            "shipper": {
-                                                                "default": "oem",
-                                                                "description": "current kit status as a named entity in possession of the kit",
-                                                                "enum": [
-                                                                    "oem",
-                                                                    "warehouse",
-                                                                    "dealer",
-                                                                    "retailer",
-                                                                    "hospital",
-                                                                    "scrapped"
-                                                                ],
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "skitID"
-                                                ],
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "eventout": {
-                                        "description": "The chaincode event emitted on invoke exit, if any",
-                                        "properties": {
-                                            "surgicalkit": {
-                                                "description": "An chaincode event emitted by a contract invoke",
-                                                "properties": {
-                                                    "name": {
-                                                        "description": "The chaincode event's name",
-                                                        "type": "string"
-                                                    },
-                                                    "payload": {
-                                                        "description": "The chaincode event's properties",
-                                                        "properties": {},
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "prefix": {
-                                        "description": "The surgicalkit's asset class prefix in world state",
-                                        "type": "string"
-                                    },
-                                    "state": {
-                                        "description": "Properties that have been received or calculated for this surgicalkit",
-                                        "properties": {
-                                            "distanceFromCenter": {
-                                                "description": "calculated distance from the fence center, can be compared to fence radius",
-                                                "type": "number"
-                                            },
-                                            "surgicalkit": {
-                                                "description": "The changeable properties for a surgicalkit, also considered its 'event' as a partial state",
-                                                "properties": {
-                                                    "common": {
-                                                        "description": "Common properties for all assets",
-                                                        "properties": {
-                                                            "appdata": {
-                                                                "description": "Application managed information as an array of key:value pairs",
-                                                                "items": {
-                                                                    "properties": {
-                                                                        "K": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "V": {
-                                                                            "type": "string"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "deviceID": {
-                                                                "description": "A unique identifier for the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "devicetimestamp": {
-                                                                "description": "A timestamp recoded by the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "hospital": {
-                                                        "description": "the hospital within which the surgical kit is used, and within which it is geofenced",
-                                                        "properties": {
-                                                            "address": {
-                                                                "properties": {
-                                                                    "city": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "country": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "postcode": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "streetandnumber": {
-                                                                        "type": "string"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "fence": {
-                                                                "properties": {
-                                                                    "center": {
-                                                                        "description": "A geographical coordinate",
-                                                                        "properties": {
-                                                                            "latitude": {
-                                                                                "type": "number"
-                                                                            },
-                                                                            "longitude": {
-                                                                                "type": "number"
-                                                                            }
-                                                                        },
-                                                                        "type": "object"
-                                                                    },
-                                                                    "radius": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "name": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "sensors": {
-                                                        "description": "sensor readings for the surgical kit",
-                                                        "properties": {
-                                                            "begin": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "currtilt": {
-                                                                "description": "The current tilt that the kit is experiencing",
-                                                                "type": "number"
-                                                            },
-                                                            "end": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "endlocation": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "maxgforce": {
-                                                                "description": "The highest (in Gs) force that the kit experienced during the sample",
-                                                                "type": "number"
-                                                            },
-                                                            "maxtilt": {
-                                                                "description": "The highest (in degrees from horizontal) tilt that the kit experienced during the sample",
-                                                                "type": "number"
-                                                            },
-                                                            "startlocation": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "skitID": {
-                                                        "description": "A surgicalkit's ID",
-                                                        "type": "string"
-                                                    },
-                                                    "status": {
-                                                        "default": "oem",
-                                                        "description": "current kit status as a named entity in possession of the kit",
-                                                        "enum": [
-                                                            "oem",
-                                                            "warehouse",
-                                                            "dealer",
-                                                            "retailer",
-                                                            "hospital",
-                                                            "scrapped"
-                                                        ],
-                                                        "type": "string"
-                                                    },
-                                                    "transit": {
-                                                        "description": "shipping data during transit periods",
-                                                        "properties": {
-                                                            "begintransit": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "carrier": {
-                                                                "type": "string"
-                                                            },
-                                                            "endtransit": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "receiver": {
-                                                                "default": "oem",
-                                                                "description": "current kit status as a named entity in possession of the kit",
-                                                                "enum": [
-                                                                    "oem",
-                                                                    "warehouse",
-                                                                    "dealer",
-                                                                    "retailer",
-                                                                    "hospital",
-                                                                    "scrapped"
-                                                                ],
-                                                                "type": "string"
-                                                            },
-                                                            "shipper": {
-                                                                "default": "oem",
-                                                                "description": "current kit status as a named entity in possession of the kit",
-                                                                "enum": [
-                                                                    "oem",
-                                                                    "warehouse",
-                                                                    "dealer",
-                                                                    "retailer",
-                                                                    "hospital",
-                                                                    "scrapped"
-                                                                ],
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "skitID"
-                                                ],
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "txnid": {
-                                        "description": "Transaction UUID matching the blockchain",
-                                        "type": "string"
-                                    },
-                                    "txnts": {
-                                        "description": "Transaction timestamp matching the blockchain",
-                                        "type": "string"
-                                    }
-                                },
+                                "description": "The external state of one surgicalkit asset, named by its world state ID",
                                 "type": "object"
                             }
                         },
@@ -1337,512 +832,7 @@ var schemas = `
                     "items": {
                         "patternProperties": {
                             "^CON": {
-                                "description": "A surgicalkit's complete state",
-                                "properties": {
-                                    "AssetKey": {
-                                        "description": "This surgicalkit's world state surgicalkit ID",
-                                        "type": "string"
-                                    },
-                                    "alerts": {
-                                        "description": "A list of alert names",
-                                        "items": {
-                                            "description": "An alert name",
-                                            "type": "string"
-                                        },
-                                        "type": "array"
-                                    },
-                                    "assetIDpath": {
-                                        "description": "Qualified property path to the surgicalkit's ID, declared in the contract code",
-                                        "type": "string"
-                                    },
-                                    "class": {
-                                        "description": "The surgicalkit's asset class",
-                                        "type": "string"
-                                    },
-                                    "compliant": {
-                                        "description": "This surgicalkit has no active alerts",
-                                        "type": "boolean"
-                                    },
-                                    "eventin": {
-                                        "description": "The contract event that created this state, for example updateAssetSurgicalKit",
-                                        "properties": {
-                                            "surgicalkit": {
-                                                "description": "The changeable properties for a surgicalkit, also considered its 'event' as a partial state",
-                                                "properties": {
-                                                    "common": {
-                                                        "description": "Common properties for all assets",
-                                                        "properties": {
-                                                            "appdata": {
-                                                                "description": "Application managed information as an array of key:value pairs",
-                                                                "items": {
-                                                                    "properties": {
-                                                                        "K": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "V": {
-                                                                            "type": "string"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "deviceID": {
-                                                                "description": "A unique identifier for the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "devicetimestamp": {
-                                                                "description": "A timestamp recoded by the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "hospital": {
-                                                        "description": "the hospital within which the surgical kit is used, and within which it is geofenced",
-                                                        "properties": {
-                                                            "address": {
-                                                                "properties": {
-                                                                    "city": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "country": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "postcode": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "streetandnumber": {
-                                                                        "type": "string"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "fence": {
-                                                                "properties": {
-                                                                    "center": {
-                                                                        "description": "A geographical coordinate",
-                                                                        "properties": {
-                                                                            "latitude": {
-                                                                                "type": "number"
-                                                                            },
-                                                                            "longitude": {
-                                                                                "type": "number"
-                                                                            }
-                                                                        },
-                                                                        "type": "object"
-                                                                    },
-                                                                    "radius": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "name": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "sensors": {
-                                                        "description": "sensor readings for the surgical kit",
-                                                        "properties": {
-                                                            "begin": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "currtilt": {
-                                                                "description": "The current tilt that the kit is experiencing",
-                                                                "type": "number"
-                                                            },
-                                                            "end": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "endlocation": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "maxgforce": {
-                                                                "description": "The highest (in Gs) force that the kit experienced during the sample",
-                                                                "type": "number"
-                                                            },
-                                                            "maxtilt": {
-                                                                "description": "The highest (in degrees from horizontal) tilt that the kit experienced during the sample",
-                                                                "type": "number"
-                                                            },
-                                                            "startlocation": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "skitID": {
-                                                        "description": "A surgicalkit's ID",
-                                                        "type": "string"
-                                                    },
-                                                    "status": {
-                                                        "default": "oem",
-                                                        "description": "current kit status as a named entity in possession of the kit",
-                                                        "enum": [
-                                                            "oem",
-                                                            "warehouse",
-                                                            "dealer",
-                                                            "retailer",
-                                                            "hospital",
-                                                            "scrapped"
-                                                        ],
-                                                        "type": "string"
-                                                    },
-                                                    "transit": {
-                                                        "description": "shipping data during transit periods",
-                                                        "properties": {
-                                                            "begintransit": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "carrier": {
-                                                                "type": "string"
-                                                            },
-                                                            "endtransit": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "receiver": {
-                                                                "default": "oem",
-                                                                "description": "current kit status as a named entity in possession of the kit",
-                                                                "enum": [
-                                                                    "oem",
-                                                                    "warehouse",
-                                                                    "dealer",
-                                                                    "retailer",
-                                                                    "hospital",
-                                                                    "scrapped"
-                                                                ],
-                                                                "type": "string"
-                                                            },
-                                                            "shipper": {
-                                                                "default": "oem",
-                                                                "description": "current kit status as a named entity in possession of the kit",
-                                                                "enum": [
-                                                                    "oem",
-                                                                    "warehouse",
-                                                                    "dealer",
-                                                                    "retailer",
-                                                                    "hospital",
-                                                                    "scrapped"
-                                                                ],
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "skitID"
-                                                ],
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "eventout": {
-                                        "description": "The chaincode event emitted on invoke exit, if any",
-                                        "properties": {
-                                            "surgicalkit": {
-                                                "description": "An chaincode event emitted by a contract invoke",
-                                                "properties": {
-                                                    "name": {
-                                                        "description": "The chaincode event's name",
-                                                        "type": "string"
-                                                    },
-                                                    "payload": {
-                                                        "description": "The chaincode event's properties",
-                                                        "properties": {},
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "prefix": {
-                                        "description": "The surgicalkit's asset class prefix in world state",
-                                        "type": "string"
-                                    },
-                                    "state": {
-                                        "description": "Properties that have been received or calculated for this surgicalkit",
-                                        "properties": {
-                                            "distanceFromCenter": {
-                                                "description": "calculated distance from the fence center, can be compared to fence radius",
-                                                "type": "number"
-                                            },
-                                            "surgicalkit": {
-                                                "description": "The changeable properties for a surgicalkit, also considered its 'event' as a partial state",
-                                                "properties": {
-                                                    "common": {
-                                                        "description": "Common properties for all assets",
-                                                        "properties": {
-                                                            "appdata": {
-                                                                "description": "Application managed information as an array of key:value pairs",
-                                                                "items": {
-                                                                    "properties": {
-                                                                        "K": {
-                                                                            "type": "string"
-                                                                        },
-                                                                        "V": {
-                                                                            "type": "string"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                },
-                                                                "minItems": 0,
-                                                                "type": "array"
-                                                            },
-                                                            "deviceID": {
-                                                                "description": "A unique identifier for the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "devicetimestamp": {
-                                                                "description": "A timestamp recoded by the device that sent the current event",
-                                                                "type": "string"
-                                                            },
-                                                            "location": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "hospital": {
-                                                        "description": "the hospital within which the surgical kit is used, and within which it is geofenced",
-                                                        "properties": {
-                                                            "address": {
-                                                                "properties": {
-                                                                    "city": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "country": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "postcode": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "streetandnumber": {
-                                                                        "type": "string"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "fence": {
-                                                                "properties": {
-                                                                    "center": {
-                                                                        "description": "A geographical coordinate",
-                                                                        "properties": {
-                                                                            "latitude": {
-                                                                                "type": "number"
-                                                                            },
-                                                                            "longitude": {
-                                                                                "type": "number"
-                                                                            }
-                                                                        },
-                                                                        "type": "object"
-                                                                    },
-                                                                    "radius": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "name": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "sensors": {
-                                                        "description": "sensor readings for the surgical kit",
-                                                        "properties": {
-                                                            "begin": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "currtilt": {
-                                                                "description": "The current tilt that the kit is experiencing",
-                                                                "type": "number"
-                                                            },
-                                                            "end": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "endlocation": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "maxgforce": {
-                                                                "description": "The highest (in Gs) force that the kit experienced during the sample",
-                                                                "type": "number"
-                                                            },
-                                                            "maxtilt": {
-                                                                "description": "The highest (in degrees from horizontal) tilt that the kit experienced during the sample",
-                                                                "type": "number"
-                                                            },
-                                                            "startlocation": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "skitID": {
-                                                        "description": "A surgicalkit's ID",
-                                                        "type": "string"
-                                                    },
-                                                    "status": {
-                                                        "default": "oem",
-                                                        "description": "current kit status as a named entity in possession of the kit",
-                                                        "enum": [
-                                                            "oem",
-                                                            "warehouse",
-                                                            "dealer",
-                                                            "retailer",
-                                                            "hospital",
-                                                            "scrapped"
-                                                        ],
-                                                        "type": "string"
-                                                    },
-                                                    "transit": {
-                                                        "description": "shipping data during transit periods",
-                                                        "properties": {
-                                                            "begintransit": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "carrier": {
-                                                                "type": "string"
-                                                            },
-                                                            "endtransit": {
-                                                                "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                                "format": "date-time",
-                                                                "sample": "yyyy-mm-dd hh:mm:ss",
-                                                                "type": "string"
-                                                            },
-                                                            "receiver": {
-                                                                "default": "oem",
-                                                                "description": "current kit status as a named entity in possession of the kit",
-                                                                "enum": [
-                                                                    "oem",
-                                                                    "warehouse",
-                                                                    "dealer",
-                                                                    "retailer",
-                                                                    "hospital",
-                                                                    "scrapped"
-                                                                ],
-                                                                "type": "string"
-                                                            },
-                                                            "shipper": {
-                                                                "default": "oem",
-                                                                "description": "current kit status as a named entity in possession of the kit",
-                                                                "enum": [
-                                                                    "oem",
-                                                                    "warehouse",
-                                                                    "dealer",
-                                                                    "retailer",
-                                                                    "hospital",
-                                                                    "scrapped"
-                                                                ],
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "required": [
-                                                    "skitID"
-                                                ],
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    },
-                                    "txnid": {
-                                        "description": "Transaction UUID matching the blockchain",
-                                        "type": "string"
-                                    },
-                                    "txnts": {
-                                        "description": "Transaction timestamp matching the blockchain",
-                                        "type": "string"
-                                    }
-                                },
+                                "description": "The external state of one surgicalkit asset, named by its world state ID",
                                 "type": "object"
                             }
                         },
@@ -2063,9 +1053,9 @@ var schemas = `
                                             "type": "string"
                                         },
                                         "status": {
-                                            "default": "oem",
                                             "description": "current kit status as a named entity in possession of the kit",
                                             "enum": [
+                                                "",
                                                 "oem",
                                                 "warehouse",
                                                 "dealer",
@@ -2094,9 +1084,9 @@ var schemas = `
                                                     "type": "string"
                                                 },
                                                 "receiver": {
-                                                    "default": "oem",
                                                     "description": "current kit status as a named entity in possession of the kit",
                                                     "enum": [
+                                                        "",
                                                         "oem",
                                                         "warehouse",
                                                         "dealer",
@@ -2107,9 +1097,9 @@ var schemas = `
                                                     "type": "string"
                                                 },
                                                 "shipper": {
-                                                    "default": "oem",
                                                     "description": "current kit status as a named entity in possession of the kit",
                                                     "enum": [
+                                                        "",
                                                         "oem",
                                                         "warehouse",
                                                         "dealer",
@@ -2313,9 +1303,9 @@ var schemas = `
                                             "type": "string"
                                         },
                                         "status": {
-                                            "default": "oem",
                                             "description": "current kit status as a named entity in possession of the kit",
                                             "enum": [
+                                                "",
                                                 "oem",
                                                 "warehouse",
                                                 "dealer",
@@ -2344,9 +1334,9 @@ var schemas = `
                                                     "type": "string"
                                                 },
                                                 "receiver": {
-                                                    "default": "oem",
                                                     "description": "current kit status as a named entity in possession of the kit",
                                                     "enum": [
+                                                        "",
                                                         "oem",
                                                         "warehouse",
                                                         "dealer",
@@ -2357,9 +1347,9 @@ var schemas = `
                                                     "type": "string"
                                                 },
                                                 "shipper": {
-                                                    "default": "oem",
                                                     "description": "current kit status as a named entity in possession of the kit",
                                                     "enum": [
+                                                        "",
                                                         "oem",
                                                         "warehouse",
                                                         "dealer",
@@ -2811,9 +1801,9 @@ var schemas = `
                                         "type": "string"
                                     },
                                     "status": {
-                                        "default": "oem",
                                         "description": "current kit status as a named entity in possession of the kit",
                                         "enum": [
+                                            "",
                                             "oem",
                                             "warehouse",
                                             "dealer",
@@ -2842,9 +1832,9 @@ var schemas = `
                                                 "type": "string"
                                             },
                                             "receiver": {
-                                                "default": "oem",
                                                 "description": "current kit status as a named entity in possession of the kit",
                                                 "enum": [
+                                                    "",
                                                     "oem",
                                                     "warehouse",
                                                     "dealer",
@@ -2855,9 +1845,9 @@ var schemas = `
                                                 "type": "string"
                                             },
                                             "shipper": {
-                                                "default": "oem",
                                                 "description": "current kit status as a named entity in possession of the kit",
                                                 "enum": [
+                                                    "",
                                                     "oem",
                                                     "warehouse",
                                                     "dealer",
@@ -3110,9 +2100,9 @@ var schemas = `
                                         "type": "string"
                                     },
                                     "status": {
-                                        "default": "oem",
                                         "description": "current kit status as a named entity in possession of the kit",
                                         "enum": [
+                                            "",
                                             "oem",
                                             "warehouse",
                                             "dealer",
@@ -3141,9 +2131,9 @@ var schemas = `
                                                 "type": "string"
                                             },
                                             "receiver": {
-                                                "default": "oem",
                                                 "description": "current kit status as a named entity in possession of the kit",
                                                 "enum": [
+                                                    "",
                                                     "oem",
                                                     "warehouse",
                                                     "dealer",
@@ -3154,9 +2144,9 @@ var schemas = `
                                                 "type": "string"
                                             },
                                             "shipper": {
-                                                "default": "oem",
                                                 "description": "current kit status as a named entity in possession of the kit",
                                                 "enum": [
+                                                    "",
                                                     "oem",
                                                     "warehouse",
                                                     "dealer",
@@ -3434,9 +2424,9 @@ var schemas = `
                     "type": "string"
                 },
                 "status": {
-                    "default": "oem",
                     "description": "current kit status as a named entity in possession of the kit",
                     "enum": [
+                        "",
                         "oem",
                         "warehouse",
                         "dealer",
@@ -3465,9 +2455,9 @@ var schemas = `
                             "type": "string"
                         },
                         "receiver": {
-                            "default": "oem",
                             "description": "current kit status as a named entity in possession of the kit",
                             "enum": [
+                                "",
                                 "oem",
                                 "warehouse",
                                 "dealer",
@@ -3478,9 +2468,9 @@ var schemas = `
                             "type": "string"
                         },
                         "shipper": {
-                            "default": "oem",
                             "description": "current kit status as a named entity in possession of the kit",
                             "enum": [
+                                "",
                                 "oem",
                                 "warehouse",
                                 "dealer",
@@ -3679,9 +2669,9 @@ var schemas = `
                                     "type": "string"
                                 },
                                 "status": {
-                                    "default": "oem",
                                     "description": "current kit status as a named entity in possession of the kit",
                                     "enum": [
+                                        "",
                                         "oem",
                                         "warehouse",
                                         "dealer",
@@ -3710,9 +2700,9 @@ var schemas = `
                                             "type": "string"
                                         },
                                         "receiver": {
-                                            "default": "oem",
                                             "description": "current kit status as a named entity in possession of the kit",
                                             "enum": [
+                                                "",
                                                 "oem",
                                                 "warehouse",
                                                 "dealer",
@@ -3723,9 +2713,9 @@ var schemas = `
                                             "type": "string"
                                         },
                                         "shipper": {
-                                            "default": "oem",
                                             "description": "current kit status as a named entity in possession of the kit",
                                             "enum": [
+                                                "",
                                                 "oem",
                                                 "warehouse",
                                                 "dealer",
@@ -3929,9 +2919,9 @@ var schemas = `
                                     "type": "string"
                                 },
                                 "status": {
-                                    "default": "oem",
                                     "description": "current kit status as a named entity in possession of the kit",
                                     "enum": [
+                                        "",
                                         "oem",
                                         "warehouse",
                                         "dealer",
@@ -3960,9 +2950,9 @@ var schemas = `
                                             "type": "string"
                                         },
                                         "receiver": {
-                                            "default": "oem",
                                             "description": "current kit status as a named entity in possession of the kit",
                                             "enum": [
+                                                "",
                                                 "oem",
                                                 "warehouse",
                                                 "dealer",
@@ -3973,9 +2963,9 @@ var schemas = `
                                             "type": "string"
                                         },
                                         "shipper": {
-                                            "default": "oem",
                                             "description": "current kit status as a named entity in possession of the kit",
                                             "enum": [
+                                                "",
                                                 "oem",
                                                 "warehouse",
                                                 "dealer",
@@ -4013,512 +3003,7 @@ var schemas = `
             "items": {
                 "patternProperties": {
                     "^CON": {
-                        "description": "A surgicalkit's complete state",
-                        "properties": {
-                            "AssetKey": {
-                                "description": "This surgicalkit's world state surgicalkit ID",
-                                "type": "string"
-                            },
-                            "alerts": {
-                                "description": "A list of alert names",
-                                "items": {
-                                    "description": "An alert name",
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            "assetIDpath": {
-                                "description": "Qualified property path to the surgicalkit's ID, declared in the contract code",
-                                "type": "string"
-                            },
-                            "class": {
-                                "description": "The surgicalkit's asset class",
-                                "type": "string"
-                            },
-                            "compliant": {
-                                "description": "This surgicalkit has no active alerts",
-                                "type": "boolean"
-                            },
-                            "eventin": {
-                                "description": "The contract event that created this state, for example updateAssetSurgicalKit",
-                                "properties": {
-                                    "surgicalkit": {
-                                        "description": "The changeable properties for a surgicalkit, also considered its 'event' as a partial state",
-                                        "properties": {
-                                            "common": {
-                                                "description": "Common properties for all assets",
-                                                "properties": {
-                                                    "appdata": {
-                                                        "description": "Application managed information as an array of key:value pairs",
-                                                        "items": {
-                                                            "properties": {
-                                                                "K": {
-                                                                    "type": "string"
-                                                                },
-                                                                "V": {
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "type": "object"
-                                                        },
-                                                        "minItems": 0,
-                                                        "type": "array"
-                                                    },
-                                                    "deviceID": {
-                                                        "description": "A unique identifier for the device that sent the current event",
-                                                        "type": "string"
-                                                    },
-                                                    "devicetimestamp": {
-                                                        "description": "A timestamp recoded by the device that sent the current event",
-                                                        "type": "string"
-                                                    },
-                                                    "location": {
-                                                        "description": "A geographical coordinate",
-                                                        "properties": {
-                                                            "latitude": {
-                                                                "type": "number"
-                                                            },
-                                                            "longitude": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            },
-                                            "hospital": {
-                                                "description": "the hospital within which the surgical kit is used, and within which it is geofenced",
-                                                "properties": {
-                                                    "address": {
-                                                        "properties": {
-                                                            "city": {
-                                                                "type": "string"
-                                                            },
-                                                            "country": {
-                                                                "type": "string"
-                                                            },
-                                                            "postcode": {
-                                                                "type": "string"
-                                                            },
-                                                            "streetandnumber": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "fence": {
-                                                        "properties": {
-                                                            "center": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "radius": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            },
-                                            "sensors": {
-                                                "description": "sensor readings for the surgical kit",
-                                                "properties": {
-                                                    "begin": {
-                                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                        "format": "date-time",
-                                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                                        "type": "string"
-                                                    },
-                                                    "currtilt": {
-                                                        "description": "The current tilt that the kit is experiencing",
-                                                        "type": "number"
-                                                    },
-                                                    "end": {
-                                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                        "format": "date-time",
-                                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                                        "type": "string"
-                                                    },
-                                                    "endlocation": {
-                                                        "description": "A geographical coordinate",
-                                                        "properties": {
-                                                            "latitude": {
-                                                                "type": "number"
-                                                            },
-                                                            "longitude": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "maxgforce": {
-                                                        "description": "The highest (in Gs) force that the kit experienced during the sample",
-                                                        "type": "number"
-                                                    },
-                                                    "maxtilt": {
-                                                        "description": "The highest (in degrees from horizontal) tilt that the kit experienced during the sample",
-                                                        "type": "number"
-                                                    },
-                                                    "startlocation": {
-                                                        "description": "A geographical coordinate",
-                                                        "properties": {
-                                                            "latitude": {
-                                                                "type": "number"
-                                                            },
-                                                            "longitude": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            },
-                                            "skitID": {
-                                                "description": "A surgicalkit's ID",
-                                                "type": "string"
-                                            },
-                                            "status": {
-                                                "default": "oem",
-                                                "description": "current kit status as a named entity in possession of the kit",
-                                                "enum": [
-                                                    "oem",
-                                                    "warehouse",
-                                                    "dealer",
-                                                    "retailer",
-                                                    "hospital",
-                                                    "scrapped"
-                                                ],
-                                                "type": "string"
-                                            },
-                                            "transit": {
-                                                "description": "shipping data during transit periods",
-                                                "properties": {
-                                                    "begintransit": {
-                                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                        "format": "date-time",
-                                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                                        "type": "string"
-                                                    },
-                                                    "carrier": {
-                                                        "type": "string"
-                                                    },
-                                                    "endtransit": {
-                                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                        "format": "date-time",
-                                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                                        "type": "string"
-                                                    },
-                                                    "receiver": {
-                                                        "default": "oem",
-                                                        "description": "current kit status as a named entity in possession of the kit",
-                                                        "enum": [
-                                                            "oem",
-                                                            "warehouse",
-                                                            "dealer",
-                                                            "retailer",
-                                                            "hospital",
-                                                            "scrapped"
-                                                        ],
-                                                        "type": "string"
-                                                    },
-                                                    "shipper": {
-                                                        "default": "oem",
-                                                        "description": "current kit status as a named entity in possession of the kit",
-                                                        "enum": [
-                                                            "oem",
-                                                            "warehouse",
-                                                            "dealer",
-                                                            "retailer",
-                                                            "hospital",
-                                                            "scrapped"
-                                                        ],
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
-                                        },
-                                        "required": [
-                                            "skitID"
-                                        ],
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object"
-                            },
-                            "eventout": {
-                                "description": "The chaincode event emitted on invoke exit, if any",
-                                "properties": {
-                                    "surgicalkit": {
-                                        "description": "An chaincode event emitted by a contract invoke",
-                                        "properties": {
-                                            "name": {
-                                                "description": "The chaincode event's name",
-                                                "type": "string"
-                                            },
-                                            "payload": {
-                                                "description": "The chaincode event's properties",
-                                                "properties": {},
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object"
-                            },
-                            "prefix": {
-                                "description": "The surgicalkit's asset class prefix in world state",
-                                "type": "string"
-                            },
-                            "state": {
-                                "description": "Properties that have been received or calculated for this surgicalkit",
-                                "properties": {
-                                    "distanceFromCenter": {
-                                        "description": "calculated distance from the fence center, can be compared to fence radius",
-                                        "type": "number"
-                                    },
-                                    "surgicalkit": {
-                                        "description": "The changeable properties for a surgicalkit, also considered its 'event' as a partial state",
-                                        "properties": {
-                                            "common": {
-                                                "description": "Common properties for all assets",
-                                                "properties": {
-                                                    "appdata": {
-                                                        "description": "Application managed information as an array of key:value pairs",
-                                                        "items": {
-                                                            "properties": {
-                                                                "K": {
-                                                                    "type": "string"
-                                                                },
-                                                                "V": {
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "type": "object"
-                                                        },
-                                                        "minItems": 0,
-                                                        "type": "array"
-                                                    },
-                                                    "deviceID": {
-                                                        "description": "A unique identifier for the device that sent the current event",
-                                                        "type": "string"
-                                                    },
-                                                    "devicetimestamp": {
-                                                        "description": "A timestamp recoded by the device that sent the current event",
-                                                        "type": "string"
-                                                    },
-                                                    "location": {
-                                                        "description": "A geographical coordinate",
-                                                        "properties": {
-                                                            "latitude": {
-                                                                "type": "number"
-                                                            },
-                                                            "longitude": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            },
-                                            "hospital": {
-                                                "description": "the hospital within which the surgical kit is used, and within which it is geofenced",
-                                                "properties": {
-                                                    "address": {
-                                                        "properties": {
-                                                            "city": {
-                                                                "type": "string"
-                                                            },
-                                                            "country": {
-                                                                "type": "string"
-                                                            },
-                                                            "postcode": {
-                                                                "type": "string"
-                                                            },
-                                                            "streetandnumber": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "fence": {
-                                                        "properties": {
-                                                            "center": {
-                                                                "description": "A geographical coordinate",
-                                                                "properties": {
-                                                                    "latitude": {
-                                                                        "type": "number"
-                                                                    },
-                                                                    "longitude": {
-                                                                        "type": "number"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "radius": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "name": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            },
-                                            "sensors": {
-                                                "description": "sensor readings for the surgical kit",
-                                                "properties": {
-                                                    "begin": {
-                                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                        "format": "date-time",
-                                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                                        "type": "string"
-                                                    },
-                                                    "currtilt": {
-                                                        "description": "The current tilt that the kit is experiencing",
-                                                        "type": "number"
-                                                    },
-                                                    "end": {
-                                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                        "format": "date-time",
-                                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                                        "type": "string"
-                                                    },
-                                                    "endlocation": {
-                                                        "description": "A geographical coordinate",
-                                                        "properties": {
-                                                            "latitude": {
-                                                                "type": "number"
-                                                            },
-                                                            "longitude": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "maxgforce": {
-                                                        "description": "The highest (in Gs) force that the kit experienced during the sample",
-                                                        "type": "number"
-                                                    },
-                                                    "maxtilt": {
-                                                        "description": "The highest (in degrees from horizontal) tilt that the kit experienced during the sample",
-                                                        "type": "number"
-                                                    },
-                                                    "startlocation": {
-                                                        "description": "A geographical coordinate",
-                                                        "properties": {
-                                                            "latitude": {
-                                                                "type": "number"
-                                                            },
-                                                            "longitude": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            },
-                                            "skitID": {
-                                                "description": "A surgicalkit's ID",
-                                                "type": "string"
-                                            },
-                                            "status": {
-                                                "default": "oem",
-                                                "description": "current kit status as a named entity in possession of the kit",
-                                                "enum": [
-                                                    "oem",
-                                                    "warehouse",
-                                                    "dealer",
-                                                    "retailer",
-                                                    "hospital",
-                                                    "scrapped"
-                                                ],
-                                                "type": "string"
-                                            },
-                                            "transit": {
-                                                "description": "shipping data during transit periods",
-                                                "properties": {
-                                                    "begintransit": {
-                                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                        "format": "date-time",
-                                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                                        "type": "string"
-                                                    },
-                                                    "carrier": {
-                                                        "type": "string"
-                                                    },
-                                                    "endtransit": {
-                                                        "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                        "format": "date-time",
-                                                        "sample": "yyyy-mm-dd hh:mm:ss",
-                                                        "type": "string"
-                                                    },
-                                                    "receiver": {
-                                                        "default": "oem",
-                                                        "description": "current kit status as a named entity in possession of the kit",
-                                                        "enum": [
-                                                            "oem",
-                                                            "warehouse",
-                                                            "dealer",
-                                                            "retailer",
-                                                            "hospital",
-                                                            "scrapped"
-                                                        ],
-                                                        "type": "string"
-                                                    },
-                                                    "shipper": {
-                                                        "default": "oem",
-                                                        "description": "current kit status as a named entity in possession of the kit",
-                                                        "enum": [
-                                                            "oem",
-                                                            "warehouse",
-                                                            "dealer",
-                                                            "retailer",
-                                                            "hospital",
-                                                            "scrapped"
-                                                        ],
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
-                                        },
-                                        "required": [
-                                            "skitID"
-                                        ],
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object"
-                            },
-                            "txnid": {
-                                "description": "Transaction UUID matching the blockchain",
-                                "type": "string"
-                            },
-                            "txnts": {
-                                "description": "Transaction timestamp matching the blockchain",
-                                "type": "string"
-                            }
-                        },
+                        "description": "The external state of one surgicalkit asset, named by its world state ID",
                         "type": "object"
                     }
                 },
@@ -4530,512 +3015,7 @@ var schemas = `
         "surgicalkitstateexternal": {
             "patternProperties": {
                 "^CON": {
-                    "description": "A surgicalkit's complete state",
-                    "properties": {
-                        "AssetKey": {
-                            "description": "This surgicalkit's world state surgicalkit ID",
-                            "type": "string"
-                        },
-                        "alerts": {
-                            "description": "A list of alert names",
-                            "items": {
-                                "description": "An alert name",
-                                "type": "string"
-                            },
-                            "type": "array"
-                        },
-                        "assetIDpath": {
-                            "description": "Qualified property path to the surgicalkit's ID, declared in the contract code",
-                            "type": "string"
-                        },
-                        "class": {
-                            "description": "The surgicalkit's asset class",
-                            "type": "string"
-                        },
-                        "compliant": {
-                            "description": "This surgicalkit has no active alerts",
-                            "type": "boolean"
-                        },
-                        "eventin": {
-                            "description": "The contract event that created this state, for example updateAssetSurgicalKit",
-                            "properties": {
-                                "surgicalkit": {
-                                    "description": "The changeable properties for a surgicalkit, also considered its 'event' as a partial state",
-                                    "properties": {
-                                        "common": {
-                                            "description": "Common properties for all assets",
-                                            "properties": {
-                                                "appdata": {
-                                                    "description": "Application managed information as an array of key:value pairs",
-                                                    "items": {
-                                                        "properties": {
-                                                            "K": {
-                                                                "type": "string"
-                                                            },
-                                                            "V": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "minItems": 0,
-                                                    "type": "array"
-                                                },
-                                                "deviceID": {
-                                                    "description": "A unique identifier for the device that sent the current event",
-                                                    "type": "string"
-                                                },
-                                                "devicetimestamp": {
-                                                    "description": "A timestamp recoded by the device that sent the current event",
-                                                    "type": "string"
-                                                },
-                                                "location": {
-                                                    "description": "A geographical coordinate",
-                                                    "properties": {
-                                                        "latitude": {
-                                                            "type": "number"
-                                                        },
-                                                        "longitude": {
-                                                            "type": "number"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "hospital": {
-                                            "description": "the hospital within which the surgical kit is used, and within which it is geofenced",
-                                            "properties": {
-                                                "address": {
-                                                    "properties": {
-                                                        "city": {
-                                                            "type": "string"
-                                                        },
-                                                        "country": {
-                                                            "type": "string"
-                                                        },
-                                                        "postcode": {
-                                                            "type": "string"
-                                                        },
-                                                        "streetandnumber": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "fence": {
-                                                    "properties": {
-                                                        "center": {
-                                                            "description": "A geographical coordinate",
-                                                            "properties": {
-                                                                "latitude": {
-                                                                    "type": "number"
-                                                                },
-                                                                "longitude": {
-                                                                    "type": "number"
-                                                                }
-                                                            },
-                                                            "type": "object"
-                                                        },
-                                                        "radius": {
-                                                            "type": "number"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "sensors": {
-                                            "description": "sensor readings for the surgical kit",
-                                            "properties": {
-                                                "begin": {
-                                                    "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                    "format": "date-time",
-                                                    "sample": "yyyy-mm-dd hh:mm:ss",
-                                                    "type": "string"
-                                                },
-                                                "currtilt": {
-                                                    "description": "The current tilt that the kit is experiencing",
-                                                    "type": "number"
-                                                },
-                                                "end": {
-                                                    "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                    "format": "date-time",
-                                                    "sample": "yyyy-mm-dd hh:mm:ss",
-                                                    "type": "string"
-                                                },
-                                                "endlocation": {
-                                                    "description": "A geographical coordinate",
-                                                    "properties": {
-                                                        "latitude": {
-                                                            "type": "number"
-                                                        },
-                                                        "longitude": {
-                                                            "type": "number"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "maxgforce": {
-                                                    "description": "The highest (in Gs) force that the kit experienced during the sample",
-                                                    "type": "number"
-                                                },
-                                                "maxtilt": {
-                                                    "description": "The highest (in degrees from horizontal) tilt that the kit experienced during the sample",
-                                                    "type": "number"
-                                                },
-                                                "startlocation": {
-                                                    "description": "A geographical coordinate",
-                                                    "properties": {
-                                                        "latitude": {
-                                                            "type": "number"
-                                                        },
-                                                        "longitude": {
-                                                            "type": "number"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "skitID": {
-                                            "description": "A surgicalkit's ID",
-                                            "type": "string"
-                                        },
-                                        "status": {
-                                            "default": "oem",
-                                            "description": "current kit status as a named entity in possession of the kit",
-                                            "enum": [
-                                                "oem",
-                                                "warehouse",
-                                                "dealer",
-                                                "retailer",
-                                                "hospital",
-                                                "scrapped"
-                                            ],
-                                            "type": "string"
-                                        },
-                                        "transit": {
-                                            "description": "shipping data during transit periods",
-                                            "properties": {
-                                                "begintransit": {
-                                                    "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                    "format": "date-time",
-                                                    "sample": "yyyy-mm-dd hh:mm:ss",
-                                                    "type": "string"
-                                                },
-                                                "carrier": {
-                                                    "type": "string"
-                                                },
-                                                "endtransit": {
-                                                    "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                    "format": "date-time",
-                                                    "sample": "yyyy-mm-dd hh:mm:ss",
-                                                    "type": "string"
-                                                },
-                                                "receiver": {
-                                                    "default": "oem",
-                                                    "description": "current kit status as a named entity in possession of the kit",
-                                                    "enum": [
-                                                        "oem",
-                                                        "warehouse",
-                                                        "dealer",
-                                                        "retailer",
-                                                        "hospital",
-                                                        "scrapped"
-                                                    ],
-                                                    "type": "string"
-                                                },
-                                                "shipper": {
-                                                    "default": "oem",
-                                                    "description": "current kit status as a named entity in possession of the kit",
-                                                    "enum": [
-                                                        "oem",
-                                                        "warehouse",
-                                                        "dealer",
-                                                        "retailer",
-                                                        "hospital",
-                                                        "scrapped"
-                                                    ],
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "required": [
-                                        "skitID"
-                                    ],
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "eventout": {
-                            "description": "The chaincode event emitted on invoke exit, if any",
-                            "properties": {
-                                "surgicalkit": {
-                                    "description": "An chaincode event emitted by a contract invoke",
-                                    "properties": {
-                                        "name": {
-                                            "description": "The chaincode event's name",
-                                            "type": "string"
-                                        },
-                                        "payload": {
-                                            "description": "The chaincode event's properties",
-                                            "properties": {},
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "prefix": {
-                            "description": "The surgicalkit's asset class prefix in world state",
-                            "type": "string"
-                        },
-                        "state": {
-                            "description": "Properties that have been received or calculated for this surgicalkit",
-                            "properties": {
-                                "distanceFromCenter": {
-                                    "description": "calculated distance from the fence center, can be compared to fence radius",
-                                    "type": "number"
-                                },
-                                "surgicalkit": {
-                                    "description": "The changeable properties for a surgicalkit, also considered its 'event' as a partial state",
-                                    "properties": {
-                                        "common": {
-                                            "description": "Common properties for all assets",
-                                            "properties": {
-                                                "appdata": {
-                                                    "description": "Application managed information as an array of key:value pairs",
-                                                    "items": {
-                                                        "properties": {
-                                                            "K": {
-                                                                "type": "string"
-                                                            },
-                                                            "V": {
-                                                                "type": "string"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "minItems": 0,
-                                                    "type": "array"
-                                                },
-                                                "deviceID": {
-                                                    "description": "A unique identifier for the device that sent the current event",
-                                                    "type": "string"
-                                                },
-                                                "devicetimestamp": {
-                                                    "description": "A timestamp recoded by the device that sent the current event",
-                                                    "type": "string"
-                                                },
-                                                "location": {
-                                                    "description": "A geographical coordinate",
-                                                    "properties": {
-                                                        "latitude": {
-                                                            "type": "number"
-                                                        },
-                                                        "longitude": {
-                                                            "type": "number"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "hospital": {
-                                            "description": "the hospital within which the surgical kit is used, and within which it is geofenced",
-                                            "properties": {
-                                                "address": {
-                                                    "properties": {
-                                                        "city": {
-                                                            "type": "string"
-                                                        },
-                                                        "country": {
-                                                            "type": "string"
-                                                        },
-                                                        "postcode": {
-                                                            "type": "string"
-                                                        },
-                                                        "streetandnumber": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "fence": {
-                                                    "properties": {
-                                                        "center": {
-                                                            "description": "A geographical coordinate",
-                                                            "properties": {
-                                                                "latitude": {
-                                                                    "type": "number"
-                                                                },
-                                                                "longitude": {
-                                                                    "type": "number"
-                                                                }
-                                                            },
-                                                            "type": "object"
-                                                        },
-                                                        "radius": {
-                                                            "type": "number"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "name": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "sensors": {
-                                            "description": "sensor readings for the surgical kit",
-                                            "properties": {
-                                                "begin": {
-                                                    "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                    "format": "date-time",
-                                                    "sample": "yyyy-mm-dd hh:mm:ss",
-                                                    "type": "string"
-                                                },
-                                                "currtilt": {
-                                                    "description": "The current tilt that the kit is experiencing",
-                                                    "type": "number"
-                                                },
-                                                "end": {
-                                                    "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                    "format": "date-time",
-                                                    "sample": "yyyy-mm-dd hh:mm:ss",
-                                                    "type": "string"
-                                                },
-                                                "endlocation": {
-                                                    "description": "A geographical coordinate",
-                                                    "properties": {
-                                                        "latitude": {
-                                                            "type": "number"
-                                                        },
-                                                        "longitude": {
-                                                            "type": "number"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "maxgforce": {
-                                                    "description": "The highest (in Gs) force that the kit experienced during the sample",
-                                                    "type": "number"
-                                                },
-                                                "maxtilt": {
-                                                    "description": "The highest (in degrees from horizontal) tilt that the kit experienced during the sample",
-                                                    "type": "number"
-                                                },
-                                                "startlocation": {
-                                                    "description": "A geographical coordinate",
-                                                    "properties": {
-                                                        "latitude": {
-                                                            "type": "number"
-                                                        },
-                                                        "longitude": {
-                                                            "type": "number"
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "skitID": {
-                                            "description": "A surgicalkit's ID",
-                                            "type": "string"
-                                        },
-                                        "status": {
-                                            "default": "oem",
-                                            "description": "current kit status as a named entity in possession of the kit",
-                                            "enum": [
-                                                "oem",
-                                                "warehouse",
-                                                "dealer",
-                                                "retailer",
-                                                "hospital",
-                                                "scrapped"
-                                            ],
-                                            "type": "string"
-                                        },
-                                        "transit": {
-                                            "description": "shipping data during transit periods",
-                                            "properties": {
-                                                "begintransit": {
-                                                    "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                    "format": "date-time",
-                                                    "sample": "yyyy-mm-dd hh:mm:ss",
-                                                    "type": "string"
-                                                },
-                                                "carrier": {
-                                                    "type": "string"
-                                                },
-                                                "endtransit": {
-                                                    "description": "timestamp formatted yyyy-mm-dd hh:mm:ss",
-                                                    "format": "date-time",
-                                                    "sample": "yyyy-mm-dd hh:mm:ss",
-                                                    "type": "string"
-                                                },
-                                                "receiver": {
-                                                    "default": "oem",
-                                                    "description": "current kit status as a named entity in possession of the kit",
-                                                    "enum": [
-                                                        "oem",
-                                                        "warehouse",
-                                                        "dealer",
-                                                        "retailer",
-                                                        "hospital",
-                                                        "scrapped"
-                                                    ],
-                                                    "type": "string"
-                                                },
-                                                "shipper": {
-                                                    "default": "oem",
-                                                    "description": "current kit status as a named entity in possession of the kit",
-                                                    "enum": [
-                                                        "oem",
-                                                        "warehouse",
-                                                        "dealer",
-                                                        "retailer",
-                                                        "hospital",
-                                                        "scrapped"
-                                                    ],
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "required": [
-                                        "skitID"
-                                    ],
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "txnid": {
-                            "description": "Transaction UUID matching the blockchain",
-                            "type": "string"
-                        },
-                        "txnts": {
-                            "description": "Transaction timestamp matching the blockchain",
-                            "type": "string"
-                        }
-                    },
+                    "description": "The external state of one surgicalkit asset, named by its world state ID",
                     "type": "object"
                 }
             },

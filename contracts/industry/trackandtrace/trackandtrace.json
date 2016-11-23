@@ -289,8 +289,8 @@
             "status": {
                 "type": "string",
                 "description": "current kit status as a named entity in possession of the kit",
-                "default": "oem",
                 "enum": [
+                    "",
                     "oem",
                     "warehouse",
                     "dealer",
