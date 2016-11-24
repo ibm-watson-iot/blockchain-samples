@@ -1,0 +1,50 @@
+{
+    "schemas": {
+        "schemaFilename": "trackandtrace.json",
+        "goSchemaFilename": "schemas.go",
+        "API": [
+            "initContract",
+            "createAssetSurgicalKit",
+            "replaceAssetSurgicalKit",
+            "updateAssetSurgicalKit",
+            "deleteAssetSurgicalKit",
+            "deleteAssetStateHistorySurgicalKit",
+            "deletePropertiesFromAssetSurgicalKit",
+            "deleteAllAssetsSurgicalKit",
+            "readAssetSurgicalKit",
+            "readAllAssetsSurgicalKit",
+            "readAllRoutes",
+            "readWorldState",
+            "deleteWorldState",
+            "readAssetStateHistorySurgicalKit",
+            "readRecentStates",
+            "setLoggingLevel",
+            "setCreateOnFirstUpdate"
+        ],
+        "Model": [
+            "surgicalkit",
+            "invokeevent",
+            "ioteventcommon",
+            "surgicalkitstate",
+            "surgicalkitstateexternal",
+            "surgicalkitstatearray",
+            "stateFilter"
+        ]
+    },
+    "samples": {
+        "goSampleFilename": "samples.go",
+        "API": [
+            "createAssetSurgicalKit",
+            "updateAssetSurgicalKit"
+        ],
+        "Model": [
+            "surgicalkit",
+            "invokeevent",
+            "ioteventcommon",
+            "surgicalkitstate",
+            "surgicalkitstateexternal",
+            "surgicalkitstatearray",
+            "stateFilter"
+        ]
+    }
+}

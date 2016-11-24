@@ -73,12 +73,25 @@ func getDeployFunctions() []ChaincodeFunc {
 	return results
 }
 
+// EVTCCERR is a chaincode event ID that is emitted by the platform when an error
+// is encountered during deploy or invoke
+const EVTCCERR string = "EVTCCERR"
+
+// EVTCCOK is a chaincode event ID that is emitted by the platform when a transaction
+// completes successfully, invoke or deploy only
+const EVTCCOK string = "EVTCCOK"
+
+func setStubEvent(stub shim.ChaincodeStubInterface, event string, function string, method string, err string) {
+	_ = stub.SetEvent(event, []byte(fmt.Sprintf(`{"event": %s,"function": %s,"method": %s,"result": %s}`, event, function, method, err)))
+}
+
 // Init is called by deploy messages
 func Init(stub shim.ChaincodeStubInterface, function string, args []string, ContractVersion string) ([]byte, error) {
 	var iargs = make([]string, 2)
 	if len(args) == 0 {
 		err := fmt.Errorf("Init received no args, expecting a json object in args[0]")
 		log.Error(err)
+		setStubEvent(stub, EVTCCERR, function, "deploy", err.Error())
 		return nil, err
 	}
 	iargs[0] = args[0]
@@ -87,6 +100,7 @@ func Init(stub shim.ChaincodeStubInterface, function string, args []string, Cont
 	if len(fs) == 0 {
 		err := fmt.Errorf("Init found no registered functions '%s'", function)
 		log.Error(err)
+		setStubEvent(stub, EVTCCERR, function, "deploy", err.Error())
 		return nil, err
 	}
 	for _, f := range fs {
@@ -94,9 +108,11 @@ func Init(stub shim.ChaincodeStubInterface, function string, args []string, Cont
 		if err != nil {
 			err := fmt.Errorf("Init (%s) failed with error %s", function, err)
 			log.Error(err)
+			setStubEvent(stub, EVTCCERR, function, "deploy", err.Error())
 			return nil, err
 		}
 	}
+	setStubEvent(stub, EVTCCOK, function, "deploy", "ok")
 	return nil, nil
 }
 
@@ -107,14 +123,17 @@ func Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([
 	if !found {
 		err := fmt.Errorf("Invoke did not find registered invoke function %s", function)
 		log.Error(err)
+		setStubEvent(stub, EVTCCERR, function, "invoke", err.Error())
 		return nil, err
 	}
 	_, err := r.Function(stub, args)
 	if err != nil {
 		err := fmt.Errorf("Invoke (%s) failed with error %s", function, err)
 		log.Error(err)
+		setStubEvent(stub, EVTCCERR, function, "invoke", err.Error())
 		return nil, err
 	}
+	setStubEvent(stub, EVTCCOK, function, "invoke", "ok")
 	return nil, nil
 }
 
