@@ -753,6 +753,52 @@ var schemas = `
             },
             "type": "object"
         },
+        "readAssetSamples": {
+            "description": "Returns samples of selected contract objects",
+            "properties": {
+                "args": {
+                    "items": {},
+                    "maxItems": 0,
+                    "minItems": 0,
+                    "type": "array"
+                },
+                "function": {
+                    "enum": [
+                        "readAssetSamples"
+                    ],
+                    "type": "string"
+                },
+                "method": "query",
+                "result": {
+                    "properties": {},
+                    "type": "object"
+                }
+            },
+            "type": "object"
+        },
+        "readAssetSchemas": {
+            "description": "Returns the API for this contract for the use of self-configuring applications; is MANDATORY for integration with the Watson IoT Platform",
+            "properties": {
+                "args": {
+                    "items": {},
+                    "maxItems": 0,
+                    "minItems": 0,
+                    "type": "array"
+                },
+                "function": {
+                    "enum": [
+                        "readAssetSchemas"
+                    ],
+                    "type": "string"
+                },
+                "method": "query",
+                "result": {
+                    "properties": {},
+                    "type": "object"
+                }
+            },
+            "type": "object"
+        },
         "readAssetStateHistorySurgicalKit": {
             "description": "Returns history states for a surgicalkit",
             "properties": {
@@ -806,6 +852,15 @@ var schemas = `
                                             "type": "object"
                                         },
                                         "type": "array"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "surgicalkit": {
+                                "properties": {
+                                    "skitID": {
+                                        "description": "A surgicalkit's ID",
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
