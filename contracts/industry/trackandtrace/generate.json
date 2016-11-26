@@ -19,6 +19,8 @@
             "readAssetStateHistorySurgicalKit",
             "readRecentStates",
             "setLoggingLevel",
+            "readAssetSamples",
+            "readAssetSchemas",
             "setCreateOnFirstUpdate"
         ],
         "Model": [
@@ -34,8 +36,9 @@
     "samples": {
         "goSampleFilename": "samples.go",
         "API": [
-            "createAssetSurgicalKit",
-            "updateAssetSurgicalKit"
+            "deletePropertiesFromAssetSurgicalKit",
+            "readAssetStateHistorySurgicalKit",
+            "readAssetSurgicalKit"
         ],
         "Model": [
             "surgicalkit",
