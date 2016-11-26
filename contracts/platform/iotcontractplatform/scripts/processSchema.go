@@ -89,11 +89,11 @@ func DeepMergeMap(srcIn map[string]interface{}, dstIn map[string]interface{}) ma
 // can print very accurate syntax errors as found by the JSON marshaler
 // relies on the offset table created when reading the schema JSON file and expunging
 // comments and blank lines
-func printSyntaxError(js string, off *[5000]int, err interface{}) {
+func printSyntaxErrorIncludes(js string, err interface{}) string {
 	syntax, ok := err.(*json.SyntaxError)
 	if !ok {
 		fmt.Println("*********** ERR trying to get syntax error location **************\n", err)
-		return
+		return "*********** ERR trying to get syntax error location **************"
 	}
 
 	start, end := strings.LastIndex(js[:syntax.Offset], "\n")+1, len(js)
@@ -103,8 +103,33 @@ func printSyntaxError(js string, off *[5000]int, err interface{}) {
 
 	line, pos := strings.Count(js[:start], "\n"), int(syntax.Offset)-start-1
 
-	fmt.Printf("Error in line %d: %s \n", off[line]+1, err)
-	fmt.Printf("%s\n%s^\n\n", js[start:end], strings.Repeat(" ", pos))
+	e := fmt.Sprintf("Error in line %d: %s \n", line, err)
+	e += fmt.Sprintf("%s\n%s^\n\n", js[start:end], strings.Repeat(" ", pos))
+	fmt.Println(e)
+	return e
+}
+
+// can print very accurate syntax errors as found by the JSON marshaler
+// relies on the offset table created when reading the schema JSON file and expunging
+// comments and blank lines
+func printSyntaxErrorOffsets(js string, off *[5000]int, err interface{}) string {
+	syntax, ok := err.(*json.SyntaxError)
+	if !ok {
+		fmt.Println("*********** ERR trying to get syntax error location **************\n", err)
+		return "*********** ERR trying to get syntax error location **************"
+	}
+
+	start, end := strings.LastIndex(js[:syntax.Offset], "\n")+1, len(js)
+	if idx := strings.Index(js[start:], "\n"); idx >= 0 {
+		end = start + idx
+	}
+
+	line, pos := strings.Count(js[:start], "\n"), int(syntax.Offset)-start-1
+
+	e := fmt.Sprintf("Error in line %d: %s \n", off[line]+1, err)
+	e += fmt.Sprintf("%s\n%s^\n\n", js[start:end], strings.Repeat(" ", pos))
+	fmt.Println(e)
+	return e
 }
 
 // GetObject finds an object by its qualified name, which looks like "location.latitude"
@@ -415,7 +440,7 @@ func buildResolvedSchema(schema map[string]interface{}) map[string]interface{} {
 	return newSchema
 }
 
-func getIncludedFile(path string) string {
+func getIncludedFile(path string, localpath string) string {
 	var retstr = make([]byte, 0)
 	var err error
 	parts := strings.Split(path, "/#")
@@ -445,7 +470,12 @@ func getIncludedFile(path string) string {
 	var ischema interface{}
 	err = json.Unmarshal(retstr, &ischema)
 	if err != nil {
-		panic(errors.New("failed to unmarshal included schema: " + err.Error()))
+		fmt.Println("*********** UNMARSHAL ERR **************\n", err)
+		synerr := printSyntaxErrorIncludes(string(retstr), err)
+		incfilename := localpath + "schema.with.failed.include.json"
+		fmt.Println("Writing filed preprocessed schema to: " + incfilename)
+		_ = ioutil.WriteFile(incfilename, retstr, 0744)
+		panic(errors.New("unmarshal of schema with includes failed with err: " + synerr))
 	}
 	m, found := ischema.(map[string]interface{})
 	if !found {
@@ -534,7 +564,7 @@ func main() {
 			ss := strings.Split(ts, "\"")
 			p := ss[len(ss)-2]
 			// fmt.Printf("line: %d includes: %s\n", line, p)
-			refArr := getIncludedFile(p)
+			refArr := getIncludedFile(p, "./")
 			lines := strings.Split(refArr, "\n")
 			// remove open and close brace as we are replacing the reference in place with the contents of the names object
 			lines = lines[1 : len(lines)-1]
@@ -559,7 +589,7 @@ func main() {
 	err = json.Unmarshal([]byte(api), &schema)
 	if err != nil {
 		fmt.Println("*********** UNMARSHAL ERR **************\n", err)
-		printSyntaxError(api, &offsets, err)
+		printSyntaxErrorOffsets(api, &offsets, err)
 		return
 	}
 

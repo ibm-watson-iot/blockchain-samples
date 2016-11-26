@@ -441,16 +441,7 @@
                 "description": "A surgicalkit's complete state",
                 "properties": {
                     "class": {
-                        "type": "string",
-                        "description": "The surgicalkit's asset class"
-                    },
-                    "prefix": {
-                        "type": "string",
-                        "description": "The surgicalkit's asset class prefix in world state"
-                    },
-                    "assetIDpath": {
-                        "type": "string",
-                        "description": "Qualified property path to the surgicalkit's ID, declared in the contract code"
+                        "$ref": "#/definitions/Model/assetClass"
                     },
                     "AssetKey": {
                         "type": "string",
@@ -496,7 +487,7 @@
                         }
                     },
                     "alerts": {
-                        "$ref": "#/definitions/Model/alerts"
+                        "$ref": "#/definitions/Model/alertNameArray"
                     },
                     "compliant": {
                         "type": "boolean",

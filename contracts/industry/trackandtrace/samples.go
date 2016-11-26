@@ -65,8 +65,7 @@ var samples = `
                 "alerts": [
                     "An alert name"
                 ],
-                "assetIDpath": "Qualified property path to the surgicalkit's ID, declared in the contract code",
-                "class": "The surgicalkit's asset class",
+                "class": {},
                 "compliant": true,
                 "eventin": {
                     "surgicalkit": {
@@ -132,7 +131,6 @@ var samples = `
                         "payload": {}
                     }
                 },
-                "prefix": "The surgicalkit's asset class prefix in world state",
                 "state": {
                     "distanceFromCenter": 123.456,
                     "surgicalkit": {
@@ -286,8 +284,7 @@ var samples = `
             "alerts": [
                 "An alert name"
             ],
-            "assetIDpath": "Qualified property path to the surgicalkit's ID, declared in the contract code",
-            "class": "The surgicalkit's asset class",
+            "class": {},
             "compliant": true,
             "eventin": {
                 "surgicalkit": {
@@ -353,7 +350,6 @@ var samples = `
                     "payload": {}
                 }
             },
-            "prefix": "The surgicalkit's asset class prefix in world state",
             "state": {
                 "distanceFromCenter": 123.456,
                 "surgicalkit": {

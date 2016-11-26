@@ -410,7 +410,29 @@
                         "maxItems": 0
                     },
                     "result": {
-                        "$ref": "#/definitions/Model/assetstatearray"
+                        "$ref": "#/definitions/Model/routeArray"
+                    }
+                }
+            },
+            "readAllRules": {
+                "type": "object",
+                "description": "Returns an array of registered rules by class (debugging)",
+                "properties": {
+                    "method": "query",
+                    "function": {
+                        "type": "string",
+                        "enum": [
+                            "readAllRules"
+                        ]
+                    },
+                    "args": {
+                        "type": "array",
+                        "items": {},
+                        "minItems": 0,
+                        "maxItems": 0
+                    },
+                    "result": {
+                        "$ref": "#/definitions/Model/ruleArray"
                     }
                 }
             },
@@ -568,9 +590,9 @@
                 "type": "string",
                 "description": "An alert name"
             },
-            "alerts": {
+            "alertNameArray": {
                 "type": "array",
-                "description": "A list of alert names",
+                "description": "An array of alert names",
                 "items": {
                     "$ref": "#/definitions/Model/alertName"
                 }
@@ -579,8 +601,21 @@
                 "description": "A geographical coordinate",
                 "type": "object",
                 "properties": {
-                    "latitude": { "type": "number" },
-                    "longitude": { "type": "number" }
+                    "latitude": {
+                        "type": "number"
+                    },
+                    "longitude": {
+                        "type": "number"
+                    }
+                }
+            },
+            "assetClass": {
+                "type": "object",
+                "description": "An asset's classifier definition",
+                "properties": {
+                    "name": "An asset's class name",
+                    "prefix": "An asset's world state prefix, used to allow iteration over all assets of a class",
+                    "assetidpath": "An asset's primary key, expressed as a qualified property path (see example contracts)"
                 }
             },
             "asset": {
@@ -659,16 +694,7 @@
                 "description": "A asset's complete state",
                 "properties": {
                     "class": {
-                        "type": "string",
-                        "description": "The asset's asset class"
-                    },
-                    "prefix": {
-                        "type": "string",
-                        "description": "The asset's asset class prefix in world state"
-                    },
-                    "assetIDpath": {
-                        "type": "string",
-                        "description": "Qualified property path to the asset's ID, declared in the contract code"
+                        "$ref": "#/definitions/Model/assetClass"
                     },
                     "assetID": {
                         "type": "string",
@@ -710,7 +736,7 @@
                         }
                     },
                     "alerts": {
-                        "$ref": "#/definitions/Model/alerts"
+                        "$ref": "#/definitions/Model/alertNameArray"
                     },
                     "compliant": {
                         "type": "boolean",
@@ -720,6 +746,7 @@
             },
             "assetstateexternal": {
                 "type": "object",
+                "description": "(deprecated)",
                 "patternProperties": {
                     "^DEF": {
                         "type": "object",
@@ -797,6 +824,52 @@
                         "$ref": "#/definitions/Model/nickname"
                     }
                 }
+            },
+            "route": {
+                "type": "object",
+                "description": "A route defines a contract API that can be called to perform a service",
+                "properties": {
+                    "functionname": {
+                        "type": "string"
+                    },
+                    "method": {
+                        "type": "string"
+                    },
+                    "class": {
+                        "$ref": "#/definitions/Model/assetClass"
+                    }
+                }
+            },
+            "routeArray": {
+                "type": "object",
+                "description": "An array of routes",
+                "items": {
+                    "$ref": "#/definitions/Model/route"
+                },
+                "minItems": 0
+            },
+            "rule": {
+                "type": "object",
+                "description": "A rule defines a behavior that is applied to every new asset state just before writing to world state, often raises or clears alerts",
+                "properties": {
+                    "rulename": {
+                        "type": "string"
+                    },
+                    "alerts": {
+                        "$ref": "#/definitions/Model/alertNameArray"
+                    },
+                    "class": {
+                        "$ref": "#/definitions/Model/assetClass"
+                    }
+                }
+            },
+            "ruleArray": {
+                "type": "object",
+                "description": "An array of rules",
+                "items": {
+                    "$ref": "#/definitions/Model/rule"
+                },
+                "minItems": 0
             }
         }
     }
