@@ -115,7 +115,7 @@ func (a *Asset) PUTAsset(stub shim.ChaincodeStubInterface, caller string, inject
 		return nil, err
 	}
 
-	alertsDeltas := GetAlertDeltas(alertsIn, a.AlertsActive)
+	alertsDeltas := GetAlertsAndDeltas(alertsIn, a.AlertsActive)
 	alertsDeltasBytes, err := json.Marshal(alertsDeltas)
 	if err != nil {
 		err = fmt.Errorf("PUTAsset for class %s failed to marshall alert deltas for %s[%+v], err is %s", a.Class.Name, a.AssetKey, alertsDeltas, err)

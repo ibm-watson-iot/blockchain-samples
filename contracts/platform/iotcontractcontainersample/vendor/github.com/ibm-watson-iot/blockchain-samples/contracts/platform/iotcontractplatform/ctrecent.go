@@ -70,9 +70,12 @@ func GETRecentStatesFromLedger(stub shim.ChaincodeStubInterface) (RecentStates, 
 	}
 	err = json.Unmarshal(recentStatesBytes, &rstates)
 	if err != nil {
-		err = fmt.Errorf("Failed to unmarshall recent states: %s", err)
-		log.Errorf(err.Error())
-		return rstates, err
+		err = PUTRecentStatesToLedger(stub, rstates)
+		if err != nil {
+			err = fmt.Errorf("Failed to store empty recent states: %s", err)
+			log.Errorf(err.Error())
+			return rstates, err
+		}
 	}
 	return rstates, nil
 }
@@ -161,6 +164,19 @@ var readRecentStates = func(stub shim.ChaincodeStubInterface, args []string) ([]
 	var begin, end, count int
 	var found bool
 
+	var rstatesout = make(RecentStatesOut, 0, count)
+
+	r, err := GETRecentStatesFromLedger(stub)
+	if err != nil {
+		err = fmt.Errorf("readRecentStates: failed to get recent states from ledger: %s", err)
+		log.Error(err)
+		return nil, err
+	}
+
+	if len(r.States) == 0 {
+		return []byte("[]"), nil
+	}
+
 	if len(args) > 0 {
 		var arg map[string]interface{}
 		eventBytes := []byte(args[0])
@@ -173,20 +189,26 @@ var readRecentStates = func(stub shim.ChaincodeStubInterface, args []string) ([]
 		begin, found = GetObjectAsInteger(&arg, "begin")
 		if !found {
 			begin = 0
+		} else {
+			if begin < 0 || begin > (MaxRecentStates-1) {
+				err := fmt.Errorf("readRecentStates: invalid begin argument %d, should be between 0 and %d inclusive", begin, MaxRecentStates-1)
+				log.Error(err)
+				return nil, err
+			}
 		}
 		end, found = GetObjectAsInteger(&arg, "end")
 		if !found {
 			end = MaxRecentStates - begin - 1
+		} else {
+			if end < begin {
+				err := fmt.Errorf("readRecentStates: invalid end argument %d, should be > begin arg (%d)", end, begin)
+				log.Error(err)
+				return nil, err
+			}
 		}
 	} else {
+		begin = 0
 		end = MaxRecentStates - 1
-	}
-
-	r, err := GETRecentStatesFromLedger(stub)
-	if err != nil {
-		err = fmt.Errorf("readRecentStates: failed to get recent states from ledger: %s", err)
-		log.Error(err)
-		return nil, err
 	}
 
 	if begin >= len(r.States) {
@@ -201,7 +223,6 @@ var readRecentStates = func(stub shim.ChaincodeStubInterface, args []string) ([]
 
 	count = end - begin + 1
 
-	var rstatesout = make(RecentStatesOut, 0, count)
 	for i := begin; i <= end; i++ {
 		a, exists, err := GetAssetFromLedger(stub, r.States[i])
 		if err != nil {

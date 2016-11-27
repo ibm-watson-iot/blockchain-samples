@@ -19,6 +19,7 @@ Kim Letkeman - Initial Contribution
 package iotcontractplatform
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -131,4 +132,29 @@ func (a *Asset) ExecuteRules(stub shim.ChaincodeStubInterface) error {
 	// default when no compliance rule is registered
 	a.Compliant = len(a.AlertsActive) == 0
 	return nil
+}
+
+// readAllRules shows all registered rules
+var readAllRules = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	type RulesOut struct {
+		RuleName string      `json:"rulename"`
+		Alerts   []AlertName `json:"alerts,omitempty"`
+		Class    AssetClass  `json:"class"`
+	}
+	var r = make([]RulesOut, 0, len(rulerouter)+1)
+	for _, rc := range rulerouter {
+		for _, rule := range rc {
+			ro := RulesOut{
+				rule.RuleName,
+				rule.Alerts,
+				rule.Class,
+			}
+			r = append(r, ro)
+		}
+	}
+	return json.Marshal(r)
+}
+
+func init() {
+	AddRoute("readAllRules", "query", SystemClass, readAllRules)
 }
