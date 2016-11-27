@@ -365,6 +365,11 @@ func Contains(arr interface{}, val interface{}) bool {
 	}
 }
 
+// DeepCopyMap will create a new physical copy
+func DeepCopyMap(srcIn map[string]interface{}) map[string]interface{} {
+	return DeepMergeMap(srcIn, make(map[string]interface{}, 0))
+}
+
 // DeepMergeMap all levels of a src map into a dst map and return dst
 func DeepMergeMap(srcIn map[string]interface{}, dstIn map[string]interface{}) map[string]interface{} {
 	for k, v := range srcIn {

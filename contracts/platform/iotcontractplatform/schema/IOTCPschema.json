@@ -641,18 +641,46 @@
                     "assetID"
                 ]
             },
-            "invokeevent": {
+            "eventIOTContractPlatformInvokeResult": {
                 "type": "object",
-                "description": "An chaincode event emitted by a contract invoke",
+                "description": "A chaincode event defining the standard platform-generated result event for a contract invoke, contains an array of contributed results",
                 "properties": {
                     "name": {
                         "type": "string",
-                        "description": "The chaincode event's name"
+                        "enum": ["EVT.IOTCP.INVOKE.RESULT"],
+                        "default": "EVT.IOTCP.INVOKE.RESULT"
                     },
                     "payload": {
                         "type": "object",
-                        "description": "The chaincode event's properties",
-                        "properties": {}
+                        "description": "A map of contributed results",
+                        "properties": {
+                            "$ref": "#/definitions/Model/eventIOTContractPlatformStatus"
+                        }
+                    }
+                }
+            },
+            "eventIOTContractPlatformStatus": {
+                "type": "object",
+                "description": "the overall status of the invoke result, defined by err",
+                "properties": {
+                    "invokeresult": {
+                        "type": "object",
+                        "description": "status: OK==txn succeeded, ERROR==txn failed",
+                        "properties": {
+                            "status": {
+                                "type": "string",
+                                "enum": ["OK", "ERROR"]
+                            },
+                            "message": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "alertsRaised": {
+                        "$ref": "#/definitions/Model/alertNameArray"
+                    },
+                    "alertsCleared": {
+                        "$ref": "#/definitions/Model/alertNameArray"
                     }
                 }
             },
@@ -731,7 +759,7 @@
                         "description": "The chaincode event emitted on invoke exit, if any",
                         "properties": {
                             "asset": {
-                                "$ref": "#/definitions/Model/invokeevent"
+                                "$ref": "#/definitions/Model/eventIOTContractPlatformInvokeResult"
                             }
                         }
                     },
