@@ -55,6 +55,33 @@ func ClearAlert(a *Asset, alert AlertName) {
 	return
 }
 
+// GetAlertDeltas takes two alert name arrays and returns a map with "raised" and "cleared" lists
+func GetAlertDeltas(alertsInOld AlertNameArray, alertsInNew AlertNameArray) map[string]interface{} {
+	deltas := make(map[string]interface{})
+	raised := AlertNameArray{}
+	cleared := AlertNameArray{}
+	for _, alert := range alertsInOld {
+		if !Contains(alertsInNew, alert) {
+			cleared = append(cleared, alert)
+		}
+	}
+	for _, alert := range alertsInNew {
+		if !Contains(alertsInOld, alert) {
+			raised = append(raised, alert)
+		}
+	}
+	if len(raised) > 0 {
+		deltas["alertsRaised"] = raised
+	}
+	if len(cleared) > 0 {
+		deltas["alertsCleared"] = cleared
+	}
+	if len(deltas) > 0 {
+		return deltas
+	}
+	return nil
+}
+
 func (aa AlertNameArray) Len() int           { return len(aa) }
 func (aa AlertNameArray) Swap(i, j int)      { aa[i], aa[j] = aa[j], aa[i] }
 func (aa AlertNameArray) Less(i, j int) bool { return aa[i] < aa[j] }

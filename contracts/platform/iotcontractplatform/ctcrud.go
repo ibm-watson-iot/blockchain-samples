@@ -184,36 +184,36 @@ func (a *Asset) unmarshallEventIn(stub shim.ChaincodeStubInterface, args []strin
 // }
 
 // Pushes state to the ledger using assetID, which is expected to be prefixed.
-func (a *Asset) putMarshalledState(stub shim.ChaincodeStubInterface) error {
+func (a *Asset) putMarshalledState(stub shim.ChaincodeStubInterface) ([]byte, error) {
 	// Write the new state to the ledger
 	stateJSON, err := json.Marshal(a)
 	if err != nil {
 		err = fmt.Errorf("putMarshalledState: assetID %s marshal failed: %s", a.AssetKey, err)
 		log.Errorf(err.Error())
-		return err
+		return nil, err
 	}
 
 	err = stub.PutState(a.AssetKey, []byte(stateJSON))
 	if err != nil {
 		err = fmt.Errorf("putMarshalledState: PUTSTATE for assetID %s failed: %s", a.AssetKey, err)
 		log.Errorf(err.Error())
-		return err
+		return nil, err
 	}
 
 	err = a.PushRecentState(stub)
 	if err != nil {
 		err = fmt.Errorf("%s: assetID %s push recent states failed: %s", a.Class.Name, a.AssetKey, err)
 		log.Errorf(err.Error())
-		return err
+		return nil, err
 	}
 
 	err = a.PUTAssetStateHistory(stub)
 	if err != nil {
 		err = fmt.Errorf("putMarshalledState failed to put asset %s history: %s", a.AssetKey, err)
 		log.Error(err)
-		return err
+		return nil, err
 	}
-	return nil
+	return []byte(stateJSON), nil
 }
 
 // RemoveOneAssetFromWorldState remove the asset from world state

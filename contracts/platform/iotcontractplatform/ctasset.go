@@ -27,10 +27,19 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
-// InvokeEvent carries the event that is to be set upon exit from the chaincode
-type InvokeEvent struct {
+// InvokeResultEvent carries the event that is to be set upon exit from the chaincode
+type InvokeResultEvent struct {
 	Name    string                 `json:"name"`
 	Payload map[string]interface{} `json:"payload"`
+}
+
+// PushResultEventInfo adds an outgoing event info packet defined as map[string]interface{}
+// to the eventual event that is sent to subscribers at the end of the invoke
+func (a *Asset) PushResultEventInfo(key string, info interface{}) {
+	if a.EventOut == nil {
+		a.EventOut = &InvokeResultEvent{"EVT.IOTCP.INVOKE.RESULT", make(map[string]interface{}, 0)}
+	}
+	a.EventOut.Payload[key] = info
 }
 
 // AssetClass defines a receiver for rules and other class-specific execution
@@ -43,7 +52,7 @@ type AssetClass struct {
 // NewAsset create an instance of an asset class
 func (c AssetClass) NewAsset() Asset {
 	var a = Asset{
-		c, "", nil, nil, "", "", nil, nil, AlertNameArray(make([]AlertName, 0)), true,
+		c, "", nil, nil, "", "", nil, &InvokeResultEvent{"EVT.IOTCP.INVOKE.RESULT", make(map[string]interface{}, 0)}, AlertNameArray(make([]AlertName, 0)), true,
 	}
 	return a
 }
@@ -65,7 +74,7 @@ type Asset struct {
 	FunctionIn   string                  `json:"eventfunction"`      // most recent event function
 	TXNID        string                  `json:"txnid"`              // transaction UUID matching blockchain
 	TXNTS        *time.Time              `json:"txnts,omitempty"`    // transaction timestamp matching blockchain
-	EventOut     *InvokeEvent            `json:"eventout,omitempty"` // event (if any) emitted upon exit from an invoke
+	EventOut     *InvokeResultEvent      `json:"eventout,omitempty"` // event emitted upon exit from an invoke
 	AlertsActive AlertNameArray          `json:"alerts,omitempty"`   // array of active alerts
 	Compliant    bool                    `json:"compliant"`          // true if the asset complies with the contract terms
 }
@@ -85,8 +94,11 @@ func (aa AssetArray) String() string {
 // rule execution, and JSON marshaling
 func (a *Asset) PUTAsset(stub shim.ChaincodeStubInterface, caller string, inject []QPropNV) ([]byte, error) {
 
-	// save original asset function
+	// save original asset function in the asset
 	a.FunctionIn = caller
+
+	// make a copy of the alerts for later comparison
+	alertsIn := a.AlertsActive
 
 	if len(inject) > 0 {
 		err := a.injectProps(inject)
@@ -96,17 +108,28 @@ func (a *Asset) PUTAsset(stub shim.ChaincodeStubInterface, caller string, inject
 			return nil, err
 		}
 	}
+
 	if err := a.ExecuteRules(stub); err != nil {
 		err = fmt.Errorf("PUTAsset for class %s failed in rules engine for %s, err is %s", a.Class.Name, a.AssetKey, err)
 		log.Errorf(err.Error())
 		return nil, err
 	}
-	if err := a.putMarshalledState(stub); err != nil {
+
+	alertsDeltas := GetAlertDeltas(alertsIn, a.AlertsActive)
+	alertsDeltasBytes, err := json.Marshal(alertsDeltas)
+	if err != nil {
+		err = fmt.Errorf("PUTAsset for class %s failed to marshall alert deltas for %s[%+v], err is %s", a.Class.Name, a.AssetKey, alertsDeltas, err)
+		log.Error(err)
+		return nil, err
+	}
+
+	_, err = a.putMarshalledState(stub)
+	if err != nil {
 		err = fmt.Errorf("PUTAsset for class %s failed to marshall for %s, err is %s", a.Class.Name, a.AssetKey, err)
 		log.Errorf(err.Error())
 		return nil, err
 	}
-	return nil, nil
+	return alertsDeltasBytes, nil
 }
 
 // CreateAsset inializes a new asset and stores it in world state
@@ -138,7 +161,7 @@ func (c *AssetClass) CreateAsset(stub shim.ChaincodeStubInterface, args []string
 	}
 
 	// copy the event into a new state
-	astate := DeepMergeMap(*a.EventIn, make(map[string]interface{}))
+	astate := DeepCopyMap(*a.EventIn)
 	a.State = &astate
 	if err := a.addTXNTimestampToState(stub); err != nil {
 		err = fmt.Errorf("CreateAsset for class %s failed to add txn timestamp for %s, err is %s", c.Name, a.AssetKey, err)
@@ -178,7 +201,7 @@ func (c *AssetClass) ReplaceAsset(stub shim.ChaincodeStubInterface, args []strin
 	}
 
 	// copy the event into a new state
-	astate := DeepMergeMap(*a.EventIn, make(map[string]interface{}))
+	astate := DeepCopyMap(*a.EventIn)
 	a.State = &astate
 	if err := a.addTXNTimestampToState(stub); err != nil {
 		err = fmt.Errorf("CreateAsset for class %s failed to add txn timestamp for %s, err is %s", c.Name, a.AssetKey, err)
@@ -390,13 +413,14 @@ func (c *AssetClass) DeletePropertiesFromAsset(stub shim.ChaincodeStubInterface,
 		log.Errorf(err.Error())
 		return nil, err
 	}
-	if err := a.putMarshalledState(stub); err != nil {
+	jsonBytes, err := a.putMarshalledState(stub)
+	if err != nil {
 		err = fmt.Errorf("CreateAsset for class %s failed to marshall for %s, err is %s", c.Name, a.AssetKey, err)
 		log.Errorf(err.Error())
 		return nil, err
 	}
 
-	return nil, nil
+	return jsonBytes, nil
 }
 
 // ReadAsset returns an asset from world state, intended to be returned directly to a client

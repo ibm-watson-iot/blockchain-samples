@@ -62,8 +62,7 @@ var samples = `
                 "An alert name"
             ],
             "assetID": "This asset's world state asset ID",
-            "assetIDpath": "Qualified property path to the asset's ID, declared in the contract code",
-            "class": "The asset's asset class",
+            "class": {},
             "compliant": true,
             "eventin": {
                 "asset": {
@@ -88,11 +87,12 @@ var samples = `
             },
             "eventout": {
                 "asset": {
-                    "name": "The chaincode event's name",
-                    "payload": {}
+                    "name": "EVT.IOTCP.INVOKE.RESULT",
+                    "payload": {
+                        "properties": "NO TYPE PROPERTY"
+                    }
                 }
             },
-            "prefix": "The asset's asset class prefix in world state",
             "state": {
                 "asset": {
                     "assetID": "An asset's unique ID, e.g. barcode, VIN, etc.",
@@ -123,8 +123,7 @@ var samples = `
                     "An alert name"
                 ],
                 "assetID": "This asset's world state asset ID",
-                "assetIDpath": "Qualified property path to the asset's ID, declared in the contract code",
-                "class": "The asset's asset class",
+                "class": {},
                 "compliant": true,
                 "eventin": {
                     "asset": {
@@ -149,11 +148,12 @@ var samples = `
                 },
                 "eventout": {
                     "asset": {
-                        "name": "The chaincode event's name",
-                        "payload": {}
+                        "name": "EVT.IOTCP.INVOKE.RESULT",
+                        "payload": {
+                            "properties": "NO TYPE PROPERTY"
+                        }
                     }
                 },
-                "prefix": "The asset's asset class prefix in world state",
                 "state": {
                     "asset": {
                         "assetID": "An asset's unique ID, e.g. barcode, VIN, etc.",
@@ -180,70 +180,25 @@ var samples = `
             }
         ],
         "assetstateexternal": {
-            "^DEF": {
-                "alerts": [
-                    "An alert name"
-                ],
-                "assetID": "This asset's world state asset ID",
-                "assetIDpath": "Qualified property path to the asset's ID, declared in the contract code",
-                "class": "The asset's asset class",
-                "compliant": true,
-                "eventin": {
-                    "asset": {
-                        "assetID": "An asset's unique ID, e.g. barcode, VIN, etc.",
-                        "carrier": "The carrier in possession of this asset",
-                        "common": {
-                            "appdata": [
-                                {
-                                    "K": "carpe noctem",
-                                    "V": "carpe noctem"
-                                }
-                            ],
-                            "deviceID": "A unique identifier for the device that sent the current event",
-                            "devicetimestamp": "A timestamp recoded by the device that sent the current event",
-                            "location": {
-                                "latitude": 123.456,
-                                "longitude": 123.456
-                            }
-                        },
-                        "temperature": 123.456
-                    }
-                },
-                "eventout": {
-                    "asset": {
-                        "name": "The chaincode event's name",
-                        "payload": {}
-                    }
-                },
-                "prefix": "The asset's asset class prefix in world state",
-                "state": {
-                    "asset": {
-                        "assetID": "An asset's unique ID, e.g. barcode, VIN, etc.",
-                        "carrier": "The carrier in possession of this asset",
-                        "common": {
-                            "appdata": [
-                                {
-                                    "K": "carpe noctem",
-                                    "V": "carpe noctem"
-                                }
-                            ],
-                            "deviceID": "A unique identifier for the device that sent the current event",
-                            "devicetimestamp": "A timestamp recoded by the device that sent the current event",
-                            "location": {
-                                "latitude": 123.456,
-                                "longitude": 123.456
-                            }
-                        },
-                        "temperature": 123.456
-                    }
-                },
-                "txnid": "Transaction UUID matching the blockchain",
-                "txnts": "Transaction timestamp matching the blockchain"
+            "^DEF": "INVALID OBJECT - MISSING PROPERTIES"
+        },
+        "eventIOTContractPlatformInvokeResult": {
+            "name": "EVT.IOTCP.INVOKE.RESULT",
+            "payload": {
+                "properties": "NO TYPE PROPERTY"
             }
         },
-        "invokeevent": {
-            "name": "The chaincode event's name",
-            "payload": {}
+        "eventIOTContractPlatformStatus": {
+            "alertsCleared": [
+                "An alert name"
+            ],
+            "alertsRaised": [
+                "An alert name"
+            ],
+            "invokeresult": {
+                "message": "carpe noctem",
+                "status": "ERROR"
+            }
         },
         "ioteventcommon": {
             "appdata": [

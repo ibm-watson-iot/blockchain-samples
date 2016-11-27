@@ -56,6 +56,23 @@ const BlockView = ({isExpanded, blockNumber, timestampString, onBlockClick, urlR
           );
         }) : null}
       </ol>
+      <h5>{(typeof blockData === "object" && typeof blockData.nonHashData === "object" && typeof blockData.nonHashData.chaincodeEvents === "object") ? blockData.nonHashData.chaincodeEvents.length + " " + "Chaincode Events" : "No Chaincode Events"}</h5>
+      <ol>
+        {(typeof blockData === "object" && typeof blockData.nonHashData === "object" && typeof blockData.nonHashData.chaincodeEvents === "object") ? blockData.nonHashData.chaincodeEvents.map(function (event, index) {
+          return (
+            <li key={index}> {event.txID}
+              <ul>
+                <li>
+                  {event.eventName}
+                </li>
+                <li>
+                  {window.atob(event.payload)}
+                </li>
+              </ul>
+            </li>
+          );
+        }) : null}
+      </ol>
     </CardText>
   </Card>
 )
