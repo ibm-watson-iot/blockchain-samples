@@ -29,8 +29,9 @@ import (
 )
 
 type adapter struct {
-	notfy chan *pb.Event_Block
-	cc    chan *pb.Event_ChaincodeEvent
+	notfy     chan *pb.Event_Block
+	rejection chan *pb.Event_Rejection
+	cc        chan *pb.Event_ChaincodeEvent
 }
 
 //GetInterestedEvents implements consumer.EventAdapter interface for registering interested events
@@ -38,6 +39,9 @@ func (a *adapter) GetInterestedEvents() ([]*pb.Interest, error) {
 	return []*pb.Interest{
 		&pb.Interest{
 			EventType: pb.EventType_BLOCK,
+		},
+		&pb.Interest{
+			EventType: pb.EventType_REJECTION,
 		},
 		&pb.Interest{
 			EventType: pb.EventType_CHAINCODE,
@@ -66,6 +70,15 @@ func (a *adapter) GetInterestedEvents() ([]*pb.Interest, error) {
 				},
 			},
 		},
+		&pb.Interest{
+			EventType: pb.EventType_CHAINCODE,
+			RegInfo: &pb.Interest_ChaincodeRegInfo{
+				ChaincodeRegInfo: &pb.ChaincodeReg{
+					ChaincodeID: "mycc",
+					EventName:   "EVT.IOTCP.INVOKE.RESULT",
+				},
+			},
+		},
 	}, nil
 }
 
@@ -75,10 +88,14 @@ func (a *adapter) Recv(msg *pb.Event) (bool, error) {
 	case *pb.Event_Block:
 		a.notfy <- msg.Event.(*pb.Event_Block)
 		return true, nil
+	case *pb.Event_Rejection:
+		a.rejection <- msg.Event.(*pb.Event_Rejection)
+		return true, nil
 	case *pb.Event_ChaincodeEvent:
 		a.cc <- msg.Event.(*pb.Event_ChaincodeEvent)
 		return true, nil
 	default:
+		fmt.Printf("RECV went through DEFAULT for some reason\n")
 		// a.notfy <- nil
 		// a.cc <- nil
 		return false, nil
@@ -96,8 +113,9 @@ func createEventClient(eventAddress string) *adapter {
 
 	done := make(chan *pb.Event_Block)
 	done2 := make(chan *pb.Event_ChaincodeEvent)
-	adapter := &adapter{notfy: done, cc: done2}
-	obcEHClient = consumer.NewEventsClient(eventAddress, adapter)
+	done3 := make(chan *pb.Event_Rejection)
+	adapter := &adapter{notfy: done, cc: done2, rejection: done3}
+	obcEHClient, _ = consumer.NewEventsClient(eventAddress, 5, adapter)
 	if err := obcEHClient.Start(); err != nil {
 		fmt.Printf("could not start chat %s\n", err)
 		obcEHClient.Stop()
@@ -109,7 +127,7 @@ func createEventClient(eventAddress string) *adapter {
 
 func main() {
 	var eventAddress string
-	flag.StringVar(&eventAddress, "events-address", "0.0.0.0:31315", "address of events server")
+	flag.StringVar(&eventAddress, "events-address", "0.0.0.0:7053", "address of events server")
 	flag.Parse()
 
 	fmt.Printf("Event Address: %s\n", eventAddress)
@@ -119,26 +137,18 @@ func main() {
 		fmt.Printf("Error creating event client\n")
 		return
 	}
+	fmt.Printf("Event client appears to have been succesfully created\n")
 
 	for {
 		select {
 		case b := <-a.notfy:
-			if b.Block.NonHashData.TransactionResults == nil {
-				fmt.Printf("INVALID BLOCK ... NO TRANSACTION RESULTS %v\n", b)
-			} else {
-				fmt.Printf("\nReceived block\n")
-				fmt.Printf("--------------\n")
-				for _, r := range b.Block.NonHashData.TransactionResults {
-					if r.ErrorCode != 0 {
-						fmt.Printf("Err Transaction:\n\t[%v]\n", r)
-					} else {
-						fmt.Printf("Success Transaction:\n\t[%v]\n", r)
-					}
-				}
-			}
+			fmt.Printf("\nReceived block\n")
+			fmt.Printf("%+v\n\n", b)
+		case r := <-a.rejection:
+			fmt.Printf("\nReceived rejection\n")
+			fmt.Printf("%+v\n\n", r)
 		case p := <-a.cc:
 			fmt.Printf("\nReceived chaincode event\n")
-			fmt.Printf("------------------------\n")
 			fmt.Printf("%+v\n\n", p)
 		}
 	}

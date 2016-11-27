@@ -222,6 +222,15 @@ var schemas = `
                 "args": {
                     "items": {
                         "properties": {
+                            "asset": {
+                                "properties": {
+                                    "assetID": {
+                                        "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            },
                             "qprops": {
                                 "description": "Qualified property names such as common.location",
                                 "items": {

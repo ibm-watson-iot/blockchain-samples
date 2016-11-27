@@ -180,7 +180,66 @@ var samples = `
             }
         ],
         "assetstateexternal": {
-            "^DEF": "INVALID OBJECT - MISSING PROPERTIES"
+            "^DEF": {
+                "alerts": [
+                    "An alert name"
+                ],
+                "assetID": "This asset's world state asset ID",
+                "class": {},
+                "compliant": true,
+                "eventin": {
+                    "asset": {
+                        "assetID": "An asset's unique ID, e.g. barcode, VIN, etc.",
+                        "carrier": "The carrier in possession of this asset",
+                        "common": {
+                            "appdata": [
+                                {
+                                    "K": "carpe noctem",
+                                    "V": "carpe noctem"
+                                }
+                            ],
+                            "deviceID": "A unique identifier for the device that sent the current event",
+                            "devicetimestamp": "A timestamp recoded by the device that sent the current event",
+                            "location": {
+                                "latitude": 123.456,
+                                "longitude": 123.456
+                            }
+                        },
+                        "temperature": 123.456
+                    }
+                },
+                "eventout": {
+                    "asset": {
+                        "name": "EVT.IOTCP.INVOKE.RESULT",
+                        "payload": {
+                            "properties": "NO TYPE PROPERTY"
+                        }
+                    }
+                },
+                "state": {
+                    "asset": {
+                        "assetID": "An asset's unique ID, e.g. barcode, VIN, etc.",
+                        "carrier": "The carrier in possession of this asset",
+                        "common": {
+                            "appdata": [
+                                {
+                                    "K": "carpe noctem",
+                                    "V": "carpe noctem"
+                                }
+                            ],
+                            "deviceID": "A unique identifier for the device that sent the current event",
+                            "devicetimestamp": "A timestamp recoded by the device that sent the current event",
+                            "location": {
+                                "latitude": 123.456,
+                                "longitude": 123.456
+                            }
+                        },
+                        "temperature": 123.456
+                    }
+                },
+                "txnid": "Transaction UUID matching the blockchain",
+                "txnts": "Transaction timestamp matching the blockchain"
+            }
         },
         "eventIOTContractPlatformInvokeResult": {
             "name": "EVT.IOTCP.INVOKE.RESULT",
