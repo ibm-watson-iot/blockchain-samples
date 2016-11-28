@@ -2,7 +2,9 @@
 
 ## What is event-listener
 
-The [event listener client application `event_listener.go`](./event-listener.go) will connect to a peer and receive block and custom chaincode events. A block event carries the entire block structure, and thus the event listener can print the result of all transactions in the block, either success or failure. Note that emitted events from the chaincode are also shown.
+The [event listener client application `event_listener.go`](./event-listener.go) will connect to a peer and receive block, rejection and custom chaincode events. A block event carries the entire block structure, and thus the event listener can print the result of all transactions in the block, either success or failure. Note that emitted events from the chaincode are also shown.
+
+For v0.6 Hyperledger: The transactions section of the block is missing when the transaction fails, as are all errors. Thus, the new event_listener simply sumps what it gets. The rejection event is now caught and displayed, and is sent for each failed transaction. The chaincode event section is compatible with the PING and PONG events of the sample contract, and with the more complex EVT.IOTCP.INVOKE.RESULT events that emanate from contracts that use the IoT Contract Platform for v0.6 and beyond.
 
 ## To Run in Debug Mode
 
@@ -15,6 +17,8 @@ For the 0.5 developer preview build of Hyperledger, the command line should look
 ``` sh
 vagrant@hyperledger-devenv:v0.0.10-cfc2099:/local-dev/github.com/blockchain-samples/applications/event_listener$ ./event_listener -events-address=0.0.0.0:31315
 ```
+
+But since the default address is set inside the client, the client can simply be launched with `./event_listener` after building it.
 
 The running event listener will connect to the peer running in debug mode in another terminal window, and the chaincode running in a third terminal window.
 
@@ -48,7 +52,7 @@ Postman-Token: 262df139-9ba2-1260-71c8-a3d04758f7b8
 }
 ```
 
-The event catcher prints:
+The event catcher prints (note: this is the old format, the new format simply dumps the block as shown below):
 
 ``` txt
 Received block
