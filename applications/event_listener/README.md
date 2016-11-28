@@ -4,7 +4,7 @@
 
 The [event listener client application `event_listener.go`](./event-listener.go) will connect to a peer and receive block, rejection and custom chaincode events. A block event carries the entire block structure, and thus the event listener can print the result of all transactions in the block, either success or failure. Note that emitted events from the chaincode are also shown.
 
-For v0.6 Hyperledger: The transactions section of the block is missing when the transaction fails, as are all errors. Thus, the new event_listener simply sumps what it gets. The rejection event is now caught and displayed, and is sent for each failed transaction. The chaincode event section is compatible with the PING and PONG events of the sample contract, and with the more complex EVT.IOTCP.INVOKE.RESULT events that emanate from contracts that use the IoT Contract Platform for v0.6 and beyond.
+For v0.6 Hyperledger: The transactions section of the block is missing when the transaction fails, as are all errors. Thus, the new event_listener simply dumps what it gets. The rejection event is now caught and displayed, and is sent for each failed transaction. The chaincode event section is compatible with the PING and PONG events of the sample contract, and with the more complex EVT.IOTCP.INVOKE.RESULT events that emanate from contracts that use the IoT Contract Platform for v0.6 and beyond.
 
 ## To Run in Debug Mode
 
