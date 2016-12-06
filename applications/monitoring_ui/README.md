@@ -22,10 +22,6 @@ To install the Monitoring UI on your local workstation, in the root directory of
 npm install
 ```
 
->NOTE that Vagrant on Windows may require you to add a flag to avoid the EPROTO error. The new command line would be:
->
-> `npm install --no-bin-links`
-
 ## Running
 You can run the monitoring UI directly from the file system or by running the webpack-dev-server.
 

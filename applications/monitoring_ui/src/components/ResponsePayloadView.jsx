@@ -24,17 +24,15 @@ import FlatButton from 'material-ui/lib/flat-button'
 import CardText from 'material-ui/lib/card/card-text'
 import Toggle from 'material-ui/lib/toggle';
 
-const ResponsePayloadHeaderView = ({func, args, removeFn, isRemoveBtnEnabled, index, togglePayloadPolling}) => (
+const ResponsePayloadHeaderView = ({func, args, removeFn, isRemoveBtnEnabled, index}) => (
   <div>
-  <div>
-    {isRemoveBtnEnabled ? <FlatButton label="[X]" primary={true} onClick={() => {removeFn(index)}}/> :
-    <FlatButton label="[X]" disabled={true}/>
+    {isRemoveBtnEnabled ? <FlatButton label="X" primary={true} onClick={() => {removeFn(index)}}/> :
+    <FlatButton label="X" disabled={true}/>
     }
 
     {/* label for the response payloads is: function() or function(args) if not null */}
     {func.concat("( ").concat((args==null) ? "" : JSON.stringify(args)).concat(" )")}
-  </div>  </div>
-  
+  </div>
 )
 
 /**
@@ -45,19 +43,21 @@ removeFn is responsible for removing the asset from the tracking list
 showRemoveFn is responsible for showing the remove asset button that calls removeFn
 hideRemoveFn is responsible for hiding the remove asset button that calls removeFn
 **/
-
 const ResponsePayloadView = ({rPayload, removeFn, displayFn, enableRemoveBtnFn, disableRemoveBtnFn, index, isRemoveBtnEnabled, togglePayloadPolling}) => (
-  <Card initiallyExpanded={true}>
+  <Card initiallyExpanded={false}>
     <CardHeader
-      title={<ResponsePayloadHeaderView func={rPayload.fn} args={rPayload.args} removeFn={removeFn} isRemoveBtnEnabled={isRemoveBtnEnabled} index={index} togglePayloadPolling={togglePayloadPolling}/>}
+      title={<ResponsePayloadHeaderView func={rPayload.fn} args={rPayload.args} removeFn={removeFn} isRemoveBtnEnabled={isRemoveBtnEnabled} index={index}/>}
       actAsExpander={false}
       showExpandableButton={true}
       onMouseEnter={() => {enableRemoveBtnFn(index)}}
       onMouseLeave={() => {disableRemoveBtnFn(index)}}
     />
-    <CardText expandable={true} >
-      <Toggle onToggle={()=>{togglePayloadPolling(index)}} label="poll"/>
+    <CardText expandable={true}>
       {/*displayObj is a function that describes how to display the data.*/}
+      <Toggle
+        onToggle={()=>{togglePayloadPolling(index)}}
+        label="Poll for changes"
+      />
       {displayFn(rPayload.responsePayload, [], 0).map(function(item){
         return item;
       })}
