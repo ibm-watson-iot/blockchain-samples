@@ -54,19 +54,22 @@ which is mapped inside the vagrant environment to `/opt/gopath`. This manifests 
 unfortunately not going to work once you start working against a local clones of included packages.
 
 Consider getting used to using commands like `cd /opt/gopath` instead. This will allow you to adjust your `GOPATH` to something that works with locally
-cloned packages, which should also be located under your `/local-dev`.
-
-
+cloned packages, which should also be located under your `/local-dev`. Your own contracts should be on your `/local-dev` path,
+and to set this all up correctly, see the instructions for setting up your local development environment, including the setting of the environment variable `LOCALDEVDIR`. 
+so when you issue the following command, `go generate` and `go build` will work properly with local dependencies in `/local-dev`.
 
 > You will know that you have the issue when you see an error like this:
 
-``` go
+``` bash
+vagrant@hyperledger-devenv:v0.0.11-b111ac5:/local-dev/src/github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractminimalsample$ go generate
+
+Included schema file not found on GOPATH: /opt/gopath: github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatform/schema/IOTCPschema.json
+    -- please ensure that you have cloned or fetched the platform to your GOPATH
+    -- also, please ensure that you add /local-dev to your GOPATH using the command
+       'export GOPATH=/opt/gopath:/local-dev' and then run 'go generate' again
+
+exit status 1
+main.go:27: running "go": exit status 1
+vagrant@hyperledger-devenv:v0.0.11-b111ac5:/local-dev/src/github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractminimalsample$ 
 ```
-
-> Your own contracts should be on your
-`/local-dev` path (see the instructions for setting up your local development environment, including the setting of the environment variable `LOCALDEVDIR`), 
-so when you issue the following command, `go generate` and `go build` will work properly with local dependencies in `/local-dev`.
-
-`export GOPATH=/opt/gopath:/local-dev`
-
 More to follow ....
