@@ -34,13 +34,12 @@ const BlockView = ({isExpanded, blockNumber, blockData, blockArr}) => (
       title={strings.BLOCK_CARD_HEADER_TEXT + " #"+blockNumber}
       actAsExpander={true}
       showExpandableButton={true}
-      subtitle={blockData ? moment.unix(blockData.nonHashData.localLedgerCommitTimestamp.seconds).format("M/D/YY LT") : ""}/>
+      subtitle={(blockData ? moment.unix(blockData.nonHashData.localLedgerCommitTimestamp.seconds).format("M/D/YY LT") : "") +  "\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0" + blockArr.length + " transactions"}/>
     <CardText expandable={true}>
-      <u>{blockArr ? blockArr.length + " " + strings.BLOCK_CARD_CONTENTS_TRANSACTION_TEXT : "ERROR Block Array Missing" }</u>
       <ol>
       {blockArr ? blockArr.map(function(transaction, index){
           return(
-             <li key={index}> {transaction.txid}
+             <li key={index}><b>{transaction.txid}</b>
                <ul>
                  <li>
                    Chaincode ID: {transaction.chaincodeID}
