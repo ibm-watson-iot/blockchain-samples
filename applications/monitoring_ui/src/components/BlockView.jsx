@@ -28,7 +28,7 @@ import * as strings from '../resources/strings'
 
 const FUNCTION_PAYLOAD_INDEX = 2
 
-const BlockView = ({isExpanded, blockNumber, timestampString, onBlockClick, urlRestRoot, blockData}) => (
+const BlockView = ({isExpanded, blockNumber, blockData, blockArr}) => (
   <Card initiallyExpanded={isExpanded}>
     <CardHeader
       title={strings.BLOCK_CARD_HEADER_TEXT + " #"+blockNumber}
@@ -36,21 +36,29 @@ const BlockView = ({isExpanded, blockNumber, timestampString, onBlockClick, urlR
       showExpandableButton={true}
       subtitle={blockData ? moment.unix(blockData.nonHashData.localLedgerCommitTimestamp.seconds).format("M/D/YY LT") : ""}/>
     <CardText expandable={true}>
-      <u>{blockData ? blockData.transactions.length + " " + strings.BLOCK_CARD_CONTENTS_TRANSACTION_TEXT : "" }</u>
+      <u>{blockArr ? blockArr.length + " " + strings.BLOCK_CARD_CONTENTS_TRANSACTION_TEXT : "ERROR Block Array Missing" }</u>
       <ol>
-      {blockData ? blockData.transactions.map(function(transaction, index){
+      {blockArr ? blockArr.map(function(transaction, index){
           return(
              <li key={index}> {transaction.txid}
                <ul>
                  <li>
-                   {moment.unix(transaction.timestamp.seconds).format("M/D/YY LT")}
+                   Chaincode ID: {transaction.chaincodeID}
                  </li>
                  <li>
-                   {window.atob(transaction.payload).split('\n')[FUNCTION_PAYLOAD_INDEX] + 
-                      " (" + window.atob(transaction.payload).split('\n')[3].substr(1) + ")"}
+                   Timestamp: {transaction.timestamp ? moment.unix(transaction.timestamp.seconds).format("M/D/YY HH:mm:ss.") + Math.floor(transaction.timestamp.nanos/1000000) : "n/a"}
                  </li>
                  <li>
-                   {blockData.nonHashData.chaincodeEvents[index].eventName + ": " + window.atob(blockData.nonHashData.chaincodeEvents[index].payload)}
+                   Function: {transaction.function ? transaction.function : "n/a"}
+                 </li>
+                 <li>
+                   Args: {transaction.args ? transaction.args : "n/a"}
+                 </li>
+                 <li>
+                   Event Emitted: {transaction.eventName}
+                 </li>
+                 <li>
+                   Event Payload: {transaction.event}
                  </li>
                </ul>
              </li>
@@ -65,10 +73,8 @@ const BlockView = ({isExpanded, blockNumber, timestampString, onBlockClick, urlR
 BlockView.propTypes ={
   isExpanded: PropTypes.bool.isRequired,
   blockNumber: PropTypes.number.isRequired,
-  timeStampString: momentPropTypes.momentObj,
-  transactionsContent: PropTypes.array,
-  onBlockClick: PropTypes.func,
-  urlRestRoot: PropTypes.string.isRequired
+  blockData: PropTypes.object.isRequired,
+  blockArr: PropTypes.array.isRequired
 }
 
 export default BlockView

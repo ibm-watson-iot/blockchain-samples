@@ -36,8 +36,50 @@ class Block extends React.Component{
   }
 
   render(){
+    // combine transactions and chaincodeEvents, either can be missing or incomplete!
+    let blockMap = {}
+    const bd = this.props.blockData
+    if (bd) {
+      if (bd.transactions) {
+        for (let i=0; i<bd.transactions.length; i++) {
+          let t = bd.transactions[i]
+          blockMap[t.txid] = {
+            timestamp: t.timestamp,
+            function: window.atob(t.payload).split("\n")[2],
+            args: window.atob(t.payload).split("\n")[3].substr(1),
+            chaincodeID: window.atob(t.chaincodeID)
+          }
+        }
+      }
+      if (bd.nonHashData) {
+        if (bd.nonHashData.chaincodeEvents) {
+          for (let i=0; i<bd.nonHashData.chaincodeEvents.length; i++) {
+            let e = bd.nonHashData.chaincodeEvents[i]
+            if (blockMap[e.txID]) {
+              blockMap[e.txID].eventName = e.eventName
+              blockMap[e.txID].event = window.atob(e.payload)
+              blockMap[e.txID].chaincodeID = e.chaincodeID
+            } else {
+              blockMap[e.txID] = {
+                eventName: e.eventName,
+                event: window.atob(e.payload),
+                chaincodeID: e.chaincodeID
+              }
+            }
+          }
+        }
+      }
+    }
+    let blockArr = []
+    for (var p in blockMap) {
+      if (blockMap.hasOwnProperty(p)) {
+          let a = blockMap[p]
+          a.txid = p
+          blockArr.push(a)
+      }
+    }
     return(
-      <BlockView {...this.props} />
+      <BlockView isExpanded={this.props.isExpanded} blockNumber={this.props.blockNumber} blockData={this.props.blockData} blockArr={blockArr} />
     )
   }
 
