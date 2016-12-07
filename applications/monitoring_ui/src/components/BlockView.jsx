@@ -54,10 +54,10 @@ const BlockView = ({isExpanded, blockNumber, blockData, blockArr}) => (
                    Args: {transaction.args ? transaction.args : "n/a"}
                  </li>
                  <li>
-                   Event Emitted: {transaction.eventName}
+                   Event Emitted: {transaction.eventName ? transaction.eventName : "n/a"}
                  </li>
                  <li>
-                   Event Payload: {transaction.event}
+                   Event Payload: {transaction.event ? transaction.event : "n/a"}
                  </li>
                </ul>
              </li>
