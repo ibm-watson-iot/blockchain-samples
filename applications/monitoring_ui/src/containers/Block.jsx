@@ -18,6 +18,7 @@ Alex Nguyen - Initial Contribution
 *****************************************************************************/
 import { connect } from 'react-redux'
 import { fetchBlockData } from '../actions/BlockActions'
+import { getFuncName } from '../actions/ChaincodeActions'
 import React from 'react'
 import BlockView from '../components/BlockView.jsx'
 
@@ -42,6 +43,7 @@ class Block extends React.Component{
 
     return JSON.stringify(obj) === JSON.stringify({});
   };
+
   
   render(){
     // combine transactions and chaincodeEvents, either can be missing or incomplete!
@@ -51,24 +53,18 @@ class Block extends React.Component{
       if (bd.transactions) {
         for (let i=0; i<bd.transactions.length; i++) {
           let t = bd.transactions[i]
-          let p = window.atob(t.payload).split(new RegExp('[^\u0020-\u007e]+', 'g'))
-          let f = "n/a"
-          let a = "n/a"
-          if (p.length === 5) {
-            // invoke without arguments
-            f = p[3].substr(0,p[3].length-1)
-          } else if (p.length === 7) {
-            // invoke with arguments
-            f = p[4]
-            a = p[5].substr(1,p[5].length-2)
-          } else if (p.length === 6) {
-            // deploy functions have 6 elements
-            f = p[4]
-            a = p[5].substr(1,p[5].length-1)
-          } else {
-            // not known to happen in v0.6 fabric
-            f = "ERR: ARRAY LENGTH: " + p.length + " [" + JSON.stringify(p) + "]"
+          let p = window.atob(t.payload)
+          let f = getFuncName(p)
+          if (f === null) {
+            f = "n/a"
           }
+          let a = "n/a"
+          let left = p.indexOf('{')
+          let right = p.lastIndexOf('}')
+          if (left >=0 && right > left) {
+            a = p.substr(left, right - left + 1)
+          }
+
           blockMap[t.txid] = {
             timestamp: t.timestamp,
             function: f,
@@ -107,7 +103,6 @@ class Block extends React.Component{
           blockArr.push(a)
       }
     }
-    console.log("BLOCKARR ----  #", this.props.blockNumber, blockArr)
     return(
       <BlockView isExpanded={this.props.isExpanded} blockNumber={this.props.blockNumber} blockData={this.props.blockData} blockArr={blockArr} />
     )
