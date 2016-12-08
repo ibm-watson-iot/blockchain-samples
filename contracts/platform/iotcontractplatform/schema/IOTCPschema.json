@@ -676,6 +676,9 @@
                             }
                         }
                     },
+                    "activeAlerts": {
+                        "$ref": "#/definitions/Model/alertNameArray"
+                    },
                     "alertsRaised": {
                         "$ref": "#/definitions/Model/alertNameArray"
                     },
