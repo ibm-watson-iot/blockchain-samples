@@ -55,6 +55,9 @@ var replaceAssetSurgicalKit iot.ChaincodeFunc = func(stub shim.ChaincodeStubInte
 }
 
 var updateAssetSurgicalKit iot.ChaincodeFunc = func(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	if len(args) > 0 {
+		log.Debugf("Payload received in updateAssetSurgicalKit: %s", args[0])
+	}
 	return SurgicalKitClass.UpdateAsset(stub, args, "updateAssetSurgicalKit", []iot.QPropNV{})
 }
 
