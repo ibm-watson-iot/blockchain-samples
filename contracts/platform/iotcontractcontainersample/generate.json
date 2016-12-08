@@ -22,13 +22,7 @@
             "setCreateOnFirstUpdate"
         ],
         "Model": [
-            "container",
-            "invokeevent",
-            "ioteventcommon",
-            "containerstate",
-            "containerstateexternal",
-            "containerstatearray",
-            "stateFilter"
+            "container"
         ]
     },
     "samples": {
@@ -39,12 +33,7 @@
         ],
         "Model": [
             "container",
-            "invokeevent",
-            "ioteventcommon",
-            "containerstate",
-            "containerstateexternal",
-            "containerstatearray",
-            "stateFilter"
+            "eventIOTContractPlatformInvokeResult"
         ]
     }
 }

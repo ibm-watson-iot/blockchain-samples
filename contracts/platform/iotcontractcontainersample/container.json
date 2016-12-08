@@ -370,12 +370,12 @@
                         "description": "The chaincode event emitted on invoke exit, if any",
                         "properties": {
                             "container": {
-                                "$ref": "#/definitions/Model/invokeevent"
+                                "$ref": "#/definitions/Model/eventIOTContractPlatformInvokeResult"
                             }
                         }
                     },
                     "alerts": {
-                        "$ref": "#/definitions/Model/alerts"
+                        "$ref": "#/definitions/Model/alertNameArray"
                     },
                     "compliant": {
                         "type": "boolean",

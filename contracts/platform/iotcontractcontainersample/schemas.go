@@ -393,210 +393,30 @@ var schemas = `
                 },
                 "method": "query",
                 "result": {
-                    "description": "Array of asset states, can mix asset classes",
+                    "description": "An array of routes",
                     "items": {
-                        "description": "A asset's complete state",
+                        "description": "A route defines a contract API that can be called to perform a service",
                         "properties": {
-                            "alerts": {
-                                "description": "A list of alert names",
-                                "items": {
-                                    "description": "An alert name",
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            "assetID": {
-                                "description": "This asset's world state asset ID",
-                                "type": "string"
-                            },
-                            "assetIDpath": {
-                                "description": "Qualified property path to the asset's ID, declared in the contract code",
-                                "type": "string"
-                            },
                             "class": {
-                                "description": "The asset's asset class",
-                                "type": "string"
-                            },
-                            "compliant": {
-                                "description": "This asset has no active alerts",
-                                "type": "boolean"
-                            },
-                            "eventin": {
-                                "description": "The contract event that created this state, for example updateAsset",
+                                "description": "An asset's classifier definition",
                                 "properties": {
-                                    "asset": {
-                                        "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
-                                        "properties": {
-                                            "assetID": {
-                                                "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
-                                                "type": "string"
-                                            },
-                                            "carrier": {
-                                                "description": "The carrier in possession of this asset",
-                                                "type": "string"
-                                            },
-                                            "common": {
-                                                "description": "Common properties for all assets",
-                                                "properties": {
-                                                    "appdata": {
-                                                        "description": "Application managed information as an array of key:value pairs",
-                                                        "items": {
-                                                            "properties": {
-                                                                "K": {
-                                                                    "type": "string"
-                                                                },
-                                                                "V": {
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "type": "object"
-                                                        },
-                                                        "minItems": 0,
-                                                        "type": "array"
-                                                    },
-                                                    "deviceID": {
-                                                        "description": "A unique identifier for the device that sent the current event",
-                                                        "type": "string"
-                                                    },
-                                                    "devicetimestamp": {
-                                                        "description": "A timestamp recoded by the device that sent the current event",
-                                                        "type": "string"
-                                                    },
-                                                    "location": {
-                                                        "description": "A geographical coordinate",
-                                                        "properties": {
-                                                            "latitude": {
-                                                                "type": "number"
-                                                            },
-                                                            "longitude": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            },
-                                            "temperature": {
-                                                "description": "Temperature of an asset's contents in degrees Celsuis",
-                                                "type": "number"
-                                            }
-                                        },
-                                        "required": [
-                                            "assetID"
-                                        ],
-                                        "type": "object"
-                                    }
+                                    "assetidpath": "An asset's primary key, expressed as a qualified property path (see example contracts)",
+                                    "name": "An asset's class name",
+                                    "prefix": "An asset's world state prefix, used to allow iteration over all assets of a class"
                                 },
                                 "type": "object"
                             },
-                            "eventout": {
-                                "description": "The chaincode event emitted on invoke exit, if any",
-                                "properties": {
-                                    "asset": {
-                                        "description": "An chaincode event emitted by a contract invoke",
-                                        "properties": {
-                                            "name": {
-                                                "description": "The chaincode event's name",
-                                                "type": "string"
-                                            },
-                                            "payload": {
-                                                "description": "The chaincode event's properties",
-                                                "properties": {},
-                                                "type": "object"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object"
-                            },
-                            "prefix": {
-                                "description": "The asset's asset class prefix in world state",
+                            "functionname": {
                                 "type": "string"
                             },
-                            "state": {
-                                "description": "Properties that have been received or calculated for this asset",
-                                "properties": {
-                                    "asset": {
-                                        "description": "The changeable properties for an asset, also considered its 'event' as a partial state",
-                                        "properties": {
-                                            "assetID": {
-                                                "description": "An asset's unique ID, e.g. barcode, VIN, etc.",
-                                                "type": "string"
-                                            },
-                                            "carrier": {
-                                                "description": "The carrier in possession of this asset",
-                                                "type": "string"
-                                            },
-                                            "common": {
-                                                "description": "Common properties for all assets",
-                                                "properties": {
-                                                    "appdata": {
-                                                        "description": "Application managed information as an array of key:value pairs",
-                                                        "items": {
-                                                            "properties": {
-                                                                "K": {
-                                                                    "type": "string"
-                                                                },
-                                                                "V": {
-                                                                    "type": "string"
-                                                                }
-                                                            },
-                                                            "type": "object"
-                                                        },
-                                                        "minItems": 0,
-                                                        "type": "array"
-                                                    },
-                                                    "deviceID": {
-                                                        "description": "A unique identifier for the device that sent the current event",
-                                                        "type": "string"
-                                                    },
-                                                    "devicetimestamp": {
-                                                        "description": "A timestamp recoded by the device that sent the current event",
-                                                        "type": "string"
-                                                    },
-                                                    "location": {
-                                                        "description": "A geographical coordinate",
-                                                        "properties": {
-                                                            "latitude": {
-                                                                "type": "number"
-                                                            },
-                                                            "longitude": {
-                                                                "type": "number"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            },
-                                            "temperature": {
-                                                "description": "Temperature of an asset's contents in degrees Celsuis",
-                                                "type": "number"
-                                            }
-                                        },
-                                        "required": [
-                                            "assetID"
-                                        ],
-                                        "type": "object"
-                                    }
-                                },
-                                "type": "object"
-                            },
-                            "txnid": {
-                                "description": "Transaction UUID matching the blockchain",
-                                "type": "string"
-                            },
-                            "txnts": {
-                                "description": "Transaction timestamp matching the blockchain",
+                            "method": {
                                 "type": "string"
                             }
                         },
                         "type": "object"
                     },
                     "minItems": 0,
-                    "type": "array"
+                    "type": "object"
                 }
             },
             "type": "object"
@@ -638,7 +458,7 @@ var schemas = `
                             "type": "string"
                         },
                         "alerts": {
-                            "description": "A list of alert names",
+                            "description": "An array of alert names",
                             "items": {
                                 "description": "An alert name",
                                 "type": "string"
@@ -730,15 +550,63 @@ var schemas = `
                             "description": "The chaincode event emitted on invoke exit, if any",
                             "properties": {
                                 "container": {
-                                    "description": "An chaincode event emitted by a contract invoke",
+                                    "description": "A chaincode event defining the standard platform-generated result event for a contract invoke, contains an array of contributed results",
                                     "properties": {
                                         "name": {
-                                            "description": "The chaincode event's name",
+                                            "default": "EVT.IOTCP.INVOKE.RESULT",
+                                            "enum": [
+                                                "EVT.IOTCP.INVOKE.RESULT"
+                                            ],
                                             "type": "string"
                                         },
                                         "payload": {
-                                            "description": "The chaincode event's properties",
-                                            "properties": {},
+                                            "description": "A map of contributed results",
+                                            "properties": {
+                                                "description": "the overall status of the invoke result, defined by err",
+                                                "properties": {
+                                                    "activeAlerts": {
+                                                        "description": "An array of alert names",
+                                                        "items": {
+                                                            "description": "An alert name",
+                                                            "type": "string"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "alertsCleared": {
+                                                        "description": "An array of alert names",
+                                                        "items": {
+                                                            "description": "An alert name",
+                                                            "type": "string"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "alertsRaised": {
+                                                        "description": "An array of alert names",
+                                                        "items": {
+                                                            "description": "An alert name",
+                                                            "type": "string"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "invokeresult": {
+                                                        "description": "status: OK==txn succeeded, ERROR==txn failed",
+                                                        "properties": {
+                                                            "message": {
+                                                                "type": "string"
+                                                            },
+                                                            "status": {
+                                                                "enum": [
+                                                                    "OK",
+                                                                    "ERROR"
+                                                                ],
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
                                             "type": "object"
                                         }
                                     },
@@ -840,6 +708,15 @@ var schemas = `
                 "args": {
                     "items": {
                         "properties": {
+                            "container": {
+                                "properties": {
+                                    "barcode": {
+                                        "description": "A container's ID",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            },
                             "daterange": {
                                 "description": "if specified, dates must fall in between these values, inclusive",
                                 "properties": {
@@ -959,7 +836,7 @@ var schemas = `
                         "description": "A asset's complete state",
                         "properties": {
                             "alerts": {
-                                "description": "A list of alert names",
+                                "description": "An array of alert names",
                                 "items": {
                                     "description": "An alert name",
                                     "type": "string"
@@ -970,13 +847,14 @@ var schemas = `
                                 "description": "This asset's world state asset ID",
                                 "type": "string"
                             },
-                            "assetIDpath": {
-                                "description": "Qualified property path to the asset's ID, declared in the contract code",
-                                "type": "string"
-                            },
                             "class": {
-                                "description": "The asset's asset class",
-                                "type": "string"
+                                "description": "An asset's classifier definition",
+                                "properties": {
+                                    "assetidpath": "An asset's primary key, expressed as a qualified property path (see example contracts)",
+                                    "name": "An asset's class name",
+                                    "prefix": "An asset's world state prefix, used to allow iteration over all assets of a class"
+                                },
+                                "type": "object"
                             },
                             "compliant": {
                                 "description": "This asset has no active alerts",
@@ -1055,15 +933,63 @@ var schemas = `
                                 "description": "The chaincode event emitted on invoke exit, if any",
                                 "properties": {
                                     "asset": {
-                                        "description": "An chaincode event emitted by a contract invoke",
+                                        "description": "A chaincode event defining the standard platform-generated result event for a contract invoke, contains an array of contributed results",
                                         "properties": {
                                             "name": {
-                                                "description": "The chaincode event's name",
+                                                "default": "EVT.IOTCP.INVOKE.RESULT",
+                                                "enum": [
+                                                    "EVT.IOTCP.INVOKE.RESULT"
+                                                ],
                                                 "type": "string"
                                             },
                                             "payload": {
-                                                "description": "The chaincode event's properties",
-                                                "properties": {},
+                                                "description": "A map of contributed results",
+                                                "properties": {
+                                                    "description": "the overall status of the invoke result, defined by err",
+                                                    "properties": {
+                                                        "activeAlerts": {
+                                                            "description": "An array of alert names",
+                                                            "items": {
+                                                                "description": "An alert name",
+                                                                "type": "string"
+                                                            },
+                                                            "type": "array"
+                                                        },
+                                                        "alertsCleared": {
+                                                            "description": "An array of alert names",
+                                                            "items": {
+                                                                "description": "An alert name",
+                                                                "type": "string"
+                                                            },
+                                                            "type": "array"
+                                                        },
+                                                        "alertsRaised": {
+                                                            "description": "An array of alert names",
+                                                            "items": {
+                                                                "description": "An alert name",
+                                                                "type": "string"
+                                                            },
+                                                            "type": "array"
+                                                        },
+                                                        "invokeresult": {
+                                                            "description": "status: OK==txn succeeded, ERROR==txn failed",
+                                                            "properties": {
+                                                                "message": {
+                                                                    "type": "string"
+                                                                },
+                                                                "status": {
+                                                                    "enum": [
+                                                                        "OK",
+                                                                        "ERROR"
+                                                                    ],
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
                                                 "type": "object"
                                             }
                                         },
@@ -1071,10 +997,6 @@ var schemas = `
                                     }
                                 },
                                 "type": "object"
-                            },
-                            "prefix": {
-                                "description": "The asset's asset class prefix in world state",
-                                "type": "string"
                             },
                             "state": {
                                 "description": "Properties that have been received or calculated for this asset",
@@ -1481,320 +1403,6 @@ var schemas = `
             "required": [
                 "barcode"
             ],
-            "type": "object"
-        },
-        "containerstate": {
-            "description": "A container's complete state",
-            "properties": {
-                "AssetKey": {
-                    "description": "This container's world state container ID",
-                    "type": "string"
-                },
-                "alerts": {
-                    "description": "A list of alert names",
-                    "items": {
-                        "description": "An alert name",
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "assetIDpath": {
-                    "description": "Qualified property path to the container's ID, declared in the contract code",
-                    "type": "string"
-                },
-                "class": {
-                    "description": "The container's asset class",
-                    "type": "string"
-                },
-                "compliant": {
-                    "description": "This container has no active alerts",
-                    "type": "boolean"
-                },
-                "eventin": {
-                    "description": "The contract event that created this state, for example updateAssetContainer",
-                    "properties": {
-                        "container": {
-                            "description": "The changeable properties for a container, also considered its 'event' as a partial state",
-                            "properties": {
-                                "barcode": {
-                                    "description": "A container's ID",
-                                    "type": "string"
-                                },
-                                "carrier": {
-                                    "description": "The carrier in possession of this container",
-                                    "type": "string"
-                                },
-                                "common": {
-                                    "description": "Common properties for all assets",
-                                    "properties": {
-                                        "appdata": {
-                                            "description": "Application managed information as an array of key:value pairs",
-                                            "items": {
-                                                "properties": {
-                                                    "K": {
-                                                        "type": "string"
-                                                    },
-                                                    "V": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            },
-                                            "minItems": 0,
-                                            "type": "array"
-                                        },
-                                        "deviceID": {
-                                            "description": "A unique identifier for the device that sent the current event",
-                                            "type": "string"
-                                        },
-                                        "devicetimestamp": {
-                                            "description": "A timestamp recoded by the device that sent the current event",
-                                            "type": "string"
-                                        },
-                                        "location": {
-                                            "description": "A geographical coordinate",
-                                            "properties": {
-                                                "latitude": {
-                                                    "type": "number"
-                                                },
-                                                "longitude": {
-                                                    "type": "number"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "temperature": {
-                                    "description": "Temperature of a container's contents in degrees Celsuis",
-                                    "type": "number"
-                                }
-                            },
-                            "required": [
-                                "barcode"
-                            ],
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                },
-                "eventout": {
-                    "description": "The chaincode event emitted on invoke exit, if any",
-                    "properties": {
-                        "container": {
-                            "description": "An chaincode event emitted by a contract invoke",
-                            "properties": {
-                                "name": {
-                                    "description": "The chaincode event's name",
-                                    "type": "string"
-                                },
-                                "payload": {
-                                    "description": "The chaincode event's properties",
-                                    "properties": {},
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                },
-                "prefix": {
-                    "description": "The container's asset class prefix in world state",
-                    "type": "string"
-                },
-                "state": {
-                    "description": "Properties that have been received or calculated for this container",
-                    "properties": {
-                        "container": {
-                            "description": "The changeable properties for a container, also considered its 'event' as a partial state",
-                            "properties": {
-                                "barcode": {
-                                    "description": "A container's ID",
-                                    "type": "string"
-                                },
-                                "carrier": {
-                                    "description": "The carrier in possession of this container",
-                                    "type": "string"
-                                },
-                                "common": {
-                                    "description": "Common properties for all assets",
-                                    "properties": {
-                                        "appdata": {
-                                            "description": "Application managed information as an array of key:value pairs",
-                                            "items": {
-                                                "properties": {
-                                                    "K": {
-                                                        "type": "string"
-                                                    },
-                                                    "V": {
-                                                        "type": "string"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            },
-                                            "minItems": 0,
-                                            "type": "array"
-                                        },
-                                        "deviceID": {
-                                            "description": "A unique identifier for the device that sent the current event",
-                                            "type": "string"
-                                        },
-                                        "devicetimestamp": {
-                                            "description": "A timestamp recoded by the device that sent the current event",
-                                            "type": "string"
-                                        },
-                                        "location": {
-                                            "description": "A geographical coordinate",
-                                            "properties": {
-                                                "latitude": {
-                                                    "type": "number"
-                                                },
-                                                "longitude": {
-                                                    "type": "number"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "temperature": {
-                                    "description": "Temperature of a container's contents in degrees Celsuis",
-                                    "type": "number"
-                                }
-                            },
-                            "required": [
-                                "barcode"
-                            ],
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                },
-                "txnid": {
-                    "description": "Transaction UUID matching the blockchain",
-                    "type": "string"
-                },
-                "txnts": {
-                    "description": "Transaction timestamp matching the blockchain",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "containerstatearray": {
-            "description": "Array of container states, can mix asset classes",
-            "items": {
-                "patternProperties": {
-                    "^CON": {
-                        "description": "The external state of one container asset, named by its world state ID",
-                        "type": "object"
-                    }
-                },
-                "type": "object"
-            },
-            "minItems": 0,
-            "type": "array"
-        },
-        "containerstateexternal": {
-            "patternProperties": {
-                "^CON": {
-                    "description": "The external state of one container asset, named by its world state ID",
-                    "type": "object"
-                }
-            },
-            "type": "object"
-        },
-        "invokeevent": {
-            "description": "An chaincode event emitted by a contract invoke",
-            "properties": {
-                "name": {
-                    "description": "The chaincode event's name",
-                    "type": "string"
-                },
-                "payload": {
-                    "description": "The chaincode event's properties",
-                    "properties": {},
-                    "type": "object"
-                }
-            },
-            "type": "object"
-        },
-        "ioteventcommon": {
-            "description": "Common properties for all assets",
-            "properties": {
-                "appdata": {
-                    "description": "Application managed information as an array of key:value pairs",
-                    "items": {
-                        "properties": {
-                            "K": {
-                                "type": "string"
-                            },
-                            "V": {
-                                "type": "string"
-                            }
-                        },
-                        "type": "object"
-                    },
-                    "minItems": 0,
-                    "type": "array"
-                },
-                "deviceID": {
-                    "description": "A unique identifier for the device that sent the current event",
-                    "type": "string"
-                },
-                "devicetimestamp": {
-                    "description": "A timestamp recoded by the device that sent the current event",
-                    "type": "string"
-                },
-                "location": {
-                    "description": "A geographical coordinate",
-                    "properties": {
-                        "latitude": {
-                            "type": "number"
-                        },
-                        "longitude": {
-                            "type": "number"
-                        }
-                    },
-                    "type": "object"
-                }
-            },
-            "type": "object"
-        },
-        "stateFilter": {
-            "description": "Filter asset states",
-            "properties": {
-                "match": {
-                    "description": "Defines how to match properties, missing property always fails match",
-                    "enum": [
-                        "n/a",
-                        "all",
-                        "any",
-                        "none"
-                    ],
-                    "type": "string"
-                },
-                "select": {
-                    "description": "Qualified property names and values match",
-                    "items": {
-                        "properties": {
-                            "qprop": {
-                                "description": "Qualified property to compare, for example 'asset.assetID'",
-                                "type": "string"
-                            },
-                            "value": {
-                                "description": "Value to be compared",
-                                "type": "string"
-                            }
-                        },
-                        "type": "object"
-                    },
-                    "type": "array"
-                }
-            },
             "type": "object"
         }
     }
