@@ -288,14 +288,7 @@
                         "items": {
                             "type": "object",
                             "properties": {
-                                "asset": {
-                                    "type": "object",
-                                    "properties": {
-                                        "assetID": {
-                                            "$ref": "#/definitions/Model/assetID"
-                                        }
-                                    }
-                                },
+                                "$ref": "#/definitions/Model/assetKey",
                                 "daterange": {
                                     "$ref": "#/definitions/Model/dateRange"
                                 },

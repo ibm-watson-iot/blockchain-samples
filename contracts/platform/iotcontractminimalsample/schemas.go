@@ -476,6 +476,14 @@ var schemas = `
                                                 "properties": {
                                                     "description": "the overall status of the invoke result, defined by err",
                                                     "properties": {
+                                                        "activeAlerts": {
+                                                            "description": "An array of alert names",
+                                                            "items": {
+                                                                "description": "An alert name",
+                                                                "type": "string"
+                                                            },
+                                                            "type": "array"
+                                                        },
                                                         "alertsCleared": {
                                                             "description": "An array of alert names",
                                                             "items": {
@@ -844,6 +852,14 @@ var schemas = `
                                             "properties": {
                                                 "description": "the overall status of the invoke result, defined by err",
                                                 "properties": {
+                                                    "activeAlerts": {
+                                                        "description": "An array of alert names",
+                                                        "items": {
+                                                            "description": "An alert name",
+                                                            "type": "string"
+                                                        },
+                                                        "type": "array"
+                                                    },
                                                     "alertsCleared": {
                                                         "description": "An array of alert names",
                                                         "items": {
@@ -1167,6 +1183,14 @@ var schemas = `
                                                 "properties": {
                                                     "description": "the overall status of the invoke result, defined by err",
                                                     "properties": {
+                                                        "activeAlerts": {
+                                                            "description": "An array of alert names",
+                                                            "items": {
+                                                                "description": "An alert name",
+                                                                "type": "string"
+                                                            },
+                                                            "type": "array"
+                                                        },
                                                         "alertsCleared": {
                                                             "description": "An array of alert names",
                                                             "items": {
@@ -1441,6 +1465,14 @@ var schemas = `
                                                 "properties": {
                                                     "description": "the overall status of the invoke result, defined by err",
                                                     "properties": {
+                                                        "activeAlerts": {
+                                                            "description": "An array of alert names",
+                                                            "items": {
+                                                                "description": "An alert name",
+                                                                "type": "string"
+                                                            },
+                                                            "type": "array"
+                                                        },
                                                         "alertsCleared": {
                                                             "description": "An array of alert names",
                                                             "items": {

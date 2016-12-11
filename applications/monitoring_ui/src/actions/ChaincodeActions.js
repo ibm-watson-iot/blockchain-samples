@@ -126,6 +126,7 @@ export const updateResponsePayload = (index, payload) => {
 }
 
 export const TAB_CREATE = "CREATE";
+export const TAB_REPLACE = "REPLACE";
 export const TAB_READ = "READ";
 export const TAB_UPDATE = "UPDATE";
 export const TAB_DELETE = "DELETE";
@@ -210,6 +211,39 @@ export function sendObcPollingRequests() {
     }
 }
 
+function removeEmptyProps(args, requestType) {
+    var argsout = {}
+    for (var propertyName in args) {
+        if (args.hasOwnProperty(propertyName)) {
+            console.log("****args[" + propertyName + "] BEFORE === " + JSON.stringify(args[propertyName]) + "  TYPEOF === " + typeof args[propertyName]);
+            if (args[propertyName] === "") {
+                console.log("****skip args[" + propertyName + "]");
+            } else if (JSON.stringify(args[propertyName]) === JSON.stringify({})) {
+                console.log("****skip args[" + propertyName + "]");
+            } else if (JSON.stringify(args[propertyName]) === JSON.stringify([])) {
+                console.log("****skip args[" + propertyName + "]");
+            } else if (requestType.toLowerCase() === "invoke" && (propertyName === "match" && ["n/a", "all", "any", "none"].indexOf(args[propertyName]) > -1)) {
+                // bandaid over fragile state code
+                console.log("****skip args[" + propertyName + "]");
+            } else if (requestType.toLowerCase() === "query" && (propertyName === "match" && ["n/a"].indexOf(args[propertyName]) > -1)) {
+                // bandaid over fragile state code
+                console.log("****skip args[" + propertyName + "]");
+            } else if (typeof args[propertyName] === "object") {
+                var tmp = removeEmptyProps(args[propertyName], requestType)
+                if (JSON.stringify(tmp) === "{}") {
+                    console.log("****skip args[" + propertyName + "]");
+                } else {
+                    argsout[propertyName] = tmp
+                }
+            } else {
+                argsout[propertyName] = args[propertyName]
+            }
+        }
+    }
+    return argsout
+}
+
+
 /**
 Send an http request to the OBC Peer. The requestType is either query or invoke.
 The args is the form data.
@@ -220,13 +254,7 @@ export function sendObcRequest(args, fn, requestType) {
         let state = getState();
         //iterate through the args and delete any empty strings
 
-        for (var propertyName in args) {
-            if (args.hasOwnProperty(propertyName)) {
-                if (args[propertyName] === "") {
-                    delete args[propertyName]
-                }
-            }
-        }
+        args = removeEmptyProps(args, requestType);
 
         let requestPayload = {
             "jsonrpc": "2.0",

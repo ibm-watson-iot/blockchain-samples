@@ -46,15 +46,19 @@ class JsonSchemaForm extends React.Component {
     //formData contains all field forms and takes the one with the most properties. idSchema allows
     //us to figure out what properties a particular form requires. We cross compare to figure out
     //what the args should be.
+    console.log("*** Handle Form Submit: ", data);
     for(var propertyName in data.formData){
-      if (data.formData.hasOwnProperty(propertyName) &&
-        (JSON.stringify(data.formData[propertyName]) !== JSON.stringify({}))) {
-        //if the id schema contains this property, that means it is a legitimate argument
-        if(data.idSchema[propertyName]){
-          if(!args){
-            args = {};
+      if (data.formData.hasOwnProperty(propertyName)) {
+        console.log("*** Handle Form Submit - PropertyName: ", propertyName, data.formData[propertyName]);
+        if (JSON.stringify(data.formData[propertyName]) !== JSON.stringify({})) {
+          //if the id schema contains this property, that means it is a legitimate argument
+          if(data.idSchema[propertyName]){
+            if(!args){
+              args = {};
+            }
+            console.log("*** Handle Form Submit - adding propertyName to args: ", propertyName, data.formData[propertyName]);
+            args[propertyName]=data.formData[propertyName];
           }
-          args[propertyName]=data.formData[propertyName];
         }
       }
     }
@@ -120,7 +124,7 @@ function mapStateToProps(state) {
     fnIndex = state.chaincodeOpsForm[currentTab].selectedFn;
     fnName = state.chaincodeOpsForm[currentTab].fns[fnIndex].name;
     selectedJsonSchema = state.chaincode.schema ? state.chaincode.schema.API[fnName].properties.args.items : null;
-    //console.log(selectedJsonSchema);
+    console.log("***** Selected Schema, funcIdx, funcName, currTab: ", selectedJsonSchema, fnIndex, fnName, currentTab);
   }
 
   return {

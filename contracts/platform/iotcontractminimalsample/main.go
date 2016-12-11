@@ -24,7 +24,7 @@ import (
 )
 
 // Update the path to match your configuration
-//go:generate go run /local-dev/src/github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatform/scripts/processSchema.go
+//go:generate go run /local-dev/src/github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatform/scripts/processSchema.go -debug
 
 // SimpleChaincode is the receiver for all shim API
 type SimpleChaincode struct {

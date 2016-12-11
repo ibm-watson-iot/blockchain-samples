@@ -111,9 +111,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return{
-    fetchAssetObjectModel: () => {
-      dispatch(fetchAssetObjectModel())
-    },
+    // fetchAssetObjectModel: () => {
+    //   dispatch(fetchAssetObjectModel())
+    // },
     fetchCcSchema: () => {
       dispatch(fetchCcSchema())
     },

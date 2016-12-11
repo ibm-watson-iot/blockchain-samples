@@ -180,10 +180,10 @@ func replaceReferences(schema map[string]interface{}, name string, obj interface
 						oMap[kk] = replaceReferences(schema, kk, vv)
 					}
 				}
+				delete(oMap, "$ref")
 			} else {
 				oMap[k] = replaceReferences(schema, k, v)
 			}
-			delete(oMap, "$ref")
 		}
 		return oMap
 	}

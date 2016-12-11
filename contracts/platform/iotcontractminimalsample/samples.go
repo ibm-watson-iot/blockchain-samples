@@ -248,6 +248,9 @@ var samples = `
             }
         },
         "eventIOTContractPlatformStatus": {
+            "activeAlerts": [
+                "An alert name"
+            ],
             "alertsCleared": [
                 "An alert name"
             ],
