@@ -31,17 +31,36 @@ var schemas = `
                                 "description": "Overtime duration.",
                                 "type": "integer"
                             },
+                            "latitude": {
+                                "description": "Location:latitude",
+                                "type": "number"
+                            },
+                            "longitude": {
+                                "description": "Location:longitude",
+                                "type": "number"
+                            },
+                            "address": {
+                                "description": "Abbreviated street address",
+                                "type": "string"
+                            },
                             "available": {
                                 "description": "Light in candela.",
                                 "type": "boolean"
                             }
                         },
                         "required": [
-                            "deviceid"
+                            "deviceid",
+                            "minimumusagecost",
+                            "minimumusagetime",
+                            "overtimeusagecost",
+                            "overtimeusagetime",
+                            "latitude",
+                            "longitude",
+                            "address",
+                            "available"
                         ],
                         "type": "object"
                     },
-                    "maxItems": 1,
                     "minItems": 1,
                     "type": "array"
                 },
@@ -242,6 +261,18 @@ var schemas = `
                                 "description": "Overtime duration.",
                                 "type": "integer"
                             },
+                            "latitude": {
+                                "description": "Location:latitude",
+                                "type": "number"
+                            },
+                            "longitude": {
+                                "description": "Location:longitude",
+                                "type": "number"
+                            },
+                            "address": {
+                                "description": "Abbreviated street address",
+                                "type": "string"
+                            },
                             "available": {
                                 "description": "Light in candela.",
                                 "type": "boolean"
@@ -311,33 +342,37 @@ var schemas = `
                                 "description": "The ID of a meter.",
                                 "type": "string"
                             },
-                            "starttime": {
-                                "description": "start time of usage",
+                            "minimumusagecost": {
+                                "description": "minimum cost for using the meter",
+                                "type": "number"
+                            },
+                            "minimumusagetime": {
+                                "description": "minimum duration of use",
+                                "type": "integer"
+                            },
+                            "overtimeusagecost": {
+                                "description": "overtime cost.",
+                                "type": "number"
+                            },
+                            "overtimeusagetime": {
+                                "description": "Overtime duration.",
+                                "type": "integer"
+                            },
+                            "latitude": {
+                                "description": "Location:latitude",
+                                "type": "number"
+                            },
+                            "longitude": {
+                                "description": "Location:longitude",
+                                "type": "number"
+                            },
+                            "address": {
+                                "description": "Abbreviated street address",
                                 "type": "string"
                             },
-                            "endtime": {
-                                "description": "usage end time. Computed from start time and duration",
-                                "type": "string"
-                            },
-                            "duration": {
-                                "description": "Usage duration. Difference between start and end times. Duration is passed in and end time computed",
-                                "type": "number"
-                            },
-                            "usagecost": {
-                                "description": "Usage cost. Based on duration and rates defined for device.",
-                                "type": "number"
-                            },
-                            "actualendtime": {
-                                "description": "actual end time. Provision for overtime scenario",
-                                "type": "string"
-                            },
-                            "overtimecost": {
-                                "description": "Cost incurred for overtime use. Provision for overtime scenario",
-                                "type": "number"
-                            },
-                             "totalcost": {
-                                "description": "Total Cost incurred including overtime use. Provision for overtime scenario",
-                                "type": "number"
+                            "available": {
+                                "description": "Light in candela.",
+                                "type": "boolean"
                             }
                     },
                     "type": "object"
@@ -379,33 +414,37 @@ var schemas = `
                                 "description": "The ID of a meter.",
                                 "type": "string"
                             },
-                            "starttime": {
-                                "description": "start time of usage",
+                            "minimumusagecost": {
+                                "description": "minimum cost for using the meter",
+                                "type": "number"
+                            },
+                            "minimumusagetime": {
+                                "description": "minimum duration of use",
+                                "type": "integer"
+                            },
+                            "overtimeusagecost": {
+                                "description": "overtime cost.",
+                                "type": "number"
+                            },
+                            "overtimeusagetime": {
+                                "description": "Overtime duration.",
+                                "type": "integer"
+                            },
+                            "latitude": {
+                                "description": "Location:latitude",
+                                "type": "number"
+                            },
+                            "longitude": {
+                                "description": "Location:longitude",
+                                "type": "number"
+                            },
+                            "address": {
+                                "description": "Abbreviated street address",
                                 "type": "string"
                             },
-                            "endtime": {
-                                "description": "usage end time. Computed from start time and duration",
-                                "type": "string"
-                            },
-                            "duration": {
-                                "description": "Usage duration. Difference between start and end times. Duration is passed in and end time computed",
-                                "type": "number"
-                            },
-                            "usagecost": {
-                                "description": "Usage cost. Based on duration and rates defined for device.",
-                                "type": "number"
-                            },
-                            "actualendtime": {
-                                "description": "actual end time. Provision for overtime scenario",
-                                "type": "string"
-                            },
-                            "overtimecost": {
-                                "description": "Cost incurred for overtime use. Provision for overtime scenario",
-                                "type": "number"
-                            },
-                             "totalcost": {
-                                "description": "Total Cost incurred including overtime use. Provision for overtime scenario",
-                                "type": "number"
+                            "available": {
+                                "description": "Light in candela.",
+                                "type": "boolean"
                             }
                     },
                     "type": "object"
@@ -454,6 +493,18 @@ var schemas = `
                                 "description": "Overtime duration.",
                                 "type": "integer"
                             },
+                            "latitude": {
+                                "description": "Location:latitude",
+                                "type": "number"
+                            },
+                            "longitude": {
+                                "description": "Location:longitude",
+                                "type": "number"
+                            },
+                            "address": {
+                                "description": "Abbreviated street address",
+                                "type": "string"
+                            },
                             "available": {
                                 "description": "Light in candela.",
                                 "type": "boolean"
@@ -463,8 +514,40 @@ var schemas = `
                 }
             },
             "type": "object"
+        },
+        "deleteDevice": {
+            "description": "Delete a parking meter device. One argument, a JSON encoded event.",
+            "properties": {
+                "args": {
+                    "description": "args are JSON encoded strings",
+                    "items": {
+                        "description": "Parking meter device registration / update.",
+                        "properties": {
+                            "deviceid": {
+                                "description": "The ID of a meter.",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "deviceid"
+                        ],
+                        "type": "object"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                },
+                "function": {
+                    "description": "deleteDevice function",
+                    "enum": [
+                        "deleteDevice"
+                    ],
+                    "type": "string"
+                },
+                "method": "invoke"
+            },
+            "type": "object"
         }
-
+        
     },
     "objectModelSchemas": {
         "deviceidKey": {
@@ -481,55 +564,40 @@ var schemas = `
             "description": "A set of fields that constitute the writable fields in an device's state. Device Id  is mandatory along with at least one writable field. In this contract pattern, a partial state is used as an event.",
             "properties": {
                 "deviceid": {
-                    "description": "The ID of a managed device. The resource focal point for a smart contract.",
+                    "description": "The ID of a meter.",
                     "type": "string"
                 },
-                "carrier": {
-                    "description": "transport entity currently in possession of device",
+                "minimumusagecost": {
+                    "description": "minimum cost for using the meter",
+                    "type": "number"
+                },
+                "minimumusagetime": {
+                    "description": "minimum duration of use",
+                    "type": "integer"
+                },
+                "overtimeusagecost": {
+                    "description": "overtime cost.",
+                    "type": "number"
+                },
+                "overtimeusagetime": {
+                    "description": "Overtime duration.",
+                    "type": "integer"
+                },
+                "latitude": {
+                    "description": "Location:latitude",
+                    "type": "number"
+                },
+                "longitude": {
+                    "description": "Location:longitude",
+                    "type": "number"
+                },
+                "address": {
+                    "description": "Abbreviated street address",
                     "type": "string"
                 },
-                "location": {
-                    "description": "A geographical coordinate",
-                    "properties": {
-                        "latitude": {
-                            "type": "number"
-                        },
-                        "longitude": {
-                            "type": "number"
-                        }
-                    },
-                    "type": "object"
-                },
-                "temperature": {
-                    "description": "Temperature of the device in CELSIUS.",
-                    "type": "number"
-                },
-                "humidity": {
-                    "description": "Humidity in percentage.",
-                    "type": "number"
-                },
-                "light": {
+                "available": {
                     "description": "Light in candela.",
-                    "type": "number"
-                },
-                    "acceleration": {
-                    "description": "acceleration -gforce / shock.",
-                    "type": "number"
-                },
-                "airquality": {
-                    "description": "A geographical coordinate",
-                    "properties": {
-                        "oxygen": {
-                            "type": "number"
-                        },
-                        "carbondioxide": {
-                            "type": "number"
-                        },
-                        "ethylene": {
-                            "type": "number"
-                        }
-                    },
-                    "type": "object"
+                    "type": "boolean"
                 }
             },
             "required": [
@@ -577,6 +645,18 @@ var schemas = `
                 "overtimeusagetime": {
                     "description": "Overtime duration.",
                     "type": "integer"
+                },
+                "latitude": {
+                    "description": "Location:latitude",
+                    "type": "number"
+                },
+                "longitude": {
+                    "description": "Location:longitude",
+                    "type": "number"
+                },
+                "address": {
+                    "description": "Abbreviated street address",
+                    "type": "string"
                 },
                 "available": {
                     "description": "Light in candela.",

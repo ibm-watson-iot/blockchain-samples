@@ -5,7 +5,10 @@ type Device struct {
     MinimumUsageCost            *float64                   `json:"minimumusagecost,omitempty"`    
     MinimumUsageTime            *int32                    `json:"minimumusagetime,omitempty"` 
     OvertimeUsageCost           *float64                   `json:"overtimeusagecost,omitempty"`    
-    OvertimeUsageTime           *int32                    `json:"overtimeusagetime,omitempty"`       
+    OvertimeUsageTime           *int32                    `json:"overtimeusagetime,omitempty"`      
+    Latitude                    *float64                    `json:"latitude,omitempty"`  
+    Longitude                   *float64                    `json:"longitude,omitempty"` 
+    Address                     *string                    `json:"address,omitempty"`    
     Available                   *bool                      `json:"available,omitempty"`        
 }
 

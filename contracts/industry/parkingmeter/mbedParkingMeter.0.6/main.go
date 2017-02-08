@@ -4,7 +4,7 @@ import (
     "errors"
     "fmt"
     "time"
-  //  "strings"
+    "strings"
   //  "reflect"
  //  "github.com/mcuadros/go-jsonschema-generator"
 "github.com/hyperledger/fabric/core/chaincode/shim"
@@ -53,14 +53,19 @@ func main() {
 // ************************************
 func (t *DeviceUsageChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	if function == "createDevice" {
-		// create container records
+		// create parking meter records
 		return t.createDevice(stub, args)
-    } else if function =="createUsage" {
+    }else if function == "createBulkDevice" {
+		// create parking meter records in bulk
+		return t.createBulkDevice(stub, args)
+    }else if function =="createUsage" {
         return t.createUsage(stub, args)
     }else if function =="extendUsage" {
         return t.extendUsage(stub, args)
     } else if function =="updateDeviceAsAvailable" {
         return t.updateDeviceAsAvailable(stub, args)
+    }else if function =="deleteDevice" {
+        return t.deleteDevice(stub, args)
     } 
 	//fmt.Println("Unknown invocation function: ", function)
 	return nil, errors.New("Received unknown invocation: " + function)
@@ -128,9 +133,118 @@ func (t *DeviceUsageChaincode) Init(stub shim.ChaincodeStubInterface,  function 
 // ************************************
 
 func (t *DeviceUsageChaincode) createDevice(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+    var devicesIn Device
+    //var devicesStub []Device
+    var device Device
+	var err error
+    var sError string = ""
+    var sStubUpdate []byte
+    var devList DevList
+    //var deviceList []string
+    var devSlice []string
+    
+    var devListData []byte
+    if len(args) != 1 {
+        return nil, errors.New("Expects one argument, a JSON array with one or more device details")
+    }
+    fmt.Println(args[0]);
+    err = json.Unmarshal([]byte(args[0]), &devicesIn)
+    if err != nil {
+        return nil, errors.New("Unable to unmarshal device data " + fmt.Sprint(err))
+    }
+    // Check if device data already exists in the stub
+
+
+    //Assuming creteonupdate
+    sDeviceId:=*devicesIn.DeviceID 
+    sDeviceKey:=DEVICESKEY+"_"+sDeviceId
+    sDevListKey:=LISTKEY
+    stubData, err := stub.GetState(sDeviceKey)
+    if err ==nil && len(stubData) >0 {
+        // This device is being updated
+        //If it is in use, it shouldn't be
+        err = json.Unmarshal(stubData, &device)
+        if err != nil {
+            //fmt.Println(err)
+            return nil, err
+        }
+        if *device.Available {
+            //Compare and update
+                if devicesIn.MinimumUsageCost !=nil {
+                *device.MinimumUsageCost=*devicesIn.MinimumUsageCost
+                }
+            if devicesIn.MinimumUsageTime !=nil {
+                *device.MinimumUsageTime=*devicesIn.MinimumUsageTime
+            }
+            if devicesIn.OvertimeUsageCost !=nil {
+                *device.OvertimeUsageCost=*devicesIn.OvertimeUsageCost
+            }
+            if devicesIn.OvertimeUsageTime !=nil {
+                *device.OvertimeUsageTime=*devicesIn.OvertimeUsageTime
+            }
+            sStubUpdate, err = json.Marshal(&devicesIn)
+            if err !=nil {
+                return nil, err
+            }
+        } else {
+            sError +="Device unavailable for update:  "+sDeviceId
+            sStubUpdate = []byte("")
+
+        }
+    } else {
+            // If device does not exist in stub, this is a new entry
+        
+            sStubUpdate, err = json.Marshal(&devicesIn)
+
+        if err !=nil {
+            return nil, err
+        }
+    }
+    devSlice = make([]string, 0)
+
+    devSlice = append(devSlice, sDeviceId)
+
+    if len(string(sStubUpdate))>0 {
+        err = stub.PutState(sDeviceKey,sStubUpdate)
+        if err != nil {
+            return nil, errors.New("Device record failed PUT to ledger: " + fmt.Sprint(err))
+        }
+    }
+    //Get device list from stub
+    fmt.Println("Get device list from stub")
+    sListData, err:= stub.GetState(sDevListKey)
+    fmt.Println("List data " ,string(sListData))
+    if err==nil {     
+        if len(strings.Trim(string(sListData), " "))>0 {
+            fmt.Println("In here")   
+            err = json.Unmarshal(sListData, &devList)
+            if err != nil {
+                return nil, err
+            }
+            fmt.Println("Out here") 
+            devSlice = append(devSlice, devList.Devices...)
+        }
+    }
+    fmt.Println("Out here") 
+    devList.Devices = devSlice
+    devListData, err = json.Marshal(&devList)
+    err = stub.PutState(sDevListKey,devListData)
+    //fmt.Println("Data to be put in stub is ", string(devListData))
+    if err != nil {
+        return nil, errors.New("Usage record failed PUT to ledger: " + fmt.Sprint(err))
+    }
+    if len(sError)>0 {
+        return nil, errors.New(sError)
+    } 
+    return nil, nil
+}
+
+/************************ createBulkDevices ********************/
+func (t *DeviceUsageChaincode) createBulkDevice(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
     var devicesIn []Device
     //var devicesStub []Device
     var device Device
+    var sDevListKey string
 	var err error
     var sError string = ""
     var sStubUpdate []byte
@@ -143,6 +257,7 @@ func (t *DeviceUsageChaincode) createDevice(stub shim.ChaincodeStubInterface, ar
     if len(args) != 1 {
         return nil, errors.New("Expects one argument, a JSON array with one or more device details")
     }
+    fmt.Println(args[0]);
     err = json.Unmarshal([]byte(args[0]), &devicesIn)
     if err != nil {
         return nil, errors.New("Unable to unmarshal device data " + fmt.Sprint(err))
@@ -153,7 +268,7 @@ func (t *DeviceUsageChaincode) createDevice(stub shim.ChaincodeStubInterface, ar
         //Assuming creteonupdate
         sDeviceId:=*devicesIn[l].DeviceID 
         sDeviceKey:=DEVICESKEY+"_"+sDeviceId
-        sDevListKey:=LISTKEY
+        sDevListKey=LISTKEY
         stubData, err := stub.GetState(sDeviceKey)
         if err ==nil && len(stubData) >0 {
             // This device is being updated
@@ -199,7 +314,7 @@ func (t *DeviceUsageChaincode) createDevice(stub shim.ChaincodeStubInterface, ar
             devSlice = make([]string, 0)
             iCount++
         }
-        //Get device list from stub
+        
         
         devSlice = append(devSlice, sDeviceId)
         //fmt.Println("Added to list")
@@ -210,14 +325,22 @@ func (t *DeviceUsageChaincode) createDevice(stub shim.ChaincodeStubInterface, ar
                 return nil, errors.New("Device record failed PUT to ledger: " + fmt.Sprint(err))
             }
         }
+        
+    }
+    if iCount >0 {
+        //Get device list from stub
         sListData, err:= stub.GetState(sDevListKey)
-        if err!=nil {
-            err = json.Unmarshal(sListData, &devList)
-            if err != nil {
-                return nil, err
+        fmt.Println("Get device list from stub", string(sListData), "*")
+        if err==nil {  
+            if len(strings.Trim(string(sListData), " "))>0 {
+                fmt.Println("In here")   
+                err = json.Unmarshal(sListData, &devList)
+                if err != nil {
+                    return nil, err
+                }
+                fmt.Println("Out here") 
+                devSlice = append(devSlice, devList.Devices...)
             }
-            //fmt.Println("Added history to list")
-            devSlice = append(devSlice, devList.Devices...)
         }
         devList.Devices = devSlice
         devListData, err = json.Marshal(&devList)
@@ -226,7 +349,6 @@ func (t *DeviceUsageChaincode) createDevice(stub shim.ChaincodeStubInterface, ar
         if err != nil {
             return nil, errors.New("Usage record failed PUT to ledger: " + fmt.Sprint(err))
         }
-       
     }
     if len(sError)>0 {
         return nil, errors.New(sError)
@@ -679,3 +801,71 @@ func (t *DeviceUsageChaincode) extendUsage(stub shim.ChaincodeStubInterface, arg
 func (t *DeviceUsageChaincode) readAssetSchemas(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	return []byte(schemas), nil
 }
+//*************deleteDevice*******************/
+func (t *DeviceUsageChaincode) deleteDevice(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+    var device Device
+    var devList DevList
+    var newdevList DevList
+    var iCount int = 0
+    if len(args) != 1 {
+        return nil, errors.New("deleteDevice expects one argument, a JSON string with device id")
+    }
+    fmt.Println(args[0])
+    err := json.Unmarshal([]byte(args[0]), &device)
+    if err!=nil {
+         return nil, errors.New("Unable to unmarshal input device!")
+    } else {
+        if device.DeviceID!=nil {
+            sDeviceId:=*device.DeviceID 
+            sUsageKey:=USAGEKEY+"_"+sDeviceId
+            sDeviceKey:=DEVICESKEY+"_"+sDeviceId
+            // Delete usage
+            err= stub.DelState(sUsageKey)
+            // Delete Device
+            err:= stub.DelState(sDeviceKey)
+            if err!=nil {
+                return nil, errors.New("Unable to delete device from stub !")
+            } 
+            // Remove from device list
+            sDevListKey:=LISTKEY
+            sListData, err:= stub.GetState(sDevListKey)
+            fmt.Println(string(sListData))
+            if err!=nil {
+                return nil, errors.New("Device List couldn't be retrived from the stub " + fmt.Sprint(err))
+            }
+            err = json.Unmarshal(sListData, &devList)
+            if err != nil {
+                return nil, err
+            }
+            newdevList = devList
+            for _, thisDevice := range devList.Devices {
+                fmt.Println(thisDevice)
+                if thisDevice == sDeviceId {
+                    if iCount < len(newdevList.Devices) {
+                        newdevList.Devices = append(newdevList.Devices[:iCount], newdevList.Devices[iCount+1:]...)
+                    } else {
+                        newdevList.Devices = make([]string, 0)
+                        break
+                    }
+                }
+                iCount++
+            }
+            if len(newdevList.Devices) >0 {
+                fmt.Println(newdevList)
+                devListData, err := json.Marshal(&newdevList)
+                err = stub.PutState(sDevListKey,devListData)
+                //fmt.Println("Data to be put in stub is ", string(devListData))
+                if err != nil {
+                    return nil, errors.New("Updated Devices list failed PUT to ledger: " + fmt.Sprint(err))
+                }
+            }else {
+               _= stub.DelState(LISTKEY)
+                
+            }
+        }else {
+            return nil, errors.New("Device id is mandatory !")
+        }
+
+    }
+    return nil, nil
+} 
