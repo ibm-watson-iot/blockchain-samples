@@ -465,7 +465,7 @@ func (t *DeviceUsageChaincode) createUsage(stub shim.ChaincodeStubInterface, arg
         //fmt.Println(err)
         return nil, err
     }
-    iDuration := time.Duration(usage.Duration)*time.Minute
+    iDuration := time.Duration(usage.Duration)*time.Second
     dEndTime:= tEndTime.Add(iDuration)
     usage.EndTime = dEndTime.String()
     //Computing usage cost
@@ -766,7 +766,7 @@ func (t *DeviceUsageChaincode) extendUsage(stub shim.ChaincodeStubInterface, arg
         //fmt.Println(err)
         return nil, err
     }
-    iDuration := time.Duration(usage.Duration)*time.Minute
+    iDuration := time.Duration(usage.Duration)*time.Second
     dEndTime:= tEndTime.Add(iDuration)
     usageStub.EndTime = dEndTime.String()
     //Computing usage cost
