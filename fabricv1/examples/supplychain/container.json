@@ -1,0 +1,406 @@
+{
+    "id": "https://github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractminimalsample/minimal.json",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+        "API": {
+            "$ref": "github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatform/schema/IOTCPschema.json/#definitions/API",
+            "createAssetContainer": {
+                "type": "object",
+                "description": "Creates a new container (e.g. put new)",
+                "properties": {
+                    "method": "invoke",
+                    "function": {
+                        "type": "string",
+                        "enum": [
+                            "createAssetContainer"
+                        ]
+                    },
+                    "args": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "container": {
+                                    "$ref": "#/definitions/Model/container"
+                                }
+                            }
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                    }
+                }
+            },
+            "replaceAssetContainer": {
+                "type": "object",
+                "description": "Replaces a container's state (e.g. put existing)",
+                "properties": {
+                    "method": "invoke",
+                    "function": {
+                        "type": "string",
+                        "enum": [
+                            "replaceAssetContainer"
+                        ]
+                    },
+                    "args": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "container": {
+                                    "$ref": "#/definitions/Model/container"
+                                }
+                            }
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                    }
+                }
+            },
+            "updateAssetContainer": {
+                "type": "object",
+                "description": "Update a contaner's state with one or more property changes (e.g. patch existing)",
+                "properties": {
+                    "method": "invoke",
+                    "function": {
+                        "type": "string",
+                        "enum": [
+                            "updateAssetContainer"
+                        ]
+                    },
+                    "args": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "container": {
+                                    "$ref": "#/definitions/Model/container"
+                                }
+                            }
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                    }
+                }
+            },
+            "deleteAssetContainer": {
+                "type": "object",
+                "description": "Delete a container from world state, transactions remain on the blockchain",
+                "properties": {
+                    "method": "invoke",
+                    "function": {
+                        "type": "string",
+                        "enum": [
+                            "deleteAssetContainer"
+                        ]
+                    },
+                    "args": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "$ref": "#/definitions/Model/containerKey"
+                            }
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                    }
+                }
+            },
+            "deleteAssetStateHistoryContainer": {
+                "type": "object",
+                "description": "Delete a container's history from world state, transactions remain on the blockchain",
+                "properties": {
+                    "method": "invoke",
+                    "function": {
+                        "type": "string",
+                        "enum": [
+                            "deleteAssetStateHistoryContainer"
+                        ]
+                    },
+                    "args": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "$ref": "#/definitions/Model/containerKey"
+                            }
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                    }
+                }
+            },
+            "deletePropertiesFromAssetContainer": {
+                "type": "object",
+                "description": "Delete one or more properties from a container's state, an example being temperature, which is only relevant for sensitive (as in frozen) shipments",
+                "properties": {
+                    "method": "invoke",
+                    "function": {
+                        "type": "string",
+                        "enum": [
+                            "deletePropertiesFromAssetContainer"
+                        ]
+                    },
+                    "args": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "$ref": "#/definitions/Model/containerKey",
+                                "qprops": {
+                                    "type": "array",
+                                    "description": "Qualified property names, e.g. container.barcode",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                    }
+                }
+            },
+            "deleteAllAssetsContainer": {
+                "type": "object",
+                "description": "Delete all containers from world state, supports filters",
+                "properties": {
+                    "method": "invoke",
+                    "function": {
+                        "type": "string",
+                        "enum": [
+                            "deleteAllAssetsContainer"
+                        ]
+                    },
+                    "args": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "filter": {
+                                    "$ref": "#/definitions/Model/stateFilter"
+                                }
+                            }
+                        },
+                        "minItems": 0,
+                        "maxItems": 1
+                    }
+                }
+            },
+            "readAssetContainer": {
+                "type": "object",
+                "description": "Returns the state a container",
+                "properties": {
+                    "method": "query",
+                    "function": {
+                        "type": "string",
+                        "enum": [
+                            "readAssetContainer"
+                        ]
+                    },
+                    "args": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "$ref": "#/definitions/Model/containerKey"
+                            }
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                    },
+                    "result": {
+                        "$ref": "#/definitions/Model/containerstate"
+                    }
+                }
+            },
+            "readAllAssetsContainer": {
+                "type": "object",
+                "description": "Returns the state of all containers, supports filters",
+                "properties": {
+                    "method": "query",
+                    "function": {
+                        "type": "string",
+                        "enum": [
+                            "readAllAssetsContainer"
+                        ]
+                    },
+                    "args": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "filter": {
+                                    "$ref": "#/definitions/Model/stateFilter"
+                                }
+                            }
+                        },
+                        "minItems": 0,
+                        "maxItems": 1
+                    },
+                    "result": {
+                        "$ref": "#/definitions/Model/containerstatearray"
+                    }
+                }
+            },
+            "readAssetStateHistoryContainer": {
+                "type": "object",
+                "description": "Returns history states for a container",
+                "properties": {
+                    "method": "query",
+                    "function": {
+                        "type": "string",
+                        "enum": [
+                            "readAssetStateHistoryContainer"
+                        ]
+                    },
+                    "args": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "$ref": "#/definitions/Model/containerKey",
+                                "daterange": {
+                                    "$ref": "#/definitions/Model/dateRange"
+                                },
+                                "filter": {
+                                    "$ref": "#/definitions/Model/stateFilter"
+                                }
+                            },
+                            "required": [
+                                "container"
+                            ]
+                        },
+                        "minItems": 1,
+                        "maxItems": 1
+                    },
+                    "result": {
+                        "$ref": "#/definitions/Model/containerstatearray"
+                    }
+                }
+            }
+        },
+        "Model": {
+            "$ref": "github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatform/schema/IOTCPschema.json/#definitions/Model",
+            "barcode": {
+                "type": "string",
+                "description": "A container's ID"
+            },
+            "container": {
+                "type": "object",
+                "description": "The changeable properties for a container, also considered its 'event' as a partial state",
+                "properties": {
+                    "common": {
+                        "$ref": "#/definitions/Model/ioteventcommon"
+                    },
+                    "barcode": {
+                        "$ref": "#/definitions/Model/barcode"
+                    },
+                    "temperature": {
+                        "type": "number",
+                        "description": "Temperature of a container's contents in degrees Celsuis"
+                    },
+                    "carrier": {
+                        "type": "string",
+                        "description": "The carrier in possession of this container"
+                    }
+                },
+                "required": [
+                    "barcode"
+                ]
+            },
+            "containerKey": {
+                "container": {
+                    "type": "object",
+                    "properties": {
+                        "barcode": {
+                            "$ref": "#/definitions/Model/barcode"
+                        }
+                    }
+                }
+            },
+            "containerstate": {
+                "type": "object",
+                "description": "A container's complete state",
+                "properties": {
+                    "class": {
+                        "type": "string",
+                        "description": "The container's asset class"
+                    },
+                    "prefix": {
+                        "type": "string",
+                        "description": "The container's asset class prefix in world state"
+                    },
+                    "assetIDpath": {
+                        "type": "string",
+                        "description": "Qualified property path to the container's ID, declared in the contract code"
+                    },
+                    "AssetKey": {
+                        "type": "string",
+                        "description": "This container's world state container ID"
+                    },
+                    "state": {
+                        "type": "object",
+                        "description": "Properties that have been received or calculated for this container",
+                        "properties": {
+                            "container": {
+                                "$ref": "#/definitions/Model/container"
+                            }
+                        }
+                    },
+                    "eventin": {
+                        "type": "object",
+                        "description": "The contract event that created this state, for example updateAssetContainer",
+                        "properties": {
+                            "container": {
+                                "$ref": "#/definitions/Model/container"
+                            }
+                        }
+                    },
+                    "txnts": {
+                        "type": "string",
+                        "description": "Transaction timestamp matching the blockchain"
+                    },
+                    "txnid": {
+                        "type": "string",
+                        "description": "Transaction UUID matching the blockchain"
+                    },
+                    "eventout": {
+                        "type": "object",
+                        "description": "The chaincode event emitted on invoke exit, if any",
+                        "properties": {
+                            "container": {
+                                "$ref": "#/definitions/Model/eventIOTContractPlatformInvokeResult"
+                            }
+                        }
+                    },
+                    "alerts": {
+                        "$ref": "#/definitions/Model/alertNameArray"
+                    },
+                    "compliant": {
+                        "type": "boolean",
+                        "description": "This container has no active alerts"
+                    }
+                }
+            },
+            "containerstateexternal": {
+                "type": "object",
+                "patternProperties": {
+                    "^CON": {
+                        "type": "object",
+                        "description": "The external state of one container asset, named by its world state ID",
+                        "$ref": "#/definitions/Model/containerstate"
+                    }
+                }
+            },
+            "containerstatearray": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/Model/containerstateexternal"
+                },
+                "minItems": 0,
+                "description": "Array of container states, can mix asset classes"
+            }
+        }
+    }
+}
