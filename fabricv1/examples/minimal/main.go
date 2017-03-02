@@ -20,11 +20,12 @@ package main
 
 import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	iot "github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatform"
+	pb "github.com/hyperledger/fabric/protos/peer"
+	iot "github.com/ibm-watson-iot/blockchain-samples/fabricv1/platform"
 )
 
 // Update the path to match your configuration
-//go:generate go run /local-dev/src/github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatform/scripts/processSchema.go -debug
+//go:generate go run /local-dev/src/github.com/ibm-watson-iot/blockchain-samples/fabricv1/platform/scripts/processSchema.go
 
 // SimpleChaincode is the receiver for all shim API
 type SimpleChaincode struct {
@@ -45,18 +46,13 @@ func main() {
 }
 
 // Init is called in deploy mode and calls the router's Init function
-func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-	return iot.Init(stub, function, args, CONTRACTVERSION)
+func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
+	return iot.Init(stub, CONTRACTVERSION)
 }
 
 // Invoke is called in invoke mode and calls the router's Invoke function
-func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-	return iot.Invoke(stub, function, args)
-}
-
-// Query is called in query mode and calls the router's Query function
-func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-	return iot.Query(stub, function, args)
+func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
+	return iot.Invoke(stub)
 }
 
 func init() {
