@@ -89,13 +89,13 @@ class AppContext {
      * @param  {string} argv -- the function to be invoked on the contract inside the Init() method
      */
     deploy(func, argv) {
-        return deploy.deploy(func, argv);
+        return deploy.deploy(this, func, argv);
     }
 
 }
 
-module.exports.newAppContext = function(name, user, client) {
-    return new AppContext(name, user, client);
+module.exports.newAppContext = function(name, user) {
+    return new AppContext(name, user);
 }
 
 module.exports.getQProp = function(obj, str) {
