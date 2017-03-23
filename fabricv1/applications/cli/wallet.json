@@ -1,0 +1,35 @@
+{
+    "name": "admin",
+    "secret": "adminpw",
+    "myKeyValueStore": "/tmp/fabric-client-kvs",
+    "myOrganization": {
+        "name": "Organization 1",
+        "mspid": "MSP1",
+        "ca": "http://localhost:7054",
+        "endorsers": [{
+                "name": "peer1",
+                "requests": "grpc://localhost:7051",
+                "events": "grpc://localhost:7053"
+            },
+            {
+                "name": "peer2",
+                "requests": "grpc://localhost:7056",
+                "events": "grpc://localhost:7058"
+            }
+        ]
+    },
+    "myOrderers": [{
+        "name": "orderer1",
+        "uri": "grpc://localhost:7050"
+    }],
+    "myChannel": {
+        "description": "this is the channel for the minimal sample contract",
+        "channelID": "CHANMIN1",
+        "chaincodeID": "minimalcontract1"
+    },
+    "myContract": {
+        "description": "using the minimal sample from the Watson IoT contract platform",
+        "chaincodeID": "minimal1",
+        "chaincodePath": "github.com/ibm-watson-iot/blockchain-samples/fabricv1/examples/minimal"
+    }
+}
