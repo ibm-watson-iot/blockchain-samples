@@ -18,9 +18,9 @@ var hfc = require('fabric-client');
 //var hfcca = require('fabric-ca');
 var sdk = require("../cpsdk/cpsdk.js");
 var utils = require('fabric-client/lib/utils.js');
-var log4js = require('log4js');
 
 var client = new hfc();
+var log4js = require('log4js');
 var logger = log4js.getLogger('CLI');
 logger.setLevel('DEBUG');
 
@@ -28,15 +28,24 @@ var command = process.argv[2]
 var func = process.argv[3]
 var payload = process.argv[4]
 
-logger.debug("%s %s(%s)", command.toUpperCase(), func, payload)
+logger.debug("%s %s %s", command, func, payload)
 
 var user = require("./wallet.json")
 var appc = sdk.newAppContext("IOT Contract Platform CLI", user);
 
 switch (command) {
-    case "deploy":
-        result = appc.deploy(func, payload);
-        logger.debug("Deploy result: ", result);
+    case "chanHeight":
+        result = appc.chanHeight(func);
+        logger.debug("ChanHeight result: ", result);
+        break;
+    case "blocks":
+        // func==from payload==to
+        result = appc.blocks(func, payload);
+        logger.debug("Blocks result: ", result);
+        break;
+    case "newChan":
+        result = appc.newChan();
+        logger.debug("Newchan result: ", result);
         break;
     case "test":
         testcli();

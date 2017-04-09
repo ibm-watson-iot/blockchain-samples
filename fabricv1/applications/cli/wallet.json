@@ -7,21 +7,24 @@
         "mspid": "MSP1",
         "ca": "http://localhost:7054",
         "endorsers": [{
-                "name": "peer1",
+                "name": "peer0",
                 "requests": "grpc://localhost:7051",
-                "events": "grpc://localhost:7053"
+                "events": "grpc://localhost:7053",
+                "tls_cacerts": "../../test/fixtures/tls/peers/peer0/ca-cert.pem"
             },
             {
-                "name": "peer2",
+                "name": "peer1",
                 "requests": "grpc://localhost:7056",
-                "events": "grpc://localhost:7058"
+                "events": "grpc://localhost:7058",
+                "tls_cacerts": "../../test/fixtures/tls/peers/peer1/ca-cert.pem"
             }
         ]
     },
-    "myOrderers": [{
+    "myOrderer": {
         "name": "orderer1",
-        "uri": "grpc://localhost:7050"
-    }],
+        "uri": "grpc://localhost:7050",
+        "tls_cacerts": "../../test/fixtures/tls/orderer/ca-cert.pem"
+    },
     "myChannel": {
         "description": "this is the channel for the minimal sample contract",
         "channelID": "CHANMIN1",

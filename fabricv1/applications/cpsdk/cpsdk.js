@@ -21,6 +21,8 @@ var Peer = require('fabric-client/lib/Peer.js');
 var Orderer = require('fabric-client/lib/Orderer.js');
 var EventHub = require('fabric-client/lib/EventHub.js');
 var log4js = require('log4js');
+var fs = require('fs');
+var path = require('path');
 
 // for TLS
 process.env.GRPC_SSL_CIPHER_SUITES = process.env.GRPC_SSL_CIPHER_SUITES ?
@@ -34,13 +36,14 @@ process.env.GRPC_SSL_CIPHER_SUITES = process.env.GRPC_SSL_CIPHER_SUITES ?
     'ECDHE-ECDSA-AES256-SHA384:' +
     'ECDHE-ECDSA-AES256-GCM-SHA384';
 
-// var createChan = require('./create-channel.js');
-// var joinChan = require('./join-channel.js');
-// var installCC = require('./install-chaincode.js');
-// var instantiateCC = require('./instantiate-chaincode.js');
+var newChan = require('./newchan.js');
+//var joinChan = require('./joinchan.js');
+var channel = require('./channel.js');
+//var installCC = require('./installcc.js');
+//var instantiateCC = require('./instantiatess.js');
 //var invoke = require('./invoke.js');
 //var query = require('./query.js');
-var deploy = require('./deploy.js');
+//var deploy = require('./deploy.js');
 var client = new hfc();
 var logger = log4js.getLogger('IOTCPSDK');
 logger.setLevel('DEBUG');
@@ -65,31 +68,47 @@ class AppContext {
             throw new Error(err);
         }
         this.user = user;
+
+        this._myChain = null;
+
         logger.debug("IOTCP SDK Instantiated as [%s] with wallet [%s]", this.name, JSON.stringify(this.user).substr(0, 30) + "...");
     }
 
+    // user based info
     get myUserName() { return this.user["name"] }
     get myUserSecret() { return this.user["secret"] }
-
     get myKeyValueStore() { return this.user["myKeyValueStore"] }
     get myORGName() { return this.user["myOrganization"]["name"] }
-    get myChannelID() { return this.user["myChannel"]["channelID"] }
-    get myContractID() { return this.user["myContract"]["chaincodeID"] }
-    get myContractPath() { return this.user["myContract"]["chaincodePath"] }
-    get myOrdererName() { return this.user["myOrderers"][0]["name"] }
-    get myOrdererURI() { return this.user["myOrderers"][0]["uri"] }
+
+    // targeted fabric info
+    get myOrdererName() { return this.user["myOrderer"]["name"] }
+    get myOrdererURI() { return this.user["myOrderer"]["uri"] }
+    get myOrdererCACertsPath() { return this.user["myOrderer"]["tls_cacerts"] }
     get myEndorserName() { return this.user["myOrganization"]["endorsers"][0]["name"] }
     get myEndorserURIRequests() { return this.user["myOrganization"]["endorsers"][0]["requests"] }
     get myEndorserURIEvents() { return this.user["myOrganization"]["endorsers"][0]["events"] }
+    get myEndorserCACertsPath() { return this.user["myOrganization"]["endorsers"][0]["tls_cacerts"] }
     get myCAURI() { return this.user["myOrganization"]["ca"] }
     get myMSPID() { return this.user["myOrganization"]["mspid"] }
 
-    /**
-     * @param  {stringarray} func -- parameters for func
-     * @param  {string} argv -- the function to be invoked on the contract inside the Init() method
-     */
-    deploy(func, argv) {
-        return deploy.deploy(this, func, argv);
+    // targeted channel info
+    get myChannelID() { return this.user["myChannel"]["channelID"] }
+    get myContractID() { return this.user["myContract"]["chaincodeID"] }
+    get myContractPath() { return this.user["myContract"]["chaincodePath"] }
+    get myContractID() { return this.user["myContract"]["chaincodeID"] }
+
+    get myChain() { 
+        if ( this._myChain === null) {
+            this._myChain = client.newChain(this.myChannelID);
+        }
+        return this._myChain;
+    }
+
+    // methods for channel manipulation and monitoring
+    chanHeight() { return channel.chanHeight(this) }
+    blocks(from, to) { return channel.blocks(this, from, to) }
+    newChan(channame) {
+        return channel.newchan(this, channame);
     }
 
 }

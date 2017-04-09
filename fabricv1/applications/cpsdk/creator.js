@@ -37,6 +37,11 @@ module.exports.getCreator = function(client, appc) {
                 logger.info('Successfully loaded member from persistence');
                 return user;
             } else {
+				// Need to enroll it with CA server
+				var tlsOptions = {
+					trustedRoots: [appc.certificate],
+					verify: false
+				};
                 var ca_client = new copService(appc.myCAURI);
                 // need to enroll it with CA server
                 return ca_client.enroll({
