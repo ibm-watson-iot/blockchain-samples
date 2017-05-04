@@ -1,0 +1,110 @@
+[{
+        "id": "4dd52f21.3875d",
+        "type": "ibmiot out",
+        "z": "58b9efe5.a7569",
+        "authentication": "boundService",
+        "apiKey": "",
+        "outputType": "evt",
+        "deviceId": "POISSON1",
+        "deviceType": "PoissonTraffic",
+        "eventCommandType": "update",
+        "format": "json",
+        "data": "{\"d\":{\"myName\":\"Arduino Uno\", \"temperature\":989}}",
+        "qos": "2",
+        "name": "Send to IBM IoT Platform",
+        "service": "registered",
+        "x": 781,
+        "y": 489,
+        "wires": []
+    },
+    {
+        "id": "3d020f20.2cc2",
+        "type": "inject",
+        "z": "58b9efe5.a7569",
+        "name": "Send Data",
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 184,
+        "y": 386,
+        "wires": [
+            ["923d7fd4.a1fa"]
+        ]
+    },
+    {
+        "id": "923d7fd4.a1fa",
+        "type": "function",
+        "z": "58b9efe5.a7569",
+        "name": "Device payload",
+        "func": "// Array of pseudo random tilts\nvar tilt = [-2,-1.5,-91,0,180,180,0,89,90,91];\n\n// Array of pseudo random gforces\nvar gforce = [0,5,4,3,0,3,0,3.66,0,2.1];\n\n// array of assetIDs\nvar assets = [\"00001\", \"00002\", \"00003\", \"00004\", \"00005\", \"00006\", \"00007\", \"00008\", \"00009\", \"00010\", \"00011\", \"00012\", \"00013\", \"00014\", \"00015\", \"00016\", \"00017\", \"00018\"];\n\nvar iasset = Math.floor(Math.random()*assets.length);\nvar itilt = Math.floor(Math.random()*tilt.length);\nvar igforce = Math.floor(Math.random()*gforce.length);\nvar lat = Math.random() * (46 - 44) + 44;\nvar long = Math.random() * (-80 + 71) -80;\n// Create MQTT message in JSON\nmsg = {\n  payload: JSON.stringify(\n    {\n      d:{\n        \"skit\" : assets[iasset],\n        \"force\" : gforce[igforce],\n        \"tilt\" : tilt[itilt],\n        \"location\" :\n        {\n          \"longitude\" : long,\n          \"latitude\" : lat\n        },\n      }\n    }\n  )\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 399,
+        "y": 387,
+        "wires": [
+            ["298554fa.5d4ffc"]
+        ]
+    },
+    {
+        "id": "85059e66.c2da6",
+        "type": "debug",
+        "z": "58b9efe5.a7569",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 783,
+        "y": 603,
+        "wires": []
+    },
+    {
+        "id": "23ef6ba7.5a9434",
+        "type": "comment",
+        "z": "58b9efe5.a7569",
+        "name": "Device Simulator",
+        "info": "Sends simulated device sensor data to IBM Watson IoT Plaform.\n\nCan be configured to send on click or on an automatic interval.\n\n\n#Prerequisite\nOutput node device type and device ID need to match a device that it registered in a running IBM Watson IoT Platform service.\n\n# Watson IoT Platform docs\n[Connecting devices](https://www.bluemix.net/docs/services/IoT/iotplatform_task.html)",
+        "x": 184,
+        "y": 306,
+        "wires": []
+    },
+    {
+        "id": "787239f2.c777c8",
+        "type": "comment",
+        "z": "58b9efe5.a7569",
+        "name": "1. Configure target",
+        "info": "",
+        "x": 647,
+        "y": 343,
+        "wires": []
+    },
+    {
+        "id": "a97c6f7.9255b9",
+        "type": "comment",
+        "z": "58b9efe5.a7569",
+        "name": "2. Click to send data",
+        "info": "To automatically send data:\n1. Change *Repeat* to interval.\n2. Click Deploy button.\n",
+        "x": 194,
+        "y": 426,
+        "wires": []
+    },
+    {
+        "id": "298554fa.5d4ffc",
+        "type": "function",
+        "z": "58b9efe5.a7569",
+        "name": "poisson delay",
+        "func": "function poisson(rate) {\n    return -Math.log(1.0 - Math.random()) / rate;\n}\n\nvar delay = poisson(1/0.15)*1000;\nmsg.delay = delay;\n\n// delay for an average of 3s\nsetTimeout(function(){node.send(msg);}, delay);",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 394,
+        "y": 598,
+        "wires": [
+            ["923d7fd4.a1fa",
+                "85059e66.c2da6",
+                "4dd52f21.3875d"
+            ]
+        ]
+    }
+]
