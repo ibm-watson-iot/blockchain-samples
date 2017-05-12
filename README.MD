@@ -1,5 +1,7 @@
 # Blockchain Samples
 
+**NOTE** that this project contains mainly Fabric v0.6 compatible work. There is a FabricV1 subfolder for early work on a port to the new Hyperledger Fabric, however that work is in early states and is not to be used at this time. Updates to follow.
+
 This project contains samples of blockchain smart contracts and blockchain applications for the [Hyperledger](https://github.com/hyperledger) [fabric](https://github.com/hyperledger/fabric). 
 
 Purpose:
