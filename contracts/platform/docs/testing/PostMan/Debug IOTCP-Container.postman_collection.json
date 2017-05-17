@@ -1,0 +1,686 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Debug IOTCP:Container",
+		"_postman_id": "4f52c63a-af0c-f800-d31a-bb90850465b0",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Enroll User",
+			"request": {
+				"url": "{{URL}}/registrar",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"enrollId\": \"user_type1_0\",\r\n  \"enrollSecret\": \"774f058c7e\"\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Deploy",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"deploy\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"path\":\"{{path}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"init\",\r\n            \"args\":[\"{\\\"version\\\":\\\"{{version}}\\\",\\\"nickname\\\":\\\"{{nickname}}\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Deploy mycc",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"deploy\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"mycc\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"initContract\",\r\n            \"args\":[\"{\\\"version\\\":\\\"0.1\\\",\\\"nickname\\\":\\\"CTIOTSample\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Deploy IOTCPSample Github",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"deploy\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"path\":\"https://github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatformsample\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"initContract\",\r\n            \"args\":[\"{\\\"version\\\":\\\"0.1\\\",\\\"nickname\\\":\\\"IOTCPSample\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "setLoggingLevel=DEBUG",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"setLoggingLevel\",\r\n            \"args\":[\"{\\\"logLevel\\\":\\\"DEBUG\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "setCreateOnUpdate=false",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"setCreateOnUpdate\",\r\n            \"args\":[\"{\\\"createOnUpdate\\\":false}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readContractState",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readContractState\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAllRoutes",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllRoutes\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAssetSamples",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAssetSamples\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAssetSchemas",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAssetSchemas\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readContractObjectModel",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readContractObjectModel\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readRecentStates",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readRecentStates\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAssetHistory",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAssetHistoryContainer\",\r\n            \"args\":[\"{\\\"container\\\":{\\\"barcode\\\":\\\"12345\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAllAssets",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsContainer\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAllAssets filtered",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssetsContainer\",\r\n            \"args\":[{\"\\\"filter\\\":{\\\"matchmode\\\":\\\"ALL\\\", \\\"entries\\\":[{\\\"qprop\\\":\\\"container.carrier\\\",\\\"value\\\":\\\"UPS\\\"}]}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "createAsset",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"createAssetContainer\",\r\n            \"args\":[\"{\\\"container\\\":{\\\"barcode\\\":\\\"12345\\\",\\\"temperature\\\":3}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "createAsset testValidation=true",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"createAsset\",\r\n            \"args\":[\"{\\\"assetID\\\":\\\"IOT2\\\",\\\"testValidation\\\":true}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readAsset",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAssetContainer\",\r\n            \"args\":[\"{\\\"container\\\":{\\\"barcode\\\":\\\"12345\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "updateAsset temp -1",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"updateAssetContainer\",\r\n            \"args\":[\"{\\\"container\\\":{\\\"barcode\\\":\\\"12345\\\",\\\"temperature\\\":-1}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "updateAsset temp=1",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"updateAssetContainer\",\r\n            \"args\":[\"{\\\"container\\\":{\\\"barcode\\\":\\\"12345\\\",\\\"temperature\\\":1}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "updateAsset testValidation=true",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"updateAsset\",\r\n            \"args\":[\"{\\\"assetID\\\":\\\"IOT2\\\",\\\"testValidation\\\":true}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "deleteAsset",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"deleteAssetContainer\",\r\n            \"args\":[\"{\\\"container\\\":{\\\"barcode\\\":\\\"123456\\\"}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "deleteAllAssets",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"deleteAllAssetsContainer\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "updateAsset delproptest=\"to test deletePropertiesFromAsset\"",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"updateAssetContainer\",\r\n            \"args\":[\"{\\\"container\\\":{\\\"barcode\\\":\\\"12345\\\",\\\"extension\\\":{\\\"delproptest\\\":\\\"to test deletePropertiesFromAsset\\\"}}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "deletePropertiesFromAsset extension.delproptest",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"deletePropertiesFromAssetContainer\",\r\n            \"args\":[\"{\\\"container\\\":{\\\"barcode\\\":\\\"12345\\\"}, \\\"qprops\\\":[\\\"container.extension.delproptest\\\"]}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "readWorldState",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readWorldState\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "CLEARWorldState ***WARNING***",
+			"request": {
+				"url": "{{URL}}/chaincode",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"invoke\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"deleteWorldState\",\r\n            \"args\":[]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
