@@ -26,7 +26,32 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"enrollId\": \"user_type1_0\",\r\n  \"enrollSecret\": \"774f058c7e\"\r\n}"
+					"raw": "{\r\n  \"enrollId\": \"user_type1_0\",\r\n  \"enrollSecret\": \"518383c605\"\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "chain height",
+			"request": {
+				"url": "{{URL}}/chain",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
 				},
 				"description": ""
 			},
@@ -83,7 +108,7 @@
 			"response": []
 		},
 		{
-			"name": "Deploy IOTCPSample Github",
+			"name": "Deploy T&T Github",
 			"request": {
 				"url": "{{URL}}/chaincode",
 				"method": "POST",
@@ -101,7 +126,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"deploy\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"path\":\"https://github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatformsample\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"initContract\",\r\n            \"args\":[\"{\\\"version\\\":\\\"0.1\\\",\\\"nickname\\\":\\\"IOTCPSample\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"deploy\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"path\":\"https://github.com/ibm-watson-iot/blockchain-samples/contracts/industry/trackandtrace\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"initContract\",\r\n            \"args\":[\"{\\\"version\\\":\\\"0.1\\\",\\\"nickname\\\":\\\"PBFT_track_trace\\\"}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
 				},
 				"description": ""
 			},
@@ -366,7 +391,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssets\",\r\n            \"args\":[\"{\\\"filter\\\":{\\\"match\\\":\\\"all\\\", \\\"select\\\":[{\\\"qprop\\\":\\\"asset.carrier\\\",\\\"value\\\":\\\"UPS\\\"}]}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
+					"raw": "{\r\n    \"jsonrpc\": \"2.0\",\r\n    \"method\": \"query\",\r\n    \"params\": {\r\n        \"type\": 1,\r\n        \"chaincodeID\":{\r\n            \"name\":\"{{contract}}\"\r\n        },\r\n        \"ctorMsg\": {\r\n            \"function\":\"readAllAssets\",\r\n            \"args\":[\"{\\\"filter\\\":{\\\"match\\\":\\\"any\\\", \\\"select\\\":[{\\\"qprop\\\":\\\"assetstate.asset.carrier\\\",\\\"value\\\":\\\"Famer Al\\\"}]}}\"]\r\n        },\r\n        \"secureContext\": \"{{securecontext}}\"\r\n    },\r\n    \"id\":1234\r\n}"
 				},
 				"description": ""
 			},
@@ -423,7 +448,7 @@
 			"response": []
 		},
 		{
-			"name": "updateAsset temp -1",
+			"name": "updateAsset allerts raised",
 			"request": {
 				"url": "{{URL}}/chaincode",
 				"method": "POST",
