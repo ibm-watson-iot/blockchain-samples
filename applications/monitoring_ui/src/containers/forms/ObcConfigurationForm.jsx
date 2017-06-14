@@ -39,7 +39,7 @@ class ObcConfigurationForm extends React.Component {
 
     let idWithoutSpaces = obcConfiguration.chaincodeId.replace(/ /g,'');
     //submit if the length is correct
-    if(idWithoutSpaces.length === 128 || idWithoutSpaces == "mycc"){
+    if(idWithoutSpaces.length > 0 || idWithoutSpaces == "mycc"){
       this.props.dispatch(actions.change('obcConfiguration.chaincodeId',obcConfiguration.chaincodeId.replace(/ /g,'')));
 
       let config = Object.assign({}, obcConfiguration, {
