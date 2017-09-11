@@ -1,0 +1,7 @@
+{
+    "id": "https://github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractminimalsample/minimal.json",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "definitions": {
+        "$ref": "github.com/ibm-watson-iot/blockchain-samples/contracts/platform/iotcontractplatform/schema/IOTCPschema.json/#definitions"
+    }
+}
