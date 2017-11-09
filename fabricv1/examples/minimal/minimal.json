@@ -1,7 +1,0 @@
-{
-    "id": "https://github.com/ibm-watson-iot/blockchain-samples/fabricv1/examples/minimal/minimal.json",
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "definitions": {
-        "$ref": "github.com/ibm-watson-iot/blockchain-samples/fabricv1/platform/schema/IOTCPschema.json/#definitions"
-    }
-}

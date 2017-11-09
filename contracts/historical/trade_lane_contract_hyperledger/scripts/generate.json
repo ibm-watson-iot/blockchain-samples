@@ -1,0 +1,36 @@
+{
+  "schemas": {
+    "schemaFilename": "payloadschema.json",
+    "goSchemaFilename": "schemas.go",
+    "API": [
+      "init",
+      "createAsset",
+      "updateAsset",
+      "deleteAsset",
+      "deletePropertiesFromAsset",
+      "deleteAllAssets",
+      "readAsset",
+      "readAllAssets",
+      "readAssetHistory",
+      "readRecentStates",
+      "setLoggingLevel",
+      "setCreateOnUpdate"
+    ],
+    "goSchemaElements": [
+      "assetIDandCount",
+      "assetIDKey",
+      "initEvent",
+      "event",
+      "state"
+    ]
+  },
+  "samples": {
+    "goSampleFilename": "samples.go",
+    "goSampleElements": [
+      "initEvent",
+      "event",
+      "state",
+      "contractState"
+    ]
+  }
+}
