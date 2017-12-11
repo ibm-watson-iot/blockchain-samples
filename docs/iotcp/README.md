@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Watson IoT blockchain samples currently fall into three broad categories:
+Watson IoT Contract Platform samples currently fall into three broad categories:
 
 - simple single-asset hello world sample
 - simple single-asset sample with numerous additional features
