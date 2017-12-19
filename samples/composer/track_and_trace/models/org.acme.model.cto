@@ -1,0 +1,76 @@
+/**
+ * Defines a data model for the track and trace network
+ */
+namespace org.acme.model
+
+// the status of a shipment
+enum ShipmentStatus {
+  o CREATED
+  o IN_TRANSIT
+  o ARRIVED
+}
+
+// an abstract transaction that is related to the shipment
+abstract transaction ShipmentTransaction {
+  --> SurgicalKit surgicalKit
+}
+
+// a tilt reading of the surgical kit during shipment
+transaction TiltReading extends ShipmentTransaction {
+  o Double tilt
+}
+
+// a force reading of the surgical kit during shipment
+transaction ForceReading extends ShipmentTransaction {
+  o Double force
+}
+
+// a notification that the shipment has been received
+transaction ShipmentReceived extends ShipmentTransaction {
+}
+
+// a log of the surgical kits movement within the hospital
+transaction KitMovement {
+  o String movementId
+  o Double longitude
+  o Double latitude
+  --> SurgicalKit surgicalKit
+}
+ 
+// a surgical kit being tracked as an asset on the ledger
+asset SurgicalKit identified by surgicalKitId {
+  o String surgicalKitId
+  o ShipmentStatus status
+  o TiltReading[] tiltReadings optional
+  o ForceReading[] forceReadings optional
+  --> Contract contract
+}
+
+//Defines a contract between the shipper and the hospital in relation to the surgical kit
+asset Contract identified by contractId {
+  o String contractId
+  --> Shipper shipper
+  --> Hospital hospital
+  o DateTime arrivalDateTime
+  o Double maxTilt
+  o Double maxForce
+}
+
+// a participant 
+participant Hospital identified by email {
+  o String email
+  o String firstName
+  o String lastName
+  o Double geoLong
+  o Double geoLat
+  o Double geoRadius
+  o Double numOfKits
+}
+
+// a participant
+participant Shipper identified by email {
+  o String email
+  o String firstName
+  o String lastName
+  o Double numOfKits
+}
