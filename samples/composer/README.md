@@ -1,5 +1,5 @@
 # Composer Samples
-This project contains samples of IoT Blockchain composer contracts that are compatible with Fabric v1.0 and Hyperledger Composer v0.13.2. Use the above samples to explore the uses of IoT Blockchain and Composor.
+This project contains samples of IoT Blockchain composer contracts that are compatible with Fabric v1.0 and Hyperledger Composer v0.13.2. Use the above samples to explore the uses of IoT Blockchain and Composer.
 
 ## Steps for Use
 Follow the steps below to convert a contract folder into a ready-to-deploy .bna file.  
