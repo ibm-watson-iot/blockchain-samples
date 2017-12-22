@@ -1,0 +1,104 @@
+/**
+ * Sample IoT business network definition for supply chain.
+ */
+namespace org.poc.scbn
+
+asset IoTDevice identified by deviceId {
+  o String deviceId
+  o String description optional
+  o DateTime date optional
+  o DateTime time optional
+  o Double altitude optional
+  o Double accelX optional
+  o Double accelY optional
+  o Double accelZ optional
+  o Double latitude optional
+  o Double longitude optional
+  o Double temperature optional
+  o Double humidity optional
+  o Integer eventCode optional
+  o String shipmentId optional
+  --> SupplyChainParticipant participant optional
+}
+
+participant SupplyChainParticipant identified by email {
+  o String email
+  o String name
+}
+
+transaction CreateIoTDevice {
+  o String deviceId
+  o String description optional
+  o DateTime date optional
+  o DateTime time optional
+  o Double altitude optional
+  o Double accelX optional
+  o Double accelY optional
+  o Double accelZ optional
+  o Double latitude optional
+  o Double longitude optional
+  o Double temperature optional
+  o Double humidity optional
+  o Integer eventCode optional
+  o String shipmentId optional
+  --> SupplyChainParticipant participant optional
+}
+
+transaction IoTDeviceReading {
+  o String deviceId
+  o String description optional
+  o DateTime date optional
+  o DateTime time optional
+  o Double altitude optional
+  o Double accelX optional
+  o Double accelY optional
+  o Double accelZ optional
+  o Double latitude optional
+  o Double longitude optional
+  o Double temperature optional
+  o Double humidity optional
+  o Integer eventCode optional
+  o String shipmentId optional
+  --> SupplyChainParticipant participant optional
+}
+
+event IoTUpdateEvent {
+  o String deviceId
+  o String description optional
+  o DateTime date optional
+  o DateTime time optional
+  o Double altitude optional
+  o Double accelX optional
+  o Double accelY optional
+  o Double accelZ optional
+  o Double latitude optional
+  o Double longitude optional
+  o Double temperature optional
+  o Double humidity optional
+  o Integer eventCode optional
+  o String shipmentId optional
+  --> SupplyChainParticipant participant optional
+}
+
+event IoTDeviceCreatedEvent {
+  o String deviceId
+  o String description optional
+  o DateTime date optional
+  o DateTime time optional
+  o Double altitude optional
+  o Double accelX optional
+  o Double accelY optional
+  o Double accelZ optional
+  o Double latitude optional
+  o Double longitude optional
+  o Double temperature optional
+  o Double humidity optional
+  o Integer eventCode optional
+  o String shipmentId optional
+  --> SupplyChainParticipant participant optional
+}
+
+event LogInfoEvent {
+  o String message
+  o String payload
+}
