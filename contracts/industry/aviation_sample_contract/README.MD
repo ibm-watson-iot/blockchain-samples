@@ -7,7 +7,7 @@ The aviation scenario is as follows:
 
 - Three primary asset classes:
     - Airline -- owns zero to many aircraft
-    - Aircraft -- encompasses zero ro many assemblies
+    - Aircraft -- encompasses zero to many assemblies
     - Assembly -- landing gear, wing, etc. These are life limited parts.
 - The CRUD features for each asset are abstracted in the module [assetCommon.go](./assetCommon.go), which makes heavy use of abstracted services in [crudCommon.go](./crudCommon.go)  
 - each asset follows the *partial state as event* pattern, where the asset's writable properties make up its primary `event` to be passed to create and update
