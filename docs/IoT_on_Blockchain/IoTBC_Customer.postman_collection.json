@@ -2,7 +2,7 @@
 	"info": {
 		"name": "IoTBC_Customer",
 		"_postman_id": "f148207f-35fb-303b-4b72-64b2dcdc7614",
-		"description": "API calls for IoT Blockchain Adaptor",
+		"description": "API calls for IoT Blockchain Service",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
