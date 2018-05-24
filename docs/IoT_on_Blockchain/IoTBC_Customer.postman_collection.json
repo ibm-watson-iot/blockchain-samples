@@ -1,0 +1,1087 @@
+{
+	"info": {
+		"name": "IoTBC_Customer",
+		"_postman_id": "f148207f-35fb-303b-4b72-64b2dcdc7614",
+		"description": "API calls for IoT Blockchain Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1 Fabrics",
+			"item": [
+				{
+					"name": "all fabrics",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic get_your_own_aXNyYW1vc0B1cy5pYm0uY29tOnYxNHIwMThmYzA="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/fabrics",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"fabrics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "new callback",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"type": "any"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic get_your_own_aXNyYW1vc0B1cy5pYm0uY29tOmZmcnp2c2psaDU="
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"defaultCallback\",\n    \"type\": \"http\",\n    \"peers\": [\n        {\n            \"url\": \"https://request-viewer.mybluemix.net\",\n            \"method\": \"POST\",\n            \"headers\": {\n                \"x-testing\": \"I am a header\",\n                \"Content-Type\": \"application/json\"\n            },\n            \"username\": \"myUser\",\n            \"password\": \"pass1234\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/fabrics/",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"fabrics",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "one fabrics",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic get_your_own_aXNyYW1vc0B1cy5pYm0uY29tOjRmN25kZjNyaHU="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/fabrics/k8sFabric",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"fabrics",
+								"k8sFabric"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete fabric",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic Y2NvcmxleUB1cy5pYm0uY29tOmUyNWM1bnE4czU="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/fabrics/k8sFabric",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"fabrics",
+								"k8sFabric"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2 Routes",
+			"item": [
+				{
+					"name": "all routes",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic get_your_own_aXNyYW1vc0B1cy5pYm0uY29tOjRmN25kZjNyaHU="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/routes",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"routes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "one route",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic get_your_own_aXNyYW1vc0B1cy5pYm0uY29tOnJmMGF5aGY2b2w="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/routes/appType/appEvent",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"routes",
+								"appType",
+								"appEvent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "new route iot-device-create",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"type": "any"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic Y29ybGV5MkB1cy5pYm0uY29tOnA2MzlkY2F1aDU="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"deviceType\": \"iotsensor_device\",\n  \"eventId\": \"CreateIoTDevice\",\n  \"fabricName\": \"k8sFabric\",\n  \"dataMap\": [\n    {\n      \"output\": \"json\",\n      \"mappings\": [\n        {\n          \"deviceKey\": \"$class\",\n          \"chaincodeKey\": \"$class\",\n          \"required\": true,\n          \"default\": \"org.poc.scbn.CreateIoTDevice\"\n        },\n        {\n          \"deviceKey\": \"server.uuid\",\n          \"chaincodeKey\": \"transactionId\",\n          \"required\": false\n        },\n        {\n          \"deviceKey\": \"deviceId\",\n          \"chaincodeKey\": \"deviceId\",\n          \"required\": true\n        },\n        {\n          \"deviceKey\": \"description\",\n          \"chaincodeKey\": \"description\",\n          \"required\": false\n        },\n        {\n          \"deviceKey\": \"date\",\n          \"chaincodeKey\": \"date\",\n          \"required\": false\n        },\n        {\n          \"deviceKey\": \"time\",\n          \"chaincodeKey\": \"time\",\n          \"required\": false\n        },\n        {\n          \"deviceKey\": \"altitude\",\n          \"chaincodeKey\": \"altitude\",\n          \"required\": false\n        },\n        {\n          \"deviceKey\": \"accelX\",\n          \"chaincodeKey\": \"accelX\",\n          \"required\": false\n        },\n        {\n          \"deviceKey\": \"accelY\",\n          \"chaincodeKey\": \"accelY\",\n          \"required\": false\n        },\n        {\n          \"deviceKey\": \"accelZ\",\n          \"chaincodeKey\": \"accelZ\",\n          \"required\": false\n        },\n        {\n          \"deviceKey\": \"humidity\",\n          \"chaincodeKey\": \"humidity\",\n          \"required\": false\n        },\n        {\n          \"deviceKey\": \"latitude\",\n          \"chaincodeKey\": \"latitude\",\n          \"required\": false\n        },\n        {\n          \"deviceKey\": \"longitude\",\n          \"chaincodeKey\": \"longitude\",\n          \"required\": false\n        },\n        {\n          \"deviceKey\": \"eventCode\",\n          \"chaincodeKey\": \"eventCode\",\n          \"required\": false\n        },\n        {\n          \"deviceKey\": \"shipmentId\",\n          \"chaincodeKey\": \"shipmentId\",\n          \"required\": false\n        },\n        {\n          \"deviceKey\": \"temperature\",\n          \"chaincodeKey\": \"temperature\",\n          \"required\": false\n        },\n        {\n          \"deviceKey\": \"timestamp\",\n          \"chaincodeKey\": \"timestamp\",\n          \"required\": true,\n          \"default\": \"server.timestamp\"\n        },\n        {\n          \"deviceKey\": \"participant\",\n          \"chaincodeKey\": \"participant\",\n          \"required\": false\n        }\n      ]\n    }\n  ],\n  \"notification\": {\n    \"notifyName\": \"defaultCallback\",\n    \"notifyAssetUpdate\": false,\n    \"notifySettlement\": false,\n    \"notifyContractEvent\": false\n  }\n}"
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/routes/iotsensor_device/CreateIoTDevice",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"routes",
+								"iotsensor_device",
+								"CreateIoTDevice"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "new route iot-device-reading",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"type": "any"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic Y29ybGV5MkB1cy5pYm0uY29tOnA2MzlkY2F1aDU="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"deviceType\": \"iotsensor_device\",\n    \"eventId\": \"IoTDeviceReading\",\n    \"fabricName\": \"k8sFabric\",\n    \"dataMap\": [\n        {\n            \"output\": \"json\",\n            \"mappings\": [\n                {\n                    \"deviceKey\": \"$class\",\n                    \"chaincodeKey\": \"$class\",\n                    \"required\": true,\n                    \"default\": \"org.poc.scbn.IoTDeviceReading\"\n                },\n                {\n                    \"deviceKey\": \"server.uuid\",\n                    \"chaincodeKey\": \"transactionId\",\n                    \"required\": false\n                },\n                {\n                    \"deviceKey\": \"deviceId\",\n                    \"chaincodeKey\": \"deviceId\",\n                    \"required\": true\n                },\n                {\n                    \"deviceKey\": \"description\",\n                    \"chaincodeKey\": \"description\",\n                    \"required\": false\n                },\n                {\n                    \"deviceKey\": \"date\",\n                    \"chaincodeKey\": \"date\",\n                    \"required\": false\n                },\n                {\n                    \"deviceKey\": \"time\",\n                    \"chaincodeKey\": \"time\",\n                    \"required\": false\n                },               \n                {\n                    \"deviceKey\": \"altitude\",\n                    \"chaincodeKey\": \"altitude\",\n                    \"required\": false\n                },               \n                {\n                    \"deviceKey\": \"accelX\",\n                    \"chaincodeKey\": \"accelX\",\n                    \"required\": false\n                },               \n                {\n                    \"deviceKey\": \"accelY\",\n                    \"chaincodeKey\": \"accelY\",\n                    \"required\": false\n                },               \n                {\n                    \"deviceKey\": \"accelZ\",\n                    \"chaincodeKey\": \"accelZ\",\n                    \"required\": false\n                },\n                {\n                    \"deviceKey\": \"humidity\",\n                    \"chaincodeKey\": \"humidity\",\n                    \"required\": false\n                }, \n                {\n                    \"deviceKey\": \"latitude\",\n                    \"chaincodeKey\": \"latitude\",\n                    \"required\": false\n                },               \n                {\n                    \"deviceKey\": \"longitude\",\n                    \"chaincodeKey\": \"longitude\",\n                    \"required\": false\n                },               \n                {\n                    \"deviceKey\": \"eventCode\",\n                    \"chaincodeKey\": \"eventCode\",\n                    \"required\": false\n                },\n                {\n                    \"deviceKey\": \"shipmentId\",\n                    \"chaincodeKey\": \"shipmentId\",\n                    \"required\": false\n                },\n                {\n                    \"deviceKey\": \"temperature\",\n                    \"chaincodeKey\": \"temperature\",\n                    \"required\": false\n                },\n                {\n                    \"deviceKey\": \"timestamp\",\n                    \"chaincodeKey\": \"timestamp\",\n                    \"required\": true,\n                    \"default\": \"server.timestamp\"\n                },\n                {\n                    \"deviceKey\": \"participant\",\n                    \"chaincodeKey\": \"participant\",\n                    \"required\": false\n                }\n            ]\n        }\n    ],\n\t\"notification\":\n\t{\n\t\t\"notifyName\": \"defaultCallback\",\n\t\t\"notifyAssetUpdate\": false,\n\t\t\"notifyContractEvent\": false,\n\t\t\"notifySettlement\": false\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/routes/iotsensor_device/IoTDeviceReading",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"routes",
+								"iotsensor_device",
+								"IoTDeviceReading"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete route",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"type": "any"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic Y29ybGV5QHVzLmlibS5jb206YzZnNTN4NzBhdg=="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/routes/iotsensor_device/CreateIoTDevice",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"routes",
+								"iotsensor_device",
+								"CreateIoTDevice"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3 Transactions",
+			"item": [
+				{
+					"name": "Transaction iot-device-create",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"type": "any"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic Y29ybGV5QHVzLmlibS5jb206YzZnNTN4NzBhdg=="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"$class\": \"org.poc.scbn.CreateIoTDevice\",\n        \"deviceId\": \"iotsensor1234 n\",\n        \"description\": \"Create iotsensor1234\",\n        \"date\": \"2017-09-26T01:50:29.455Z\",\n        \"time\": \"2017-09-26T01:50:29.455Z\",\n        \"altitude\": 10000,\n        \"accelX\": 9,\n        \"accelY\": 9,\n        \"accelZ\": 9,\n        \"latitude\": 59.675,\n        \"longitude\": 58.5,\n        \"temperature\": 59,\n        \"humidity\": 75,\n        \"eventCode\": 200,\n        \"shipmentId\": \"9128734765\"\n}"
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/tx/iotsensor_device/instance1/CreateIoTDevice",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"tx",
+								"iotsensor_device",
+								"instance1",
+								"CreateIoTDevice"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transaction iot-device-reading",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"type": "any"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic Y29ybGV5QHVzLmlibS5jb206YzZnNTN4NzBhdg=="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"msg\": {\n\t\t\"payload\": {\n        \t\"$class\": \"org.poc.scbn.IoTDeviceReading\",\n        \t\"asset\": \"resource:org.poc.scbn.IoTDevice#iotsensor\",\n        \t\"deviceId\": \"iotsensor1234 n\",\n        \t\"description\": \"iotsensor1234 reading\",\n        \t\"date\": \"2017-11-10T01:50:29.455Z\",\n        \t\"time\": \"2017-11-10T01:50:29.455Z\",\n        \t\"altitude\": 10000,\n        \t\"accelX\": 1,\n        \t\"accelY\": 1,\n        \t\"accelZ\": 1,\n        \t\"latitude\": 33.675,\n        \t\"longitude\": 34.5,\n        \t\"temperature\": 72,\n        \t\"humidity\": 30,\n        \t\"eventCode\": 200,\n        \t\"shipmentId\": \"326750\"\n\t\t}\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/tx/iotsensor_device/instance1/IoTDeviceReading",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"tx",
+								"iotsensor_device",
+								"instance1",
+								"IoTDeviceReading"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4 Logs",
+			"item": [
+				{
+					"name": "all logs",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic get_your_own_aXNyYW1vc0B1cy5pYm0uY29tOmJldGE="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/logs",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"logs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "all logs - filtered",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic get_your_own_aXNyYW1vc0B1cy5pYm0uY29tOjRmN25kZjNyaHU="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/logs?q=Http",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"logs"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "Http",
+									"equals": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "one transaction id",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic Y29ybGV5QHVzLmlibS5jb206YzZnNTN4NzBhdg=="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/logs/9ee3eee6-7f4f-4e9d-a257-6170f28f34c2",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"logs",
+								"9ee3eee6-7f4f-4e9d-a257-6170f28f34c2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get metrics",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic get_your_own_aXNyYW1vc0B1cy5pYm0uY29tOmJldGE="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/logs/metrics",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"logs",
+								"metrics"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5 Query",
+			"item": [
+				{
+					"name": "Query One Asset",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic get_your_own_aXNyYW1vc0B1cy5pYm0uY29tOjRmN25kZjNyaHU="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/composer/appType/appInstance/appEvent/org.acme.sample.SampleAsset/phone1",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"composer",
+								"appType",
+								"appInstance",
+								"appEvent",
+								"org.acme.sample.SampleAsset",
+								"phone1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Query All Assets",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic get_your_own_aXNyYW1vc0B1cy5pYm0uY29tOjRmN25kZjNyaHU="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/composer/appType/appInstance/appEvent/org.acme.sample.SampleAsset",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"composer",
+								"appType",
+								"appInstance",
+								"appEvent",
+								"org.acme.sample.SampleAsset"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Query All assets (alias)",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic get_your_own_aXNyYW1vc0B1cy5pYm0uY29tOjRmN25kZjNyaHU="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/q/appType/appEvent2/org.poc.maximo.Inspection",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"q",
+								"appType",
+								"appEvent2",
+								"org.poc.maximo.Inspection"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Query One Asset (alias)",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "{{user}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{pass}}",
+									"type": "string"
+								},
+								{
+									"key": "saveHelperData",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "showPassword",
+									"value": false,
+									"type": "boolean"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic get_your_own_aXNyYW1vc0B1cy5pYm0uY29tOjRmN25kZjNyaHU="
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{iotbc_url}}/{{api}}/q/appType/appEvent/org.acme.sample.SampleAsset/phone1",
+							"host": [
+								"{{iotbc_url}}"
+							],
+							"path": [
+								"{{api}}",
+								"q",
+								"appType",
+								"appEvent",
+								"org.acme.sample.SampleAsset",
+								"phone1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
