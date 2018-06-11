@@ -1,13 +1,14 @@
 {
 	"info": {
+		"_postman_id": "343bfe15-1f3c-4235-a531-84f0ab00525b",
 		"name": "IoTBC_Customer",
-		"_postman_id": "488f6a4e-5544-1a88-8303-ac094f3968a9",
-		"description": "API calls for IoT Blockchain Service",
+		"description": "The IBM IoT Blockchain Service API lets you configure and manage your IoT Blockchain Service environment by creating API keys, setting up routes and callbacks, execute transactions on Hyperledger Composer smart contracts, query your assets, and read organization logs. \n\nThe documentation for the endpoints as well as example responses can be found at [IBM IoT Blockchain Service API documentation](https://www.ibm.com/support/knowledgecenter/SSCG66/iot-blockchain/references/ref_apis.html?pos=2).",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "1 Fabrics",
+			"description": null,
 			"item": [
 				{
 					"name": "all fabrics",
@@ -97,9 +98,7 @@
 						],
 						"body": {
 							"mode": "file",
-							"file": {
-								"src": ""
-							}
+							"file": {}
 						},
 						"url": {
 							"raw": "{{iotbc_url}}/{{api}}/fabrics/k8sFabric?ip={{public_IP}}&type=composer016&description=IoT Supply Chain Sample Network",
@@ -114,18 +113,15 @@
 							"query": [
 								{
 									"key": "ip",
-									"value": "{{public_IP}}",
-									"equals": true
+									"value": "{{public_IP}}"
 								},
 								{
 									"key": "type",
-									"value": "composer016",
-									"equals": true
+									"value": "composer016"
 								},
 								{
 									"key": "description",
-									"value": "IoT Supply Chain Sample Network",
-									"equals": true
+									"value": "IoT Supply Chain Sample Network"
 								}
 							]
 						}
@@ -302,6 +298,7 @@
 		},
 		{
 			"name": "2 Routes",
+			"description": null,
 			"item": [
 				{
 					"name": "all routes",
@@ -584,6 +581,7 @@
 		},
 		{
 			"name": "3 Transactions",
+			"description": null,
 			"item": [
 				{
 					"name": "Transaction iot-device-create",
@@ -705,6 +703,7 @@
 		},
 		{
 			"name": "4 Logs",
+			"description": null,
 			"item": [
 				{
 					"name": "all logs",
@@ -809,8 +808,7 @@
 							"query": [
 								{
 									"key": "q",
-									"value": "Http",
-									"equals": true
+									"value": "Http"
 								}
 							]
 						}
@@ -927,6 +925,7 @@
 		},
 		{
 			"name": "5 Query",
+			"description": null,
 			"item": [
 				{
 					"name": "Query One Asset",
@@ -1153,6 +1152,87 @@
 					"response": []
 				}
 			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "username",
+				"value": "",
+				"type": "string"
+			},
+			{
+				"key": "password",
+				"value": "",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "cbc01efc-7036-47bb-b19b-8e845a3899ff",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "0ed05908-7707-4598-8a00-41868d28ea42",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "3d5358d6-d2d7-4388-9a04-b3ba807d591d",
+			"key": "iotbc_url",
+			"value": "https://iotbcprod.sao01.containers.appdomain.cloud",
+			"type": "string",
+			"description": ""
+		},
+		{
+			"id": "15a4bddb-7cde-46a2-ab07-b20a300fdb0d",
+			"key": "org",
+			"value": "<your_organization_id>",
+			"type": "string",
+			"description": ""
+		},
+		{
+			"id": "8e82f428-f8c7-4ffc-a967-384affb6e7c8",
+			"key": "user",
+			"value": "use-token-auth",
+			"type": "string",
+			"description": ""
+		},
+		{
+			"id": "dc226015-afbd-42c8-bccb-9eeee813e75a",
+			"key": "api",
+			"value": "api/v1/{{org}}",
+			"type": "string",
+			"description": ""
+		},
+		{
+			"id": "4149b90e-4a57-42e1-97e2-1a7d49623c2a",
+			"key": "public_IP",
+			"value": "<your_cluster_public_IP>",
+			"type": "string",
+			"description": ""
+		},
+		{
+			"id": "4522ba75-29d1-4e69-ad1a-25a20a4ba783",
+			"key": "pass",
+			"value": "<your_api_key>",
+			"type": "string",
+			"description": ""
 		}
 	]
 }
