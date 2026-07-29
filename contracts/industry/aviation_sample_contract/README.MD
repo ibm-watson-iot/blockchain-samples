@@ -20,7 +20,7 @@ The aviation scenario is as follows:
 - rules exist to track cycles and hard landings
     - ACHECK rule compares adjusted (by analytics) cycle counters to a dynamically configurable threshold, raising an alert as necessary, typically short time
     - BCHECK rule compares adjusted (by analytics) cycle counters to a dynamically configurable threshold, raising an alert as necessary, typically long time
-    - HARDLANDING rule raises an alert when a hard landing is known to have occured
+    - HARDLANDING rule raises an alert when a hard landing is known to have occurred
     
 - inspection events clear these alerts, note that bcheck clears both acheck and bcheck alerts
 

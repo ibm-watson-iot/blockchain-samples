@@ -82,7 +82,7 @@ Following is sample output from the event_ listener application that captures al
 ``` text
 vagrant@hyperledger-devenv:v0.0.11-b111ac5:/local-dev/src/github.com/ibm-watson-iot/blockchain-samples/applications/event_listener$ ./event_listener 
 Event Address: 0.0.0.0:7053
-Event client appears to have been succesfully created
+Event client appears to have been successfully created
 
 Received rejection
 &{Rejection:tx:<type:CHAINCODE_INVOKE chaincodeID:"\022\004mycc" payload:"\nW\010\001\022\006\022\004mycc\032=\n\013createAsset\n.{\"asset\":{\"assetID\":\"12345\",\"temperature\":-4}}*\014user_type1_0" txid:"558afcd2-e7d0-49d4-8d4e-f8dbfdc393fd" timestamp:<seconds:1480228360 nanos:580007792 > > errorMsg:"Transaction or query returned with failure: Invoke (createAsset) failed with error CreateAsset for class default asset DEF12345 asset already exists" }
