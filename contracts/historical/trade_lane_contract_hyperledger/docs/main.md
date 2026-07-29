@@ -43,7 +43,7 @@ Properties used by trade lane:
     * `assetID` - the ID of the asset that is the central focus of the contract, a good example being a container or package
 * Useful in all IoT contracts 
     * `location` - a `Geolocation` object containing the properties `latitude` and `longitude` specifying the last known location of the object
-    * `timestamp` - date and time that the event occured or state was created. 
+    * `timestamp` - date and time that the event occurred or state was created. 
     * `extension` - application-managed state as discussed elsewhere
 * Specific to trade lane's lightweight shipping scenario
     * `temperature` - an asset-specific measurement of the temperature in Celsuis. This example contract uses zero as the threshold value, inclusive. That is, any temperature above zero is too high. The example is meant to simulate shipment of frozen goods. This is used to demonstrate how alerts work, so a temperature above zero raises an `OVERTEMP` alert, which would cause inspection of the contents on arrival and possible penalties to the responsible carrier.

@@ -121,9 +121,9 @@ A monitor application could of course poll asset state constantly, maintaining t
 
 Instead, the extra information is embedded in the asset's state as the two rased and cleared arrays so that an application can ask for a specific historical period of states from the contract and process the returned list of states to find the moments of transition. 
 
-This is possible by looking at individual states without writing algorithms that remember previous states etc because the contract knows the previous alert status and isolates the single raise or clear moment in the alertstatus at the one state transition where it occured.
+This is possible by looking at individual states without writing algorithms that remember previous states etc because the contract knows the previous alert status and isolates the single raise or clear moment in the alertstatus at the one state transition where it occurred.
 
-An example: say that OVERTEMP occured at some point along a journey, and the frozen goods are spoilt upon arrival. A monitor application can perform a some lightweight analytics by requesting the historical states for all or part of the journey of the package or container, and then plot the moments when the temperature went out of spec and the time it stayed that way. Since the carrier property is remembered in every state since it was set upon assumption of the transport responsibility, finding the carrier that is responsible for the spoilage is an easy matter. Graphing the issue in a rudimentary fashion could look like:
+An example: say that OVERTEMP occurred at some point along a journey, and the frozen goods are spoilt upon arrival. A monitor application can perform a some lightweight analytics by requesting the historical states for all or part of the journey of the package or container, and then plot the moments when the temperature went out of spec and the time it stayed that way. Since the carrier property is remembered in every state since it was set upon assumption of the transport responsibility, finding the carrier that is responsible for the spoilage is an easy matter. Graphing the issue in a rudimentary fashion could look like:
 
 |State->|1|2|3|4|5|6|7|8|9|10|
 |-------|---|---|---|---|---|---|---|---|---|---|
